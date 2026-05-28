@@ -1,6 +1,7 @@
-// Package gk 是 GoKit 工具集合的根包。
+// Package knifer is the root package of the go-knifer utility toolkit.
 //
-// 本模块按领域拆分为多个对外子包，按需引入：
+// This module is split into multiple public subpackages by domain.
+// Import only the packages you need:
 //
 //	import "github.com/imajinyun/go-knifer/vbase"
 //	import "github.com/imajinyun/go-knifer/vcache"
@@ -9,5 +10,6 @@
 //	import "github.com/imajinyun/go-knifer/vhttp"
 //	import "github.com/imajinyun/go-knifer/vsetting"
 //
-// 子包之间相互独立，根包不承载业务 API。
-package gk
+// Subpackages are independent from each other, and the root package does not
+// expose business APIs.
+package knifer
