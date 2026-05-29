@@ -44,13 +44,13 @@ func CloseCookie() {
 	httpx.CloseCookie()
 }
 
-// NewHTTPError delegates to the internal httpx implementation.
-func NewHTTPError(msg string, cause error) *HTTPError {
+// NewError delegates to the internal httpx implementation.
+func NewError(msg string, cause error) *Error {
 	return httpx.NewHTTPError(msg, cause)
 }
 
-// HTTPErrorf delegates to the internal httpx implementation.
-func HTTPErrorf(format string, args ...any) *HTTPError {
+// Errorf delegates to the internal httpx implementation.
+func Errorf(format string, args ...any) *Error {
 	return httpx.HTTPErrorf(format, args...)
 }
 
@@ -145,7 +145,7 @@ func FilterHTMLTag(s string, tagNames ...string) string {
 }
 
 // Options delegates to the internal httpx implementation.
-func Options(rawURL string) *HTTPRequest {
+func Options(rawURL string) *Request {
 	return httpx.Options(rawURL)
 }
 
@@ -175,17 +175,17 @@ func IsHTTP(u string) bool {
 }
 
 // CreateRequest delegates to the internal httpx implementation.
-func CreateRequest(method Method, rawURL string) *HTTPRequest {
+func CreateRequest(method Method, rawURL string) *Request {
 	return httpx.CreateRequest(method, rawURL)
 }
 
 // CreateGet delegates to the internal httpx implementation.
-func CreateGet(rawURL string, followRedirects bool) *HTTPRequest {
+func CreateGet(rawURL string, followRedirects bool) *Request {
 	return httpx.CreateGet(rawURL, followRedirects)
 }
 
 // CreatePost delegates to the internal httpx implementation.
-func CreatePost(rawURL string) *HTTPRequest {
+func CreatePost(rawURL string) *Request {
 	return httpx.CreatePost(rawURL)
 }
 
