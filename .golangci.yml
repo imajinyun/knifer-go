@@ -40,7 +40,7 @@ linters:
         linters:
           - gosec
         text: "Potential file inclusion via variable"
-      - path: internal/(http/response|setting/setting)\.go
+      - path: internal/(http/response|conf/conf)\.go
         linters:
           - gosec
         text: "Potential file inclusion via variable"

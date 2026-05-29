@@ -8,7 +8,7 @@
 //	import "github.com/imajinyun/go-knifer/vcrypto"
 //	import "github.com/imajinyun/go-knifer/vextra"
 //	import "github.com/imajinyun/go-knifer/vhttp"
-//	import "github.com/imajinyun/go-knifer/vsetting"
+//	import "github.com/imajinyun/go-knifer/vconf"
 //
 // Subpackages are independent from each other, and the root package does not
 // expose business APIs.

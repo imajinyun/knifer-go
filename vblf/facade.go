@@ -1,4 +1,4 @@
-package vbf
+package vblf
 
 import bloomfilter "github.com/imajinyun/go-knifer/internal/bloomfilter"
 

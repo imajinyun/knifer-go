@@ -1,4 +1,4 @@
-package vsocket
+package vskt
 
 import (
 	"bytes"

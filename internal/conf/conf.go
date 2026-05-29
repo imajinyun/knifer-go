@@ -1,4 +1,4 @@
-package setting
+package conf
 
 import (
 	"bufio"
@@ -12,18 +12,18 @@ import (
 
 const defaultGroup = ""
 
-// Setting 存储分组键值配置，对应 Hutool Setting/GroupedMap 的核心能力。Setting stores grouped key-value configuration.
-type Setting struct {
+// Conf stores grouped key-value configuration.
+type Conf struct {
 	data map[string]map[string]string
 }
 
-// New 创建空的 Setting。New creates an empty Setting.
-func New() *Setting {
-	return &Setting{data: map[string]map[string]string{defaultGroup: {}}}
+// New creates an empty Conf.
+func New() *Conf {
+	return &Conf{data: map[string]map[string]string{defaultGroup: {}}}
 }
 
 // Load 读取并解析 setting/properties 配置文件。Load reads and parses a setting/properties file.
-func Load(path string) (*Setting, error) {
+func Load(path string) (*Conf, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -32,10 +32,10 @@ func Load(path string) (*Setting, error) {
 }
 
 // Parse 解析 setting/properties 文本内容。Parse parses setting/properties content.
-func Parse(content string) (*Setting, error) { return ParseBytes([]byte(content)) }
+func Parse(content string) (*Conf, error) { return ParseBytes([]byte(content)) }
 
 // ParseBytes 解析 setting/properties 字节内容。ParseBytes parses setting/properties content.
-func ParseBytes(content []byte) (*Setting, error) {
+func ParseBytes(content []byte) (*Conf, error) {
 	s := New()
 	group := defaultGroup
 	scanner := bufio.NewScanner(bytes.NewReader(content))
@@ -69,7 +69,7 @@ func ParseBytes(content []byte) (*Setting, error) {
 }
 
 // ParseYAML 将简单 YAML 子集解析为分组配置。ParseYAML parses a small YAML subset into grouped configuration.
-func ParseYAML(content string) (*Setting, error) {
+func ParseYAML(content string) (*Conf, error) {
 	s := New()
 	group := defaultGroup
 	scanner := bufio.NewScanner(strings.NewReader(content))
@@ -105,10 +105,10 @@ func ParseYAML(content string) (*Setting, error) {
 }
 
 // Get 从默认分组获取配置值。Get returns a value from the default group.
-func (s *Setting) Get(key string) string { return s.GetByGroup(defaultGroup, key) }
+func (s *Conf) Get(key string) string { return s.GetByGroup(defaultGroup, key) }
 
 // GetOrDefault 从默认分组获取配置值，不存在时返回 def。GetOrDefault returns a value from the default group or def when absent.
-func (s *Setting) GetOrDefault(key, def string) string {
+func (s *Conf) GetOrDefault(key, def string) string {
 	if v, ok := s.Lookup(defaultGroup, key); ok {
 		return v
 	}
@@ -116,13 +116,13 @@ func (s *Setting) GetOrDefault(key, def string) string {
 }
 
 // GetByGroup 获取指定分组中的配置值。GetByGroup returns a grouped value.
-func (s *Setting) GetByGroup(group, key string) string {
+func (s *Conf) GetByGroup(group, key string) string {
 	v, _ := s.Lookup(group, key)
 	return v
 }
 
 // Lookup 获取指定分组中的配置值并返回是否存在。Lookup returns a grouped value and whether it exists.
-func (s *Setting) Lookup(group, key string) (string, bool) {
+func (s *Conf) Lookup(group, key string) (string, bool) {
 	if s == nil || s.data == nil {
 		return "", false
 	}
@@ -135,7 +135,7 @@ func (s *Setting) Lookup(group, key string) (string, bool) {
 }
 
 // GetInt 从默认分组获取 int 值，不存在或格式非法时返回 def。GetInt returns an int value from the default group or def when absent/invalid.
-func (s *Setting) GetInt(key string, def int) int {
+func (s *Conf) GetInt(key string, def int) int {
 	v, ok := s.Lookup(defaultGroup, key)
 	if !ok {
 		return def
@@ -148,7 +148,7 @@ func (s *Setting) GetInt(key string, def int) int {
 }
 
 // GetBool 从默认分组获取 bool 值，不存在或格式非法时返回 def。GetBool returns a bool value from the default group or def when absent/invalid.
-func (s *Setting) GetBool(key string, def bool) bool {
+func (s *Conf) GetBool(key string, def bool) bool {
 	v, ok := s.Lookup(defaultGroup, key)
 	if !ok {
 		return def
@@ -161,16 +161,19 @@ func (s *Setting) GetBool(key string, def bool) bool {
 }
 
 // Set 将配置值写入默认分组。Set stores a value in the default group.
-func (s *Setting) Set(key, value string) { s.SetByGroup(defaultGroup, key, value) }
+func (s *Conf) Set(key, value string) { s.SetByGroup(defaultGroup, key, value) }
 
 // SetByGroup 将配置值写入指定分组。SetByGroup stores a grouped value.
-func (s *Setting) SetByGroup(group, key, value string) {
+func (s *Conf) SetByGroup(group, key, value string) {
 	s.ensureGroup(group)
 	s.data[group][key] = value
 }
 
 // Groups 返回全部分组名称。Groups returns all group names.
-func (s *Setting) Groups() []string {
+func (s *Conf) Groups() []string {
+	if s == nil || s.data == nil {
+		return []string{}
+	}
 	groups := make([]string, 0, len(s.data))
 	for g := range s.data {
 		groups = append(groups, g)
@@ -180,7 +183,10 @@ func (s *Setting) Groups() []string {
 }
 
 // Keys 返回指定分组中的全部键。Keys returns keys from group.
-func (s *Setting) Keys(group string) []string {
+func (s *Conf) Keys(group string) []string {
+	if s == nil || s.data == nil {
+		return []string{}
+	}
 	m := s.data[group]
 	keys := make([]string, 0, len(m))
 	for k := range m {
@@ -191,7 +197,10 @@ func (s *Setting) Keys(group string) []string {
 }
 
 // ToMap 返回所有分组配置的深拷贝。ToMap returns a deep copy of all groups.
-func (s *Setting) ToMap() map[string]map[string]string {
+func (s *Conf) ToMap() map[string]map[string]string {
+	if s == nil || s.data == nil {
+		return map[string]map[string]string{}
+	}
 	out := make(map[string]map[string]string, len(s.data))
 	for g, m := range s.data {
 		out[g] = make(map[string]string, len(m))
@@ -202,7 +211,7 @@ func (s *Setting) ToMap() map[string]map[string]string {
 	return out
 }
 
-func (s *Setting) ensureGroup(group string) {
+func (s *Conf) ensureGroup(group string) {
 	if s.data == nil {
 		s.data = map[string]map[string]string{}
 	}
