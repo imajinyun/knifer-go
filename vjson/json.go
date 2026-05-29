@@ -2,101 +2,101 @@ package vjson
 
 import jsonx "github.com/imajinyun/go-knifer/internal/json"
 
-// JSONObject 是有序的 JSON 对象。
-type JSONObject = jsonx.JSONObject
+// Object is an ordered JSON object.
+type Object = jsonx.JSONObject
 
-// JSONArray 是有序的 JSON 数组。
-type JSONArray = jsonx.JSONArray
+// Array is an ordered JSON array.
+type Array = jsonx.JSONArray
 
-// JSONConfig 控制 JSON 序列化行为。
-type JSONConfig = jsonx.Config
+// Config controls JSON serialization behavior.
+type Config = jsonx.Config
 
-// JSONError 是 JSON 模块错误类型。
-type JSONError = jsonx.JSONError
+// Error is the JSON module error type.
+type Error = jsonx.JSONError
 
-// JSONNull 是 JSON null 单例值。
-var JSONNull = jsonx.Null
+// Null is the JSON null singleton value.
+var Null = jsonx.Null
 
-// NewJSONObject 创建一个空的有序 JSON 对象。
-func NewJSONObject() *JSONObject { return jsonx.NewJSONObject() }
+// NewObject creates an empty ordered JSON object.
+func NewObject() *Object { return jsonx.NewJSONObject() }
 
-// NewJSONObjectWithConfig 使用指定配置创建 JSON 对象。
-func NewJSONObjectWithConfig(cfg *JSONConfig) *JSONObject {
+// NewObjectWithConfig creates a JSON object with cfg.
+func NewObjectWithConfig(cfg *Config) *Object {
 	return jsonx.NewJSONObjectWithConfig(cfg)
 }
 
-// NewJSONArray 创建空的有序 JSON 数组。
-func NewJSONArray() *JSONArray { return jsonx.NewJSONArray() }
+// NewArray creates an empty ordered JSON array.
+func NewArray() *Array { return jsonx.NewJSONArray() }
 
-// NewJSONArrayWithConfig 使用指定配置创建 JSON 数组。
-func NewJSONArrayWithConfig(cfg *JSONConfig) *JSONArray {
+// NewArrayWithConfig creates a JSON array with cfg.
+func NewArrayWithConfig(cfg *Config) *Array {
 	return jsonx.NewJSONArrayWithConfig(cfg)
 }
 
-// NewJSONConfig 创建默认 JSON 配置。
-func NewJSONConfig() *JSONConfig { return jsonx.NewConfig() }
+// NewConfig creates a default JSON config.
+func NewConfig() *Config { return jsonx.NewConfig() }
 
-// JSONIsNull 判断值是否为 nil 或 JSON null。
-func JSONIsNull(v any) bool { return jsonx.IsNull(v) }
+// IsNull reports whether v is nil or JSON null.
+func IsNull(v any) bool { return jsonx.IsNull(v) }
 
-// JSONParse 自动判断并解析 JSON。
-func JSONParse(src any) (any, error) { return jsonx.Parse(src) }
+// Parse automatically detects and parses JSON.
+func Parse(src any) (any, error) { return jsonx.Parse(src) }
 
-// JSONParseObj 强制解析为 JSONObject。
-func JSONParseObj(src any) (*JSONObject, error) { return jsonx.ParseObj(src) }
+// ParseObj parses src as a JSON object.
+func ParseObj(src any) (*Object, error) { return jsonx.ParseObj(src) }
 
-// JSONParseArray 强制解析为 JSONArray。
-func JSONParseArray(src any) (*JSONArray, error) { return jsonx.ParseArray(src) }
+// ParseArray parses src as a JSON array.
+func ParseArray(src any) (*Array, error) { return jsonx.ParseArray(src) }
 
-// JSONToStr 紧凑序列化任意值为 JSON。
-func JSONToStr(v any) (string, error) { return jsonx.ToJSONStr(v) }
+// ToStr serializes v to compact JSON.
+func ToStr(v any) (string, error) { return jsonx.ToJSONStr(v) }
 
-// JSONToPrettyStr 4 空格缩进序列化。
-func JSONToPrettyStr(v any) (string, error) { return jsonx.ToJSONPrettyStr(v) }
+// ToPrettyStr serializes v to pretty JSON with 4-space indentation.
+func ToPrettyStr(v any) (string, error) { return jsonx.ToJSONPrettyStr(v) }
 
-// JSONToStrIndent 自定义缩进序列化。
-func JSONToStrIndent(v any, indent int) (string, error) {
+// ToStrIndent serializes v to pretty JSON with custom indentation.
+func ToStrIndent(v any, indent int) (string, error) {
 	return jsonx.ToJSONStrIndent(v, indent)
 }
 
-// JSONFormat 对原始 JSON 字符串重排版。
-func JSONFormat(raw string) string { return jsonx.FormatJSONStr(raw) }
+// Format formats raw JSON string.
+func Format(raw string) string { return jsonx.FormatJSONStr(raw) }
 
-// JSONIsJSON 判断字符串是否为合法 JSON。
-func JSONIsJSON(s string) bool { return jsonx.IsJSON(s) }
+// IsJSON reports whether s is valid JSON.
+func IsJSON(s string) bool { return jsonx.IsJSON(s) }
 
-// JSONIsObj 判断字符串是否为 JSON 对象。
-func JSONIsObj(s string) bool { return jsonx.IsJSONObj(s) }
+// IsObj reports whether s is a JSON object.
+func IsObj(s string) bool { return jsonx.IsJSONObj(s) }
 
-// JSONIsArray 判断字符串是否为 JSON 数组。
-func JSONIsArray(s string) bool { return jsonx.IsJSONArray(s) }
+// IsArray reports whether s is a JSON array.
+func IsArray(s string) bool { return jsonx.IsJSONArray(s) }
 
-// JSONGetByPath 路径表达式取值。
-func JSONGetByPath(root any, path string) any { return jsonx.GetByPath(root, path) }
+// GetByPath gets a value by path expression.
+func GetByPath(root any, path string) any { return jsonx.GetByPath(root, path) }
 
-// JSONGetByPathOr 路径表达式取值并提供默认值。
-func JSONGetByPathOr(root any, path string, def any) any {
+// GetByPathOr gets a value by path expression with a default.
+func GetByPathOr(root any, path string, def any) any {
 	return jsonx.GetByPathOr(root, path, def)
 }
 
-// JSONPutByPath 路径表达式写入。
-func JSONPutByPath(root any, path string, value any) error {
+// PutByPath writes a value by path expression.
+func PutByPath(root any, path string, value any) error {
 	return jsonx.PutByPath(root, path, value)
 }
 
-// JSONQuote 给字符串添加 JSON 双引号并转义。
-func JSONQuote(s string) string { return jsonx.Quote(s) }
+// Quote adds JSON double quotes and escapes s.
+func Quote(s string) string { return jsonx.Quote(s) }
 
-// JSONToBean 将 JSON 反序列化到 dst（必须是指针）。
-func JSONToBean(src any, dst any) error { return jsonx.ToBean(src, dst) }
+// ToBean deserializes JSON to dst, which must be a pointer.
+func ToBean(src any, dst any) error { return jsonx.ToBean(src, dst) }
 
-// JSONToList 将 JSON 数组反序列化到 dst（必须是指向 slice 的指针）。
-func JSONToList(src any, dst any) error { return jsonx.ToList(src, dst) }
+// ToList deserializes a JSON array to dst, which must point to a slice.
+func ToList(src any, dst any) error { return jsonx.ToList(src, dst) }
 
 // XMLToJSON 将 XML 字符串解析为 JSONObject。
-func XMLToJSON(xmlStr string) (*JSONObject, error) { return jsonx.XMLToJSON(xmlStr) }
+func XMLToJSON(xmlStr string) (*Object, error) { return jsonx.XMLToJSON(xmlStr) }
 
-// JSONToXML 将 JSON 值序列化为 XML 字符串，rootTag 为空时直接拼接键。
-func JSONToXML(root any, rootTag string) (string, error) {
+// ToXML serializes a JSON value to XML string. When rootTag is empty, keys are concatenated directly.
+func ToXML(root any, rootTag string) (string, error) {
 	return jsonx.JSONToXML(root, rootTag)
 }

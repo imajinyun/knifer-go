@@ -89,7 +89,7 @@ import (
 func main() {
  name := vbase.DefaultIfBlank("", "go-knifer")
 
- obj := vjson.NewJSONObject().
+ obj := vjson.NewObject().
   Set("id", vbase.FastUUID()).
   Set("name", name).
   Set("tags", []string{"go", "tool"})
@@ -138,9 +138,9 @@ import (
 )
 
 func main() {
- vhttp.HTTPSetGlobalTimeout(3 * time.Second)
+ vhttp.SetGlobalTimeout(3 * time.Second)
 
- resp := vhttp.HTTPGet("https://example.com").
+ resp := vhttp.Get("https://example.com").
   Query("lang", "go").
   Header("X-Client", "go-knifer").
   FollowRedirects(true).
