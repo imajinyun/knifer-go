@@ -52,7 +52,7 @@ text := vbase.MD5Hex("hello")
 | `vjwt` | `github.com/imajinyun/go-knifer/vjwt` | JWT 创建、解析、签名、验签与时间字段校验，支持 HMAC、RSA、ECDSA、none 等 signer。 |
 | `vlog` | `github.com/imajinyun/go-knifer/vlog` | 日志 facade：console/color console logger、日志级别、全局 logger 与静态日志函数。 |
 | `vconf` | `github.com/imajinyun/go-knifer/vconf` | 分组配置读取：setting/properties 风格文本和简单 YAML 子集，支持类型化读取。 |
-| `vsocket` | `github.com/imajinyun/go-knifer/vsocket` | TCP socket 工具：普通连接、NIO/AIO server/client、协议编解码接口。 |
+| `vskt` | `github.com/imajinyun/go-knifer/vskt` | TCP socket 工具：普通连接、NIO/AIO server/client、协议编解码接口。 |
 | `vsys` | `github.com/imajinyun/go-knifer/vsys` | 系统与运行时信息：主机、OS、用户、Go runtime、进程内存、goroutine、环境变量等。 |
 
 ## 🚀 Install
