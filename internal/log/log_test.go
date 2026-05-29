@@ -45,7 +45,7 @@ func TestFormatTemplatePrintfFallback(t *testing.T) {
 }
 
 func TestFormatTemplateNoArgs(t *testing.T) {
-	if got := renderLogMessage("plain", nil...); got != "plain" {
+	if got := renderLogMessage("plain"); got != "plain" {
 		t.Errorf("formatTemplate plain got=%q", got)
 	}
 }

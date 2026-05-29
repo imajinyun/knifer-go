@@ -6,22 +6,26 @@ import (
 )
 
 // renderLogMessage supports Hutool-style "{}" placeholders.
-// When format contains "{}", arguments are replaced positionally;
+// When template contains "{}", arguments are replaced positionally;
 // otherwise it falls back to fmt.Sprintf.
 //
 //	renderLogMessage("hello {}", "world") // "hello world"
 //	renderLogMessage("a=%d", 1)           // "a=1"
-func renderLogMessage(format string, args ...any) string {
-	if format == "" {
+func renderLogMessage(template string, args ...any) string {
+	if template == "" {
 		return concatArgs(args...)
 	}
-	if strings.Contains(format, "{}") {
-		return replacePlaceholders(format, args...)
+	if strings.Contains(template, "{}") {
+		return replacePlaceholders(template, args...)
 	}
 	if len(args) == 0 {
-		return format
+		return template
 	}
-	return fmt.Sprintf(format, args...)
+	return sprintfLogMessage(template, args)
+}
+
+func sprintfLogMessage(template string, args []any) string {
+	return fmt.Sprintf(template, args...)
 }
 
 // replacePlaceholders replaces "{}" placeholders in argument order.
