@@ -2,60 +2,60 @@ package cache
 
 import "time"
 
-// CacheListener 缓存监听器，对应 hutool-cache CacheListener。
+// CacheListener receives callbacks when entries are removed from a cache.
 type CacheListener[K comparable, V any] interface {
 	OnRemove(key K, value V)
 }
 
-// CacheListenerFunc 函数式 CacheListener。
+// CacheListenerFunc adapts a function to CacheListener.
 type CacheListenerFunc[K comparable, V any] func(key K, value V)
 
-// OnRemove 实现 CacheListener。
+// OnRemove implements CacheListener.
 func (f CacheListenerFunc[K, V]) OnRemove(key K, value V) { f(key, value) }
 
-// Supplier 在缓存缺失时用于生成新值。
+// Supplier creates a value when GetOrLoad observes a cache miss.
 type Supplier[V any] func() (V, error)
 
-// Cache 缓存接口（对应 hutool-cache Cache）。
+// Cache defines the common cache operations, similar to hutool-cache Cache.
 type Cache[K comparable, V any] interface {
-	// Capacity 容量，0 表示不限。
+	// Capacity returns the maximum number of entries; 0 means unlimited.
 	Capacity() int
-	// Timeout 默认过期时长，0 表示无限制。
+	// Timeout returns the default expiration duration; 0 means no expiration.
 	Timeout() time.Duration
-	// Put 加入元素，使用默认过期时长。
+	// Put stores an entry using the default expiration duration.
 	Put(key K, value V)
-	// PutWithTimeout 加入元素，指定过期时长。
+	// PutWithTimeout stores an entry using the specified expiration duration.
 	PutWithTimeout(key K, value V, timeout time.Duration)
-	// Get 取值，未命中或已过期返回零值与 false。默认会刷新最近访问时间。
+	// Get returns a value and refreshes access metadata on hit.
 	Get(key K) (V, bool)
-	// GetWithUpdate 取值，可指定是否刷新访问时间。
+	// GetWithUpdate returns a value and optionally refreshes last access time.
 	GetWithUpdate(key K, updateLastAccess bool) (V, bool)
-	// GetOrLoad 缺失时调用 supplier 生成并存入缓存。
+	// GetOrLoad calls supplier on miss and stores the generated value.
 	GetOrLoad(key K, supplier Supplier[V]) (V, error)
-	// GetOrLoadWith 缺失时调用 supplier，并指定是否刷新访问时间与超时。
+	// GetOrLoadWith calls supplier on miss and controls refresh and expiration.
 	GetOrLoadWith(key K, updateLastAccess bool, timeout time.Duration, supplier Supplier[V]) (V, error)
-	// Remove 移除一个 key。
+	// Remove deletes one key.
 	Remove(key K)
-	// ContainsKey 是否包含 key（命中检查也会触发过期清理）。
+	// ContainsKey reports whether key exists and prunes it if expired.
 	ContainsKey(key K) bool
-	// Size 当前缓存条目数。
+	// Size returns the current number of entries.
 	Size() int
-	// IsEmpty 是否为空。
+	// IsEmpty reports whether the cache contains no entries.
 	IsEmpty() bool
-	// IsFull 是否已满。
+	// IsFull reports whether the cache reached its capacity.
 	IsFull() bool
-	// Prune 清理过期对象，返回清理数量。
+	// Prune removes expired or evicted entries and returns the removed count.
 	Prune() int
-	// Clear 清空缓存。
+	// Clear removes all entries.
 	Clear()
-	// Keys 返回所有键的快照。
+	// Keys returns a snapshot of all keys.
 	Keys() []K
-	// Values 返回所有值的快照（已过期会过滤）。
+	// Values returns a snapshot of all non-expired values.
 	Values() []V
-	// SetListener 设置移除监听器。
+	// SetListener sets the removal listener and returns the cache for chaining.
 	SetListener(listener CacheListener[K, V]) Cache[K, V]
-	// HitCount 命中数。
+	// HitCount returns the number of successful lookups.
 	HitCount() int64
-	// MissCount 未命中数。
+	// MissCount returns the number of missed or expired lookups.
 	MissCount() int64
 }

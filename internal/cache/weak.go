@@ -6,12 +6,16 @@ import (
 	"time"
 )
 
-// WeakCache 弱引用缓存。
+// WeakCache is a weak-reference-like cache for pointer values.
 //
-// Go 没有 Java 的 WeakReference，这里使用 runtime.SetFinalizer 模拟：
-// 当外部对持有的引用全部释放后，元素会在下一次 GC 时被回收。
-// 由于 Go 的语义不同，这里弱引用语义为：缓存只持有 *V（指针）的弱视图，
-// 当外部引用消失后，对应缓存条目将自动被清理。
+// Go does not provide Java-style WeakReference. This implementation uses
+// runtime.SetFinalizer to approximate weak-reference behavior: when all strong
+// references to a cached pointer disappear, a later GC cycle may run the
+// finalizer and remove the corresponding entry.
+//
+// Because finalizer scheduling is intentionally non-deterministic in Go, callers
+// should treat GC-based cleanup as eventual cleanup. TTL checks and explicit
+// Prune/Remove/Clear remain deterministic.
 type WeakCache[K comparable, V any] struct {
 	mu       sync.Mutex
 	entries  map[K]*weakEntry[V]
@@ -27,7 +31,8 @@ type weakEntry[V any] struct {
 	ttl        time.Duration
 }
 
-// NewWeakCache 创建弱引用缓存，timeout 为默认过期时长，0 表示无限制。
+// NewWeakCache creates a weak-reference-like cache with timeout as default TTL.
+// A zero timeout means entries do not expire by time.
 func NewWeakCache[K comparable, V any](timeout time.Duration) *WeakCache[K, V] {
 	return &WeakCache[K, V]{
 		entries: make(map[K]*weakEntry[V]),
@@ -35,18 +40,18 @@ func NewWeakCache[K comparable, V any](timeout time.Duration) *WeakCache[K, V] {
 	}
 }
 
-// SetListener 设置移除监听。
+// SetListener sets the removal listener and returns the cache for chaining.
 func (c *WeakCache[K, V]) SetListener(l CacheListener[K, *V]) *WeakCache[K, V] {
 	c.listener = l
 	return c
 }
 
-// Put 放入键值对，使用默认 timeout。
+// Put stores a pointer value using the default timeout.
 func (c *WeakCache[K, V]) Put(key K, value *V) {
 	c.PutWithTimeout(key, value, c.timeout)
 }
 
-// PutWithTimeout 放入键值对，自定义超时。
+// PutWithTimeout stores a pointer value using a custom timeout.
 func (c *WeakCache[K, V]) PutWithTimeout(key K, value *V, timeout time.Duration) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -62,7 +67,7 @@ func (c *WeakCache[K, V]) PutWithTimeout(key K, value *V, timeout time.Duration)
 		lastAccess: time.Now().UnixNano(),
 		ttl:        timeout,
 	}
-	// 使用 finalizer 检测对象被 GC 之后清理对应缓存条目
+	// Use a finalizer to remove the entry after the pointed value is collected.
 	keyCopy := key
 	cache := c
 	runtime.SetFinalizer(value, func(v *V) {
@@ -70,7 +75,7 @@ func (c *WeakCache[K, V]) PutWithTimeout(key K, value *V, timeout time.Duration)
 	})
 }
 
-// Get 取值，未命中或已过期返回 nil 与 false。
+// Get returns a cached pointer, or nil and false when missing or expired.
 func (c *WeakCache[K, V]) Get(key K) (*V, bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -90,7 +95,7 @@ func (c *WeakCache[K, V]) Get(key K) (*V, bool) {
 	return e.ref, true
 }
 
-// Remove 移除一个 key。
+// Remove deletes one key and notifies the removal listener when present.
 func (c *WeakCache[K, V]) Remove(key K) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -100,14 +105,15 @@ func (c *WeakCache[K, V]) Remove(key K) {
 	}
 }
 
-// Size 当前条目数（仅基于内部结构，被 GC 但还未触发 finalizer 的可能仍计入）。
+// Size returns the number of entries still tracked internally.
+// Values already collected by GC may still be counted until their finalizers run.
 func (c *WeakCache[K, V]) Size() int {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	return len(c.entries)
 }
 
-// Clear 清空缓存。
+// Clear removes all entries and notifies the listener for each value.
 func (c *WeakCache[K, V]) Clear() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -117,7 +123,7 @@ func (c *WeakCache[K, V]) Clear() {
 	c.entries = make(map[K]*weakEntry[V])
 }
 
-// Prune 清理过期条目。
+// Prune removes expired entries and returns the removed count.
 func (c *WeakCache[K, V]) Prune() int {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -133,21 +139,23 @@ func (c *WeakCache[K, V]) Prune() int {
 	return count
 }
 
-// HitCount 命中数。
+// HitCount returns the number of successful lookups.
 func (c *WeakCache[K, V]) HitCount() int64 {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	return c.hits
 }
 
-// MissCount 未命中数。
+// MissCount returns the number of missed or expired lookups.
 func (c *WeakCache[K, V]) MissCount() int64 {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	return c.misses
 }
 
-// removeIfRefIs 在对象被 GC 时由 finalizer 调用。
+// removeIfRefIs is called by the finalizer and removes key only when it still
+// points to the same value. This avoids deleting a newer value stored under the
+// same key after the finalizer was registered.
 func (c *WeakCache[K, V]) removeIfRefIs(key K, ref *V) {
 	c.mu.Lock()
 	defer c.mu.Unlock()

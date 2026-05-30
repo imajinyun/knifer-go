@@ -54,8 +54,8 @@ text := vbase.MD5Hex("hello")
 | `vlog` | `github.com/imajinyun/go-knifer/vlog` | 日志 facade：console/color console logger、日志级别、全局 logger 与静态日志函数。 |
 | `verr` | `github.com/imajinyun/go-knifer/verr` | 错误工具：panic recover、错误聚合、multierror 匹配、堆栈捕获/格式化，以及可选 logrus/Sentry 集成。 |
 | `vconf` | `github.com/imajinyun/go-knifer/vconf` | 分组配置读取：setting/properties 风格文本和简单 YAML 子集，支持类型化读取。 |
-| `vset` | `github.com/imajinyun/go-knifer/vset` | 集合工具：支持 string、int、int32、int64、uint、uint32、uint64 类型，提供添加、删除、包含判断与集合运算。 |
-| `vjob` | `github.com/imajinyun/go-knifer/vjob` | 可切分任务执行：职责分离任务数据与调度配置，支持泛型 Slice/Map 适配、context 取消和串行合并回调。 |
+| `vset` | `github.com/imajinyun/go-knifer/vset` | 泛型与常用类型集合工具：支持添加、删除、包含判断、集合运算，以及 JSON/YAML 编解码辅助。 |
+| `vjob` | `github.com/imajinyun/go-knifer/vjob` | 可切分任务执行：职责分离任务数据与调度配置，支持泛型 Slice/Map 适配、context 取消和串行合并回调；无需开启 generic type alias 实验。 |
 | `vsem` | `github.com/imajinyun/go-knifer/vsem` | 加权计数信号量：支持 context 取消、FIFO 公平等待、非阻塞获取、关闭通知与占用数查询。 |
 | `vskt` | `github.com/imajinyun/go-knifer/vskt` | TCP socket 工具：普通连接、NIO/AIO server/client、协议编解码接口。 |
 | `vsys` | `github.com/imajinyun/go-knifer/vsys` | 系统与运行时信息：主机、OS、用户、Go runtime、进程内存、goroutine、环境变量等。 |
@@ -247,13 +247,50 @@ func main() {
 }
 ```
 
+### 泛型集合
+
+`vset` 提供泛型 `Set[T]` 和常用类型构造函数。对外的泛型 facade 使用普通泛型
+类型实现，而不是 generic type alias，因此默认 Go 工具链和 `go vet` 下无需开启
+`GOEXPERIMENT=aliastypeparams`。
+
+```go
+package main
+
+import (
+ "encoding/json"
+ "fmt"
+
+ "github.com/imajinyun/go-knifer/vset"
+)
+
+func main() {
+ tags := vset.New("go", "tool")
+ tags.Add("sdk")
+
+ other := vset.New("tool", "cli")
+ fmt.Println(tags.Contains("go"))
+ fmt.Println(tags.Union(other).Members())
+ fmt.Println(tags.Intersect(other).Members())
+
+ data, _ := json.Marshal(tags)
+ var decoded vset.Set[string]
+ _ = json.Unmarshal(data, &decoded)
+ fmt.Println(decoded.Equal(tags))
+
+ ids := vset.NewInt(1, 2, 3)
+ ids.Remove(2)
+ fmt.Println(ids.Members())
+}
+```
+
 ### 可切分任务执行
 
 `vjob` 将任务接口和调度配置拆开：任务只需要实现 `Len` 和按区间执行的
 `Run`，`Options` 负责控制分片大小和最大并发数。`Options` 零值合法：
 `Run` 默认把整个任务作为一个分片串行执行；需要指定批大小或并发度时使用
 `RunWith`。每个分片返回的 `Merge` 会在分片执行成功后按顺序串行回放，适合
-worker 并发构造局部结果，再安全地合并到共享结果中。
+worker 并发构造局部结果，再安全地合并到共享结果中。`Batch[T]` 是对内部实现的
+facade 包装类型，不是 generic type alias，因此 `go vet` 不需要额外实验开关。
 
 ```go
 package main

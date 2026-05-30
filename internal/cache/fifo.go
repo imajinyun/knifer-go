@@ -2,24 +2,24 @@ package cache
 
 import "time"
 
-// FIFOCache 先进先出缓存（对应 hutool-cache FIFOCache）。
+// FIFOCache evicts entries in first-in-first-out order.
 type FIFOCache[K comparable, V any] struct {
 	abstractCache[K, V]
 }
 
-// NewFIFOCache 创建容量为 capacity 的 FIFO 缓存，默认无超时。
+// NewFIFOCache creates a FIFO cache with the given capacity and no default timeout.
 func NewFIFOCache[K comparable, V any](capacity int) *FIFOCache[K, V] {
 	return NewFIFOCacheWithTimeout[K, V](capacity, 0)
 }
 
-// NewFIFOCacheWithTimeout 创建带超时的 FIFO 缓存。
+// NewFIFOCacheWithTimeout creates a FIFO cache with a default timeout.
 func NewFIFOCacheWithTimeout[K comparable, V any](capacity int, timeout time.Duration) *FIFOCache[K, V] {
 	c := &FIFOCache[K, V]{}
 	c.init(capacity, timeout, fifoPrune[K, V])
 	return c
 }
 
-// SetListener 设置移除监听。
+// SetListener sets the removal listener and returns the cache for chaining.
 func (c *FIFOCache[K, V]) SetListener(l CacheListener[K, V]) Cache[K, V] {
 	c.listener = l
 	return c
@@ -29,7 +29,8 @@ func fifoPrune[K comparable, V any](c *abstractCache[K, V]) int {
 	count := 0
 	var first *CacheObj[K, V]
 	if c.isPruneExpiredActive() {
-		// 清理过期对象，并找到链表头部第一个未过期对象
+		// Remove expired entries and remember the first non-expired entry at the
+		// head side of the list as the FIFO eviction candidate.
 		for _, key := range c.cacheMap.keysInOrder() {
 			co, _ := c.cacheMap.get(key)
 			if co.isExpired() {

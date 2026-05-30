@@ -30,8 +30,9 @@ func TestWeakCacheTimeout(t *testing.T) {
 	}
 }
 
-// 验证当外部强引用消失后，下一次 GC 会清理弱引用条目。
-// 由于 finalizer 调度时机不可完全控制，多次 GC + 微小休眠以提高稳定性。
+// Verify that a later GC can clean a weak entry once external strong references
+// disappear. Finalizer scheduling is not fully deterministic, so the test uses
+// several GC cycles and small sleeps to improve stability.
 func TestWeakCacheGC(t *testing.T) {
 	c := NewWeak[string, int](0)
 	func() {
@@ -43,7 +44,8 @@ func TestWeakCacheGC(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 	}
 	if c.Size() != 0 {
-		// 在某些 Go runtime/GC 下 finalizer 触发可能延迟，跳过严格断言但记录信息。
+		// On some Go runtime/GC schedules, finalizer execution can be delayed.
+		// Keep the test non-flaky by logging instead of asserting strictly.
 		t.Logf("weak cache size after GC: %d (finalizer may be delayed)", c.Size())
 	}
 }

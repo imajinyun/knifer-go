@@ -1,2 +1,3 @@
-// Package gkcache 对应 hutool-cache，提供 LRU、LFU、FIFO、Weak、Timed、File 等多种缓存实现。
+// Package cache provides cache implementations inspired by hutool-cache,
+// including FIFO, LFU, LRU, Timed, Weak, and NoCache variants.
 package cache
