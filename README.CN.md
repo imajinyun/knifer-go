@@ -53,6 +53,7 @@ text := vbase.MD5Hex("hello")
 | `vlog` | `github.com/imajinyun/go-knifer/vlog` | 日志 facade：console/color console logger、日志级别、全局 logger 与静态日志函数。 |
 | `vconf` | `github.com/imajinyun/go-knifer/vconf` | 分组配置读取：setting/properties 风格文本和简单 YAML 子集，支持类型化读取。 |
 | `vset` | `github.com/imajinyun/go-knifer/vset` | 集合工具：支持 string、int、int32、int64、uint、uint32、uint64 类型，提供添加、删除、包含判断与集合运算。 |
+| `vsem` | `github.com/imajinyun/go-knifer/vsem` | 加权计数信号量：支持 context 取消、FIFO 公平等待、非阻塞获取、关闭通知与占用数查询。 |
 | `vskt` | `github.com/imajinyun/go-knifer/vskt` | TCP socket 工具：普通连接、NIO/AIO server/client、协议编解码接口。 |
 | `vsys` | `github.com/imajinyun/go-knifer/vsys` | 系统与运行时信息：主机、OS、用户、Go runtime、进程内存、goroutine、环境变量等。 |
 
