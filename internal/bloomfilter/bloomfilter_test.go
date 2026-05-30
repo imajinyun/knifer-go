@@ -57,7 +57,8 @@ func TestBitMapBloomFilter(t *testing.T) {
 }
 
 func TestBitMapBloomFilter_CustomFilters(t *testing.T) {
-	bf := NewBitMapBloomFilterWithFilters(5,
+	bf := NewBitMapBloomFilterWithFilters(
+		5,
 		NewFNVFilter(1<<20),
 		NewRSFilter(1<<20),
 	)

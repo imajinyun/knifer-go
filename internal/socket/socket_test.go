@@ -7,6 +7,13 @@ import (
 	"time"
 )
 
+func closeAndReport(t *testing.T, closeFn func() error) {
+	t.Helper()
+	if err := closeFn(); err != nil {
+		t.Errorf("close failed: %v", err)
+	}
+}
+
 func TestSocketConfigDefaults(t *testing.T) {
 	cfg := NewSocketConfig()
 	if cfg.ThreadPoolSize != runtime.NumCPU() {
@@ -29,7 +36,7 @@ func TestSocketUtilConnect(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer ln.Close()
+	defer closeAndReport(t, ln.Close)
 
 	go func() {
 		c, _ := ln.Accept()
@@ -43,7 +50,7 @@ func TestSocketUtilConnect(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Connect 失败: %v", err)
 	}
-	defer conn.Close()
+	defer closeAndReport(t, conn.Close)
 
 	if !IsConnected(conn) {
 		t.Errorf("IsConnected 应返回 true")

@@ -204,8 +204,16 @@ func TestRequestMultipartUpload(t *testing.T) {
 			http.Error(w, err.Error(), 400)
 			return
 		}
-		defer f.Close()
-		data, _ := io.ReadAll(f)
+		defer func() {
+			if err := f.Close(); err != nil {
+				t.Errorf("close multipart file: %v", err)
+			}
+		}()
+		data, err := io.ReadAll(f)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
 		_, _ = w.Write([]byte(fh.Filename + ":" + string(data) + ":" + r.FormValue("k")))
 	}))
 	defer srv.Close()
@@ -225,9 +233,21 @@ func TestRequestFormFileReader(t *testing.T) {
 			http.Error(w, err.Error(), 400)
 			return
 		}
-		f, fh, _ := r.FormFile("f")
-		defer f.Close()
-		data, _ := io.ReadAll(f)
+		f, fh, err := r.FormFile("f")
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
+		defer func() {
+			if err := f.Close(); err != nil {
+				t.Errorf("close multipart file: %v", err)
+			}
+		}()
+		data, err := io.ReadAll(f)
+		if err != nil {
+			http.Error(w, err.Error(), 400)
+			return
+		}
 		_, _ = w.Write([]byte(fh.Filename + ":" + string(data)))
 	}))
 	defer srv.Close()

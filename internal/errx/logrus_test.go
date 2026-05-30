@@ -24,7 +24,7 @@ func TestWrapperExecConvertsPanic(t *testing.T) {
 
 	got := Wrap(func() error {
 		panic("panic from wrapper")
-	}).WithWarnf("panic").Exec(nil)
+	}).WithWarnf("panic").Exec(context.TODO())
 	if got == nil || !strings.Contains(got.Error(), "panic from wrapper") {
 		t.Fatalf("Exec() panic error = %v, want panic value", got)
 	}

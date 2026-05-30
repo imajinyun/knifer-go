@@ -27,7 +27,7 @@ func TestNioServerEcho(t *testing.T) {
 		t.Fatal(err)
 	}
 	server.SetChannelHandler(&echoChannelHandler{})
-	defer server.Close()
+	defer closeAndReport(t, server.Close)
 
 	server.ListenAsync()
 
@@ -36,7 +36,7 @@ func TestNioServerEcho(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer conn.Close()
+	defer closeAndReport(t, conn.Close)
 
 	want := []byte("hello-nio")
 	if _, err := conn.Write(want); err != nil {
@@ -58,7 +58,7 @@ func TestNioClientReceive(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer server.Close()
+	defer closeAndReport(t, server.Close)
 
 	server.SetChannelHandler(ChannelHandlerFunc(func(conn net.Conn) error {
 		// The server writes once and then closes the connection.
@@ -73,7 +73,7 @@ func TestNioClientReceive(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer client.Close()
+	defer closeAndReport(t, client.Close)
 
 	var (
 		mu      sync.Mutex

@@ -111,7 +111,7 @@ func (r *HTTPResponse) WriteTo(w io.Writer) (int64, error) {
 // SaveAs saves the response body to a file and returns the number of bytes written.
 //
 // When dest is a directory, the file name is extracted from URL or Content-Disposition automatically.
-func (r *HTTPResponse) SaveAs(dest string) (int64, error) {
+func (r *HTTPResponse) SaveAs(dest string) (n int64, err error) {
 	if r.resp == nil {
 		return 0, HTTPErrorf("no response")
 	}
@@ -123,11 +123,15 @@ func (r *HTTPResponse) SaveAs(dest string) (int64, error) {
 		}
 		target = filepath.Join(dest, fileName)
 	}
-	f, err := os.Create(target)
+	f, err := os.Create(target) // #nosec G304 -- SaveAs intentionally writes to a caller-provided destination.
 	if err != nil {
 		return 0, NewHTTPError("create file failed", err)
 	}
-	defer f.Close()
+	defer func() {
+		if closeErr := f.Close(); closeErr != nil && err == nil {
+			err = NewHTTPError("close file failed", closeErr)
+		}
+	}()
 	return r.WriteTo(f)
 }
 

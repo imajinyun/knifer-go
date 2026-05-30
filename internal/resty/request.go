@@ -242,7 +242,7 @@ func (r *HTTPRequest) buildClient() *grestry.Client {
 		c.SetTimeout(timeout)
 	}
 	if r.tlsSkip || IsTrustAnyHost() {
-		c.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true})
+		c.SetTLSClientConfig(&tls.Config{InsecureSkipVerify: true}) // #nosec G402 -- caller explicitly requested skipping TLS verification.
 	}
 	follow := GetGlobalFollowRedirects()
 	if r.followRedir != nil {
@@ -285,7 +285,8 @@ func (r *HTTPRequest) doExecute() (*HTTPResponse, error) {
 			req.SetQueryParam(k, v)
 		}
 	}
-	if len(r.files) > 0 {
+	switch {
+	case len(r.files) > 0:
 		for k, v := range r.form {
 			req.SetFormData(map[string]string{k: toString(v)})
 		}
@@ -296,7 +297,7 @@ func (r *HTTPRequest) doExecute() (*HTTPResponse, error) {
 				req.SetFileReader(f.field, f.fileName, bytesReader(f.data))
 			}
 		}
-	} else if len(r.form) > 0 {
+	case len(r.form) > 0:
 		if r.method == MethodPost || r.method == MethodPut || r.method == MethodPatch {
 			data := make(map[string]string, len(r.form))
 			for k, v := range r.form {
@@ -308,7 +309,7 @@ func (r *HTTPRequest) doExecute() (*HTTPResponse, error) {
 				req.SetQueryParam(k, toString(v))
 			}
 		}
-	} else if r.body != nil {
+	case r.body != nil:
 		req.SetBody(r.body)
 	}
 	resp, err := req.Execute(string(r.method), r.rawURL)

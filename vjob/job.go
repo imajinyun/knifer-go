@@ -70,14 +70,14 @@ func NewMapKeys[K comparable, V any](run func(context.Context, K) (Merge, error)
 // WithBatchSize sets the number of items passed to each Run call.
 func (b *Batch[T]) WithBatchSize(size int) *Batch[T] {
 	b.ensureInner().WithBatchSize(size)
-	b.Options.BatchSize = size
+	b.BatchSize = size
 	return b
 }
 
 // WithMaxConcurrency sets the maximum number of concurrent shards.
 func (b *Batch[T]) WithMaxConcurrency(maxConcurrency int) *Batch[T] {
 	b.ensureInner().WithMaxConcurrency(maxConcurrency)
-	b.Options.MaxConcurrency = maxConcurrency
+	b.MaxConcurrency = maxConcurrency
 	return b
 }
 

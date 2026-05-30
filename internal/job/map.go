@@ -28,7 +28,7 @@ func NewMap(run any, m any) *Slice {
 		panic(fmt.Errorf("job run must use func(context.Context, key) (job.Merge, error), got %s", f.Type()))
 	}
 	errorType := reflect.TypeOf((*error)(nil)).Elem()
-	mergeType := reflect.TypeOf((Merge)(nil))
+	mergeType := reflect.TypeOf(Merge(nil))
 	if !f.Type().Out(0).AssignableTo(mergeType) || !f.Type().Out(1).Implements(errorType) {
 		panic(fmt.Errorf("job run must return (job.Merge, error), got %s", f.Type()))
 	}

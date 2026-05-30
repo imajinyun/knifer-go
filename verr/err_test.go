@@ -34,7 +34,7 @@ func TestRecoverFacadeConvertsPanic(t *testing.T) {
 
 func TestWrapperAndStackFacade(t *testing.T) {
 	want := errors.New("wrapper failure")
-	if got := verr.Wrap(func() error { return want }).WithWarnf("wrapper").Exec(nil); !verr.ErrorIs(got, want) {
+	if got := verr.Wrap(func() error { return want }).WithWarnf("wrapper").Exec(context.TODO()); !verr.ErrorIs(got, want) {
 		t.Fatalf("Wrapper.Exec() = %v, want %v", got, want)
 	}
 	stack := verr.GetStackTrace(0)

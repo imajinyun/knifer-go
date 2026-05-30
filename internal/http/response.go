@@ -185,7 +185,11 @@ func (r *HTTPResponse) writeBodyTo(w io.Writer) (int64, error) {
 		return 0, err
 	}
 	if closer, ok := reader.(io.Closer); ok && closer != r.resp.Body {
-		defer closer.Close()
+		defer func() {
+			if closeErr := closer.Close(); closeErr != nil && r.err == nil {
+				r.err = NewHTTPError("close decoded body failed", closeErr)
+			}
+		}()
 	}
 	n, err := io.Copy(w, reader)
 	if err != nil && (!IsIgnoreEOFError() || err != io.ErrUnexpectedEOF) {

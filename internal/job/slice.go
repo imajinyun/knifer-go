@@ -29,13 +29,13 @@ func NewSliceSingle(run func(context.Context, int) (Merge, error), length int) *
 
 // WithBatchSize sets the number of indexes passed to each Run call.
 func (s *Slice) WithBatchSize(size int) *Slice {
-	s.Options.BatchSize = size
+	s.BatchSize = size
 	return s
 }
 
 // WithMaxConcurrency sets the maximum number of concurrent shards.
 func (s *Slice) WithMaxConcurrency(maxConcurrency int) *Slice {
-	s.Options.MaxConcurrency = maxConcurrency
+	s.MaxConcurrency = maxConcurrency
 	return s
 }
 
