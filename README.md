@@ -52,6 +52,7 @@ The project follows an “internal implementation + public facade” layout: `in
 | `vjwt` | `github.com/imajinyun/go-knifer/vjwt` | JWT creation, parsing, signing, verification, and time-claim validation; supports HMAC, RSA, ECDSA, and none signers. |
 | `vlog` | `github.com/imajinyun/go-knifer/vlog` | Logging facade: console/color console loggers, log levels, global logger, and static logging functions. |
 | `vconf` | `github.com/imajinyun/go-knifer/vconf` | Grouped configuration reader for setting/properties-style text and a simple YAML subset, with typed getters. |
+| `vset` | `github.com/imajinyun/go-knifer/vset` | Set utilities for string, int, int32, int64, uint, uint32, and uint64 values, with add/remove/contains and set operations. |
 | `vskt` | `github.com/imajinyun/go-knifer/vskt` | TCP socket utilities: plain connections, NIO/AIO server/client helpers, and protocol encoder/decoder interfaces. |
 | `vsys` | `github.com/imajinyun/go-knifer/vsys` | System and runtime information: host, OS, user, Go runtime, process memory, goroutines, environment variables, and more. |
 
