@@ -29,13 +29,13 @@ func NewBatchSingle[T any](run func(context.Context, T) (Merge, error), vals []T
 
 // WithBatchSize sets the number of items passed to each Run call.
 func (b *Batch[T]) WithBatchSize(size int) *Batch[T] {
-	b.Options.BatchSize = size
+	b.BatchSize = size
 	return b
 }
 
 // WithMaxConcurrency sets the maximum number of concurrent shards.
 func (b *Batch[T]) WithMaxConcurrency(maxConcurrency int) *Batch[T] {
-	b.Options.MaxConcurrency = maxConcurrency
+	b.MaxConcurrency = maxConcurrency
 	return b
 }
 

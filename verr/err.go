@@ -13,10 +13,8 @@ const (
 	SentryDSN = errimpl.SentryDSN
 )
 
-var (
-	// EmptyFormatter suppresses logrus output while still allowing hooks to run.
-	EmptyFormatter = errimpl.EmptyFormatter
-)
+// EmptyFormatter suppresses logrus output while still allowing hooks to run.
+var EmptyFormatter = errimpl.EmptyFormatter
 
 // WithStack is implemented by errors that can expose a string stack trace.
 type WithStack = errimpl.WithStack

@@ -78,7 +78,8 @@ func NewConsoleColorLog(name string) *ConsoleColorLog {
 func (c *ConsoleColorLog) write(level Level, err error, format string, args ...any) {
 	msg := renderLogMessage(format, args...)
 	color := getColorFactory()(level)
-	line := fmt.Sprintf("%s[%s]%s %s[%-5s]%s %s%s%s: %s",
+	line := fmt.Sprintf(
+		"%s[%s]%s %s[%-5s]%s %s%s%s: %s",
 		ansiWhite, time.Now().Format(consoleLogTimeLayout), ansiReset,
 		color, level.String(), ansiReset,
 		ansiCyan, c.name, ansiReset,

@@ -12,11 +12,13 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type collectorContextKey struct{}
+
 func TestCollectorRecoverCollectsReturnedError(t *testing.T) {
 	silenceLogrus(t)
 
 	want := errors.New("boom")
-	c := NewCollector().WithContext(nil).WithLevel(logrus.WarnLevel)
+	c := NewCollector().WithContext(context.TODO()).WithLevel(logrus.WarnLevel)
 	got := c.Recover(func() error { return want }, "run %s", "job")
 	if !ErrorIs(got, want) {
 		t.Fatalf("Recover() error = %v, want wrapped %v", got, want)
@@ -118,7 +120,7 @@ func silenceLogrus(t *testing.T) {
 
 func TestCollectorWithContextUsesProvidedContext(t *testing.T) {
 	c := NewCollector()
-	ctx := context.WithValue(context.Background(), struct{}{}, "value")
+	ctx := context.WithValue(context.Background(), collectorContextKey{}, "value")
 	if got := c.WithContext(ctx); got != c {
 		t.Fatal("WithContext should return the receiver")
 	}

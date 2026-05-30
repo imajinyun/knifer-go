@@ -37,7 +37,7 @@ func TestAioServerEcho(t *testing.T) {
 		t.Fatal(err)
 	}
 	server.SetIoAction(action)
-	defer server.Close()
+	defer closeAndReport(t, server.Close)
 
 	server.Start(false)
 
@@ -46,7 +46,7 @@ func TestAioServerEcho(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer conn.Close()
+	defer closeAndReport(t, conn.Close)
 
 	want := []byte("hello-aio")
 	if _, err := conn.Write(want); err != nil {
@@ -93,7 +93,7 @@ func TestAioClient(t *testing.T) {
 		t.Fatal(err)
 	}
 	server.SetIoAction(&echoIoAction{})
-	defer server.Close()
+	defer closeAndReport(t, server.Close)
 	server.Start(false)
 
 	addr := server.LocalAddr().(*net.TCPAddr)
@@ -103,7 +103,7 @@ func TestAioClient(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer client.Close()
+	defer closeAndReport(t, client.Close)
 
 	if _, err := client.Write([]byte("ping")); err != nil {
 		t.Fatal(err)
