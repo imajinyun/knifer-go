@@ -1,9 +1,14 @@
 package vset
 
-import setimpl "github.com/imajinyun/go-knifer/internal/sets"
+import (
+	"encoding/json"
+	"fmt"
+
+	setimpl "github.com/imajinyun/go-knifer/internal/sets"
+)
 
 // Set is a generic set for comparable values.
-type Set[T comparable] = setimpl.Set[T]
+type Set[T comparable] setimpl.Set[T]
 
 // Int is a set of int values.
 type Int = setimpl.Int
@@ -48,4 +53,63 @@ func NewUint64(items ...uint64) Uint64 { return setimpl.NewUint64(items...) }
 func NewString(items ...string) String { return setimpl.NewString(items...) }
 
 // New creates a generic set.
-func New[T comparable](items ...T) Set[T] { return setimpl.New(items...) }
+func New[T comparable](items ...T) Set[T] { return Set[T](setimpl.New(items...)) }
+
+// Add inserts items into the set.
+func (s Set[T]) Add(items ...T) { setimpl.Set[T](s).Add(items...) }
+
+// Remove deletes items from the set.
+func (s Set[T]) Remove(items ...T) { setimpl.Set[T](s).Remove(items...) }
+
+// Contains reports whether item exists in the set.
+func (s Set[T]) Contains(item T) bool { return setimpl.Set[T](s).Contains(item) }
+
+// Sub returns the set difference s - other.
+func (s Set[T]) Sub(other Set[T]) Set[T] {
+	return Set[T](setimpl.Set[T](s).Sub(setimpl.Set[T](other)))
+}
+
+// Union returns a set containing all values from s and other.
+func (s Set[T]) Union(other Set[T]) Set[T] {
+	return Set[T](setimpl.Set[T](s).Union(setimpl.Set[T](other)))
+}
+
+// Intersect returns a set containing values present in both sets.
+func (s Set[T]) Intersect(other Set[T]) Set[T] {
+	return Set[T](setimpl.Set[T](s).Intersect(setimpl.Set[T](other)))
+}
+
+// Members returns all values in the set. The order is intentionally undefined.
+func (s Set[T]) Members() []T { return setimpl.Set[T](s).Members() }
+
+// Equal reports whether both sets contain exactly the same values.
+func (s Set[T]) Equal(other Set[T]) bool { return setimpl.Set[T](s).Equal(setimpl.Set[T](other)) }
+
+// String returns a human-readable representation of the set.
+func (s Set[T]) String() string { return fmt.Sprintf("set%v", s.Members()) }
+
+// MarshalJSON encodes the set as a JSON array.
+func (s Set[T]) MarshalJSON() ([]byte, error) { return json.Marshal(s.Members()) }
+
+// UnmarshalJSON decodes a JSON array into the set.
+func (s *Set[T]) UnmarshalJSON(data []byte) error {
+	var list []T
+	if err := json.Unmarshal(data, &list); err != nil {
+		return err
+	}
+	*s = New(list...)
+	return nil
+}
+
+// MarshalYAML encodes the set as a YAML sequence.
+func (s Set[T]) MarshalYAML() (any, error) { return s.Members(), nil }
+
+// UnmarshalYAML decodes a YAML sequence into the set.
+func (s *Set[T]) UnmarshalYAML(unmarshal func(any) error) error {
+	var list []T
+	if err := unmarshal(&list); err != nil {
+		return err
+	}
+	*s = New(list...)
+	return nil
+}

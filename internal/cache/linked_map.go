@@ -1,6 +1,6 @@
 package cache
 
-// linkedNode 双向链表节点。
+// linkedNode is a node in the doubly linked list backing linkedMap.
 type linkedNode[K comparable, V any] struct {
 	key   K
 	value *CacheObj[K, V]
@@ -8,8 +8,10 @@ type linkedNode[K comparable, V any] struct {
 	next  *linkedNode[K, V]
 }
 
-// linkedMap 提供 O(1) 的 get/put/remove，并支持把节点移到尾部（用于 LRU）。
-// 链表头部为最早元素，尾部为最近元素。
+// linkedMap combines a map with a doubly linked list.
+// It provides O(1) get/put/remove operations and O(1) movement to the tail for
+// LRU. The head stores the oldest entry and the tail stores the newest or most
+// recently used entry, depending on the cache strategy.
 type linkedMap[K comparable, V any] struct {
 	m    map[K]*linkedNode[K, V]
 	head *linkedNode[K, V]
@@ -33,7 +35,8 @@ func (lm *linkedMap[K, V]) get(key K) (*CacheObj[K, V], bool) {
 	return n.value, true
 }
 
-// putBack 将 key->value 放在链表尾部；若已存在则替换并保持原位置。
+// putBack appends a new key/value pair to the list tail.
+// Existing keys are replaced in place to preserve their current order.
 func (lm *linkedMap[K, V]) putBack(key K, value *CacheObj[K, V]) (old *CacheObj[K, V], existed bool) {
 	if n, ok := lm.m[key]; ok {
 		old = n.value
@@ -46,7 +49,7 @@ func (lm *linkedMap[K, V]) putBack(key K, value *CacheObj[K, V]) (old *CacheObj[
 	return zeroOf[CacheObj[K, V]](), false
 }
 
-// remove 从链表与 map 中移除 key。
+// remove deletes key from both the map and the linked list.
 func (lm *linkedMap[K, V]) remove(key K) (*CacheObj[K, V], bool) {
 	n, ok := lm.m[key]
 	if !ok {
@@ -57,7 +60,7 @@ func (lm *linkedMap[K, V]) remove(key K) (*CacheObj[K, V], bool) {
 	return n.value, true
 }
 
-// moveToBack 把 key 对应节点移动到链表尾部。
+// moveToBack moves the node for key to the list tail.
 func (lm *linkedMap[K, V]) moveToBack(key K) {
 	n, ok := lm.m[key]
 	if !ok {
@@ -70,7 +73,7 @@ func (lm *linkedMap[K, V]) moveToBack(key K) {
 	lm.appendNode(n)
 }
 
-// firstKey 返回最早入队的 key（FIFO/LRU 头部），为空返回零值与 false。
+// firstKey returns the head key, or the zero value and false when empty.
 func (lm *linkedMap[K, V]) firstKey() (K, bool) {
 	if lm.head == nil {
 		var zero K
@@ -79,7 +82,7 @@ func (lm *linkedMap[K, V]) firstKey() (K, bool) {
 	return lm.head.key, true
 }
 
-// keysInOrder 顺序返回所有 key（头到尾）。
+// keysInOrder returns all keys from head to tail.
 func (lm *linkedMap[K, V]) keysInOrder() []K {
 	out := make([]K, 0, len(lm.m))
 	for n := lm.head; n != nil; n = n.next {
@@ -88,7 +91,7 @@ func (lm *linkedMap[K, V]) keysInOrder() []K {
 	return out
 }
 
-// valuesInOrder 顺序返回所有缓存对象（头到尾）。
+// valuesInOrder returns all cache objects from head to tail.
 func (lm *linkedMap[K, V]) valuesInOrder() []*CacheObj[K, V] {
 	out := make([]*CacheObj[K, V], 0, len(lm.m))
 	for n := lm.head; n != nil; n = n.next {
@@ -129,5 +132,5 @@ func (lm *linkedMap[K, V]) detach(n *linkedNode[K, V]) {
 	n.next = nil
 }
 
-// zeroOf 返回 *T 的 nil。
+// zeroOf returns nil for *T.
 func zeroOf[T any]() *T { return nil }

@@ -54,8 +54,8 @@ The project follows an “internal implementation + public facade” layout: `in
 | `vlog` | `github.com/imajinyun/go-knifer/vlog` | Logging facade: console/color console loggers, log levels, global logger, and static logging functions. |
 | `verr` | `github.com/imajinyun/go-knifer/verr` | Error helpers: panic recovery, error aggregation, multierror matching, stack capture/formatting, and optional logrus/Sentry integration. |
 | `vconf` | `github.com/imajinyun/go-knifer/vconf` | Grouped configuration reader for setting/properties-style text and a simple YAML subset, with typed getters. |
-| `vset` | `github.com/imajinyun/go-knifer/vset` | Set utilities for string, int, int32, int64, uint, uint32, and uint64 values, with add/remove/contains and set operations. |
-| `vjob` | `github.com/imajinyun/go-knifer/vjob` | Sliceable job execution: separate job data from scheduling options, typed slice/map adapters, context cancellation, and serialized merge callbacks. |
+| `vset` | `github.com/imajinyun/go-knifer/vset` | Generic and typed set utilities with add/remove/contains, set operations, and JSON/YAML encoding helpers. |
+| `vjob` | `github.com/imajinyun/go-knifer/vjob` | Sliceable job execution: separate job data from scheduling options, typed slice/map adapters, context cancellation, and serialized merge callbacks; no generic type-alias experiment is required. |
 | `vsem` | `github.com/imajinyun/go-knifer/vsem` | Weighted, context-aware counting semaphore with FIFO fairness, try-acquire, close notifications, and in-use metrics. |
 | `vskt` | `github.com/imajinyun/go-knifer/vskt` | TCP socket utilities: plain connections, NIO/AIO server/client helpers, and protocol encoder/decoder interfaces. |
 | `vsys` | `github.com/imajinyun/go-knifer/vsys` | System and runtime information: host, OS, user, Go runtime, process memory, goroutines, environment variables, and more. |
@@ -248,6 +248,43 @@ func main() {
 }
 ```
 
+### Generic sets
+
+`vset` exposes a generic `Set[T]` plus common typed constructors. The generic
+facade is implemented as a regular generic type instead of a generic type alias,
+so it works with the default Go toolchain and `go vet` without enabling
+`GOEXPERIMENT=aliastypeparams`.
+
+```go
+package main
+
+import (
+ "encoding/json"
+ "fmt"
+
+ "github.com/imajinyun/go-knifer/vset"
+)
+
+func main() {
+ tags := vset.New("go", "tool")
+ tags.Add("sdk")
+
+ other := vset.New("tool", "cli")
+ fmt.Println(tags.Contains("go"))
+ fmt.Println(tags.Union(other).Members())
+ fmt.Println(tags.Intersect(other).Members())
+
+ data, _ := json.Marshal(tags)
+ var decoded vset.Set[string]
+ _ = json.Unmarshal(data, &decoded)
+ fmt.Println(decoded.Equal(tags))
+
+ ids := vset.NewInt(1, 2, 3)
+ ids.Remove(2)
+ fmt.Println(ids.Members())
+}
+```
+
 ### Sliceable job execution
 
 `vjob` separates the job contract from scheduling options. A job only needs to
@@ -255,7 +292,9 @@ implement `Len` and range-based `Run`; `Options` controls batch size and maximum
 concurrency. The zero value is valid: `Run` processes the whole job as one serial
 shard, while `RunWith` accepts explicit scheduling options. Returned `Merge`
 callbacks are replayed serially after shards succeed, which lets each worker
-build local results concurrently and merge them safely afterwards.
+build local results concurrently and merge them safely afterwards. `Batch[T]` is
+a facade wrapper around the internal implementation, not a generic type alias,
+so `go vet` works without extra experiment flags.
 
 ```go
 package main

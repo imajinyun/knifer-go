@@ -6,12 +6,16 @@ import (
 	"time"
 )
 
-// pruneStrategy 子类提供的 prune 策略，返回清理数量。
-// 调用时持有 abstractCache.mu 写锁。
+// pruneStrategy is the eviction strategy provided by each concrete cache.
+// It returns the number of entries removed while abstractCache.mu is held.
 type pruneStrategy[K comparable, V any] func(c *abstractCache[K, V]) int
 
-// abstractCache 抽象缓存，对应 hutool-cache AbstractCache + ReentrantCache。
-// 内部使用读写锁（put/prune 加写锁，get 加写锁以更新访问时间和命中计数）。
+// abstractCache contains the shared implementation for cache variants, similar
+// to hutool-cache AbstractCache and ReentrantCache.
+//
+// A single mutex protects both the map/list structure and metadata updates.
+// Reads also take the lock because a successful get may refresh the last access
+// time, increment the hit counter on the entry, and move the node for LRU.
 type abstractCache[K comparable, V any] struct {
 	mu        sync.Mutex
 	cacheMap  *linkedMap[K, V]
@@ -22,13 +26,13 @@ type abstractCache[K comparable, V any] struct {
 	hitCount  int64
 	missCount int64
 
-	// existCustomTimeout 标记是否存在自定义 ttl 元素。
+	// existCustomTimeout records whether any entry uses a non-default TTL.
 	existCustomTimeout bool
 
-	// moveToBackOnGet 取值后是否将节点移动到链表尾部（LRU）。
+	// moveToBackOnGet moves a node to the list tail after a successful get.
 	moveToBackOnGet bool
 
-	// keyLocks 给 GetOrLoad 提供按 key 加锁能力。
+	// keyLocks serializes GetOrLoad calls per key to prevent duplicate loading.
 	keyLocks sync.Map
 }
 
@@ -44,7 +48,7 @@ func (c *abstractCache[K, V]) Timeout() time.Duration { return c.timeout }
 func (c *abstractCache[K, V]) HitCount() int64        { return atomic.LoadInt64(&c.hitCount) }
 func (c *abstractCache[K, V]) MissCount() int64       { return atomic.LoadInt64(&c.missCount) }
 
-// IsFull 是否已满（容量限制）。
+// IsFull reports whether the cache has reached its configured capacity.
 func (c *abstractCache[K, V]) IsFull() bool {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -55,31 +59,31 @@ func (c *abstractCache[K, V]) isFullLocked() bool {
 	return c.capacity > 0 && c.cacheMap.size() >= c.capacity
 }
 
-// isPruneExpiredActive 是否需要清理过期对象。
+// isPruneExpiredActive reports whether expiration checks are needed.
 func (c *abstractCache[K, V]) isPruneExpiredActive() bool {
 	return c.timeout > 0 || c.existCustomTimeout
 }
 
-// Size 返回缓存大小。
+// Size returns the number of entries currently stored in the cache.
 func (c *abstractCache[K, V]) Size() int {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	return c.cacheMap.size()
 }
 
-// IsEmpty 是否为空。
+// IsEmpty reports whether the cache contains no entries.
 func (c *abstractCache[K, V]) IsEmpty() bool {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	return c.cacheMap.size() == 0
 }
 
-// Put 加入元素，使用默认过期时长。
+// Put stores an entry using the cache's default expiration duration.
 func (c *abstractCache[K, V]) Put(key K, value V) {
 	c.PutWithTimeout(key, value, c.timeout)
 }
 
-// PutWithTimeout 加入元素，指定过期时长。
+// PutWithTimeout stores an entry with a custom expiration duration.
 func (c *abstractCache[K, V]) PutWithTimeout(key K, value V, timeout time.Duration) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -92,7 +96,7 @@ func (c *abstractCache[K, V]) putLocked(key K, value V, timeout time.Duration) {
 		c.existCustomTimeout = true
 	}
 	if old, ok := c.cacheMap.get(key); ok {
-		// 已存在则覆盖，不再做满队列清理，对齐 issue#3618
+		// Replacing an existing entry must not trigger capacity eviction.
 		c.cacheMap.putBack(key, co)
 		c.notifyRemove(old.key, old.value)
 		return
@@ -103,12 +107,13 @@ func (c *abstractCache[K, V]) putLocked(key K, value V, timeout time.Duration) {
 	c.cacheMap.putBack(key, co)
 }
 
-// Get 取值，未命中或已过期返回零值与 false（默认刷新访问时间）。
+// Get returns a cached value and refreshes access metadata on hit.
+// Missing or expired entries return the zero value and false.
 func (c *abstractCache[K, V]) Get(key K) (V, bool) {
 	return c.GetWithUpdate(key, true)
 }
 
-// GetWithUpdate 取值，可选是否刷新访问时间。
+// GetWithUpdate returns a cached value and optionally refreshes last access time.
 func (c *abstractCache[K, V]) GetWithUpdate(key K, updateLastAccess bool) (V, bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -123,7 +128,7 @@ func (c *abstractCache[K, V]) getLocked(key K, updateLastAccess bool) (V, bool) 
 		return zero, false
 	}
 	if co.isExpired() {
-		// 过期，移除并触发监听
+		// Remove expired entries immediately so future lookups do not see them.
 		c.cacheMap.remove(key)
 		c.notifyRemove(co.key, co.value)
 		atomic.AddInt64(&c.missCount, 1)
@@ -135,19 +140,20 @@ func (c *abstractCache[K, V]) getLocked(key K, updateLastAccess bool) (V, bool) 
 	return v, true
 }
 
-// afterGet 子类钩子：用于 LRU 把 key 调到尾部。
+// afterGet is a hook used by LRU to move a hit entry to the list tail.
 func (c *abstractCache[K, V]) afterGet(key K) {
 	if c.moveToBackOnGet {
 		c.cacheMap.moveToBack(key)
 	}
 }
 
-// GetOrLoad 缺失时调用 supplier 生成并存入。
+// GetOrLoad calls supplier on cache miss and stores the generated value.
 func (c *abstractCache[K, V]) GetOrLoad(key K, supplier Supplier[V]) (V, error) {
 	return c.GetOrLoadWith(key, true, c.timeout, supplier)
 }
 
-// GetOrLoadWith 缺失时调用 supplier，可指定是否刷新访问时间与超时。
+// GetOrLoadWith calls supplier on cache miss and stores the generated value.
+// The caller can control access-time refresh and the TTL used for the loaded value.
 func (c *abstractCache[K, V]) GetOrLoadWith(key K, updateLastAccess bool, timeout time.Duration, supplier Supplier[V]) (V, error) {
 	if v, ok := c.GetWithUpdate(key, updateLastAccess); ok {
 		return v, nil
@@ -156,7 +162,8 @@ func (c *abstractCache[K, V]) GetOrLoadWith(key K, updateLastAccess bool, timeou
 		var zero V
 		return zero, nil
 	}
-	// 双重检查锁
+	// Double-check after acquiring the per-key lock; another goroutine may have
+	// populated the same key while this goroutine was waiting.
 	lockAny, _ := c.keyLocks.LoadOrStore(key, &sync.Mutex{})
 	lock := lockAny.(*sync.Mutex)
 	lock.Lock()
@@ -175,7 +182,7 @@ func (c *abstractCache[K, V]) GetOrLoadWith(key K, updateLastAccess bool, timeou
 	return v, nil
 }
 
-// ContainsKey 是否包含 key（命中检查时也会触发过期清理）。
+// ContainsKey reports whether key exists and removes it if the entry has expired.
 func (c *abstractCache[K, V]) ContainsKey(key K) bool {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -191,7 +198,7 @@ func (c *abstractCache[K, V]) ContainsKey(key K) bool {
 	return true
 }
 
-// Remove 移除一个 key。
+// Remove deletes one key and notifies the removal listener when present.
 func (c *abstractCache[K, V]) Remove(key K) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -200,7 +207,7 @@ func (c *abstractCache[K, V]) Remove(key K) {
 	}
 }
 
-// Clear 清空缓存，并对每个元素触发监听。
+// Clear removes all entries and notifies the listener for each removed value.
 func (c *abstractCache[K, V]) Clear() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -210,21 +217,21 @@ func (c *abstractCache[K, V]) Clear() {
 	c.cacheMap.clear()
 }
 
-// Prune 清理过期对象。
+// Prune runs the configured eviction strategy and returns the removed count.
 func (c *abstractCache[K, V]) Prune() int {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	return c.pruneFn(c)
 }
 
-// Keys 返回所有 key 快照。
+// Keys returns a snapshot of all keys in list order.
 func (c *abstractCache[K, V]) Keys() []K {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	return c.cacheMap.keysInOrder()
 }
 
-// Values 返回所有未过期 value 快照。
+// Values returns a snapshot of all non-expired values in list order.
 func (c *abstractCache[K, V]) Values() []V {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -243,7 +250,8 @@ func (c *abstractCache[K, V]) notifyRemove(key K, value V) {
 	}
 }
 
-// removeWithoutLock 不加锁地移除，并触发监听。
+// removeWithoutLock removes a key and notifies the listener.
+// Callers must already hold abstractCache.mu.
 func (c *abstractCache[K, V]) removeWithoutLock(key K) {
 	if old, ok := c.cacheMap.remove(key); ok {
 		c.notifyRemove(old.key, old.value)

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// 对应 hutool-cache CacheTest 的核心场景。
+// Core scenarios from hutool-cache CacheTest.
 
 func TestFIFOCache(t *testing.T) {
 	var removedKey, removedValue string
@@ -20,7 +20,7 @@ func TestFIFOCache(t *testing.T) {
 	c.PutWithTimeout("key3", "value3", 3*time.Second)
 	c.PutWithTimeout("key4", "value4", 3*time.Second)
 
-	// 第 4 个加入时，最早的 key1 应被移除
+	// Adding the 4th entry should evict the oldest key, key1.
 	if v, ok := c.Get("key1"); ok {
 		t.Fatalf("key1 should be evicted, got %q", v)
 	}
@@ -42,7 +42,7 @@ func TestFIFOCapacity(t *testing.T) {
 func TestLFUCache(t *testing.T) {
 	c := NewLFU[string, string](3)
 	c.PutWithTimeout("key1", "value1", 3*time.Second)
-	c.Get("key1") // 访问次数 +1
+	c.Get("key1") // Increase the access count by 1.
 	c.PutWithTimeout("key2", "value2", 3*time.Second)
 	c.PutWithTimeout("key3", "value3", 3*time.Second)
 	c.PutWithTimeout("key4", "value4", 3*time.Second)
@@ -63,7 +63,7 @@ func TestLRUCache(t *testing.T) {
 	c.PutWithTimeout("key1", "value1", 3*time.Second)
 	c.PutWithTimeout("key2", "value2", 3*time.Second)
 	c.PutWithTimeout("key3", "value3", 3*time.Second)
-	c.Get("key1") // key1 移到尾部，key2 变成最久未使用
+	c.Get("key1") // Move key1 to the tail; key2 becomes least recently used.
 	c.PutWithTimeout("key4", "value4", 3*time.Second)
 
 	if _, ok := c.Get("key1"); !ok {
@@ -82,12 +82,12 @@ func TestLRURemoveCount(t *testing.T) {
 	}))
 	for i := 0; i < 10; i++ {
 		c.Put("key-"+itoa(i), i)
-		// 每次 put 之间 sleep 让上一个值过期，从而 prune 时被 onRemove
+		// Sleep between puts so the previous value expires and prune triggers onRemove.
 		time.Sleep(2 * time.Millisecond)
 	}
 	if c.Size() != 1 {
-		// 由于 ttl=1ms，sleep 2ms 后每次 put 触发 prune 都会清掉旧的过期项；
-		// 最终只剩下最后一次 put 的项。
+		// With ttl=1ms and a 2ms sleep, each put-triggered prune removes old
+		// expired entries, leaving only the last inserted entry.
 		t.Fatalf("expected size=1, got %d", c.Size())
 	}
 }
@@ -96,8 +96,8 @@ func TestTimedCache(t *testing.T) {
 	c := NewTimed[string, string](4 * time.Millisecond)
 	c.PutWithTimeout("key1", "value1", 1*time.Millisecond)
 	c.PutWithTimeout("key2", "value2", 5*time.Second)
-	c.Put("key3", "value3")               // 默认 4ms
-	c.PutWithTimeout("key4", "value4", 0) // 永不过期
+	c.Put("key3", "value3")               // Uses the default 4ms timeout.
+	c.PutWithTimeout("key4", "value4", 0) // Never expires.
 
 	c.SchedulePrune(5 * time.Millisecond)
 	defer c.CancelPruneSchedule()
@@ -122,7 +122,7 @@ func TestTimedCache(t *testing.T) {
 	}
 }
 
-// 对应 hutool whenContainsKeyTimeout_shouldCallOnRemove
+// Mirrors hutool whenContainsKeyTimeout_shouldCallOnRemove.
 func TestContainsKeyExpiredOnRemove(t *testing.T) {
 	timeout := 50 * time.Millisecond
 	c := NewTimed[int, string](timeout)
@@ -140,7 +140,7 @@ func TestContainsKeyExpiredOnRemove(t *testing.T) {
 	}
 }
 
-// 对应 hutool reentrantCache_clear_Method_Test
+// Mirrors hutool reentrantCache_clear_Method_Test.
 func TestLRUClearTriggersListener(t *testing.T) {
 	var removeCount int32
 	c := NewLRU[string, string](4)
@@ -150,9 +150,9 @@ func TestLRUClearTriggersListener(t *testing.T) {
 	c.Put("key1", "String1")
 	c.Put("key2", "String2")
 	c.Put("key3", "String3")
-	c.Put("key1", "String4") // 覆盖触发一次
+	c.Put("key1", "String4") // Replacement triggers one removal notification.
 	c.Put("key4", "String5")
-	c.Clear() // 清空触发剩下 4 次
+	c.Clear() // Clearing triggers the remaining 4 removal notifications.
 	if got := atomic.LoadInt32(&removeCount); got != 5 {
 		t.Fatalf("removeCount expected 5, got %d", got)
 	}
@@ -164,7 +164,7 @@ func TestGetOrLoad(t *testing.T) {
 	if err != nil || v != 42 {
 		t.Fatalf("first: %v %v", v, err)
 	}
-	// 第二次直接命中，不再调 supplier
+	// The second call hits the cache directly and does not call supplier again.
 	called := 0
 	v, err = c.GetOrLoad("a", func() (int, error) {
 		called++
@@ -207,7 +207,8 @@ func TestLRUReadWriteConcurrency(t *testing.T) {
 		}(i)
 	}
 	wg.Wait()
-	// 顺序应仍为 0..9（每次 get 都把节点移到尾部，所以 0 现在是最前）
+	// The order should still be 0..9. Each get moves a node to the tail, so 0 is
+	// the first element after iterating over all keys in ascending order.
 	got := ""
 	for i := 0; i < N; i++ {
 		if v, ok := c.Get(i); ok {
@@ -219,7 +220,7 @@ func TestLRUReadWriteConcurrency(t *testing.T) {
 	if got != "0123456789" {
 		t.Fatalf("got: %s", got)
 	}
-	// 新加 11，0 最久未使用应被淘汰
+	// Adding 11 should evict 0, which is now the least recently used entry.
 	c.Put(11, 11)
 	if _, ok := c.Get(0); ok {
 		t.Fatalf("key 0 should be evicted")
@@ -254,7 +255,7 @@ func TestHitMissCount(t *testing.T) {
 }
 
 func itoa(i int) string {
-	// 简单 int -> string
+	// Simple int-to-string conversion used by tests to avoid extra dependencies.
 	if i == 0 {
 		return "0"
 	}
@@ -274,7 +275,7 @@ func itoa(i int) string {
 		buf[n] = '-'
 		n++
 	}
-	// 反转
+	// Reverse the digits in place.
 	for j, k := 0, n-1; j < k; j, k = j+1, k-1 {
 		buf[j], buf[k] = buf[k], buf[j]
 	}

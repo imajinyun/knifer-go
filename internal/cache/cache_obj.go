@@ -5,17 +5,17 @@ import (
 	"time"
 )
 
-// CacheObj 缓存对象，对应 hutool-cache CacheObj。
+// CacheObj stores one cached entry and its access metadata.
 type CacheObj[K comparable, V any] struct {
 	key         K
 	value       V
-	ttl         time.Duration // 0 表示永不过期
-	lastAccess  int64         // Unix 纳秒
-	accessCount int64         // 访问次数
+	ttl         time.Duration // 0 means the entry never expires.
+	lastAccess  int64         // Unix timestamp in nanoseconds.
+	accessCount int64         // Number of successful accesses.
 	mu          sync.Mutex
 }
 
-// newCacheObj 创建一个 CacheObj。
+// newCacheObj creates a CacheObj with its last access time set to now.
 func newCacheObj[K comparable, V any](key K, value V, ttl time.Duration) *CacheObj[K, V] {
 	return &CacheObj[K, V]{
 		key:        key,
@@ -25,30 +25,30 @@ func newCacheObj[K comparable, V any](key K, value V, ttl time.Duration) *CacheO
 	}
 }
 
-// Key 返回键。
+// Key returns the entry key.
 func (c *CacheObj[K, V]) Key() K { return c.key }
 
-// Value 返回值。
+// Value returns the entry value.
 func (c *CacheObj[K, V]) Value() V { return c.value }
 
-// TTL 返回过期时长。
+// TTL returns the entry expiration duration.
 func (c *CacheObj[K, V]) TTL() time.Duration { return c.ttl }
 
-// LastAccess 上次访问时间。
+// LastAccess returns the last successful access time.
 func (c *CacheObj[K, V]) LastAccess() time.Time {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	return time.Unix(0, c.lastAccess)
 }
 
-// AccessCount 访问次数。
+// AccessCount returns the number of successful accesses.
 func (c *CacheObj[K, V]) AccessCount() int64 {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	return c.accessCount
 }
 
-// ExpiredTime 过期时间，永不过期返回零值与 false。
+// ExpiredTime returns the expiration time, or false when the entry never expires.
 func (c *CacheObj[K, V]) ExpiredTime() (time.Time, bool) {
 	if c.ttl <= 0 {
 		return time.Time{}, false
@@ -58,7 +58,7 @@ func (c *CacheObj[K, V]) ExpiredTime() (time.Time, bool) {
 	return time.Unix(0, c.lastAccess).Add(c.ttl), true
 }
 
-// isExpired 判断是否已经过期。
+// isExpired reports whether the entry has expired relative to last access time.
 func (c *CacheObj[K, V]) isExpired() bool {
 	if c.ttl <= 0 {
 		return false
@@ -68,7 +68,7 @@ func (c *CacheObj[K, V]) isExpired() bool {
 	return time.Now().UnixNano()-c.lastAccess > int64(c.ttl)
 }
 
-// get 取值，更新访问计数与可选的访问时间。
+// get returns the value and updates access count and, optionally, last access time.
 func (c *CacheObj[K, V]) get(updateLastAccess bool) V {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -79,7 +79,7 @@ func (c *CacheObj[K, V]) get(updateLastAccess bool) V {
 	return c.value
 }
 
-// addAccessCount 调整访问计数（用于 LFU 衰减），返回调整后的值。
+// addAccessCount adjusts access count for LFU aging and returns the new count.
 func (c *CacheObj[K, V]) addAccessCount(delta int64) int64 {
 	c.mu.Lock()
 	defer c.mu.Unlock()

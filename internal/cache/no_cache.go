@@ -2,10 +2,10 @@ package cache
 
 import "time"
 
-// NoCache 无缓存实现（对应 hutool-cache NoCache）。
+// NoCache implements Cache without storing any values.
 type NoCache[K comparable, V any] struct{}
 
-// NewNoCache 创建 NoCache。
+// NewNoCache creates a no-op cache.
 func NewNoCache[K comparable, V any]() *NoCache[K, V] { return &NoCache[K, V]{} }
 
 func (NoCache[K, V]) Capacity() int                                        { return 0 }
