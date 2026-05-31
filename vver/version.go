@@ -56,3 +56,8 @@ func MatchElWithDelimiter(currentVersion, versionEl, versionsDelimiter string) b
 func MatchElWithDelimiterErr(currentVersion, versionEl, versionsDelimiter string) error {
 	return versionimpl.MatchElWithDelimiterErr(currentVersion, versionEl, versionsDelimiter)
 }
+
+// MatchElByDelimiter is a bool-returning convenience wrapper around MatchElWithDelimiter.
+func MatchElByDelimiter(currentVersion, versionEl, versionsDelimiter string) bool {
+	return versionimpl.MatchElByDelimiter(currentVersion, versionEl, versionsDelimiter)
+}

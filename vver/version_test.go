@@ -28,6 +28,9 @@ func TestFacadeVersionHelpers(t *testing.T) {
 	if !vver.MatchElWithDelimiter("1.0.2", "<1.0.1,1.0.2", ",") {
 		t.Fatal("MatchElWithDelimiter failed")
 	}
+	if !vver.MatchElByDelimiter("1.0.2", "1.0.1,1.0.2-1.1.1", ",") {
+		t.Fatal("MatchElByDelimiter failed")
+	}
 	if err := vver.MatchElWithDelimiterErr("1.0.2", ">=1.0.0", "-"); err == nil {
 		t.Fatal("expected invalid delimiter error")
 	}
