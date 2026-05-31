@@ -93,8 +93,8 @@ Go will resolve the module according to the subpackages you actually import, for
 
 ```go
 import (
- "github.com/imajinyun/go-knifer/vstr"
- "github.com/imajinyun/go-knifer/vhttp"
+  "github.com/imajinyun/go-knifer/vstr"
+  "github.com/imajinyun/go-knifer/vhttp"
 )
 ```
 
@@ -106,23 +106,23 @@ import (
 package main
 
 import (
- "fmt"
+  "fmt"
 
- "github.com/imajinyun/go-knifer/vid"
- "github.com/imajinyun/go-knifer/vjson"
- "github.com/imajinyun/go-knifer/vstr"
+  "github.com/imajinyun/go-knifer/vid"
+  "github.com/imajinyun/go-knifer/vjson"
+  "github.com/imajinyun/go-knifer/vstr"
 )
 
 func main() {
- name := vstr.DefaultIfBlank("", "go-knifer")
+  name := vstr.DefaultIfBlank("", "go-knifer")
 
- obj := vjson.NewObject().
-  Set("id", vid.FastUUID()).
-  Set("name", name).
-  Set("tags", []string{"go", "tool"})
+  obj := vjson.NewObject().
+    Set("id", vid.FastUUID()).
+    Set("name", name).
+    Set("tags", []string{"go", "tool"})
 
- fmt.Println(obj.GetString("name"))
- fmt.Println(obj.ToStringPretty())
+  fmt.Println(obj.GetString("name"))
+  fmt.Println(obj.ToStringPretty())
 }
 ```
 
@@ -132,23 +132,23 @@ func main() {
 package main
 
 import (
- "fmt"
- "time"
+  "fmt"
+  "time"
 
- "github.com/imajinyun/go-knifer/vcache"
+  "github.com/imajinyun/go-knifer/vcache"
 )
 
 func main() {
- c := vcache.NewLRUWithTimeout[string, int](3, 5*time.Minute)
- c.Put("answer", 42)
+  c := vcache.NewLRUWithTimeout[string, int](3, 5*time.Minute)
+  c.Put("answer", 42)
 
- value, ok := c.Get("answer")
- fmt.Println(value, ok)
+  value, ok := c.Get("answer")
+  fmt.Println(value, ok)
 
- loaded, err := c.GetOrLoad("miss", func() (int, error) {
-  return 100, nil
- })
- fmt.Println(loaded, err)
+  loaded, err := c.GetOrLoad("miss", func() (int, error) {
+    return 100, nil
+  })
+  fmt.Println(loaded, err)
 }
 ```
 
@@ -158,28 +158,28 @@ func main() {
 package main
 
 import (
- "fmt"
- "time"
+  "fmt"
+  "time"
 
- "github.com/imajinyun/go-knifer/vhttp"
+  "github.com/imajinyun/go-knifer/vhttp"
 )
 
 func main() {
- vhttp.SetGlobalTimeout(3 * time.Second)
+  vhttp.SetGlobalTimeout(3 * time.Second)
 
- resp := vhttp.Get("https://example.com").
-  Query("lang", "go").
-  Header("X-Client", "go-knifer").
-  FollowRedirects(true).
-  Execute()
+  resp := vhttp.Get("https://example.com").
+    Query("lang", "go").
+    Header("X-Client", "go-knifer").
+    FollowRedirects(true).
+    Execute()
 
- if resp.Err() != nil {
-  panic(resp.Err())
- }
+  if resp.Err() != nil {
+    panic(resp.Err())
+  }
 
- fmt.Println(resp.Status())
- fmt.Println(resp.ContentType())
- fmt.Println(resp.Body())
+  fmt.Println(resp.Status())
+  fmt.Println(resp.ContentType())
+  fmt.Println(resp.Body())
 }
 ```
 
@@ -195,32 +195,32 @@ downloads.
 package main
 
 import (
- "fmt"
- "time"
+  "fmt"
+  "time"
 
- "github.com/imajinyun/go-knifer/vresty"
+  "github.com/imajinyun/go-knifer/vresty"
 )
 
 func main() {
- vresty.SetGlobalTimeout(5 * time.Second)
- vresty.SetGlobalHeader("X-App", "go-knifer")
+  vresty.SetGlobalTimeout(5 * time.Second)
+  vresty.SetGlobalHeader("X-App", "go-knifer")
 
- resp := vresty.Post("https://api.example.com/users").
-  Query("source", "demo").
-  BearerAuth("token").
-  BodyJSON(`{"name":"go-knifer"}`).
-  Timeout(3 * time.Second).
-  Execute()
+  resp := vresty.Post("https://api.example.com/users").
+    Query("source", "demo").
+    BearerAuth("token").
+    BodyJSON(`{"name":"go-knifer"}`).
+    Timeout(3 * time.Second).
+    Execute()
 
- if resp.Err() != nil {
-  panic(resp.Err())
- }
- if !resp.IsOK() {
-  panic(fmt.Sprintf("unexpected status: %d", resp.Status()))
- }
+  if resp.Err() != nil {
+    panic(resp.Err())
+  }
+  if !resp.IsOK() {
+    panic(fmt.Sprintf("unexpected status: %d", resp.Status()))
+  }
 
- fmt.Println(resp.ContentType())
- fmt.Println(resp.Body())
+  fmt.Println(resp.ContentType())
+  fmt.Println(resp.Body())
 }
 ```
 
@@ -243,22 +243,22 @@ checks, Data URI building, and file URL conversion.
 package main
 
 import (
- "fmt"
+  "fmt"
 
- "github.com/imajinyun/go-knifer/vurl"
+  "github.com/imajinyun/go-knifer/vurl"
 )
 
 func main() {
- normalized := vurl.Normalize(`example.com\docs/a b`, true, true)
- completed, _ := vurl.Complete("https://example.com/base/", "next?id=1")
- query := vurl.BuildQuery(map[string]any{"lang": "go", "page": 1})
- dataURI := vurl.DataURIBase64("text/plain", "aGVsbG8=")
+  normalized := vurl.Normalize(`example.com\docs/a b`, true, true)
+  completed, _ := vurl.Complete("https://example.com/base/", "next?id=1")
+  query := vurl.BuildQuery(map[string]any{"lang": "go", "page": 1})
+  dataURI := vurl.DataURIBase64("text/plain", "aGVsbG8=")
 
- fmt.Println(normalized)
- fmt.Println(completed)
- fmt.Println(query)
- fmt.Println(vurl.IsWebURL(completed))
- fmt.Println(dataURI)
+  fmt.Println(normalized)
+  fmt.Println(completed)
+  fmt.Println(query)
+  fmt.Println(vurl.IsWebURL(completed))
+  fmt.Println(dataURI)
 }
 ```
 
@@ -272,26 +272,26 @@ type inspection.
 package main
 
 import (
- "fmt"
+  "fmt"
 
- "github.com/imajinyun/go-knifer/vobj"
+  "github.com/imajinyun/go-knifer/vobj"
 )
 
 type Profile struct {
- Name string
- Tags []string
+  Name string
+  Tags []string
 }
 
 func main() {
- name := "go-knifer"
- profile := Profile{Name: name, Tags: []string{"go", "tool"}}
+  name := "go-knifer"
+  profile := Profile{Name: name, Tags: []string{"go", "tool"}}
 
- cloned := vobj.CloneIfPossible(profile)
- fmt.Println(vobj.Equal(1, int64(1)))
- fmt.Println(vobj.IsEmpty([]string{}))
- fmt.Println(vobj.DefaultIfNil(&name, "default"))
- fmt.Println(vobj.Contains(cloned.Tags, "go"))
- fmt.Println(vobj.TypeName(profile))
+  cloned := vobj.CloneIfPossible(profile)
+  fmt.Println(vobj.Equal(1, int64(1)))
+  fmt.Println(vobj.IsEmpty([]string{}))
+  fmt.Println(vobj.DefaultIfNil(&name, "default"))
+  fmt.Println(vobj.Contains(cloned.Tags, "go"))
+  fmt.Println(vobj.TypeName(profile))
 }
 ```
 
@@ -305,25 +305,25 @@ object graph validation.
 package main
 
 import (
- "fmt"
+  "fmt"
 
- "github.com/imajinyun/go-knifer/vser"
+  "github.com/imajinyun/go-knifer/vser"
 )
 
 type Profile struct {
- Name string
- Tags []string
+  Name string
+  Tags []string
 }
 
 func main() {
- profile := Profile{Name: "go-knifer", Tags: []string{"go", "tool"}}
+  profile := Profile{Name: "go-knifer", Tags: []string{"go", "tool"}}
 
- data, _ := vser.Serialize(profile)
- decoded, _ := vser.DeserializeTo[Profile](data, Profile{})
- cloned := vser.CloneIfPossible(profile)
+  data, _ := vser.Serialize(profile)
+  decoded, _ := vser.DeserializeTo[Profile](data, Profile{})
+  cloned := vser.CloneIfPossible(profile)
 
- fmt.Println(decoded.Name)
- fmt.Println(cloned.Tags)
+  fmt.Println(decoded.Name)
+  fmt.Println(cloned.Tags)
 }
 ```
 
@@ -336,18 +336,18 @@ append operations, in-memory entries, and byte/string compression helpers.
 package main
 
 import (
- "fmt"
+  "fmt"
 
- "github.com/imajinyun/go-knifer/vzip"
+  "github.com/imajinyun/go-knifer/vzip"
 )
 
 func main() {
- _ = vzip.ZipEntries("demo.zip", vzip.EntryData{Name: "hello.txt", Data: []byte("hello")})
- data, _ := vzip.GetBytes("demo.zip", "hello.txt")
- gz, _ := vzip.GzipString(string(data))
- text, _ := vzip.UnGzipString(gz)
+  _ = vzip.ZipEntries("demo.zip", vzip.EntryData{Name: "hello.txt", Data: []byte("hello")})
+  data, _ := vzip.GetBytes("demo.zip", "hello.txt")
+  gz, _ := vzip.GzipString(string(data))
+  text, _ := vzip.UnGzipString(gz)
 
- fmt.Println(text)
+  fmt.Println(text)
 }
 ```
 
@@ -361,16 +361,16 @@ bank cards, IP addresses, passports, and credit codes.
 package main
 
 import (
- "fmt"
+  "fmt"
 
- "github.com/imajinyun/go-knifer/vdes"
+  "github.com/imajinyun/go-knifer/vdes"
 )
 
 func main() {
- fmt.Println(vdes.MobilePhone("18049531999"))
- fmt.Println(vdes.Email("duandazhi-jack@gmail.com.cn"))
- fmt.Println(vdes.BankCard("11011111222233333256"))
- fmt.Println(vdes.Desensitized("PJ1234567", vdes.PassportType))
+  fmt.Println(vdes.MobilePhone("18049531999"))
+  fmt.Println(vdes.Email("duandazhi-jack@gmail.com.cn"))
+  fmt.Println(vdes.BankCard("11011111222233333256"))
+  fmt.Println(vdes.Desensitized("PJ1234567", vdes.PassportType))
 }
 ```
 
@@ -384,21 +384,21 @@ template/function replacement, and escaping regex metacharacters.
 package main
 
 import (
- "fmt"
+  "fmt"
 
- "github.com/imajinyun/go-knifer/vregex"
+  "github.com/imajinyun/go-knifer/vregex"
 )
 
 func main() {
- text := "date=2026-05-31; score=100"
+  text := "date=2026-05-31; score=100"
 
- fmt.Println(vregex.GetByName(`(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})`, text, "year"))
- fmt.Println(vregex.ExtractMulti(`score=(\d+)`, text, "score:$1"))
- fmt.Println(vregex.DelFirst(`\d+`, text))
- fmt.Println(vregex.ReplaceAllFunc(text, `\d+`, func(m vregex.MatchResult) string {
-  return "[" + m.Text + "]"
- }))
- fmt.Println(vregex.Escape("a+b(c)"))
+  fmt.Println(vregex.GetByName(`(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})`, text, "year"))
+  fmt.Println(vregex.ExtractMulti(`score=(\d+)`, text, "score:$1"))
+  fmt.Println(vregex.DelFirst(`\d+`, text))
+  fmt.Println(vregex.ReplaceAllFunc(text, `\d+`, func(m vregex.MatchResult) string {
+    return "[" + m.Text + "]"
+  }))
+  fmt.Println(vregex.Escape("a+b(c)"))
 }
 ```
 
@@ -408,33 +408,33 @@ func main() {
 package main
 
 import (
- "fmt"
- "time"
+  "fmt"
+  "time"
 
- "github.com/imajinyun/go-knifer/vcrypto"
- "github.com/imajinyun/go-knifer/vjwt"
+  "github.com/imajinyun/go-knifer/vcrypto"
+  "github.com/imajinyun/go-knifer/vjwt"
 )
 
 func main() {
- fmt.Println(vcrypto.SHA256Hex("hello"))
+  fmt.Println(vcrypto.SHA256Hex("hello"))
 
- key := []byte("secret")
- token, err := vjwt.NewJWT().
-  SetSubject("user-1").
-  SetPayload("role", "admin").
-  SetExpiresAt(time.Now().Add(time.Hour)).
-  SetKey(key).
-  Sign()
- if err != nil {
-  panic(err)
- }
+  key := []byte("secret")
+  token, err := vjwt.NewJWT().
+    SetSubject("user-1").
+    SetPayload("role", "admin").
+    SetExpiresAt(time.Now().Add(time.Hour)).
+    SetKey(key).
+    Sign()
+  if err != nil {
+    panic(err)
+  }
 
- jwt, err := vjwt.ParseJWT(token)
- if err != nil {
-  panic(err)
- }
+  jwt, err := vjwt.ParseJWT(token)
+  if err != nil {
+    panic(err)
+  }
 
- fmt.Println(jwt.SetKey(key).Verify())
+  fmt.Println(jwt.SetKey(key).Verify())
 }
 ```
 
@@ -449,29 +449,29 @@ so it works with the default Go toolchain and `go vet` without enabling
 package main
 
 import (
- "encoding/json"
- "fmt"
+  "encoding/json"
+  "fmt"
 
- "github.com/imajinyun/go-knifer/vset"
+  "github.com/imajinyun/go-knifer/vset"
 )
 
 func main() {
- tags := vset.New("go", "tool")
- tags.Add("sdk")
+  tags := vset.New("go", "tool")
+  tags.Add("sdk")
 
- other := vset.New("tool", "cli")
- fmt.Println(tags.Contains("go"))
- fmt.Println(tags.Union(other).Members())
- fmt.Println(tags.Intersect(other).Members())
+  other := vset.New("tool", "cli")
+  fmt.Println(tags.Contains("go"))
+  fmt.Println(tags.Union(other).Members())
+  fmt.Println(tags.Intersect(other).Members())
 
- data, _ := json.Marshal(tags)
- var decoded vset.Set[string]
- _ = json.Unmarshal(data, &decoded)
- fmt.Println(decoded.Equal(tags))
+  data, _ := json.Marshal(tags)
+  var decoded vset.Set[string]
+  _ = json.Unmarshal(data, &decoded)
+  fmt.Println(decoded.Equal(tags))
 
- ids := vset.NewInt(1, 2, 3)
- ids.Remove(2)
- fmt.Println(ids.Members())
+  ids := vset.NewInt(1, 2, 3)
+  ids.Remove(2)
+  fmt.Println(ids.Members())
 }
 ```
 
@@ -490,37 +490,37 @@ so `go vet` works without extra experiment flags.
 package main
 
 import (
- "context"
- "fmt"
- "sync"
+  "context"
+  "fmt"
+  "sync"
 
- "github.com/imajinyun/go-knifer/vjob"
+  "github.com/imajinyun/go-knifer/vjob"
 )
 
 func main() {
- values := []int{1, 2, 3, 4}
- var (
-  mu  sync.Mutex
-  sum int
- )
+  values := []int{1, 2, 3, 4}
+  var (
+    mu  sync.Mutex
+    sum int
+  )
 
- job := vjob.NewBatch(func(ctx context.Context, batch []int) (vjob.Merge, error) {
-  local := 0
-  for _, v := range batch {
-   local += v
+  job := vjob.NewBatch(func(ctx context.Context, batch []int) (vjob.Merge, error) {
+    local := 0
+    for _, v := range batch {
+      local += v
+    }
+    return func() error {
+      mu.Lock()
+      defer mu.Unlock()
+      sum += local
+      return nil
+    }, nil
+  }, values)
+
+  if err := vjob.RunWith(context.Background(), job, vjob.Options{BatchSize: 2, MaxConcurrency: 2}); err != nil {
+    panic(err)
   }
-  return func() error {
-   mu.Lock()
-   defer mu.Unlock()
-   sum += local
-   return nil
-  }, nil
- }, values)
-
- if err := vjob.RunWith(context.Background(), job, vjob.Options{BatchSize: 2, MaxConcurrency: 2}); err != nil {
-  panic(err)
- }
- fmt.Println(sum)
+  fmt.Println(sum)
 }
 ```
 
@@ -529,17 +529,17 @@ Reusable jobs can embed `vjob.Options` and pass their own configuration to
 
 ```go
 type UserImportJob struct {
- vjob.Options
- users []User
+  vjob.Options
+  users []User
 }
 
 func (j *UserImportJob) Len() int { return len(j.users) }
 
 func (j *UserImportJob) Run(ctx context.Context, start, end int) (vjob.Merge, error) {
- batch := j.users[start:end]
- return func() error {
-  return saveUsers(batch)
- }, nil
+  batch := j.users[start:end]
+  return func() error {
+    return saveUsers(batch)
+  }, nil
 }
 
 err := vjob.RunWith(ctx, job, job.Options)
@@ -551,25 +551,25 @@ err := vjob.RunWith(ctx, job, job.Options)
 package main
 
 import (
- "fmt"
+  "fmt"
 
- "github.com/imajinyun/go-knifer/verr"
+  "github.com/imajinyun/go-knifer/verr"
 )
 
 func main() {
- err := verr.Recover(func() error {
-  panic("boom")
- }, "run risky job")
- if err != nil {
-  fmt.Println(err)
-  fmt.Println(verr.GetStack(err))
- }
+  err := verr.Recover(func() error {
+    panic("boom")
+  }, "run risky job")
+  if err != nil {
+    fmt.Println(err)
+    fmt.Println(verr.GetStack(err))
+  }
 
- collector := verr.NewCollector()
- collector.GoRun(func() error { return fmt.Errorf("task failed") }, "async task")
- if err := collector.Error(); err != nil {
-  fmt.Println(err)
- }
+  collector := verr.NewCollector()
+  collector.GoRun(func() error { return fmt.Errorf("task failed") }, "async task")
+  if err := collector.Error(); err != nil {
+    fmt.Println(err)
+  }
 }
 ```
 
