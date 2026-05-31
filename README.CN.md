@@ -49,14 +49,16 @@ text := vhash.MD5Hex("hello")
 | `vcodec` | `github.com/imajinyun/go-knifer/vcodec` | 编解码工具：Base64、URL-safe Base64、Hex 和 URL query 转义。 |
 | `vurl` | `github.com/imajinyun/go-knifer/vurl` | URL 与 URI 工具：解析、标准化、相对 URL 补全、query 编解码、Data URI 构造、协议判断和文件 URL 转换。 |
 | `vobj` | `github.com/imajinyun/go-knifer/vobj` | 对象工具：nil/空值判断、相等性、默认值、克隆/序列化、比较、类型检查和容器辅助。 |
+| `vser` | `github.com/imajinyun/go-knifer/vser` | 序列化工具：gob 编码/解码、泛型反序列化、深拷贝、类型注册和可选的解码类型校验。 |
 | `vref` | `github.com/imajinyun/go-knifer/vref` | 反射工具：字段查找与赋值、方法发现与调用、构造函数风格调用、类型/值工具和方法分类判断。 |
 | `vzip` | `github.com/imajinyun/go-knifer/vzip` | ZIP、gzip、zlib 工具：压缩包创建/解压、条目读取、遍历、追加、内存条目和流式压缩。 |
+| `vdes` | `github.com/imajinyun/go-knifer/vdes` | 脱敏工具：姓名、证件号、电话、地址、邮箱、密码、车牌、银行卡、IP、护照号和信用代码遮罩。 |
 | `vnum` | `github.com/imajinyun/go-knifer/vnum` | 数字工具：精确加减乘除、舍入模式、格式化、数字判断、不重复随机数、range、阶乘/组合数、最大公约数/最小公倍数、二进制转换、比较、解析、字节转换、表达式计算和奇偶判断。 |
 | `vrand` | `github.com/imajinyun/go-knifer/vrand` | 随机工具：整数、浮点、布尔、字节、字符串、数字字符串和随机元素。 |
 | `vid` | `github.com/imajinyun/go-knifer/vid` | ID 工具：random/simple/fast UUID、MongoDB 风格 ObjectId、Snowflake 生成器与单例 next-id、worker/datacenter id 推导和 NanoId。 |
 | `vhash` | `github.com/imajinyun/go-knifer/vhash` | Hash 工具：Additive、FNV、MD5、SHA-1、SHA-256 Hex。 |
 | `vvalidator` | `github.com/imajinyun/go-knifer/vvalidator` | 校验工具：邮箱、手机号、URL、IPv4、中文和数字字符串。 |
-| `vregex` | `github.com/imajinyun/go-knifer/vregex` | 正则工具：匹配、查找、查找全部和替换，并安全处理非法 pattern。 |
+| `vregex` | `github.com/imajinyun/go-knifer/vregex` | 正则工具：匹配、分组提取、命名分组、删除、计数、索引定位、模板/函数替换和元字符转义。 |
 | `vchar` | `github.com/imajinyun/go-knifer/vchar` | 字符工具：空白、字母、数字、ASCII、字母或数字判断。 |
 | `vbool` | `github.com/imajinyun/go-knifer/vbool` | 布尔工具：取反、转 int、全真/任一为真判断。 |
 | `vbf` | `github.com/imajinyun/go-knifer/vbf` | 布隆过滤器：bitmap/bitset/filter 抽象，以及多种字符串哈希算法。 |
@@ -291,6 +293,37 @@ func main() {
 }
 ```
 
+### 序列化工具
+
+`vser` 提供基于 gob 的序列化辅助能力，覆盖字节编码、泛型反序列化、
+深拷贝、接口类型注册，以及可选的解码对象图类型校验。
+
+```go
+package main
+
+import (
+ "fmt"
+
+ "github.com/imajinyun/go-knifer/vser"
+)
+
+type Profile struct {
+ Name string
+ Tags []string
+}
+
+func main() {
+ profile := Profile{Name: "go-knifer", Tags: []string{"go", "tool"}}
+
+ data, _ := vser.Serialize(profile)
+ decoded, _ := vser.DeserializeTo[Profile](data, Profile{})
+ cloned := vser.CloneIfPossible(profile)
+
+ fmt.Println(decoded.Name)
+ fmt.Println(cloned.Tags)
+}
+```
+
 ### ZIP、gzip 与 zlib 工具
 
 `vzip` 提供压缩包创建/解压、条目读取、遍历、追加、内存条目写入，
@@ -312,6 +345,55 @@ func main() {
  text, _ := vzip.UnGzipString(gz)
 
  fmt.Println(text)
+}
+```
+
+### 脱敏工具
+
+`vdes` 提供常见敏感字段的内置遮罩规则，例如姓名、证件号、电话、地址、
+邮箱、密码、车牌、银行卡、IP 地址、护照号和信用代码。
+
+```go
+package main
+
+import (
+ "fmt"
+
+ "github.com/imajinyun/go-knifer/vdes"
+)
+
+func main() {
+ fmt.Println(vdes.MobilePhone("18049531999"))
+ fmt.Println(vdes.Email("duandazhi-jack@gmail.com.cn"))
+ fmt.Println(vdes.BankCard("11011111222233333256"))
+ fmt.Println(vdes.Desensitized("PJ1234567", vdes.PassportType))
+}
+```
+
+### 正则工具
+
+`vregex` 提供安全的正则辅助能力，覆盖全量匹配、子串查找、捕获分组、
+命名分组、删除、计数、索引定位、模板/函数替换，以及正则元字符转义。
+
+```go
+package main
+
+import (
+ "fmt"
+
+ "github.com/imajinyun/go-knifer/vregex"
+)
+
+func main() {
+ text := "date=2026-05-31; score=100"
+
+ fmt.Println(vregex.GetByName(`(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})`, text, "year"))
+ fmt.Println(vregex.ExtractMulti(`score=(\d+)`, text, "score:$1"))
+ fmt.Println(vregex.DelFirst(`\d+`, text))
+ fmt.Println(vregex.ReplaceAllFunc(text, `\d+`, func(m vregex.MatchResult) string {
+  return "[" + m.Text + "]"
+ }))
+ fmt.Println(vregex.Escape("a+b(c)"))
 }
 ```
 

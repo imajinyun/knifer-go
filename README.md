@@ -49,14 +49,16 @@ The project follows an “internal implementation + public facade” layout: `in
 | `vcodec` | `github.com/imajinyun/go-knifer/vcodec` | Encoding helpers: Base64, URL-safe Base64, Hex, and URL query escaping. |
 | `vurl` | `github.com/imajinyun/go-knifer/vurl` | URL and URI helpers: parse, normalize, resolve relative URLs, query encode/decode, Data URI building, scheme checks, and file URL conversion. |
 | `vobj` | `github.com/imajinyun/go-knifer/vobj` | Object helpers: nil/empty checks, equality, defaults, clone/serialization, comparison, type inspection, and container utilities. |
+| `vser` | `github.com/imajinyun/go-knifer/vser` | Serialization helpers: gob encode/decode, typed deserialization, deep clone, type registration, and optional decoded-type validation. |
 | `vref` | `github.com/imajinyun/go-knifer/vref` | Reflection helpers: field lookup and mutation, method discovery and invocation, constructor-style function calls, type/value utilities, and method classification. |
 | `vzip` | `github.com/imajinyun/go-knifer/vzip` | ZIP, gzip, and zlib helpers: archive creation/extraction, entry lookup, archive traversal, append, in-memory entries, and stream compression. |
+| `vdes` | `github.com/imajinyun/go-knifer/vdes` | Desensitization helpers: mask names, IDs, phones, addresses, email, passwords, license plates, bank cards, IPs, passports, and credit codes. |
 | `vnum` | `github.com/imajinyun/go-knifer/vnum` | Numeric helpers: precise arithmetic, rounding modes, formatting, number checks, random unique numbers, ranges, factorial/combinations, gcd/lcm, binary conversion, comparison, parsing, byte conversion, expression calculation, and odd/even checks. |
 | `vrand` | `github.com/imajinyun/go-knifer/vrand` | Random helpers: integers, floats, booleans, bytes, strings, numeric strings, and random element selection. |
 | `vid` | `github.com/imajinyun/go-knifer/vid` | ID helpers: random/simple/fast UUIDs, MongoDB-style ObjectId, Snowflake generators and singleton next-id helpers, worker/datacenter id derivation, and NanoId generation. |
 | `vhash` | `github.com/imajinyun/go-knifer/vhash` | Hash helpers: additive hash, FNV, MD5, SHA-1, and SHA-256 hex helpers. |
 | `vvalidator` | `github.com/imajinyun/go-knifer/vvalidator` | Validation helpers: email, mobile, URL, IPv4, Chinese text, and number string checks. |
-| `vregex` | `github.com/imajinyun/go-knifer/vregex` | Regular-expression helpers: match, find, find all, and replace with safe invalid-pattern handling. |
+| `vregex` | `github.com/imajinyun/go-knifer/vregex` | Regular-expression helpers: matching, group extraction, named groups, deletion, counting, index lookup, template/function replacement, and escaping. |
 | `vchar` | `github.com/imajinyun/go-knifer/vchar` | Character helpers: blank, letter, digit, ASCII, and letter-or-digit checks. |
 | `vbool` | `github.com/imajinyun/go-knifer/vbool` | Boolean helpers: negate, bool-to-int, all/any checks. |
 | `vbf` | `github.com/imajinyun/go-knifer/vbf` | Bloom filters: bitmap/bitset/filter abstractions and multiple string hash algorithms. |
@@ -289,7 +291,39 @@ func main() {
  fmt.Println(vobj.IsEmpty([]string{}))
  fmt.Println(vobj.DefaultIfNil(&name, "default"))
  fmt.Println(vobj.Contains(cloned.Tags, "go"))
-fmt.Println(vobj.TypeName(profile))
+ fmt.Println(vobj.TypeName(profile))
+}
+```
+
+### Serialization helpers
+
+`vser` provides gob-based serialization helpers for byte encoding, typed
+deserialization, deep cloning, interface type registration, and optional decoded
+object graph validation.
+
+```go
+package main
+
+import (
+ "fmt"
+
+ "github.com/imajinyun/go-knifer/vser"
+)
+
+type Profile struct {
+ Name string
+ Tags []string
+}
+
+func main() {
+ profile := Profile{Name: "go-knifer", Tags: []string{"go", "tool"}}
+
+ data, _ := vser.Serialize(profile)
+ decoded, _ := vser.DeserializeTo[Profile](data, Profile{})
+ cloned := vser.CloneIfPossible(profile)
+
+ fmt.Println(decoded.Name)
+ fmt.Println(cloned.Tags)
 }
 ```
 
@@ -314,6 +348,57 @@ func main() {
  text, _ := vzip.UnGzipString(gz)
 
  fmt.Println(text)
+}
+```
+
+### Desensitization helpers
+
+`vdes` provides built-in masking rules for common sensitive fields such as names,
+identity numbers, phones, addresses, email addresses, passwords, license plates,
+bank cards, IP addresses, passports, and credit codes.
+
+```go
+package main
+
+import (
+ "fmt"
+
+ "github.com/imajinyun/go-knifer/vdes"
+)
+
+func main() {
+ fmt.Println(vdes.MobilePhone("18049531999"))
+ fmt.Println(vdes.Email("duandazhi-jack@gmail.com.cn"))
+ fmt.Println(vdes.BankCard("11011111222233333256"))
+ fmt.Println(vdes.Desensitized("PJ1234567", vdes.PassportType))
+}
+```
+
+### Regular-expression helpers
+
+`vregex` provides safe regular-expression helpers for whole-string matching,
+substring lookup, capture groups, named groups, deletion, counting, index lookup,
+template/function replacement, and escaping regex metacharacters.
+
+```go
+package main
+
+import (
+ "fmt"
+
+ "github.com/imajinyun/go-knifer/vregex"
+)
+
+func main() {
+ text := "date=2026-05-31; score=100"
+
+ fmt.Println(vregex.GetByName(`(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})`, text, "year"))
+ fmt.Println(vregex.ExtractMulti(`score=(\d+)`, text, "score:$1"))
+ fmt.Println(vregex.DelFirst(`\d+`, text))
+ fmt.Println(vregex.ReplaceAllFunc(text, `\d+`, func(m vregex.MatchResult) string {
+  return "[" + m.Text + "]"
+ }))
+ fmt.Println(vregex.Escape("a+b(c)"))
 }
 ```
 
