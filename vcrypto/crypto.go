@@ -16,15 +16,18 @@ var ErrInvalidIV = cryptoimpl.ErrInvalidIV
 var ErrInvalidCipherText = cryptoimpl.ErrInvalidCipherText
 
 // MD5Hex returns the MD5 digest of s in lower-case hex form.
+// For lightweight checksum shortcuts with no security requirement, vhash.MD5Hex is also available.
 func MD5Hex(s string) string { return cryptoimpl.MD5Hex([]byte(s)) }
 
 // MD5HexBytes returns the MD5 digest of data in lower-case hex form.
 func MD5HexBytes(data []byte) string { return cryptoimpl.MD5Hex(data) }
 
 // SHA1Hex returns the SHA1 digest of s in lower-case hex form.
+// For lightweight checksum shortcuts with no security requirement, vhash.SHA1Hex is also available.
 func SHA1Hex(s string) string { return cryptoimpl.SHA1Hex([]byte(s)) }
 
 // SHA256Hex returns the SHA256 digest of s in lower-case hex form.
+// For lightweight checksum shortcuts with no security requirement, vhash.SHA256Hex is also available.
 func SHA256Hex(s string) string { return cryptoimpl.SHA256Hex([]byte(s)) }
 
 // SHA512Hex returns the SHA512 digest of s in lower-case hex form.

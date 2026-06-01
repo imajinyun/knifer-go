@@ -12,5 +12,11 @@ func HexEncode(data []byte) string             { return codecimpl.HexEncode(data
 func HexEncodeStr(s string) string             { return codecimpl.HexEncodeStr(s) }
 func HexDecode(s string) ([]byte, error)       { return codecimpl.HexDecode(s) }
 func HexDecodeStr(s string) (string, error)    { return codecimpl.HexDecodeStr(s) }
-func URLEncode(s string) string                { return codecimpl.URLEncode(s) }
-func URLDecode(s string) (string, error)       { return codecimpl.URLDecode(s) }
+
+// URLEncode escapes s so it can be safely placed inside a URL query.
+// For full URL parsing, normalization, and semantic processing, use vurl.
+func URLEncode(s string) string { return codecimpl.URLEncode(s) }
+
+// URLDecode unescapes a URL query component.
+// For full URL parsing, normalization, and semantic processing, use vurl.
+func URLDecode(s string) (string, error) { return codecimpl.URLDecode(s) }

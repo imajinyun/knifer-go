@@ -1,6 +1,10 @@
 package vhash
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/imajinyun/go-knifer/vcrypto"
+)
 
 func TestHashFacade(t *testing.T) {
 	if MD5Hex("abc") != "900150983cd24fb0d6963f7d28e17f72" {
@@ -14,5 +18,18 @@ func TestHashFacade(t *testing.T) {
 	}
 	if FnvHash("abc") == 0 || AdditiveHash("abc", 31) < 0 {
 		t.Fatal("hash helpers failed")
+	}
+}
+
+func TestDigestShortcutsMatchCryptoFacade_BitsUT(t *testing.T) {
+	input := "boundary-doc"
+	if got, want := MD5Hex(input), vcrypto.MD5Hex(input); got != want {
+		t.Fatalf("MD5Hex mismatch: got %q, want %q", got, want)
+	}
+	if got, want := SHA1Hex(input), vcrypto.SHA1Hex(input); got != want {
+		t.Fatalf("SHA1Hex mismatch: got %q, want %q", got, want)
+	}
+	if got, want := SHA256Hex(input), vcrypto.SHA256Hex(input); got != want {
+		t.Fatalf("SHA256Hex mismatch: got %q, want %q", got, want)
 	}
 }

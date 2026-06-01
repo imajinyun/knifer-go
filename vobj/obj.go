@@ -81,6 +81,7 @@ func DefaultIfEmptyApply[T any](s string, handle func(string) T, defaultValue T)
 }
 
 // DefaultIfBlank returns defaultValue when s is empty or contains only whitespace.
+// String-specific blank checking is available via vstr.DefaultIfBlank.
 func DefaultIfBlank(s, defaultValue string) string { return objimpl.DefaultIfBlank(s, defaultValue) }
 
 // DefaultIfBlankFunc returns a supplier value when s is blank.
