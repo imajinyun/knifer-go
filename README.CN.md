@@ -1,23 +1,23 @@
 # go-knifer
 
-> 🍬 A set of Go tools that keep development sharp.
+> 🍬 一组让 Go 开发保持锋利的工具。
 
 ![go-knifer](./go-knifer.jpeg)
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/imajinyun/go-knifer.svg)](https://pkg.go.dev/github.com/imajinyun/go-knifer)
 [![Go Version](https://img.shields.io/badge/go-%3E%3D1.20-00ADD8?logo=go)](https://go.dev/)
 
-## 📚 Introduction
+## 📚 简介
 
 `go-knifer` 是一个面向 Go 项目的常用工具集合：把项目里反复出现的字符串处理、集合操作、编解码、加密、HTTP、JSON、缓存、定时任务、JWT、日志、配置、系统信息等能力沉淀成可复用的工具包。
 
 项目根包 `github.com/imajinyun/go-knifer` 仅作为模块入口说明使用；实际能力按领域拆分到多个 `v*` 对外子包中，用户可以按需导入，避免把无关 API 混入业务代码。
 
-## 🔪 Origin of the `go-knifer` name
+## 🔪 `go-knifer` 名称来源
 
 `knifer` 来自 “knife”：像一把随手可用的小刀，解决日常 Go 开发里的高频小问题。它不试图替代标准库，而是对标准库与常见工程实践做轻量封装，让代码更短、更统一、更容易维护。
 
-## ✨ How go-knifer changes the way we code
+## ✨ go-knifer 如何改变编码方式
 
 以前，计算一个 MD5 往往需要在业务代码里重复写样板逻辑：
 
@@ -34,7 +34,7 @@ text := vhash.MD5Hex("hello")
 
 这类封装能减少重复代码、降低复制粘贴带来的隐患，也让团队内相同场景使用一致的 API。
 
-## 🧩 Module
+## 🧩 模块
 
 当前项目采用“内部实现 + 对外 facade”的组织方式：`internal/*` 保存具体实现，`v*` 包提供稳定、可导入的公共 API。
 
@@ -111,7 +111,7 @@ facade 规则：
 部分 `internal` 包，例如 `db`、`dfa`、`poi`，是有意保留的领域占位。它们用于说明未来能力归属，
 当前不提供运行时 API。
 
-## 🚀 Install
+## 🚀 安装
 
 项目要求 Go 1.20 或更高版本。
 
@@ -128,7 +128,7 @@ import (
 )
 ```
 
-## 📝 Quick start
+## 📝 快速开始
 
 ### 基础工具与 JSON
 
@@ -617,14 +617,14 @@ func main() {
 }
 ```
 
-## 📖 Doc
+## 📖 文档
 
 - 根包说明：`doc.go`
 - 对外 API：各 `v*` 子包的 `doc.go` 与 facade 文件
 - 测试示例：各模块下的 `*_test.go`
 - 在线文档：[pkg.go.dev/github.com/imajinyun/go-knifer](https://pkg.go.dev/github.com/imajinyun/go-knifer)
 
-## 📦 Download & Build
+## 📦 下载与构建
 
 下载源码：
 
@@ -645,7 +645,7 @@ go test ./...
 gofmt -w .
 ```
 
-## 🤝 Provide feedback or suggestions on bugs
+## 🤝 问题反馈与建议
 
 如果发现问题或希望补充新工具，请通过 GitHub Issues 反馈。建议提供：
 
@@ -655,7 +655,7 @@ gofmt -w .
 - 期望行为与实际行为；
 - 相关错误日志或测试输出。
 
-## ✅ Principles of PR (pull request)
+## ✅ PR（Pull Request）原则
 
 欢迎提交 PR。为了保持工具库稳定，请尽量遵循以下原则：
 
