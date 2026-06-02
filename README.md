@@ -53,6 +53,7 @@ The project follows an “internal implementation + public facade” layout: `in
 | `vser` | `github.com/imajinyun/go-knifer/vser` | Serialization helpers: gob encode/decode, typed deserialization, deep clone, type registration, and optional decoded-type validation. |
 | `vver` | `github.com/imajinyun/go-knifer/vver` | Version helpers: version comparison, greater/less predicates, expression matching, inclusive ranges, and custom expression delimiters. |
 | `vref` | `github.com/imajinyun/go-knifer/vref` | Reflection helpers: field lookup and mutation, method discovery and invocation, constructor-style function calls, type/value utilities, and method classification. |
+| `vbean` | `github.com/imajinyun/go-knifer/vbean` | Bean/struct mapping helpers: struct/map conversion, copy properties, tag and alias matching, ignore-empty/zero options, and weak type conversion. |
 | `vzip` | `github.com/imajinyun/go-knifer/vzip` | ZIP, gzip, and zlib helpers: archive creation/extraction, entry lookup, archive traversal, append, in-memory entries, and stream compression. |
 | `vpoi` | `github.com/imajinyun/go-knifer/vpoi` | Office document helpers: lightweight Excel XLSX sheet listing, row reading, row writing, multi-sheet writing, and in-memory workbook creation. |
 | `vdes` | `github.com/imajinyun/go-knifer/vdes` | Desensitization helpers: mask names, IDs, phones, addresses, email, passwords, license plates, bank cards, IPs, passports, and credit codes. |
@@ -114,6 +115,8 @@ Domain boundary rules:
 - `vjson` owns JSON objects, arrays, paths, and lightweight XML adapters;
   `vxml` owns XML parsing, tree navigation, formatting, namespace handling, and
   XML-specific map/bean conversion.
+- `vbean` owns direct struct/map property mapping, copy-properties, tag/alias
+  matching, and weak type conversion without serializing through JSON.
 - `vobj` is a convenience object-level facade. New domain logic should still be
   implemented first in clear packages such as `vstr`, `vslice`, `vmap`, `vser`,
   or `vref`, then wrapped by `vobj` only when a broad object helper is useful.
@@ -373,6 +376,45 @@ func main() {
   fmt.Println(vobj.DefaultIfNil(&name, "default"))
   fmt.Println(vobj.Contains(cloned.Tags, "go"))
   fmt.Println(vobj.TypeName(profile))
+}
+```
+
+### Bean and struct mapping
+
+`vbean` copies properties directly between structs and maps without a JSON
+round-trip. It supports tag/alias matching, weak type conversion, and per-call
+options such as ignoring empty or zero source values.
+
+```go
+package main
+
+import (
+  "fmt"
+
+  "github.com/imajinyun/go-knifer/vbean"
+)
+
+type UserDTO struct {
+  Name  string `bean:"name,alias=full_name|displayName"`
+  Age   string `bean:"age"`
+  Admin string `bean:"admin"`
+}
+
+type User struct {
+  Name  string `json:"full_name"`
+  Age   int    `json:"age"`
+  Admin bool   `json:"admin"`
+}
+
+func main() {
+  src := UserDTO{Name: "alice", Age: "42", Admin: "yes"}
+
+  var dst User
+  _ = vbean.CopyProperties(src, &dst, vbean.WithIgnoreEmpty(true))
+
+  m, _ := vbean.ToMap(dst)
+  fmt.Println(dst.Age, dst.Admin)
+  fmt.Println(m["full_name"])
 }
 ```
 

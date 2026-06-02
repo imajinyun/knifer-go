@@ -53,6 +53,7 @@ text := vhash.MD5Hex("hello")
 | `vser` | `github.com/imajinyun/go-knifer/vser` | 序列化工具：gob 编码/解码、泛型反序列化、深拷贝、类型注册和可选的解码类型校验。 |
 | `vver` | `github.com/imajinyun/go-knifer/vver` | 版本工具：版本号比较、大小关系判断、表达式匹配、闭区间范围和自定义多表达式分隔符。 |
 | `vref` | `github.com/imajinyun/go-knifer/vref` | 反射工具：字段查找与赋值、方法发现与调用、构造函数风格调用、类型/值工具和方法分类判断。 |
+| `vbean` | `github.com/imajinyun/go-knifer/vbean` | Bean/结构体映射工具：struct/map 互转、copy properties、tag/alias 匹配、忽略空值/零值选项和弱类型转换。 |
 | `vzip` | `github.com/imajinyun/go-knifer/vzip` | ZIP、gzip、zlib 工具：压缩包创建/解压、条目读取、遍历、追加、内存条目和流式压缩。 |
 | `vpoi` | `github.com/imajinyun/go-knifer/vpoi` | Office 文档工具：轻量 Excel XLSX 工作表列表、行读取、行写入、多工作表写入和内存工作簿创建。 |
 | `vdes` | `github.com/imajinyun/go-knifer/vdes` | 脱敏工具：姓名、证件号、电话、地址、邮箱、密码、车牌、银行卡、IP、护照号和信用代码遮罩。 |
@@ -107,6 +108,8 @@ facade 规则：
   资源和协议语义。
 - `vjson` 负责 JSON 对象、数组、路径和轻量 XML adapter；`vxml` 负责 XML 解析、树访问、格式化、
   namespace 和 XML 专属的 map/bean 转换。
+- `vbean` 负责直接的 struct/map 属性映射、copy properties、tag/alias 匹配和弱类型转换，
+  不通过 JSON 序列化绕路。
 - `vobj` 是对象级便利 facade。新增具体领域逻辑应优先落到 `vstr`、`vslice`、`vmap`、`vser`、`vref`
   等明确领域包，只有在对象级聚合有价值时再由 `vobj` 做轻量包装。
 
@@ -359,6 +362,44 @@ func main() {
   fmt.Println(vobj.DefaultIfNil(&name, "default"))
   fmt.Println(vobj.Contains(cloned.Tags, "go"))
   fmt.Println(vobj.TypeName(profile))
+}
+```
+
+### Bean 与结构体映射
+
+`vbean` 用于在 struct 与 map 之间直接复制属性，不通过 JSON 序列化绕路。
+它支持 tag/alias 匹配、弱类型转换，以及忽略空值/零值等单次调用 options。
+
+```go
+package main
+
+import (
+  "fmt"
+
+  "github.com/imajinyun/go-knifer/vbean"
+)
+
+type UserDTO struct {
+  Name  string `bean:"name,alias=full_name|displayName"`
+  Age   string `bean:"age"`
+  Admin string `bean:"admin"`
+}
+
+type User struct {
+  Name  string `json:"full_name"`
+  Age   int    `json:"age"`
+  Admin bool   `json:"admin"`
+}
+
+func main() {
+  src := UserDTO{Name: "alice", Age: "42", Admin: "yes"}
+
+  var dst User
+  _ = vbean.CopyProperties(src, &dst, vbean.WithIgnoreEmpty(true))
+
+  m, _ := vbean.ToMap(dst)
+  fmt.Println(dst.Age, dst.Admin)
+  fmt.Println(m["full_name"])
 }
 ```
 
