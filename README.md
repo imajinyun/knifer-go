@@ -71,6 +71,7 @@ The project follows an “internal implementation + public facade” layout: `in
 | `vcaptcha` | `github.com/imajinyun/go-knifer/vcaptcha` | Image captcha generation: line, circle, shear, and GIF captchas, with random and math-expression generators. |
 | `vcron` | `github.com/imajinyun/go-knifer/vcron` | Cron expression parsing and task scheduling, including both default and custom schedulers. |
 | `vcrypto` | `github.com/imajinyun/go-knifer/vcrypto` | Cryptography and digests: MD5/SHA, HMAC, PBKDF2, parameter signing, random bytes, AES CBC/ECB/CTR/CFB/OFB/GCM, DES/3DES, RC4, Vigenere, XXTEA, RSA OAEP/PKCS#1/PSS, PEM, and X.509 certificate helpers. |
+| `vdb` | `github.com/imajinyun/go-knifer/vdb` | Database helpers built on database/sql: SQL execution, named parameters, entities, conditions, query builders, transactions, pagination, and lightweight metadata lookup. |
 | `vhttp` | `github.com/imajinyun/go-knifer/vhttp` | Chainable HTTP client, downloads, per-call request options, BasicAuth, User-Agent parsing, and a simple server helper. |
 | `vresty` | `github.com/imajinyun/go-knifer/vresty` | Resty v3 based HTTP facade: chainable requests, JSON/form/multipart bodies, per-call request options, downloads, and lightweight response helpers. |
 | `vjson` | `github.com/imajinyun/go-knifer/vjson` | Ordered JSON objects/arrays, JSON parsing and formatting, path-based get/put, bean/list conversion, and XML/JSON conversion. |
@@ -109,6 +110,8 @@ Domain boundary rules:
   key/PEM operations.
 - `vhttp` is the lightweight standard-library HTTP facade; `vresty` is the
   Resty-based chainable client facade.
+- `vdb` owns SQL database helpers on top of `database/sql`; callers keep control
+  of drivers and connection pools through `*sql.DB` and per-call options.
 - `vcodec` owns encoding/decoding algorithms such as Base64, Hex, and query
   escaping; `vurl` owns URL/URI parsing, normalization, resource, and scheme
   semantics.
@@ -121,10 +124,11 @@ Domain boundary rules:
   implemented first in clear packages such as `vstr`, `vslice`, `vmap`, `vser`,
   or `vref`, then wrapped by `vobj` only when a broad object helper is useful.
 
-Some `internal` packages, such as `db` and `dfa`, are intentionally reserved
+Some `internal` packages, such as `dfa`, are intentionally reserved
 placeholders. They document future domain ownership and currently do not provide
-runtime APIs. Office-document helpers belong to `internal/poi` and are exposed
-through `vpoi`.
+runtime APIs. Database helpers belong to `internal/db` and are exposed through
+`vdb`; office-document helpers belong to `internal/poi` and are exposed through
+`vpoi`.
 
 ## 🚀 Install
 
@@ -376,6 +380,48 @@ func main() {
   fmt.Println(vobj.DefaultIfNil(&name, "default"))
   fmt.Println(vobj.Contains(cloned.Tags, "go"))
   fmt.Println(vobj.TypeName(profile))
+}
+```
+
+### Database helpers
+
+`vdb` provides SQL helpers on top of `database/sql`: named parameters,
+condition builders, entity-based insert/update/delete, pagination,
+transactions, and lightweight metadata lookup. Drivers and connection pools stay
+under caller control.
+
+```go
+package main
+
+import (
+  "context"
+  "database/sql"
+  "fmt"
+
+  "github.com/imajinyun/go-knifer/vdb"
+)
+
+func main() {
+  var raw *sql.DB // normally opened by your selected SQL driver
+  db := vdb.Use(raw, vdb.WithDialect(vdb.DialectPostgres))
+
+  sqlText, args, _ := vdb.NewBuilder(vdb.WithDialect(vdb.DialectPostgres)).
+    Select("id", "name").
+    From("users").
+    Where(vdb.Eq("status", "active")).
+    OrderBy(vdb.Desc("id")).
+    Page(vdb.NewPage(1, 20)).
+    SQL()
+
+  named, _ := vdb.ParseNamed(
+    "select * from users where id = :id",
+    map[string]any{"id": 1},
+    vdb.DialectPostgres,
+  )
+
+  _ = db
+  _ = context.Background()
+  fmt.Println(sqlText, args, named.SQL, named.Params)
 }
 ```
 

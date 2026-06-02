@@ -71,6 +71,7 @@ text := vhash.MD5Hex("hello")
 | `vcaptcha` | `github.com/imajinyun/go-knifer/vcaptcha` | 图片验证码：线条、圆圈、扭曲、GIF 验证码，支持随机/数学表达式生成器。 |
 | `vcron` | `github.com/imajinyun/go-knifer/vcron` | Cron 表达式解析与任务调度，支持默认调度器和自定义调度器。 |
 | `vcrypto` | `github.com/imajinyun/go-knifer/vcrypto` | 加密与摘要：MD5/SHA、HMAC、PBKDF2、参数签名、随机字节、AES CBC/ECB/CTR/CFB/OFB/GCM、DES/3DES、RC4、Vigenere、XXTEA、RSA OAEP/PKCS#1/PSS、PEM 与 X.509 证书工具。 |
+| `vdb` | `github.com/imajinyun/go-knifer/vdb` | 基于 database/sql 的数据库工具：SQL 执行、命名参数、Entity、条件、查询构造器、事务、分页和轻量元信息查询。 |
 | `vhttp` | `github.com/imajinyun/go-knifer/vhttp` | 链式 HTTP 客户端、下载、单次请求 options、BasicAuth、User-Agent 解析、简易服务端。 |
 | `vresty` | `github.com/imajinyun/go-knifer/vresty` | 基于 Resty v3 的 HTTP facade：链式请求、JSON/form/multipart 请求体、单次请求 options、下载与轻量响应工具。 |
 | `vjson` | `github.com/imajinyun/go-knifer/vjson` | 有序 JSON 对象/数组、JSON 解析与格式化、路径表达式读写、Bean/List 转换、XML/JSON 转换。 |
@@ -104,6 +105,8 @@ facade 规则：
 - `vhash` 面向通用 hash 能力，例如 Additive/FNV 和简单摘要快捷方法；`vcrypto` 面向安全相关摘要、
   HMAC、加解密、密钥和 PEM 编解码。
 - `vhttp` 是基于标准库的轻量 HTTP facade；`vresty` 是基于 Resty 的链式高级 HTTP client facade。
+- `vdb` 负责基于 `database/sql` 的 SQL 数据库辅助能力；调用方继续通过 `*sql.DB` 和单次调用 options
+  控制驱动和连接池。
 - `vcodec` 负责 Base64、Hex、URL query escaping 等编码/解码算法；`vurl` 负责 URL/URI 解析、规范化、
   资源和协议语义。
 - `vjson` 负责 JSON 对象、数组、路径和轻量 XML adapter；`vxml` 负责 XML 解析、树访问、格式化、
@@ -113,8 +116,9 @@ facade 规则：
 - `vobj` 是对象级便利 facade。新增具体领域逻辑应优先落到 `vstr`、`vslice`、`vmap`、`vser`、`vref`
   等明确领域包，只有在对象级聚合有价值时再由 `vobj` 做轻量包装。
 
-部分 `internal` 包，例如 `db`、`dfa`，是有意保留的领域占位。它们用于说明未来能力归属，
-当前不提供运行时 API。Office 文档工具归属 `internal/poi`，并通过 `vpoi` 对外暴露。
+部分 `internal` 包，例如 `dfa`，是有意保留的领域占位。它们用于说明未来能力归属，
+当前不提供运行时 API。数据库工具归属 `internal/db`，并通过 `vdb` 对外暴露；Office 文档工具归属
+`internal/poi`，并通过 `vpoi` 对外暴露。
 
 ## 🚀 安装
 
@@ -362,6 +366,46 @@ func main() {
   fmt.Println(vobj.DefaultIfNil(&name, "default"))
   fmt.Println(vobj.Contains(cloned.Tags, "go"))
   fmt.Println(vobj.TypeName(profile))
+}
+```
+
+### 数据库工具
+
+`vdb` 提供基于 `database/sql` 的 SQL 辅助能力：命名参数、条件构造、
+Entity 写入/更新/删除、分页、事务和轻量元信息查询。驱动选择和连接池仍由调用方控制。
+
+```go
+package main
+
+import (
+  "context"
+  "database/sql"
+  "fmt"
+
+  "github.com/imajinyun/go-knifer/vdb"
+)
+
+func main() {
+  var raw *sql.DB // 通常由你选择的 SQL driver 打开
+  db := vdb.Use(raw, vdb.WithDialect(vdb.DialectPostgres))
+
+  sqlText, args, _ := vdb.NewBuilder(vdb.WithDialect(vdb.DialectPostgres)).
+    Select("id", "name").
+    From("users").
+    Where(vdb.Eq("status", "active")).
+    OrderBy(vdb.Desc("id")).
+    Page(vdb.NewPage(1, 20)).
+    SQL()
+
+  named, _ := vdb.ParseNamed(
+    "select * from users where id = :id",
+    map[string]any{"id": 1},
+    vdb.DialectPostgres,
+  )
+
+  _ = db
+  _ = context.Background()
+  fmt.Println(sqlText, args, named.SQL, named.Params)
 }
 ```
 

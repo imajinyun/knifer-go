@@ -1,7 +1,7 @@
-// Package db is reserved for future database utilities.
+// Package db provides database helpers built on top of database/sql.
 //
-// This package intentionally contains no runtime API yet. When implemented, it
-// should own database-specific capabilities such as connection helpers,
-// dialects, transactions, and pagination instead of putting them in generic
-// utility packages.
+// It owns SQL-specific concepts such as entities, conditions, query builders,
+// named parameters, pagination, transactions, and lightweight metadata lookup.
+// Callers pass an existing *sql.DB so connection pooling remains controlled by
+// the standard library and the selected driver.
 package db

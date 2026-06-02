@@ -1,6 +1,6 @@
 package json
 
-// Config 对应 the utility JSONConfig，可控制序列化行为。
+// Config controls JSON serialization behavior.
 type Config struct {
 	// IgnoreNullValue 序列化时忽略 null。
 	IgnoreNullValue bool
@@ -19,7 +19,7 @@ func NewConfig() *Config {
 	return &Config{IndentFactor: 4}
 }
 
-// CreateConfig 与 the utility toolkit JSONConfig.create() 对齐。
+// CreateConfig creates a default JSON config.
 func CreateConfig() *Config { return NewConfig() }
 
 // Clone 拷贝配置。
