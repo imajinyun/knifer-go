@@ -40,7 +40,7 @@ func (a *AbstractLog) Log(level Level, format string, args ...any) {
 	a.LogE(level, nil, format, args...)
 }
 
-// 不同级别的便捷方法。
+// Trace logs at the trace level; the following methods are level shortcuts.
 func (a *AbstractLog) Trace(args ...any)                 { a.Log(LevelTrace, "", args...) }
 func (a *AbstractLog) Tracef(format string, args ...any) { a.Log(LevelTrace, format, args...) }
 func (a *AbstractLog) Debug(args ...any)                 { a.Log(LevelDebug, "", args...) }

@@ -17,6 +17,16 @@ linters:
   settings:
     cyclop:
       max-complexity: 40
+    staticcheck:
+      # SA5012 panics on generic variadic forwarding (staticcheck v0.7.0 bug:
+      # "can't set facts on objects belonging another package"). Our vmap.Of
+      # forwards to internal/maps.Of, which is correct; disable the broken check.
+      # ST1003 flags initialisms (Id/Ascii/Ip) in public API names that are kept
+      # intentionally stable; disable it to avoid breaking exported identifiers.
+      checks:
+        - all
+        - -SA5012
+        - -ST1003
   exclusions:
     rules:
       - path: _test\.go

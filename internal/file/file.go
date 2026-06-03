@@ -1,3 +1,4 @@
+// Package file provides file and IO helpers.
 package file
 
 import (

@@ -8,19 +8,10 @@ import (
 
 func New[K comparable, V any]() map[K]V                { return mapsimpl.New[K, V]() }
 func NewWithCap[K comparable, V any](hint int) map[K]V { return mapsimpl.NewWithCap[K, V](hint) }
-func Of[K comparable, V any](kvs ...any) map[K]V {
-	if len(kvs)%2 != 0 {
-		panic("maps.Of: odd number of arguments")
-	}
-	out := make(map[K]V, len(kvs)/2)
-	for i := 0; i < len(kvs); i += 2 {
-		out[kvs[i].(K)] = kvs[i+1].(V)
-	}
-	return out
-}
-func OrEmpty[K comparable, V any](m map[K]V) map[K]V { return mapsimpl.OrEmpty(m) }
-func IsEmpty[K comparable, V any](m map[K]V) bool    { return mapsimpl.IsEmpty(m) }
-func IsNotEmpty[K comparable, V any](m map[K]V) bool { return mapsimpl.IsNotEmpty(m) }
+func Of[K comparable, V any](kvs ...any) map[K]V       { return mapsimpl.Of[K, V](kvs...) }
+func OrEmpty[K comparable, V any](m map[K]V) map[K]V   { return mapsimpl.OrEmpty(m) }
+func IsEmpty[K comparable, V any](m map[K]V) bool      { return mapsimpl.IsEmpty(m) }
+func IsNotEmpty[K comparable, V any](m map[K]V) bool   { return mapsimpl.IsNotEmpty(m) }
 
 func ContainsKey[K comparable, V any](m map[K]V, key K) bool { return mapsimpl.ContainsKey(m, key) }
 

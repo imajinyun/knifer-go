@@ -1,6 +1,6 @@
 module github.com/imajinyun/go-knifer
 
-go 1.25.0
+go 1.24.0
 
 require (
 	github.com/evalphobia/logrus_sentry v0.8.2

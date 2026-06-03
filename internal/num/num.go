@@ -1,3 +1,4 @@
+// Package num provides numeric helpers.
 package num
 
 import (

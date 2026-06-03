@@ -1,3 +1,4 @@
+// Package boolean provides boolean helpers.
 package boolean
 
 // Negate returns the logical negation of b.

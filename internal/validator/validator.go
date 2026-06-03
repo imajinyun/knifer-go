@@ -1,3 +1,4 @@
+// Package validator provides value validation helpers.
 package validator
 
 import (

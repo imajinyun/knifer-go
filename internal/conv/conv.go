@@ -1,3 +1,4 @@
+// Package conv provides permissive type conversion helpers.
 package conv
 
 import (

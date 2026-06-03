@@ -1,3 +1,4 @@
+// Package str provides string and character helpers.
 package str
 
 import "unicode"

@@ -1,3 +1,4 @@
+// Package slice provides slice helpers.
 package slice
 
 import (

@@ -1,3 +1,4 @@
+// Package rand provides random value helpers.
 package rand
 
 import (

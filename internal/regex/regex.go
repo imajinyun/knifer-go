@@ -1,3 +1,4 @@
+// Package regex provides regular-expression helpers.
 package regex
 
 import (

@@ -1,3 +1,4 @@
+// Package date provides date and time helpers.
 package date
 
 import (
