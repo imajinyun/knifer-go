@@ -55,6 +55,7 @@ please follow the conventions below. Most of them are enforced by CI
 | Public | Full domain | internal |
 | --- | --- | --- |
 | vblf | bloomfilter | internal/bloomfilter |
+| vmask | data masking (desensitization) | internal/mask |
 | verr | errx (extended error) | internal/errx |
 | vsem | semaphore | internal/semaphore |
 | vset | sets | internal/sets |

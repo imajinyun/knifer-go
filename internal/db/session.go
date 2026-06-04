@@ -13,7 +13,11 @@ type Session struct {
 
 // Exec executes SQL in the transaction.
 func (s *Session) Exec(ctx context.Context, query string, args ...any) (sql.Result, error) {
-	return s.tx.ExecContext(ctx, query, args...)
+	result, err := s.tx.ExecContext(ctx, query, args...)
+	if err != nil {
+		return nil, wrapInternal("db: execute transaction SQL", err)
+	}
+	return result, nil
 }
 
 // ExecNamed executes named-parameter SQL in the transaction.
@@ -56,7 +60,11 @@ func (s *Session) Upsert(ctx context.Context, entity Entity, conflictFields []st
 	if err != nil {
 		return nil, err
 	}
-	return s.tx.ExecContext(ctx, sqlText, args...)
+	result, err := s.tx.ExecContext(ctx, sqlText, args...)
+	if err != nil {
+		return nil, wrapInternal("db: execute transaction upsert", err)
+	}
+	return result, nil
 }
 
 // Update updates rows in the transaction.
@@ -72,11 +80,11 @@ func (s *Session) Delete(ctx context.Context, table string, conds ...Condition) 
 // Savepoint creates a savepoint when the selected driver supports the SQL syntax.
 func (s *Session) Savepoint(ctx context.Context, name string) error {
 	_, err := s.tx.ExecContext(ctx, "SAVEPOINT "+s.parent.wrapper.Wrap(name))
-	return err
+	return wrapInternal("db: create savepoint", err)
 }
 
 // RollbackTo rolls back to a savepoint when supported by the selected driver.
 func (s *Session) RollbackTo(ctx context.Context, name string) error {
 	_, err := s.tx.ExecContext(ctx, "ROLLBACK TO SAVEPOINT "+s.parent.wrapper.Wrap(name))
-	return err
+	return wrapInternal("db: rollback to savepoint", err)
 }

@@ -36,6 +36,10 @@ func TestHTTPErrorMatchesErrCode(t *testing.T) {
 	if !errors.Is(HTTPErrorf("status %d", 500), knifer.ErrCodeInternal) {
 		t.Fatal("HTTPErrorf should match knifer.ErrCodeInternal")
 	}
+	code, ok := knifer.CodeOf(HTTPErrorf("status %d", 500))
+	if !ok || code != knifer.ErrCodeInternal {
+		t.Fatalf("CodeOf(HTTPErrorf) = %q, %v; want internal", code, ok)
+	}
 }
 
 func TestStatusHelpers(t *testing.T) {

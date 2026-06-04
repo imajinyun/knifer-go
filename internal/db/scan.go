@@ -10,12 +10,12 @@ import (
 // ScanRows scans all rows into Entity values.
 func ScanRows(rows *sql.Rows) ([]Entity, error) {
 	if rows == nil {
-		return nil, fmt.Errorf("db: rows is nil")
+		return nil, invalidInputf("db: rows is nil")
 	}
 	defer func() { _ = rows.Close() }()
 	cols, err := rows.Columns()
 	if err != nil {
-		return nil, err
+		return nil, wrapInternal("db: read columns", err)
 	}
 	out := make([]Entity, 0)
 	for rows.Next() {
@@ -25,7 +25,7 @@ func ScanRows(rows *sql.Rows) ([]Entity, error) {
 			dest[i] = &values[i]
 		}
 		if err := rows.Scan(dest...); err != nil {
-			return nil, err
+			return nil, wrapInternal("db: scan row", err)
 		}
 		entity := NewEntity("")
 		for i, col := range cols {
@@ -34,7 +34,7 @@ func ScanRows(rows *sql.Rows) ([]Entity, error) {
 		out = append(out, entity)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, wrapInternal("db: iterate rows", err)
 	}
 	return out, nil
 }
@@ -61,7 +61,7 @@ func normalizeDBValue(v any) any {
 // AssignEntity copies entity values into dst struct or map.
 func AssignEntity(entity Entity, dst any) error {
 	if dst == nil {
-		return fmt.Errorf("db: dst is nil")
+		return invalidInputf("db: dst is nil")
 	}
 	if m, ok := dst.(*map[string]any); ok {
 		if *m == nil {
@@ -74,11 +74,11 @@ func AssignEntity(entity Entity, dst any) error {
 	}
 	rv := reflect.ValueOf(dst)
 	if rv.Kind() != reflect.Pointer || rv.IsNil() {
-		return fmt.Errorf("db: dst must be a non-nil pointer")
+		return invalidInputf("db: dst must be a non-nil pointer")
 	}
 	rv = rv.Elem()
 	if rv.Kind() != reflect.Struct {
-		return fmt.Errorf("db: dst must point to struct")
+		return invalidInputf("db: dst must point to struct")
 	}
 	rt := rv.Type()
 	index := map[string]reflect.Value{}
@@ -106,7 +106,7 @@ func AssignEntity(entity Entity, dst any) error {
 			continue
 		}
 		if err := setValue(field, value); err != nil {
-			return fmt.Errorf("db: set field %s: %w", key, err)
+			return wrapInternal(fmt.Sprintf("db: set field %s", key), err)
 		}
 	}
 	return nil

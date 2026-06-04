@@ -1,7 +1,6 @@
 package db
 
 import (
-	"fmt"
 	"strings"
 	"unicode"
 )
@@ -43,7 +42,7 @@ func ParseNamed(query string, args map[string]any, dialect Dialect) (NamedSQL, e
 		name := query[i+1 : j]
 		value, ok := args[name]
 		if !ok {
-			return NamedSQL{}, fmt.Errorf("db: missing named parameter %q", name)
+			return NamedSQL{}, invalidInputf("db: missing named parameter %q", name)
 		}
 		params = append(params, value)
 		names = append(names, name)

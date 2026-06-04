@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"database/sql"
-	"fmt"
 )
 
 // Column describes a table column.
@@ -35,18 +34,18 @@ func (db *DB) ListTables(ctx context.Context) ([]string, error) {
 	}
 	rows, err := db.sqlDB.QueryContext(ctx, query)
 	if err != nil {
-		return nil, err
+		return nil, wrapInternal("db: list tables", err)
 	}
 	defer func() { _ = rows.Close() }()
 	out := []string{}
 	for rows.Next() {
 		var name string
 		if err := rows.Scan(&name); err != nil {
-			return nil, err
+			return nil, wrapInternal("db: scan table name", err)
 		}
 		out = append(out, name)
 	}
-	return out, rows.Err()
+	return out, wrapInternal("db: iterate table rows", rows.Err())
 }
 
 // ListColumns lists columns for supported dialects.
@@ -57,18 +56,18 @@ func (db *DB) ListColumns(ctx context.Context, table string) ([]Column, error) {
 	}
 	rows, err := db.sqlDB.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, err
+		return nil, wrapInternal("db: list columns", err)
 	}
 	defer func() { _ = rows.Close() }()
 	out := []Column{}
 	for rows.Next() {
 		col, err := scanner(rows, table)
 		if err != nil {
-			return nil, err
+			return nil, wrapInternal("db: scan column", err)
 		}
 		out = append(out, col)
 	}
-	return out, rows.Err()
+	return out, wrapInternal("db: iterate column rows", rows.Err())
 }
 
 // TableMeta returns table metadata with columns and primary keys when available.
@@ -119,7 +118,7 @@ func listTablesSQL(d Dialect) (string, error) {
 	case DialectPostgres:
 		return "SELECT table_name FROM information_schema.tables WHERE table_schema = current_schema() AND table_type = 'BASE TABLE' ORDER BY table_name", nil
 	default:
-		return "", fmt.Errorf("db: ListTables is not implemented for dialect %q", d)
+		return "", unsupportedf("db: ListTables is not implemented for dialect %q", d)
 	}
 }
 
@@ -132,7 +131,7 @@ func listColumnsSQL(d Dialect, table string) (string, []any, columnScanner, erro
 	case DialectPostgres:
 		return "SELECT column_name, data_type, is_nullable, column_default, '' AS column_key, '' AS extra FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = $1 ORDER BY ordinal_position", []any{table}, scanInformationSchemaColumn, nil
 	default:
-		return "", nil, nil, fmt.Errorf("db: ListColumns is not implemented for dialect %q", d)
+		return "", nil, nil, unsupportedf("db: ListColumns is not implemented for dialect %q", d)
 	}
 }
 

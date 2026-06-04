@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	knifer "github.com/imajinyun/go-knifer"
 	"github.com/imajinyun/go-knifer/vhttp"
 	"github.com/imajinyun/go-knifer/vurl"
 )
@@ -88,6 +89,13 @@ func TestFacadeErrorNamesWithoutHTTPPrefix(t *testing.T) {
 	err := vhttp.NewError("read failed", cause)
 	if !errors.Is(err, cause) {
 		t.Fatalf("NewError() does not unwrap cause")
+	}
+	if !errors.Is(err, knifer.ErrCodeInternal) {
+		t.Fatalf("NewError() does not match ErrCodeInternal")
+	}
+	code, ok := knifer.CodeOf(err)
+	if !ok || code != knifer.ErrCodeInternal {
+		t.Fatalf("CodeOf(NewError()) = %q, %v; want internal", code, ok)
 	}
 
 	formatted := vhttp.Errorf("status %d", 500)

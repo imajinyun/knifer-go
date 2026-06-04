@@ -1,8 +1,11 @@
 package db
 
 import (
+	"errors"
 	"reflect"
 	"testing"
+
+	knifer "github.com/imajinyun/go-knifer"
 )
 
 func TestSQLBuilderSelectWherePage(t *testing.T) {
@@ -100,5 +103,84 @@ func TestUpsertSQL(t *testing.T) {
 	}
 	if !reflect.DeepEqual(args, []any{1, "alice"}) {
 		t.Fatalf("args = %#v", args)
+	}
+}
+
+func TestDBErrorContract(t *testing.T) {
+	tests := []struct {
+		name string
+		err  error
+		code knifer.ErrCode
+	}{
+		{
+			name: "empty builder",
+			err:  sqlErr(NewBuilder().SQL()),
+			code: knifer.ErrCodeInvalidInput,
+		},
+		{
+			name: "select without table",
+			err:  sqlErr(Select("id").SQL()),
+			code: knifer.ErrCodeInvalidInput,
+		},
+		{
+			name: "insert without values",
+			err:  sqlErr(Insert(NewEntity("users")).SQL()),
+			code: knifer.ErrCodeInvalidInput,
+		},
+		{
+			name: "update without values",
+			err:  sqlErr(Update(NewEntity("users")).SQL()),
+			code: knifer.ErrCodeInvalidInput,
+		},
+		{
+			name: "delete without table",
+			err:  sqlErr(Delete("").SQL()),
+			code: knifer.ErrCodeInvalidInput,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assertDBCode(t, tt.err, tt.code)
+		})
+	}
+}
+
+func TestNamedScanMetaAndUpsertErrorContract(t *testing.T) {
+	_, err := ParseNamed("select * from users where id=:id", nil, DialectQuestion)
+	assertDBCode(t, err, knifer.ErrCodeInvalidInput)
+
+	_, err = ScanRows(nil)
+	assertDBCode(t, err, knifer.ErrCodeInvalidInput)
+
+	err = AssignEntity(NewEntity("users"), nil)
+	assertDBCode(t, err, knifer.ErrCodeInvalidInput)
+
+	_, err = listTablesSQL(DialectOracle)
+	assertDBCode(t, err, knifer.ErrCodeUnsupported)
+
+	_, _, _, err = listColumnsSQL(DialectOracle, "users")
+	assertDBCode(t, err, knifer.ErrCodeUnsupported)
+
+	entity := NewEntity("users").Set("id", 1).Set("name", "alice")
+	_, _, err = buildUpsertSQL(DialectOracle, WrapperForDialect(DialectOracle), entity, []string{"id"})
+	assertDBCode(t, err, knifer.ErrCodeUnsupported)
+
+	_, _, err = buildUpsertSQL(DialectSQLite, WrapperForDialect(DialectSQLite), entity, nil)
+	assertDBCode(t, err, knifer.ErrCodeInvalidInput)
+}
+
+func sqlErr(_ string, _ []any, err error) error { return err }
+
+func assertDBCode(t *testing.T, err error, code knifer.ErrCode) {
+	t.Helper()
+	if err == nil {
+		t.Fatalf("err = nil, want %s", code)
+	}
+	if !errors.Is(err, code) {
+		t.Fatalf("errors.Is(%v, %s) = false", err, code)
+	}
+	got, ok := knifer.CodeOf(err)
+	if !ok || got != code {
+		t.Fatalf("CodeOf(%v) = %q, %v; want %q, true", err, got, ok, code)
 	}
 }

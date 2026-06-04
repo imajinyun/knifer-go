@@ -22,13 +22,26 @@ func (e *HTTPError) Error() string {
 }
 
 // ErrorCode returns the go-knifer error code.
-func (e *HTTPError) ErrorCode() knifer.ErrCode { return e.Code }
+func (e *HTTPError) ErrorCode() knifer.ErrCode {
+	if e == nil {
+		return ""
+	}
+	return e.Code
+}
 
 // Unwrap returns the underlying error.
-func (e *HTTPError) Unwrap() error { return e.Cause }
+func (e *HTTPError) Unwrap() error {
+	if e == nil {
+		return nil
+	}
+	return e.Cause
+}
 
 // Is supports errors.Is(err, knifer.ErrCodeXxx) matching by error code.
 func (e *HTTPError) Is(target error) bool {
+	if e == nil || target == nil {
+		return false
+	}
 	code, ok := target.(knifer.ErrCode)
 	return ok && e.Code == code
 }

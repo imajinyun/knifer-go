@@ -18,6 +18,7 @@ type (
 	Options           = dbimpl.Options
 	Option            = dbimpl.Option
 	DB                = dbimpl.DB
+	DBError           = dbimpl.DBError
 	Session           = dbimpl.Session
 	Column            = dbimpl.Column
 	Table             = dbimpl.Table

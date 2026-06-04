@@ -74,7 +74,7 @@ func NewHMACSigner(algorithm string, key []byte) (JWTSigner, error) {
 		return &hmacSigner{alg: AlgHS512, key: append([]byte{}, key...), hashFn: sha512.New}, nil
 	}
 	// 兼容传 SHA384 直接 hash 别名
-	return nil, JWTErrorf("unsupported HMAC algorithm: %s", algorithm)
+	return nil, unsupportedJWTErrorf("unsupported HMAC algorithm: %s", algorithm)
 }
 
 // MustHMACSigner 创建 HMAC 签名器，失败 panic。

@@ -24,7 +24,7 @@ type DB struct {
 func Open(driverName, dataSourceName string, opts ...Option) (*DB, error) {
 	sqlDB, err := sql.Open(driverName, dataSourceName)
 	if err != nil {
-		return nil, err
+		return nil, wrapInternal("db: open database", err)
 	}
 	return Use(sqlDB, append([]Option{WithDialect(NormalizeDialect(driverName))}, opts...)...), nil
 }
@@ -53,7 +53,11 @@ func (db *DB) Ping(ctx context.Context) error { return db.sqlDB.PingContext(ctx)
 
 // Exec executes SQL.
 func (db *DB) Exec(ctx context.Context, query string, args ...any) (sql.Result, error) {
-	return db.sqlDB.ExecContext(ctx, query, args...)
+	result, err := db.sqlDB.ExecContext(ctx, query, args...)
+	if err != nil {
+		return nil, wrapInternal("db: execute SQL", err)
+	}
+	return result, nil
 }
 
 // ExecNamed executes named-parameter SQL.
@@ -105,7 +109,11 @@ func (db *DB) InsertGetID(ctx context.Context, entity Entity) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return result.LastInsertId()
+	id, err := result.LastInsertId()
+	if err != nil {
+		return 0, wrapInternal("db: read last insert id", err)
+	}
+	return id, nil
 }
 
 // Upsert inserts entity values or updates existing rows when supported by the dialect.
@@ -114,7 +122,11 @@ func (db *DB) Upsert(ctx context.Context, entity Entity, conflictFields []string
 	if err != nil {
 		return nil, err
 	}
-	return db.sqlDB.ExecContext(ctx, sqlText, args...)
+	result, err := db.sqlDB.ExecContext(ctx, sqlText, args...)
+	if err != nil {
+		return nil, wrapInternal("db: execute upsert", err)
+	}
+	return result, nil
 }
 
 // Update updates rows matching conditions.
@@ -198,7 +210,7 @@ func (db *DB) Page(ctx context.Context, q Query, page Page) (PageResult[Entity],
 func (db *DB) Tx(ctx context.Context, opts *sql.TxOptions, fn func(*Session) error) error {
 	tx, err := db.sqlDB.BeginTx(ctx, opts)
 	if err != nil {
-		return err
+		return wrapInternal("db: begin transaction", err)
 	}
 	s := &Session{tx: tx, parent: db}
 	if err := fn(s); err != nil {
@@ -207,7 +219,10 @@ func (db *DB) Tx(ctx context.Context, opts *sql.TxOptions, fn func(*Session) err
 		}
 		return err
 	}
-	return tx.Commit()
+	if err := tx.Commit(); err != nil {
+		return wrapInternal("db: commit transaction", err)
+	}
+	return nil
 }
 
 func execBatch(ctx context.Context, exec sqlExecutor, query string, batches ...[]any) ([]sql.Result, error) {
@@ -215,7 +230,7 @@ func execBatch(ctx context.Context, exec sqlExecutor, query string, batches ...[
 	for _, args := range batches {
 		result, err := exec.ExecContext(ctx, query, args...)
 		if err != nil {
-			return results, err
+			return results, wrapInternal("db: execute batch SQL", err)
 		}
 		results = append(results, result)
 	}
@@ -225,7 +240,7 @@ func execBatch(ctx context.Context, exec sqlExecutor, query string, batches ...[
 func queryEntities(ctx context.Context, exec sqlExecutor, query string, args ...any) ([]Entity, error) {
 	rows, err := exec.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, err
+		return nil, wrapInternal("db: query entities", err)
 	}
 	return ScanRows(rows)
 }
@@ -233,7 +248,7 @@ func queryEntities(ctx context.Context, exec sqlExecutor, query string, args ...
 func queryOne(ctx context.Context, exec sqlExecutor, query string, args ...any) (Entity, bool, error) {
 	rows, err := exec.QueryContext(ctx, query, args...)
 	if err != nil {
-		return Entity{}, false, err
+		return Entity{}, false, wrapInternal("db: query one", err)
 	}
 	return ScanOne(rows)
 }
@@ -241,17 +256,17 @@ func queryOne(ctx context.Context, exec sqlExecutor, query string, args ...any) 
 func queryScalar(ctx context.Context, exec sqlExecutor, query string, args ...any) (any, bool, error) {
 	rows, err := exec.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, false, err
+		return nil, false, wrapInternal("db: query scalar", err)
 	}
 	defer func() { _ = rows.Close() }()
 	if !rows.Next() {
-		return nil, false, rows.Err()
+		return nil, false, wrapInternal("db: iterate scalar rows", rows.Err())
 	}
 	var value any
 	if err := rows.Scan(&value); err != nil {
-		return nil, false, err
+		return nil, false, wrapInternal("db: scan scalar", err)
 	}
-	return normalizeDBValue(value), true, rows.Err()
+	return normalizeDBValue(value), true, wrapInternal("db: iterate scalar rows", rows.Err())
 }
 
 func insertEntity(ctx context.Context, exec sqlExecutor, dialect Dialect, wrapper Wrapper, entity Entity) (sql.Result, error) {
@@ -259,7 +274,11 @@ func insertEntity(ctx context.Context, exec sqlExecutor, dialect Dialect, wrappe
 	if err != nil {
 		return nil, err
 	}
-	return exec.ExecContext(ctx, sqlText, args...)
+	result, err := exec.ExecContext(ctx, sqlText, args...)
+	if err != nil {
+		return nil, wrapInternal("db: insert entity", err)
+	}
+	return result, nil
 }
 
 func updateEntity(ctx context.Context, exec sqlExecutor, dialect Dialect, wrapper Wrapper, entity Entity, conds ...Condition) (sql.Result, error) {
@@ -267,7 +286,11 @@ func updateEntity(ctx context.Context, exec sqlExecutor, dialect Dialect, wrappe
 	if err != nil {
 		return nil, err
 	}
-	return exec.ExecContext(ctx, sqlText, args...)
+	result, err := exec.ExecContext(ctx, sqlText, args...)
+	if err != nil {
+		return nil, wrapInternal("db: update entity", err)
+	}
+	return result, nil
 }
 
 func deleteRows(ctx context.Context, exec sqlExecutor, dialect Dialect, wrapper Wrapper, table string, conds ...Condition) (sql.Result, error) {
@@ -275,13 +298,17 @@ func deleteRows(ctx context.Context, exec sqlExecutor, dialect Dialect, wrapper 
 	if err != nil {
 		return nil, err
 	}
-	return exec.ExecContext(ctx, sqlText, args...)
+	result, err := exec.ExecContext(ctx, sqlText, args...)
+	if err != nil {
+		return nil, wrapInternal("db: delete rows", err)
+	}
+	return result, nil
 }
 
 func scanInt64(row *sql.Row) (int64, error) {
 	var n int64
 	if err := row.Scan(&n); err != nil {
-		return 0, err
+		return 0, wrapInternal("db: scan int64", err)
 	}
 	return n, nil
 }
@@ -307,7 +334,7 @@ func buildUpsertSQL(dialect Dialect, wrapper Wrapper, entity Entity, conflictFie
 		switch dialect {
 		case DialectPostgres, DialectSQLite:
 			if len(conflictFields) == 0 {
-				return "", nil, fmt.Errorf("db: upsert conflict fields are required for %s", dialect)
+				return "", nil, invalidInputf("db: upsert conflict fields are required for %s", dialect)
 			}
 			return insertSQL + " ON CONFLICT (" + wrapList(conflictFields, wrapper) + ") DO NOTHING", args, nil
 		default:
@@ -334,10 +361,10 @@ func buildUpsertSQL(dialect Dialect, wrapper Wrapper, entity Entity, conflictFie
 		return insertSQL + " ON DUPLICATE KEY UPDATE " + strings.Join(sets, ", "), args, nil
 	case DialectPostgres, DialectSQLite:
 		if len(conflictFields) == 0 {
-			return "", nil, fmt.Errorf("db: upsert conflict fields are required for %s", dialect)
+			return "", nil, invalidInputf("db: upsert conflict fields are required for %s", dialect)
 		}
 		return insertSQL + " ON CONFLICT (" + wrapList(conflictFields, wrapper) + ") DO UPDATE SET " + strings.Join(sets, ", "), args, nil
 	default:
-		return "", nil, fmt.Errorf("db: upsert is not implemented for dialect %q", dialect)
+		return "", nil, unsupportedf("db: upsert is not implemented for dialect %q", dialect)
 	}
 }

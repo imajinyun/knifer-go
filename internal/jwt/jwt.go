@@ -45,22 +45,22 @@ func (j *JWT) Parse(token string) error {
 	}
 	headerJSON, err := b64URLDecode(parts[0])
 	if err != nil {
-		return JWTErrorf("decode header: %s", err.Error())
+		return wrapJWTError(err, "decode header")
 	}
 	payloadJSON, err := b64URLDecode(parts[1])
 	if err != nil {
-		return JWTErrorf("decode payload: %s", err.Error())
+		return wrapJWTError(err, "decode payload")
 	}
 	header := map[string]any{}
 	if len(headerJSON) > 0 {
 		if err := json.Unmarshal(headerJSON, &header); err != nil {
-			return JWTErrorf("unmarshal header: %s", err.Error())
+			return wrapJWTError(err, "unmarshal header")
 		}
 	}
 	payload := map[string]any{}
 	if len(payloadJSON) > 0 {
 		if err := json.Unmarshal(payloadJSON, &payload); err != nil {
-			return JWTErrorf("unmarshal payload: %s", err.Error())
+			return wrapJWTError(err, "unmarshal payload")
 		}
 	}
 	j.header = header
@@ -228,11 +228,11 @@ func (j *JWT) SignOpts(addTypeIfNot bool) (string, error) {
 	}
 	hb, err := json.Marshal(j.header)
 	if err != nil {
-		return "", JWTErrorf("marshal header: %s", err.Error())
+		return "", wrapJWTError(err, "marshal header")
 	}
 	pb, err := json.Marshal(j.payload)
 	if err != nil {
-		return "", JWTErrorf("marshal payload: %s", err.Error())
+		return "", wrapJWTError(err, "marshal payload")
 	}
 	headerB64 := b64URLEncode(hb)
 	payloadB64 := b64URLEncode(pb)

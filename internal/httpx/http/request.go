@@ -428,7 +428,7 @@ func (r *HTTPRequest) buildClient() *http.Client {
 				return http.ErrUseLastResponse
 			}
 			if max > 0 && len(via) >= max {
-				return fmt.Errorf("stopped after %d redirects", max)
+				return HTTPErrorf("stopped after %d redirects", max)
 			}
 			return nil
 		},

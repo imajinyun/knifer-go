@@ -44,7 +44,7 @@ func NewRSASigner(algorithm string, priv *rsa.PrivateKey, pub *rsa.PublicKey) (J
 	algorithm = strings.ToUpper(strings.TrimSpace(algorithm))
 	hashID, ok := rsaHashOf(algorithm, false)
 	if !ok {
-		return nil, JWTErrorf("unsupported RSA algorithm: %s", algorithm)
+		return nil, unsupportedJWTErrorf("unsupported RSA algorithm: %s", algorithm)
 	}
 	if priv != nil && pub == nil {
 		pub = &priv.PublicKey
@@ -61,7 +61,7 @@ func NewRSAPSSSigner(algorithm string, priv *rsa.PrivateKey, pub *rsa.PublicKey)
 	algorithm = strings.ToUpper(strings.TrimSpace(algorithm))
 	hashID, ok := rsaHashOf(algorithm, true)
 	if !ok {
-		return nil, JWTErrorf("unsupported RSA-PSS algorithm: %s", algorithm)
+		return nil, unsupportedJWTErrorf("unsupported RSA-PSS algorithm: %s", algorithm)
 	}
 	if priv != nil && pub == nil {
 		pub = &priv.PublicKey
@@ -145,7 +145,7 @@ func NewECDSASigner(algorithm string, priv *ecdsa.PrivateKey, pub *ecdsa.PublicK
 	algorithm = strings.ToUpper(strings.TrimSpace(algorithm))
 	hashID, expectedCurve, rSize, ok := ecdsaParamsOf(algorithm)
 	if !ok {
-		return nil, JWTErrorf("unsupported ECDSA algorithm: %s", algorithm)
+		return nil, unsupportedJWTErrorf("unsupported ECDSA algorithm: %s", algorithm)
 	}
 	if priv != nil && pub == nil {
 		pub = &priv.PublicKey

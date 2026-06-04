@@ -157,13 +157,13 @@ func (b *SQLBuilder) SQL() (string, []any, error) {
 	case "DELETE":
 		return b.deleteSQL()
 	default:
-		return "", nil, fmt.Errorf("db: SQL verb is not set")
+		return "", nil, invalidInputf("db: SQL verb is not set")
 	}
 }
 
 func (b *SQLBuilder) selectSQL() (string, []any, error) {
 	if len(b.tables) == 0 {
-		return "", nil, fmt.Errorf("db: SELECT requires table")
+		return "", nil, invalidInputf("db: SELECT requires table")
 	}
 	fields := b.fields
 	if len(fields) == 0 {
@@ -199,7 +199,7 @@ func (b *SQLBuilder) selectSQL() (string, []any, error) {
 
 func (b *SQLBuilder) insertSQL() (string, []any, error) {
 	if len(b.tables) == 0 || b.tables[0] == "" || len(b.fields) == 0 {
-		return "", nil, fmt.Errorf("db: INSERT requires table and values")
+		return "", nil, invalidInputf("db: INSERT requires table and values")
 	}
 	ph := make([]string, len(b.fields))
 	for i := range ph {
@@ -211,7 +211,7 @@ func (b *SQLBuilder) insertSQL() (string, []any, error) {
 
 func (b *SQLBuilder) updateSQL() (string, []any, error) {
 	if len(b.tables) == 0 || b.tables[0] == "" || len(b.sets) == 0 {
-		return "", nil, fmt.Errorf("db: UPDATE requires table and values")
+		return "", nil, invalidInputf("db: UPDATE requires table and values")
 	}
 	sets := make([]string, len(b.sets))
 	for i, field := range b.sets {
@@ -234,7 +234,7 @@ func (b *SQLBuilder) updateSQL() (string, []any, error) {
 
 func (b *SQLBuilder) deleteSQL() (string, []any, error) {
 	if len(b.tables) == 0 || b.tables[0] == "" {
-		return "", nil, fmt.Errorf("db: DELETE requires table")
+		return "", nil, invalidInputf("db: DELETE requires table")
 	}
 	parts := []string{"DELETE FROM", b.wrapper.Wrap(b.tables[0])}
 	params := append([]any(nil), b.params...)
