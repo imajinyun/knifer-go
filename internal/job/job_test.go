@@ -14,6 +14,7 @@ import (
 	"testing"
 	"time"
 
+	knifer "github.com/imajinyun/go-knifer"
 	"github.com/sirupsen/logrus"
 )
 
@@ -134,6 +135,9 @@ func TestRunWithHandlesErrorsAndPanics_BitsUT(t *testing.T) {
 		if err := RunWith(context.Background(), nil, Options{}); !errors.Is(err, ErrNilJob) {
 			t.Fatalf("RunWith(nil) error = %v, want ErrNilJob", err)
 		}
+		if err := RunWith(context.Background(), nil, Options{}); !errors.Is(err, knifer.ErrCodeInvalidInput) {
+			t.Fatalf("RunWith(nil) error = %v, want ErrCodeInvalidInput", err)
+		}
 	})
 
 	t.Run("canceled context", func(t *testing.T) {
@@ -252,6 +256,9 @@ func TestAdaptersValidateRangesAndInputs_BitsUT(t *testing.T) {
 		_, err := NewSlice(func(ctx context.Context, start, end int) (Merge, error) { return nil, nil }, 1).Run(context.Background(), 1, 2)
 		if !errors.Is(err, ErrInvalidRange) {
 			t.Fatalf("Slice.Run() error = %v, want ErrInvalidRange", err)
+		}
+		if !errors.Is(err, knifer.ErrCodeInvalidInput) {
+			t.Fatalf("Slice.Run() error = %v, want ErrCodeInvalidInput", err)
 		}
 	})
 

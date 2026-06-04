@@ -33,7 +33,6 @@
 //	vcodec  Base64/Hex
 //	vjson   JSON
 //	vxml    XML
-//	vser    gob serialization (SERialize)
 //	vhash   non-cryptographic hashes
 //
 // Networking & communication:
@@ -47,7 +46,7 @@
 //
 //	vcrypto cryptography and digests
 //	vjwt    JWT sign/verify
-//	vdes    data desensitization (DESensitize)
+//	vmask   data masking (desensitization)
 //	vcaptcha image captchas
 //	vdfa    DFA word-tree text matching
 //

@@ -1,4 +1,4 @@
-package desensitize
+package mask
 
 import "testing"
 
@@ -8,7 +8,7 @@ func TestBuiltInRules(t *testing.T) {
 		got  string
 		want string
 	}{
-		{"user", Desensitized("100", UserID), "0"},
+		{"user", Masked("100", UserID), "0"},
 		{"name", ChineseName("段正淳"), "段**"},
 		{"id", IDCardNum("51343620000320711X", 1, 2), "5***************1X"},
 		{"fixed", FixedPhone("09157518479"), "0915*****79"},
@@ -20,7 +20,7 @@ func TestBuiltInRules(t *testing.T) {
 		{"car8", CarLicense("陕A12345D"), "陕A1****D"},
 		{"bank", BankCard("11011111222233333256"), "1101 **** **** **** 3256"},
 		{"ipv4", IPv4("192.168.1.1"), "192.*.*.*"},
-		{"ipv6", IPv6("2001:0db8:86a3:08d3:1319:8a2e:0370:7344"), "2001:*:*:*:*:*:*:*"},
+		{"ipv6", IPv6("2001:0db8:86a3:08d3:1319:8a2e:0370:7344"), "2001:*:*:*:*:*:*:*:*"},
 		{"passport", Passport("PJ1234567"), "PJ*****67"},
 		{"credit", CreditCode("91110108MA01ABCDE7"), "9111**********CDE7"},
 		{"first", FirstMask("123456789"), "1********"},
@@ -35,11 +35,11 @@ func TestBuiltInRules(t *testing.T) {
 	}
 }
 
-func TestDesensitizedPtrAndBoundary(t *testing.T) {
-	if got := Desensitized("18049531999", MobilePhoneType); got != "180****1999" {
-		t.Fatalf("Desensitized: %q", got)
+func TestMaskedPtrAndBoundary(t *testing.T) {
+	if got := Masked("18049531999", MobilePhoneType); got != "180****1999" {
+		t.Fatalf("Masked: %q", got)
 	}
-	if DesensitizedPtr("x", ClearToNullType) != nil {
+	if MaskedPtr("x", ClearToNullType) != nil {
 		t.Fatal("ClearToNullType should return nil pointer")
 	}
 	if got := IDCardNum("123", 2, 2); got != "" {

@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	refimpl "github.com/imajinyun/go-knifer/internal/ref"
-	serializeimpl "github.com/imajinyun/go-knifer/internal/serialize"
 )
 
 // Ordered is the set of built-in ordered value types.
@@ -148,23 +147,6 @@ func Accept[T any](source *T, consumer func(T)) {
 		consumer(*source)
 	}
 }
-
-// Clone creates a deep copy through gob serialization.
-func Clone[T any](src T) (T, error) { return serializeimpl.Clone(src) }
-
-// CloneIfPossible returns a cloned value when cloning succeeds, otherwise src.
-func CloneIfPossible[T any](src T) T {
-	return serializeimpl.CloneIfPossible(src)
-}
-
-// CloneByStream creates a deep copy through gob serialization.
-func CloneByStream[T any](src T) (T, error) { return serializeimpl.CloneByStream(src) }
-
-// Serialize encodes obj with gob.
-func Serialize[T any](obj T) ([]byte, error) { return serializeimpl.Serialize(obj) }
-
-// Deserialize decodes gob data into out, which must be a pointer.
-func Deserialize(data []byte, out any) error { return serializeimpl.Deserialize(data, out) }
 
 // IsBasicType reports whether object is a built-in scalar type or string.
 func IsBasicType(object any) bool {

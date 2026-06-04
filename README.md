@@ -58,7 +58,7 @@ Not sure which package to import? Start from what you want to do:
 | Send HTTP requests (standard library) | `vhttp` |
 | Send HTTP requests (Resty-based) | `vresty` |
 | Validate email/mobile/IP, etc. | `vvalidator` |
-| Mask sensitive data | `vdes` |
+| Mask sensitive data | `vmask` |
 | JWT sign/verify | `vjwt` |
 | Schedule cron tasks | `vcron` |
 | Cache with FIFO/LRU/LFU/TTL | `vcache` |
@@ -81,13 +81,12 @@ The project follows an “internal implementation + public facade” layout: `in
 | `vurl` | `github.com/imajinyun/go-knifer/vurl` | URL and URI helpers: parse, normalize, resolve relative URLs, query encode/decode, URL/path/fragment percent encoding, URL building, Data URI building, scheme checks, and file URL conversion. |
 | `vnet` | `github.com/imajinyun/go-knifer/vnet` | Network helpers: IPv4/IPv6 conversion, CIDR/range/mask utilities, local ports, host/interface/MAC lookup, TLS config, and multipart form helpers. |
 | `vobj` | `github.com/imajinyun/go-knifer/vobj` | Object helpers: nil/empty checks, equality, defaults, clone/serialization, comparison, type inspection, and container utilities. |
-| `vser` | `github.com/imajinyun/go-knifer/vser` | Serialization helpers: gob encode/decode, typed deserialization, deep clone, type registration, and optional decoded-type validation. |
 | `vver` | `github.com/imajinyun/go-knifer/vver` | Version helpers: version comparison, greater/less predicates, expression matching, inclusive ranges, and custom expression delimiters. |
 | `vref` | `github.com/imajinyun/go-knifer/vref` | Reflection helpers: field lookup and mutation, method discovery and invocation, constructor-style function calls, type/value utilities, and method classification. |
 | `vbean` | `github.com/imajinyun/go-knifer/vbean` | Bean/struct mapping helpers: struct/map conversion, copy properties, tag and alias matching, ignore-empty/zero options, and weak type conversion. |
 | `vzip` | `github.com/imajinyun/go-knifer/vzip` | ZIP, gzip, and zlib helpers: archive creation/extraction, entry lookup, archive traversal, append, in-memory entries, and stream compression. |
 | `vpoi` | `github.com/imajinyun/go-knifer/vpoi` | Office document helpers: lightweight Excel XLSX sheet listing, row reading, row writing, multi-sheet writing, and in-memory workbook creation. |
-| `vdes` | `github.com/imajinyun/go-knifer/vdes` | Desensitization helpers: mask names, IDs, phones, addresses, email, passwords, license plates, bank cards, IPs, passports, and credit codes. |
+| `vmask` | `github.com/imajinyun/go-knifer/vmask` | Masking helpers: mask names, IDs, phones, addresses, email, passwords, license plates, bank cards, IPs, passports, and credit codes. |
 | `vnum` | `github.com/imajinyun/go-knifer/vnum` | Numeric helpers: precise arithmetic, rounding modes, formatting, number checks, random unique numbers, ranges, factorial/combinations, gcd/lcm, binary conversion, comparison, parsing, byte conversion, expression calculation, and odd/even checks. |
 | `vrand` | `github.com/imajinyun/go-knifer/vrand` | Random helpers: integers, floats, booleans, bytes, strings, numeric strings, and random element selection. |
 | `vid` | `github.com/imajinyun/go-knifer/vid` | ID helpers: random/simple/fast UUIDs, MongoDB-style ObjectId, Snowflake generators and singleton next-id helpers, worker/datacenter id derivation, and NanoId generation. |
@@ -131,7 +130,7 @@ Facade rules:
 - Small utility packages may use hand-written thin facades; larger modules may
   keep generated `facade.go` files. In either case, newly exported internal APIs
   should be reviewed before being exposed publicly.
-- Facades may keep short names such as `vdes`, `vser`, `vsem`, `vskt`, `vblf`,
+- Facades may keep short names such as `vmask`, `vsem`, `vskt`, `vblf`,
   and `vver`; their meaning is documented in the module table above instead of
   changing established import paths.
 
@@ -161,8 +160,8 @@ Domain boundary rules:
 - `vbean` owns direct struct/map property mapping, copy-properties, tag/alias
   matching, and weak type conversion without serializing through JSON.
 - `vobj` is a convenience object-level facade. New domain logic should still be
-  implemented first in clear packages such as `vstr`, `vslice`, `vmap`, `vser`,
-  or `vref`, then wrapped by `vobj` only when a broad object helper is useful.
+  implemented first in clear packages such as `vstr`, `vslice`, `vmap`, or `vref`,
+  then wrapped by `vobj` only when a broad object helper is useful.
 
 Database helpers belong to `internal/db` and are exposed through `vdb`; DFA text
 matching belongs to `internal/dfa` and is exposed through `vdfa`; office-document
@@ -173,19 +172,23 @@ helpers belong to `internal/poi` and are exposed through `vpoi`.
 The root package `knifer` owns the cross-cutting error contract: the `ErrCode`
 classifier (`knifer.ErrCodeInvalidInput`, `ErrCodeNotFound`, `ErrCodeTimeout`,
 …), the unified `knifer.Error` type, and the `NewError` / `WrapError` / `Errorf`
-constructors. Subpackages that opt in return `*knifer.Error` and wrap the
-underlying cause, so callers can match by code while keeping the chain:
+constructors. Subpackages that opt in return `*knifer.Error` or add code-aware
+matching to their existing error types/sentinels, so callers can match by code
+while keeping the chain:
 
 ```go
 if errors.Is(err, knifer.ErrCodeInvalidInput) { /* ... */ }
 ```
 
-`vcrypto.ValidateAESKey` is a reference integration: its error matches both
-`knifer.ErrCodeInvalidInput` and `vcrypto.ErrInvalidKey`.
+`vcrypto` is a reference integration: validation errors match both
+`knifer.ErrCodeInvalidInput` and the existing `vcrypto.ErrInvalidKey` /
+`ErrInvalidIV` / `ErrInvalidCipherText` sentinels.
 
-The `vjwt`, `vjson`, and `vhttp`/`vresty` errors also participate: their errors
-match `knifer.ErrCodeInvalidInput` (vjwt, vjson) and `knifer.ErrCodeInternal`
-(vhttp/vresty) while preserving their own `*Error` types and cause chains.
+The `vjwt`, `vjson`, `vcron`, `vjob`, `vpoi`, and `vhttp`/`vresty` errors also
+participate: their errors match `knifer.ErrCodeInvalidInput` (vjwt, vjson,
+vcron, vjob, vpoi empty sheet name), `knifer.ErrCodeNotFound` (vpoi no sheet),
+or `knifer.ErrCodeInternal` (vhttp/vresty and vskt) while preserving their own
+error types, sentinels, and cause chains.
 
 ## 🚀 Install
 
@@ -553,7 +556,7 @@ func main() {
 
 ### Serialization helpers
 
-`vser` provides gob-based serialization helpers for byte encoding, typed
+`vobj` provides gob-based serialization helpers for byte encoding, typed
 deserialization, deep cloning, interface type registration, and optional decoded
 object graph validation.
 
@@ -563,7 +566,7 @@ package main
 import (
   "fmt"
 
-  "github.com/imajinyun/go-knifer/vser"
+  "github.com/imajinyun/go-knifer/vobj"
 )
 
 type Profile struct {
@@ -574,9 +577,9 @@ type Profile struct {
 func main() {
   profile := Profile{Name: "go-knifer", Tags: []string{"go", "tool"}}
 
-  data, _ := vser.Serialize(profile)
-  decoded, _ := vser.DeserializeTo[Profile](data, Profile{})
-  cloned := vser.CloneIfPossible(profile)
+  data, _ := vobj.Serialize(profile)
+  decoded, _ := vobj.DeserializeTo[Profile](data, Profile{})
+  cloned := vobj.CloneIfPossible(profile)
 
   fmt.Println(decoded.Name)
   fmt.Println(cloned.Tags)
@@ -631,9 +634,9 @@ func main() {
 }
 ```
 
-### Desensitization helpers
+### Masking helpers
 
-`vdes` provides built-in masking rules for common sensitive fields such as names,
+`vmask` provides built-in masking rules for common sensitive fields such as names,
 identity numbers, phones, addresses, email addresses, passwords, license plates,
 bank cards, IP addresses, passports, and credit codes.
 
@@ -643,14 +646,14 @@ package main
 import (
   "fmt"
 
-  "github.com/imajinyun/go-knifer/vdes"
+  "github.com/imajinyun/go-knifer/vmask"
 )
 
 func main() {
-  fmt.Println(vdes.MobilePhone("18049531999"))
-  fmt.Println(vdes.Email("duandazhi-jack@gmail.com.cn"))
-  fmt.Println(vdes.BankCard("11011111222233333256"))
-  fmt.Println(vdes.Desensitized("PJ1234567", vdes.PassportType))
+  fmt.Println(vmask.MobilePhone("18049531999"))
+  fmt.Println(vmask.Email("duandazhi-jack@gmail.com.cn"))
+  fmt.Println(vmask.BankCard("11011111222233333256"))
+  fmt.Println(vmask.Masked("PJ1234567", vmask.PassportType))
 }
 ```
 

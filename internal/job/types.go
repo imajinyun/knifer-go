@@ -2,14 +2,30 @@ package job
 
 import (
 	"context"
-	"errors"
+
+	knifer "github.com/imajinyun/go-knifer"
 )
+
+type sentinel struct {
+	code knifer.ErrCode
+	msg  string
+}
+
+func (e *sentinel) Error() string { return e.msg }
+
+func (e *sentinel) Is(target error) bool {
+	if e == target {
+		return true
+	}
+	code, ok := target.(knifer.ErrCode)
+	return ok && e.code == code
+}
 
 var (
 	// ErrNilJob indicates that a nil Sliceable job was passed to a runner.
-	ErrNilJob = errors.New("job is nil")
+	ErrNilJob error = &sentinel{code: knifer.ErrCodeInvalidInput, msg: "job is nil"}
 	// ErrInvalidRange indicates that a Run call received an invalid half-open range.
-	ErrInvalidRange = errors.New("job: invalid range")
+	ErrInvalidRange error = &sentinel{code: knifer.ErrCodeInvalidInput, msg: "job: invalid range"}
 )
 
 const singleConcurrency = 32

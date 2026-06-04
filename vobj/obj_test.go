@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/imajinyun/go-knifer/vobj"
-	"github.com/imajinyun/go-knifer/vser"
 )
 
 type record struct {
@@ -48,17 +47,24 @@ func TestFacadeCloneAndSerialize(t *testing.T) {
 	}
 }
 
-func TestObjectFacadeMatchesDomainHelpers_BitsUT(t *testing.T) {
+func TestFacadeSerializeExtended(t *testing.T) {
 	src := record{Name: "go", Tags: []string{"tool"}}
-	objData, err := vobj.Serialize(src)
+
+	data, err := vobj.Serialize(src)
 	if err != nil {
-		t.Fatalf("vobj.Serialize: %v", err)
+		t.Fatalf("Serialize: %v", err)
 	}
-	serData, err := vser.Serialize(src)
+
+	out, err := vobj.DeserializeTo[record](data)
 	if err != nil {
-		t.Fatalf("vser.Serialize: %v", err)
+		t.Fatalf("DeserializeTo: %v", err)
 	}
-	if string(objData) != string(serData) {
-		t.Fatal("serialized payloads differ")
+	if out.Name != src.Name || len(out.Tags) != 1 || out.Tags[0] != "tool" {
+		t.Fatalf("DeserializeTo mismatch: %#v", out)
+	}
+
+	nilData := vobj.SerializeOrNil(src)
+	if nilData == nil {
+		t.Fatal("SerializeOrNil should not return nil for valid input")
 	}
 }

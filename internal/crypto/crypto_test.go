@@ -15,6 +15,8 @@ import (
 	"math/big"
 	"testing"
 	"time"
+
+	knifer "github.com/imajinyun/go-knifer"
 )
 
 func TestDigestAndHMAC(t *testing.T) {
@@ -66,6 +68,9 @@ func TestPBKDF2AndSignParams(t *testing.T) {
 	}
 	if _, err := PBKDF2([]byte("password"), []byte("salt"), 0, 32, sha1.New); !errors.Is(err, ErrInvalidKey) {
 		t.Fatalf("PBKDF2 invalid iterations error = %v", err)
+	}
+	if _, err := PBKDF2([]byte("password"), []byte("salt"), 0, 32, sha1.New); !errors.Is(err, knifer.ErrCodeInvalidInput) {
+		t.Fatalf("PBKDF2 invalid iterations error = %v, want ErrCodeInvalidInput", err)
 	}
 
 	params := map[string]any{"b": 2, "a": 1, "skip": nil}

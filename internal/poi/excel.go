@@ -2,13 +2,13 @@ package poi
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
 
+	knifer "github.com/imajinyun/go-knifer"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -17,11 +17,26 @@ const (
 	DefaultSheetName = "Sheet1"
 )
 
+type sentinel struct {
+	code knifer.ErrCode
+	msg  string
+}
+
+func (e *sentinel) Error() string { return e.msg }
+
+func (e *sentinel) Is(target error) bool {
+	if e == target {
+		return true
+	}
+	code, ok := target.(knifer.ErrCode)
+	return ok && e.code == code
+}
+
 var (
 	// ErrNoSheet indicates that a workbook does not contain any worksheet.
-	ErrNoSheet = errors.New("poi: workbook has no sheet")
+	ErrNoSheet error = &sentinel{code: knifer.ErrCodeNotFound, msg: "poi: workbook has no sheet"}
 	// ErrEmptySheetName indicates an empty worksheet name.
-	ErrEmptySheetName = errors.New("poi: sheet name is empty")
+	ErrEmptySheetName error = &sentinel{code: knifer.ErrCodeInvalidInput, msg: "poi: sheet name is empty"}
 )
 
 type readConfig struct {

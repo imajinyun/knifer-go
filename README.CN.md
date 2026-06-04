@@ -58,7 +58,7 @@ text := vcrypto.MD5Hex("hello")
 | 发起 HTTP 请求（标准库） | `vhttp` |
 | 发起 HTTP 请求（基于 Resty） | `vresty` |
 | 校验邮箱/手机号/IP 等 | `vvalidator` |
-| 敏感数据脱敏 | `vdes` |
+| 敏感数据脱敏 | `vmask` |
 | JWT 签发/校验 | `vjwt` |
 | 定时任务调度 | `vcron` |
 | FIFO/LRU/LFU/TTL 缓存 | `vcache` |
@@ -81,13 +81,12 @@ text := vcrypto.MD5Hex("hello")
 | `vurl` | `github.com/imajinyun/go-knifer/vurl` | URL 与 URI 工具：解析、标准化、相对 URL 补全、query 编解码、URL/路径/fragment 百分号编码、URL 构造、Data URI 构造、协议判断和文件 URL 转换。 |
 | `vnet` | `github.com/imajinyun/go-knifer/vnet` | 网络工具：IPv4/IPv6 转换、CIDR/范围/掩码、本地端口、主机/网卡/MAC 查询、TLS 配置和 multipart 表单辅助。 |
 | `vobj` | `github.com/imajinyun/go-knifer/vobj` | 对象工具：nil/空值判断、相等性、默认值、克隆/序列化、比较、类型检查和容器辅助。 |
-| `vser` | `github.com/imajinyun/go-knifer/vser` | 序列化工具：gob 编码/解码、泛型反序列化、深拷贝、类型注册和可选的解码类型校验。 |
 | `vver` | `github.com/imajinyun/go-knifer/vver` | 版本工具：版本号比较、大小关系判断、表达式匹配、闭区间范围和自定义多表达式分隔符。 |
 | `vref` | `github.com/imajinyun/go-knifer/vref` | 反射工具：字段查找与赋值、方法发现与调用、构造函数风格调用、类型/值工具和方法分类判断。 |
 | `vbean` | `github.com/imajinyun/go-knifer/vbean` | Bean/结构体映射工具：struct/map 互转、copy properties、tag/alias 匹配、忽略空值/零值选项和弱类型转换。 |
 | `vzip` | `github.com/imajinyun/go-knifer/vzip` | ZIP、gzip、zlib 工具：压缩包创建/解压、条目读取、遍历、追加、内存条目和流式压缩。 |
 | `vpoi` | `github.com/imajinyun/go-knifer/vpoi` | Office 文档工具：轻量 Excel XLSX 工作表列表、行读取、行写入、多工作表写入和内存工作簿创建。 |
-| `vdes` | `github.com/imajinyun/go-knifer/vdes` | 脱敏工具：姓名、证件号、电话、地址、邮箱、密码、车牌、银行卡、IP、护照号和信用代码遮罩。 |
+| `vmask` | `github.com/imajinyun/go-knifer/vmask` | 脱敏工具：姓名、证件号、电话、地址、邮箱、密码、车牌、银行卡、IP、护照号和信用代码遮罩。 |
 | `vnum` | `github.com/imajinyun/go-knifer/vnum` | 数字工具：精确加减乘除、舍入模式、格式化、数字判断、不重复随机数、range、阶乘/组合数、最大公约数/最小公倍数、二进制转换、比较、解析、字节转换、表达式计算和奇偶判断。 |
 | `vrand` | `github.com/imajinyun/go-knifer/vrand` | 随机工具：整数、浮点、布尔、字节、字符串、数字字符串和随机元素。 |
 | `vid` | `github.com/imajinyun/go-knifer/vid` | ID 工具：random/simple/fast UUID、MongoDB 风格 ObjectId、Snowflake 生成器与单例 next-id、worker/datacenter id 推导和 NanoId。 |
@@ -129,7 +128,7 @@ facade 规则：
 - `v<domain>` 负责暴露该领域稳定的公共 API。
 - 简单工具包可以手写轻量转发；较大的模块可以保留生成的 `facade.go`。无论哪种方式，
   internal 新增导出 API 时，都应先评估是否需要进入 public facade。
-- `vdes`、`vser`、`vsem`、`vskt`、`vblf`、`vver` 等短命名继续保留，通过上方模块表说明含义，
+- `vmask`、`vsem`、`vskt`、`vblf`、`vver` 等短命名继续保留，通过上方模块表说明含义，
   不再通过改名破坏已有导入路径。
 
 领域边界规则：
@@ -148,7 +147,7 @@ facade 规则：
   namespace 和 XML 专属的 map/bean 转换。
 - `vbean` 负责直接的 struct/map 属性映射、copy properties、tag/alias 匹配和弱类型转换，
   不通过 JSON 序列化绕路。
-- `vobj` 是对象级便利 facade。新增具体领域逻辑应优先落到 `vstr`、`vslice`、`vmap`、`vser`、`vref`
+- `vobj` 是对象级便利 facade。新增具体领域逻辑应优先落到 `vstr`、`vslice`、`vmap`、`vref`
   等明确领域包，只有在对象级聚合有价值时再由 `vobj` 做轻量包装。
 
 数据库工具归属 `internal/db`，并通过 `vdb` 对外暴露；DFA 文本匹配归属 `internal/dfa`，并通过
@@ -158,19 +157,20 @@ facade 规则：
 
 根包 `knifer` 负责跨子包的统一错误契约：错误码分类 `ErrCode`（`knifer.ErrCodeInvalidInput`、
 `ErrCodeNotFound`、`ErrCodeTimeout` 等）、统一的 `knifer.Error` 类型，以及
-`NewError` / `WrapError` / `Errorf` 构造函数。接入的子包返回 `*knifer.Error` 并包裹底层 cause，
-调用方既能按错误码匹配，又能保留错误链：
+`NewError` / `WrapError` / `Errorf` 构造函数。接入的子包可以返回 `*knifer.Error`，也可以在
+既有 error 类型/哨兵上增加按错误码匹配能力，调用方既能按错误码匹配，又能保留错误链：
 
 ```go
 if errors.Is(err, knifer.ErrCodeInvalidInput) { /* ... */ }
 ```
 
-`vcrypto.ValidateAESKey` 是参考接入示范：其错误同时匹配
-`knifer.ErrCodeInvalidInput` 与 `vcrypto.ErrInvalidKey`。
+`vcrypto` 是参考接入示范：校验错误同时匹配 `knifer.ErrCodeInvalidInput` 与既有的
+`vcrypto.ErrInvalidKey` / `ErrInvalidIV` / `ErrInvalidCipherText` 哨兵。
 
-`vjwt`、`vjson`、`vhttp`/`vresty` 也已接入：其错误分别匹配
-`knifer.ErrCodeInvalidInput`（vjwt、vjson）与 `knifer.ErrCodeInternal`（vhttp/vresty），
-同时保留各自的 `*Error` 类型与 cause 错误链。
+`vjwt`、`vjson`、`vcron`、`vjob`、`vpoi`、`vhttp`/`vresty` 也已接入：其错误分别匹配
+`knifer.ErrCodeInvalidInput`（vjwt、vjson、vcron、vjob、vpoi 空 sheet 名）、
+`knifer.ErrCodeNotFound`（vpoi 无 sheet）与 `knifer.ErrCodeInternal`（vhttp/vresty、vskt），
+同时保留各自的 error 类型、哨兵与 cause 错误链。
 
 ## 🚀 安装
 
@@ -529,7 +529,7 @@ func main() {
 
 ### 序列化工具
 
-`vser` 提供基于 gob 的序列化辅助能力，覆盖字节编码、泛型反序列化、
+`vobj` 提供基于 gob 的序列化辅助能力，覆盖字节编码、泛型反序列化、
 深拷贝、接口类型注册，以及可选的解码对象图类型校验。
 
 ```go
@@ -538,7 +538,7 @@ package main
 import (
   "fmt"
 
-  "github.com/imajinyun/go-knifer/vser"
+  "github.com/imajinyun/go-knifer/vobj"
 )
 
 type Profile struct {
@@ -549,9 +549,9 @@ type Profile struct {
 func main() {
   profile := Profile{Name: "go-knifer", Tags: []string{"go", "tool"}}
 
-  data, _ := vser.Serialize(profile)
-  decoded, _ := vser.DeserializeTo[Profile](data, Profile{})
-  cloned := vser.CloneIfPossible(profile)
+  data, _ := vobj.Serialize(profile)
+  decoded, _ := vobj.DeserializeTo[Profile](data, Profile{})
+  cloned := vobj.CloneIfPossible(profile)
 
   fmt.Println(decoded.Name)
   fmt.Println(cloned.Tags)
@@ -607,7 +607,7 @@ func main() {
 
 ### 脱敏工具
 
-`vdes` 提供常见敏感字段的内置遮罩规则，例如姓名、证件号、电话、地址、
+`vmask` 提供常见敏感字段的内置遮罩规则，例如姓名、证件号、电话、地址、
 邮箱、密码、车牌、银行卡、IP 地址、护照号和信用代码。
 
 ```go
@@ -616,14 +616,14 @@ package main
 import (
   "fmt"
 
-  "github.com/imajinyun/go-knifer/vdes"
+  "github.com/imajinyun/go-knifer/vmask"
 )
 
 func main() {
-  fmt.Println(vdes.MobilePhone("18049531999"))
-  fmt.Println(vdes.Email("duandazhi-jack@gmail.com.cn"))
-  fmt.Println(vdes.BankCard("11011111222233333256"))
-  fmt.Println(vdes.Desensitized("PJ1234567", vdes.PassportType))
+  fmt.Println(vmask.MobilePhone("18049531999"))
+  fmt.Println(vmask.Email("duandazhi-jack@gmail.com.cn"))
+  fmt.Println(vmask.BankCard("11011111222233333256"))
+  fmt.Println(vmask.Masked("PJ1234567", vmask.PassportType))
 }
 ```
 

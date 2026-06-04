@@ -14,18 +14,34 @@ import (
 	"crypto/x509"
 	"encoding/hex"
 	"encoding/pem"
-	"errors"
 	"hash"
 	"io"
+
+	knifer "github.com/imajinyun/go-knifer"
 )
+
+type sentinel struct {
+	code knifer.ErrCode
+	msg  string
+}
+
+func (e *sentinel) Error() string { return e.msg }
+
+func (e *sentinel) Is(target error) bool {
+	if e == target {
+		return true
+	}
+	code, ok := target.(knifer.ErrCode)
+	return ok && e.code == code
+}
 
 var (
 	// ErrInvalidKey indicates an invalid cryptographic key.
-	ErrInvalidKey = errors.New("invalid key")
+	ErrInvalidKey error = &sentinel{code: knifer.ErrCodeInvalidInput, msg: "invalid key"}
 	// ErrInvalidIV indicates an invalid initialization vector.
-	ErrInvalidIV = errors.New("invalid iv")
+	ErrInvalidIV error = &sentinel{code: knifer.ErrCodeInvalidInput, msg: "invalid iv"}
 	// ErrInvalidCipherText indicates invalid encrypted data.
-	ErrInvalidCipherText = errors.New("invalid cipher text")
+	ErrInvalidCipherText error = &sentinel{code: knifer.ErrCodeInvalidInput, msg: "invalid cipher text"}
 )
 
 // MD5Hex returns the MD5 digest of data in lower-case hex form.

@@ -80,8 +80,39 @@ func CloneByStream[T any](src T) (T, error) { return objimpl.CloneByStream(src) 
 // Serialize encodes obj with gob.
 func Serialize[T any](obj T) ([]byte, error) { return objimpl.Serialize(obj) }
 
+// SerializeOrNil encodes obj with gob and returns nil when encoding fails.
+func SerializeOrNil[T any](obj T) []byte { return objimpl.SerializeOrNil(obj) }
+
 // Deserialize decodes gob data into out, which must be a pointer.
-func Deserialize(data []byte, out any) error { return objimpl.Deserialize(data, out) }
+//
+// When acceptedTypes is not empty, the decoded object graph must contain only
+// built-in container/scalar types plus values assignable to one of the accepted
+// types. Accepted entries may be concrete values, pointers, or reflect.Type.
+func Deserialize(data []byte, out any, acceptedTypes ...any) error {
+	return objimpl.Deserialize(data, out, acceptedTypes...)
+}
+
+// DeserializeTo decodes gob data into a new value.
+func DeserializeTo[T any](data []byte, acceptedTypes ...any) (T, error) {
+	return objimpl.DeserializeTo[T](data, acceptedTypes...)
+}
+
+// MustDeserialize decodes gob data into a new value and panics on failure.
+func MustDeserialize[T any](data []byte, acceptedTypes ...any) T {
+	return objimpl.MustDeserialize[T](data, acceptedTypes...)
+}
+
+// Register records a concrete type for gob interface encoding.
+func Register(value any) { objimpl.Register(value) }
+
+// RegisterName records a concrete type with a custom gob name.
+func RegisterName(name string, value any) { objimpl.RegisterName(name, value) }
+
+// ValidateAcceptedTypes checks whether value only contains built-in safe types
+// plus values assignable to one of acceptedTypes.
+func ValidateAcceptedTypes(value any, acceptedTypes ...any) error {
+	return objimpl.ValidateAcceptedTypes(value, acceptedTypes...)
+}
 
 // IsBasicType reports whether object is a built-in scalar type or string.
 func IsBasicType(object any) bool { return objimpl.IsBasicType(object) }

@@ -1,4 +1,4 @@
-package desensitize
+package mask
 
 import (
 	"strings"
@@ -11,13 +11,13 @@ type Type int
 const (
 	// UserID masks a user ID to 0.
 	UserID Type = iota
-	// ChineseName masks all but the first character.
+	// ChineseNameType masks all but the first character.
 	ChineseNameType
 	// IDCard masks identity card numbers.
 	IDCard
-	// FixedPhone masks fixed-line phone numbers.
+	// FixedPhoneType masks fixed-line phone numbers.
 	FixedPhoneType
-	// MobilePhone masks mobile phone numbers.
+	// MobilePhoneType masks mobile phone numbers.
 	MobilePhoneType
 	// AddressType masks address tail content.
 	AddressType
@@ -45,8 +45,8 @@ const (
 	ClearToEmptyType
 )
 
-// Desensitized masks str with the built-in strategy represented by typ.
-func Desensitized(str string, typ Type) string {
+// Masked masks str with the built-in strategy represented by typ.
+func Masked(str string, typ Type) string {
 	if strings.TrimSpace(str) == "" {
 		return ""
 	}
@@ -88,12 +88,12 @@ func Desensitized(str string, typ Type) string {
 	}
 }
 
-// DesensitizedPtr masks str and returns nil for ClearToNullType.
-func DesensitizedPtr(str string, typ Type) *string {
+// MaskedPtr masks str and returns nil for ClearToNullType.
+func MaskedPtr(str string, typ Type) *string {
 	if typ == ClearToNullType {
 		return nil
 	}
-	out := Desensitized(str, typ)
+	out := Masked(str, typ)
 	return &out
 }
 
@@ -230,9 +230,9 @@ func IPv4(ipv4 string) string {
 // IPv6 masks all IPv6 parts except the first one.
 func IPv6(ipv6 string) string {
 	if idx := strings.IndexRune(ipv6, ':'); idx >= 0 {
-		return ipv6[:idx] + ":*:*:*:*:*:*:*"
+		return ipv6[:idx] + ":*:*:*:*:*:*:*:*"
 	}
-	return ipv6 + ":*:*:*:*:*:*:*"
+	return ipv6 + ":*:*:*:*:*:*:*:*"
 }
 
 // Passport masks a passport number by keeping first two and last two characters.

@@ -12,6 +12,8 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+
+	"github.com/imajinyun/go-knifer/internal/httpx/internal/shared"
 )
 
 // HTTPResponse wraps http.Response and provides convenient readers, aligned with the utility toolkit-http HttpResponse.
@@ -264,17 +266,8 @@ func (r *HTTPResponse) writeBodyTo(w io.Writer) (int64, error) {
 }
 
 func (r *HTTPResponse) fileName() string {
-	if cd := r.Header(string(HeaderContentDisposition)); cd != "" {
-		if i := strings.Index(strings.ToLower(cd), "filename="); i >= 0 {
-			name := strings.TrimSpace(cd[i+len("filename="):])
-			name = strings.Trim(name, `"`)
-			if idx := strings.Index(name, ";"); idx >= 0 {
-				name = name[:idx]
-			}
-			if name != "" {
-				return name
-			}
-		}
+	if name := shared.FilenameFromContentDisposition(r.Header(string(HeaderContentDisposition))); name != "" {
+		return name
 	}
 	if r.resp != nil && r.resp.Request != nil && r.resp.Request.URL != nil {
 		_, name := filepath.Split(r.resp.Request.URL.Path)

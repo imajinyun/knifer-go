@@ -1,9 +1,14 @@
 package socket
 
-import "fmt"
+import (
+	"fmt"
+
+	knifer "github.com/imajinyun/go-knifer"
+)
 
 // SocketRuntimeError represents a runtime error during socket communication.
 type SocketRuntimeError struct {
+	Code  knifer.ErrCode
 	Msg   string
 	Cause error
 }
@@ -30,22 +35,28 @@ func (e *SocketRuntimeError) Unwrap() error {
 	return e.Cause
 }
 
+// Is supports errors.Is(err, knifer.ErrCodeXxx) matching by error code.
+func (e *SocketRuntimeError) Is(target error) bool {
+	code, ok := target.(knifer.ErrCode)
+	return ok && e.Code == code
+}
+
 // NewSocketError creates a SocketRuntimeError from any error.
 func NewSocketError(err error) *SocketRuntimeError {
 	if err == nil {
 		return nil
 	}
-	return &SocketRuntimeError{Msg: err.Error(), Cause: err}
+	return &SocketRuntimeError{Code: knifer.ErrCodeInternal, Msg: err.Error(), Cause: err}
 }
 
 // NewSocketErrorMsg creates a SocketRuntimeError from a message.
 func NewSocketErrorMsg(msg string) *SocketRuntimeError {
-	return &SocketRuntimeError{Msg: msg}
+	return &SocketRuntimeError{Code: knifer.ErrCodeInternal, Msg: msg}
 }
 
 // NewSocketErrorf creates a formatted SocketRuntimeError.
 func NewSocketErrorf(format string, args ...any) *SocketRuntimeError {
-	return &SocketRuntimeError{Msg: fmt.Sprintf(format, args...)}
+	return &SocketRuntimeError{Code: knifer.ErrCodeInternal, Msg: fmt.Sprintf(format, args...)}
 }
 
 // WrapSocketError wraps an underlying error with an additional message.
@@ -53,5 +64,5 @@ func WrapSocketError(err error, msg string) *SocketRuntimeError {
 	if err == nil {
 		return nil
 	}
-	return &SocketRuntimeError{Msg: msg, Cause: err}
+	return &SocketRuntimeError{Code: knifer.ErrCodeInternal, Msg: msg, Cause: err}
 }

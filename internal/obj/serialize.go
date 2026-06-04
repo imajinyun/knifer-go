@@ -1,4 +1,4 @@
-package serialize
+package obj
 
 import (
 	"bytes"

@@ -51,10 +51,8 @@ please follow the conventions below. Most of them are enforced by CI
 | Public | Full domain | internal |
 | --- | --- | --- |
 | vblf | bloomfilter | internal/bloomfilter |
-| vdes | desensitize | internal/desensitize |
 | verr | errx (extended error) | internal/errx |
 | vsem | semaphore | internal/semaphore |
-| vser | serialize | internal/serialize |
 | vset | sets | internal/sets |
 | vskt | socket | internal/socket |
 | vsys | system | internal/system |

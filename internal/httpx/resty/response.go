@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/imajinyun/go-knifer/internal/httpx/internal/shared"
 	grestry "resty.dev/v3"
 )
 
@@ -208,17 +209,8 @@ func (r *HTTPResponse) Close() error {
 func (r *HTTPResponse) RestyRaw() *grestry.Response { return r.resp }
 
 func (r *HTTPResponse) fileName() string {
-	if cd := r.Header(string(HeaderContentDisposition)); cd != "" {
-		if i := strings.Index(strings.ToLower(cd), "filename="); i >= 0 {
-			name := strings.TrimSpace(cd[i+len("filename="):])
-			name = strings.Trim(name, `"`)
-			if idx := strings.Index(name, ";"); idx >= 0 {
-				name = name[:idx]
-			}
-			if name != "" {
-				return name
-			}
-		}
+	if name := shared.FilenameFromContentDisposition(r.Header(string(HeaderContentDisposition))); name != "" {
+		return name
 	}
 	if r.resp != nil && r.resp.Request != nil {
 		requestURL := r.resp.Request.URL
