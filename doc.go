@@ -85,14 +85,16 @@
 //
 // Subpackages are independent from each other. The root package exposes no
 // business APIs; it only defines the cross-cutting error contract (ErrCode,
-// Error and the New/Wrap/Errorf constructors) that subpackages may use to
-// classify failures consistently.
+// Error, CodeCarrier, CodeOf and the New/Wrap/Errorf constructors) that
+// subpackages may use to classify failures consistently.
 //
 // Callers can match failures by code regardless of the originating subpackage:
 //
 //	if errors.Is(err, knifer.ErrCodeInvalidInput) { ... }
+//	if code, ok := knifer.CodeOf(err); ok { ... }
 //
-// Subpackages that participate should return *knifer.Error and wrap any
+// Subpackages that participate should return *knifer.Error or implement
+// CodeCarrier on their existing error types/sentinels while wrapping any
 // underlying cause so the standard error chain is preserved.
 //
 // The project follows an internal implementation plus public facade layout:

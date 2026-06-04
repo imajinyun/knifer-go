@@ -156,12 +156,14 @@ facade 规则：
 ### 错误契约
 
 根包 `knifer` 负责跨子包的统一错误契约：错误码分类 `ErrCode`（`knifer.ErrCodeInvalidInput`、
-`ErrCodeNotFound`、`ErrCodeTimeout` 等）、统一的 `knifer.Error` 类型，以及
-`NewError` / `WrapError` / `Errorf` 构造函数。接入的子包可以返回 `*knifer.Error`，也可以在
-既有 error 类型/哨兵上增加按错误码匹配能力，调用方既能按错误码匹配，又能保留错误链：
+`ErrCodeNotFound`、`ErrCodeTimeout` 等）、统一的 `knifer.Error` 类型、`CodeCarrier` 接口、
+`CodeOf` 提取函数，以及 `NewError` / `WrapError` / `Errorf` 构造函数。接入的子包可以返回
+`*knifer.Error`，也可以在既有 error 类型/哨兵上增加按错误码匹配能力，调用方既能按错误码匹配或提取，
+又能保留错误链：
 
 ```go
 if errors.Is(err, knifer.ErrCodeInvalidInput) { /* ... */ }
+if code, ok := knifer.CodeOf(err); ok { /* ... */ }
 ```
 
 `vcrypto` 是参考接入示范：校验错误同时匹配 `knifer.ErrCodeInvalidInput` 与既有的

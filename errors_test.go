@@ -44,6 +44,21 @@ func TestErrorAs(t *testing.T) {
 	}
 }
 
+func TestCodeOf(t *testing.T) {
+	if code, ok := knifer.CodeOf(knifer.NewError(knifer.ErrCodeNotFound, "missing")); !ok || code != knifer.ErrCodeNotFound {
+		t.Fatalf("CodeOf(NewError) = %q, %v", code, ok)
+	}
+
+	wrapped := fmt.Errorf("context: %w", knifer.WrapError(knifer.ErrCodeInternal, "boom", errors.New("root")))
+	if code, ok := knifer.CodeOf(wrapped); !ok || code != knifer.ErrCodeInternal {
+		t.Fatalf("CodeOf(wrapped) = %q, %v", code, ok)
+	}
+
+	if code, ok := knifer.CodeOf(nil); ok || code != "" {
+		t.Fatalf("CodeOf(nil) = %q, %v", code, ok)
+	}
+}
+
 func TestErrorString(t *testing.T) {
 	if got := knifer.NewError(knifer.ErrCodeNotFound, "missing").Error(); got != "GK_NOT_FOUND: missing" {
 		t.Fatalf("Error() = %q", got)

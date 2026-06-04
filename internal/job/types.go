@@ -13,6 +13,8 @@ type sentinel struct {
 
 func (e *sentinel) Error() string { return e.msg }
 
+func (e *sentinel) ErrorCode() knifer.ErrCode { return e.code }
+
 func (e *sentinel) Is(target error) bool {
 	if e == target {
 		return true

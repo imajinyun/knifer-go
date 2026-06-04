@@ -30,6 +30,9 @@ func (e *JSONError) Error() string {
 	return e.Msg
 }
 
+// ErrorCode returns the go-knifer error code.
+func (e *JSONError) ErrorCode() knifer.ErrCode { return e.Code }
+
 // Unwrap 支持 errors.Is/As。
 func (e *JSONError) Unwrap() error { return e.Cause }
 

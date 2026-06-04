@@ -171,13 +171,15 @@ helpers belong to `internal/poi` and are exposed through `vpoi`.
 
 The root package `knifer` owns the cross-cutting error contract: the `ErrCode`
 classifier (`knifer.ErrCodeInvalidInput`, `ErrCodeNotFound`, `ErrCodeTimeout`,
-…), the unified `knifer.Error` type, and the `NewError` / `WrapError` / `Errorf`
-constructors. Subpackages that opt in return `*knifer.Error` or add code-aware
-matching to their existing error types/sentinels, so callers can match by code
+…), the unified `knifer.Error` type, the `CodeCarrier` interface, the `CodeOf`
+extractor, and the `NewError` / `WrapError` / `Errorf` constructors.
+Subpackages that opt in return `*knifer.Error` or add code-aware matching to
+their existing error types/sentinels, so callers can match or extract by code
 while keeping the chain:
 
 ```go
 if errors.Is(err, knifer.ErrCodeInvalidInput) { /* ... */ }
+if code, ok := knifer.CodeOf(err); ok { /* ... */ }
 ```
 
 `vcrypto` is a reference integration: validation errors match both

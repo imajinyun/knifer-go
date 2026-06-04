@@ -21,6 +21,9 @@ func (e *JWTError) Error() string {
 	return e.Msg
 }
 
+// ErrorCode returns the go-knifer error code.
+func (e *JWTError) ErrorCode() knifer.ErrCode { return e.Code }
+
 // Unwrap 返回内部错误。
 func (e *JWTError) Unwrap() error { return e.Err }
 

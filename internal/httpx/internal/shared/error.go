@@ -21,6 +21,9 @@ func (e *HTTPError) Error() string {
 	return e.Msg
 }
 
+// ErrorCode returns the go-knifer error code.
+func (e *HTTPError) ErrorCode() knifer.ErrCode { return e.Code }
+
 // Unwrap returns the underlying error.
 func (e *HTTPError) Unwrap() error { return e.Cause }
 

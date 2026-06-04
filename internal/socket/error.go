@@ -27,6 +27,14 @@ func (e *SocketRuntimeError) Error() string {
 	return e.Msg
 }
 
+// ErrorCode returns the go-knifer error code.
+func (e *SocketRuntimeError) ErrorCode() knifer.ErrCode {
+	if e == nil {
+		return ""
+	}
+	return e.Code
+}
+
 // Unwrap supports errors.Is and errors.As.
 func (e *SocketRuntimeError) Unwrap() error {
 	if e == nil {

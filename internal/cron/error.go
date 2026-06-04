@@ -30,6 +30,9 @@ func (e *CronError) Error() string {
 	return e.Msg
 }
 
+// ErrorCode returns the go-knifer error code.
+func (e *CronError) ErrorCode() knifer.ErrCode { return e.Code }
+
 // Unwrap supports errors.Is and errors.As.
 func (e *CronError) Unwrap() error { return e.Cause }
 

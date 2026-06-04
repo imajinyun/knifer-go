@@ -1,6 +1,9 @@
 package knifer
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 // ErrCode is a stable, cross-subpackage error classifier.
 //
@@ -45,6 +48,14 @@ type Error struct {
 	Cause error
 }
 
+// CodeCarrier is implemented by errors that can expose a go-knifer error code.
+//
+// Custom subpackage errors can implement this interface while preserving their
+// own concrete type and sentinel semantics.
+type CodeCarrier interface {
+	ErrorCode() ErrCode
+}
+
 // Error returns "CODE: Message" or "CODE: Message: cause" when Cause is set.
 func (e *Error) Error() string {
 	switch {
@@ -66,6 +77,14 @@ func (e *Error) Unwrap() error {
 		return nil
 	}
 	return e.Cause
+}
+
+// ErrorCode returns the error code carried by e.
+func (e *Error) ErrorCode() ErrCode {
+	if e == nil {
+		return ""
+	}
+	return e.Code
 }
 
 // Is reports whether target matches this error.
@@ -100,4 +119,33 @@ func WrapError(code ErrCode, message string, cause error) *Error {
 // Errorf builds an *Error whose message is formatted with fmt.Sprintf.
 func Errorf(code ErrCode, format string, args ...any) *Error {
 	return &Error{Code: code, Message: fmt.Sprintf(format, args...)}
+}
+
+// CodeOf extracts a go-knifer error code from err.
+//
+// It first looks for an error implementing CodeCarrier, then falls back to the
+// predefined base ErrCode values through errors.Is. The fallback keeps sentinel
+// errors that only implement Is(target ErrCode) discoverable.
+func CodeOf(err error) (ErrCode, bool) {
+	if err == nil {
+		return "", false
+	}
+	var carrier CodeCarrier
+	if errors.As(err, &carrier) {
+		if code := carrier.ErrorCode(); code != "" {
+			return code, true
+		}
+	}
+	for _, code := range []ErrCode{
+		ErrCodeInvalidInput,
+		ErrCodeNotFound,
+		ErrCodeUnsupported,
+		ErrCodeTimeout,
+		ErrCodeInternal,
+	} {
+		if errors.Is(err, code) {
+			return code, true
+		}
+	}
+	return "", false
 }
