@@ -4,6 +4,7 @@ package validator
 import (
 	"regexp"
 
+	identityimpl "github.com/imajinyun/go-knifer/internal/identity"
 	netimpl "github.com/imajinyun/go-knifer/internal/net"
 	urlimpl "github.com/imajinyun/go-knifer/internal/url"
 )
@@ -26,6 +27,12 @@ func IsURL(s string) bool { return urlimpl.IsAbsoluteURL(s) }
 
 // IsIPv4 reports whether s is an IPv4 address.
 func IsIPv4(s string) bool { return netimpl.IsIPv4(s) }
+
+// IsIPv6 reports whether s is an IPv6 address.
+func IsIPv6(s string) bool { return netimpl.IsIPv6(s) }
+
+// IsIDCard reports whether s is a valid identity card number.
+func IsIDCard(s string) bool { return identityimpl.IsValidIDCard(s) }
 
 // IsChinese reports whether s consists only of Chinese Han characters.
 func IsChinese(s string) bool { return s != "" && rxChinese.MatchString(s) }

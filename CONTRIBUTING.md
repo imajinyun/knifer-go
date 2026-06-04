@@ -32,8 +32,12 @@ please follow the conventions below. Most of them are enforced by CI
    `internal/common`, or a domain package such as `internal/str`).
 3. **Every `v<domain>` has a `doc.go`** with a package comment.
 4. **Every `v<domain>` imports at least one `internal/` package** that exists.
+5. **Internal packages never import public facades.** The dependency direction
+   is always `v* -> internal/*`, never `internal/* -> v*`.
+6. **Production `panic` is exceptional.** New panics are only allowed for
+   explicit `MustXxx` / `PanicXxx` APIs or documented compatibility cases.
 
-`bin/check_arch.sh` verifies rules 2–4 and runs in CI.
+`bin/check_arch.sh` verifies these architecture rules and runs in CI.
 
 ## Naming
 
@@ -76,6 +80,35 @@ of truth).
 - Keep exported identifiers stable; renaming a public symbol is a breaking
   change (see Versioning).
 
+### New public API checklist
+
+Before adding or changing a public API, answer these questions in the PR/MR:
+
+1. **Domain owner:** Which `v<domain>` package owns this capability? If a clear
+   owner already exists, extend it instead of creating a sibling package.
+2. **Implementation boundary:** Is the real logic in `internal/<domain>` and is
+   the `v*` layer a thin facade only?
+3. **Root package safety:** Does the change keep the root `knifer` package free
+   of business helpers? Root additions should be limited to cross-cutting
+   contracts such as errors.
+4. **Dependency direction:** Does the implementation avoid importing public
+   `v*` packages? Shared code should move downward into `internal/*`.
+5. **Error behavior:** For recoverable failures, does the API return `error` and
+   participate in the root error contract where appropriate (`ErrCode`,
+   `CodeCarrier`, `CodeOf`)?
+6. **Panic behavior:** If the API can panic, is it named `MustXxx`/`PanicXxx` or
+   explicitly documented as a compatibility panic?
+7. **Type exposure:** Are concrete stateful structs wrapped by the facade when
+   future compatibility requires control over fields/methods? Prefer aliases
+   only for stable interfaces, function types, and option/value types.
+8. **Documentation:** Does every new public package have `doc.go`, and does
+   every new exported identifier have a useful doc comment starting with its
+   name?
+9. **Tests/examples:** Are internal behavior, facade compatibility, error
+   matching, and at least one common usage path covered by tests or examples?
+10. **Dependencies:** Does the API avoid introducing heavyweight dependencies
+    into otherwise lightweight packages?
+
 ## Error contract
 
 The root package owns a thin, dependency-free error contract in `errors.go`:
@@ -85,13 +118,16 @@ The root package owns a thin, dependency-free error contract in `errors.go`:
   `ErrCodeNotFound`, `ErrCodeUnsupported`, `ErrCodeTimeout`, `ErrCodeInternal`.
 - `Error{Code, Message, Cause}` with `Error`/`Unwrap`/`Is`, plus
   `NewError` / `WrapError` / `Errorf`.
+- `CodeCarrier` and `CodeOf` — a small extraction contract for existing custom
+  errors and sentinels that need to expose a stable code without changing their
+  concrete type.
 
 Packages that return rich errors should participate so callers can write
 `errors.Is(err, knifer.ErrCodeXxx)` while preserving the cause chain. Custom
-error types (e.g. `JWTError`, `JSONError`, `HTTPError`) add a `Code` field and
-an `Is` method that matches an `ErrCode`; wrap underlying causes with their
-`Cause` field. Logging uses the existing `vlog` package — do not add a second
-logging abstraction.
+error types (e.g. `JWTError`, `JSONError`, `HTTPError`) add a `Code` field,
+`ErrorCode`, and an `Is` method that matches an `ErrCode`; wrap underlying
+causes with their `Cause` field. Logging uses the existing `vlog` package — do
+not add a second logging abstraction.
 
 ## Tests & examples
 

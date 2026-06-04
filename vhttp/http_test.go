@@ -46,7 +46,8 @@ func TestFacadeRequestOptions(t *testing.T) {
 	}))
 	defer server.Close()
 
-	resp := vhttp.Get(server.URL,
+	resp := vhttp.Get(
+		server.URL,
 		vhttp.WithHeader("X-Opt", "yes"),
 		vhttp.WithUserAgent("vhttp-test/1.0"),
 	).Execute()

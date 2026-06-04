@@ -57,7 +57,7 @@ Not sure which package to import? Start from what you want to do:
 | Format/parse dates, offsets, day ranges | `vdate` |
 | Send HTTP requests (standard library) | `vhttp` |
 | Send HTTP requests (Resty-based) | `vresty` |
-| Validate email/mobile/IP, etc. | `vvalidator` |
+| Validate email/mobile/IP, etc. | `vvalid` |
 | Mask sensitive data | `vmask` |
 | JWT sign/verify | `vjwt` |
 | Schedule cron tasks | `vcron` |
@@ -92,7 +92,7 @@ The project follows an “internal implementation + public facade” layout: `in
 | `vid` | `github.com/imajinyun/go-knifer/vid` | ID helpers: random/simple/fast UUIDs, MongoDB-style ObjectId, Snowflake generators and singleton next-id helpers, worker/datacenter id derivation, and NanoId generation. |
 | `vident` | `github.com/imajinyun/go-knifer/vident` | Identity helpers: mainland China ID card 15/18-digit conversion, validation, check code, birthday/age/gender extraction, province/city/district code parsing, masking, and Hong Kong/Macau/Taiwan card validation. |
 | `vhash` | `github.com/imajinyun/go-knifer/vhash` | Non-cryptographic hash helpers: additive, FNV, and a set of classic string hashes (RS, JS, PJW, ELF, BKDR, SDBM, DJB, AP, HF, HFIP, TianL, Java default). |
-| `vvalidator` | `github.com/imajinyun/go-knifer/vvalidator` | Validation helpers: email, mobile, URL, IPv4, Chinese text, and number string checks. |
+| `vvalid` | `github.com/imajinyun/go-knifer/vvalid` | Validation helpers: email, mobile, URL, IPv4/IPv6, ID card, Chinese text, and number string checks. |
 | `vtpl` | `github.com/imajinyun/go-knifer/vtpl` | Go html/template rendering helpers. |
 | `vregex` | `github.com/imajinyun/go-knifer/vregex` | Regular-expression helpers: matching, group extraction, named groups, deletion, counting, index lookup, template/function replacement, and escaping. |
 | `vbool` | `github.com/imajinyun/go-knifer/vbool` | Boolean helpers: negate, bool-to-int, all/any checks. |
@@ -130,9 +130,9 @@ Facade rules:
 - Small utility packages may use hand-written thin facades; larger modules may
   keep generated `facade.go` files. In either case, newly exported internal APIs
   should be reviewed before being exposed publicly.
-- Facades may keep short names such as `vmask`, `vsem`, `vskt`, `vblf`,
-  and `vver`; their meaning is documented in the module table above instead of
-  changing established import paths.
+- Facades may keep short names such as `vvalid`, `vmask`, `vsem`, `vskt`,
+  `vblf`, and `vver`; their meaning is documented in the module table above
+  instead of changing established import paths.
 
 Domain boundary rules:
 
@@ -165,7 +165,10 @@ Domain boundary rules:
 
 Database helpers belong to `internal/db` and are exposed through `vdb`; DFA text
 matching belongs to `internal/dfa` and is exposed through `vdfa`; office-document
-helpers belong to `internal/poi` and are exposed through `vpoi`.
+helpers belong to `internal/poi` and are exposed through `vpoi`. Cross-domain
+input validators belong to `internal/validator` and are exposed through
+`vvalid`; domain-specific parsing and richer operations still stay in their
+domain packages such as `vident`, `vnet`, and `vurl`.
 
 ### Error contract
 
@@ -234,6 +237,33 @@ func main() {
 
   fmt.Println(obj.GetString("name"))
   fmt.Println(obj.ToStringPretty())
+}
+```
+
+### Validation helpers
+
+`vvalid` provides a short public entry point for common input checks. It keeps
+the frequently used boolean validators together while delegating the actual
+domain logic to the corresponding internal packages.
+
+```go
+package main
+
+import (
+  "fmt"
+
+  "github.com/imajinyun/go-knifer/vvalid"
+)
+
+func main() {
+  fmt.Println(vvalid.IsEmail("a@b.com"))
+  fmt.Println(vvalid.IsMobile("13812345678"))
+  fmt.Println(vvalid.IsURL("https://example.com"))
+  fmt.Println(vvalid.IsIPv4("127.0.0.1"))
+  fmt.Println(vvalid.IsIPv6("2001:db8::1"))
+  fmt.Println(vvalid.IsIDCard("11010519491231002X"))
+  fmt.Println(vvalid.IsChinese("你好"))
+  fmt.Println(vvalid.IsNumberStr("-3.14"))
 }
 ```
 

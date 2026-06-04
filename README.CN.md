@@ -57,7 +57,7 @@ text := vcrypto.MD5Hex("hello")
 | 日期格式化/解析、偏移、天数区间 | `vdate` |
 | 发起 HTTP 请求（标准库） | `vhttp` |
 | 发起 HTTP 请求（基于 Resty） | `vresty` |
-| 校验邮箱/手机号/IP 等 | `vvalidator` |
+| 校验邮箱/手机号/IP 等 | `vvalid` |
 | 敏感数据脱敏 | `vmask` |
 | JWT 签发/校验 | `vjwt` |
 | 定时任务调度 | `vcron` |
@@ -92,7 +92,7 @@ text := vcrypto.MD5Hex("hello")
 | `vid` | `github.com/imajinyun/go-knifer/vid` | ID 工具：random/simple/fast UUID、MongoDB 风格 ObjectId、Snowflake 生成器与单例 next-id、worker/datacenter id 推导和 NanoId。 |
 | `vident` | `github.com/imajinyun/go-knifer/vident` | 身份标识工具：中国大陆身份证 15/18 位转换、合法性校验、校验码、生日/年龄/性别提取、省市区编码解析、遮罩，以及港澳台证件校验。 |
 | `vhash` | `github.com/imajinyun/go-knifer/vhash` | 非加密 Hash 工具：Additive、FNV，以及一组经典字符串哈希（RS、JS、PJW、ELF、BKDR、SDBM、DJB、AP、HF、HFIP、TianL、Java 默认）。 |
-| `vvalidator` | `github.com/imajinyun/go-knifer/vvalidator` | 校验工具：邮箱、手机号、URL、IPv4、中文和数字字符串。 |
+| `vvalid` | `github.com/imajinyun/go-knifer/vvalid` | 校验工具：邮箱、手机号、URL、IPv4/IPv6、身份证、中文和数字字符串。 |
 | `vtpl` | `github.com/imajinyun/go-knifer/vtpl` | Go html/template 渲染工具。 |
 | `vregex` | `github.com/imajinyun/go-knifer/vregex` | 正则工具：匹配、分组提取、命名分组、删除、计数、索引定位、模板/函数替换和元字符转义。 |
 | `vbool` | `github.com/imajinyun/go-knifer/vbool` | 布尔工具：取反、转 int、全真/任一为真判断。 |
@@ -128,7 +128,7 @@ facade 规则：
 - `v<domain>` 负责暴露该领域稳定的公共 API。
 - 简单工具包可以手写轻量转发；较大的模块可以保留生成的 `facade.go`。无论哪种方式，
   internal 新增导出 API 时，都应先评估是否需要进入 public facade。
-- `vmask`、`vsem`、`vskt`、`vblf`、`vver` 等短命名继续保留，通过上方模块表说明含义，
+- `vvalid`、`vmask`、`vsem`、`vskt`、`vblf`、`vver` 等短命名继续保留，通过上方模块表说明含义，
   不再通过改名破坏已有导入路径。
 
 领域边界规则：
@@ -151,7 +151,8 @@ facade 规则：
   等明确领域包，只有在对象级聚合有价值时再由 `vobj` 做轻量包装。
 
 数据库工具归属 `internal/db`，并通过 `vdb` 对外暴露；DFA 文本匹配归属 `internal/dfa`，并通过
-`vdfa` 对外暴露；Office 文档工具归属 `internal/poi`，并通过 `vpoi` 对外暴露。
+`vdfa` 对外暴露；Office 文档工具归属 `internal/poi`，并通过 `vpoi` 对外暴露。跨领域通用输入校验归属
+`internal/validator`，并通过 `vvalid` 对外暴露；领域内解析和更丰富的操作仍留在 `vident`、`vnet`、`vurl` 等领域包。
 
 ### 错误契约
 
@@ -216,6 +217,31 @@ func main() {
 
   fmt.Println(obj.GetString("name"))
   fmt.Println(obj.ToStringPretty())
+}
+```
+
+### 校验工具
+
+`vvalid` 提供常用输入校验的短 public 入口，把高频布尔校验集中到一个包中，具体领域能力仍委托给对应的内部实现。
+
+```go
+package main
+
+import (
+  "fmt"
+
+  "github.com/imajinyun/go-knifer/vvalid"
+)
+
+func main() {
+  fmt.Println(vvalid.IsEmail("a@b.com"))
+  fmt.Println(vvalid.IsMobile("13812345678"))
+  fmt.Println(vvalid.IsURL("https://example.com"))
+  fmt.Println(vvalid.IsIPv4("127.0.0.1"))
+  fmt.Println(vvalid.IsIPv6("2001:db8::1"))
+  fmt.Println(vvalid.IsIDCard("11010519491231002X"))
+  fmt.Println(vvalid.IsChinese("你好"))
+  fmt.Println(vvalid.IsNumberStr("-3.14"))
 }
 ```
 
