@@ -54,10 +54,16 @@ func TestFacadeSchedulerLifecycle(t *testing.T) {
 
 func TestFacadeSchedulerWithOptions(t *testing.T) {
 	loc := time.FixedZone("facade", 8*60*60)
+	now := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
 	s := vcron.NewSchedulerWithOptions(
 		vcron.WithLocation(loc),
 		vcron.WithMatchSecond(true),
 		vcron.WithIDGenerator(func() string { return "facade-task" }),
+		vcron.WithClock(func() time.Time { return now }),
+		vcron.WithSleeper(func(d time.Duration, stopCh <-chan struct{}) bool {
+			now = now.Add(d)
+			return true
+		}),
 		vcron.WithExecutor(func(fn func()) { fn() }),
 	)
 	if s.Config().Location != loc {

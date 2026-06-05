@@ -11,6 +11,7 @@ import (
 	"crypto/sha512"
 	"encoding/asn1"
 	"hash"
+	"io"
 	"math/big"
 	"strings"
 )
@@ -30,17 +31,69 @@ const (
 
 // rsaSigner 对应 the utility toolkit AsymmetricJWTSigner（仅限 RSA / RSA-PSS）。
 type rsaSigner struct {
-	alg    string
-	pub    *rsa.PublicKey
-	priv   *rsa.PrivateKey
-	hashID crypto.Hash
-	usePSS bool
+	alg        string
+	pub        *rsa.PublicKey
+	priv       *rsa.PrivateKey
+	hashID     crypto.Hash
+	usePSS     bool
+	random     io.Reader
+	pssOptions *rsa.PSSOptions
+}
+
+type signerConfig struct {
+	random     io.Reader
+	pssOptions *rsa.PSSOptions
+}
+
+// SignerOption customizes asymmetric JWT signers.
+type SignerOption func(*signerConfig)
+
+// WithSignerRandomReader sets the random source used by RSA-PSS and ECDSA signing.
+func WithSignerRandomReader(reader io.Reader) SignerOption {
+	return func(c *signerConfig) { c.random = reader }
+}
+
+// WithRSAPSSOptions sets RSA-PSS options used by RSA-PSS signing and verification.
+func WithRSAPSSOptions(opts *rsa.PSSOptions) SignerOption {
+	return func(c *signerConfig) {
+		if opts == nil {
+			c.pssOptions = nil
+			return
+		}
+		clone := *opts
+		c.pssOptions = &clone
+	}
+}
+
+func applySignerOptions(opts []SignerOption) signerConfig {
+	cfg := signerConfig{random: rand.Reader, pssOptions: defaultPSSOptions()}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.random == nil {
+		cfg.random = rand.Reader
+	}
+	if cfg.pssOptions == nil {
+		cfg.pssOptions = defaultPSSOptions()
+	}
+	return cfg
+}
+
+func defaultPSSOptions() *rsa.PSSOptions {
+	return &rsa.PSSOptions{SaltLength: rsa.PSSSaltLengthEqualsHash}
 }
 
 // NewRSASigner 创建 RSA 签名器（PKCS1v15）。
 // algorithm: RS256 / RS384 / RS512。
 // privKey、pubKey 至少其一不为 nil；签名需要 priv，验签需要 pub。
 func NewRSASigner(algorithm string, priv *rsa.PrivateKey, pub *rsa.PublicKey) (JWTSigner, error) {
+	return NewRSASignerWithOptions(algorithm, priv, pub)
+}
+
+// NewRSASignerWithOptions 创建可配置 RSA 签名器（PKCS1v15）。
+func NewRSASignerWithOptions(algorithm string, priv *rsa.PrivateKey, pub *rsa.PublicKey, opts ...SignerOption) (JWTSigner, error) {
 	algorithm = strings.ToUpper(strings.TrimSpace(algorithm))
 	hashID, ok := rsaHashOf(algorithm, false)
 	if !ok {
@@ -52,12 +105,18 @@ func NewRSASigner(algorithm string, priv *rsa.PrivateKey, pub *rsa.PublicKey) (J
 	if priv == nil && pub == nil {
 		return nil, NewJWTError("RSA signer requires private key or public key")
 	}
-	return &rsaSigner{alg: algorithm, priv: priv, pub: pub, hashID: hashID, usePSS: false}, nil
+	cfg := applySignerOptions(opts)
+	return &rsaSigner{alg: algorithm, priv: priv, pub: pub, hashID: hashID, usePSS: false, random: cfg.random, pssOptions: cfg.pssOptions}, nil
 }
 
 // NewRSAPSSSigner 创建 RSA-PSS 签名器。
 // algorithm: PS256 / PS384 / PS512。
 func NewRSAPSSSigner(algorithm string, priv *rsa.PrivateKey, pub *rsa.PublicKey) (JWTSigner, error) {
+	return NewRSAPSSSignerWithOptions(algorithm, priv, pub)
+}
+
+// NewRSAPSSSignerWithOptions 创建可配置 RSA-PSS 签名器。
+func NewRSAPSSSignerWithOptions(algorithm string, priv *rsa.PrivateKey, pub *rsa.PublicKey, opts ...SignerOption) (JWTSigner, error) {
 	algorithm = strings.ToUpper(strings.TrimSpace(algorithm))
 	hashID, ok := rsaHashOf(algorithm, true)
 	if !ok {
@@ -69,7 +128,8 @@ func NewRSAPSSSigner(algorithm string, priv *rsa.PrivateKey, pub *rsa.PublicKey)
 	if priv == nil && pub == nil {
 		return nil, NewJWTError("RSA-PSS signer requires private key or public key")
 	}
-	return &rsaSigner{alg: algorithm, priv: priv, pub: pub, hashID: hashID, usePSS: true}, nil
+	cfg := applySignerOptions(opts)
+	return &rsaSigner{alg: algorithm, priv: priv, pub: pub, hashID: hashID, usePSS: true, random: cfg.random, pssOptions: cfg.pssOptions}, nil
 }
 
 func rsaHashOf(alg string, pss bool) (crypto.Hash, bool) {
@@ -105,9 +165,9 @@ func (s *rsaSigner) Sign(headerB64, payloadB64 string) string {
 	var sig []byte
 	var err error
 	if s.usePSS {
-		sig, err = rsa.SignPSS(rand.Reader, s.priv, s.hashID, digest, &rsa.PSSOptions{SaltLength: rsa.PSSSaltLengthEqualsHash})
+		sig, err = rsa.SignPSS(s.random, s.priv, s.hashID, digest, s.pssOptions)
 	} else {
-		sig, err = rsa.SignPKCS1v15(rand.Reader, s.priv, s.hashID, digest)
+		sig, err = rsa.SignPKCS1v15(s.random, s.priv, s.hashID, digest)
 	}
 	if err != nil {
 		return ""
@@ -125,7 +185,7 @@ func (s *rsaSigner) Verify(headerB64, payloadB64, signB64 string) bool {
 	}
 	digest := digestOf(s.hashID, headerB64+"."+payloadB64)
 	if s.usePSS {
-		return rsa.VerifyPSS(s.pub, s.hashID, digest, sig, &rsa.PSSOptions{SaltLength: rsa.PSSSaltLengthEqualsHash}) == nil
+		return rsa.VerifyPSS(s.pub, s.hashID, digest, sig, s.pssOptions) == nil
 	}
 	return rsa.VerifyPKCS1v15(s.pub, s.hashID, digest, sig) == nil
 }
@@ -137,11 +197,17 @@ type ecdsaSigner struct {
 	pub    *ecdsa.PublicKey
 	hashID crypto.Hash
 	rSize  int // r/s 在 JWT 序列化中固定字节数
+	random io.Reader
 }
 
 // NewECDSASigner 创建 ECDSA 签名器。
 // algorithm: ES256(P-256) / ES384(P-384) / ES512(P-521)。
 func NewECDSASigner(algorithm string, priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) (JWTSigner, error) {
+	return NewECDSASignerWithOptions(algorithm, priv, pub)
+}
+
+// NewECDSASignerWithOptions 创建可配置 ECDSA 签名器。
+func NewECDSASignerWithOptions(algorithm string, priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey, opts ...SignerOption) (JWTSigner, error) {
 	algorithm = strings.ToUpper(strings.TrimSpace(algorithm))
 	hashID, expectedCurve, rSize, ok := ecdsaParamsOf(algorithm)
 	if !ok {
@@ -156,7 +222,8 @@ func NewECDSASigner(algorithm string, priv *ecdsa.PrivateKey, pub *ecdsa.PublicK
 	if pub.Curve != expectedCurve {
 		return nil, JWTErrorf("curve mismatch: %s requires %s", algorithm, curveName(expectedCurve))
 	}
-	return &ecdsaSigner{alg: algorithm, priv: priv, pub: pub, hashID: hashID, rSize: rSize}, nil
+	cfg := applySignerOptions(opts)
+	return &ecdsaSigner{alg: algorithm, priv: priv, pub: pub, hashID: hashID, rSize: rSize, random: cfg.random}, nil
 }
 
 func ecdsaParamsOf(alg string) (crypto.Hash, elliptic.Curve, int, bool) {
@@ -190,7 +257,7 @@ func (s *ecdsaSigner) Sign(headerB64, payloadB64 string) string {
 		return ""
 	}
 	digest := digestOf(s.hashID, headerB64+"."+payloadB64)
-	r, sVal, err := ecdsa.Sign(rand.Reader, s.priv, digest)
+	r, sVal, err := ecdsa.Sign(s.random, s.priv, digest)
 	if err != nil {
 		return ""
 	}

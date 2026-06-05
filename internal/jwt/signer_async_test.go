@@ -5,6 +5,7 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/rsa"
+	"errors"
 	"testing"
 	"time"
 )
@@ -66,6 +67,39 @@ func TestRSAPSSSigner_RoundTrip(t *testing.T) {
 	}
 }
 
+func TestRSAPSSSignerWithOptions(t *testing.T) {
+	priv, err := rsa.GenerateKey(rand.Reader, 2048)
+	if err != nil {
+		t.Fatal(err)
+	}
+	signer, err := NewRSAPSSSignerWithOptions(AlgPS256, priv, nil, WithRSAPSSOptions(&rsa.PSSOptions{SaltLength: rsa.PSSSaltLengthAuto}))
+	if err != nil {
+		t.Fatalf("NewRSAPSSSignerWithOptions: %v", err)
+	}
+	token, err := New().SetPayload("u", 1).SetSigner(signer).Sign()
+	if err != nil {
+		t.Fatalf("sign: %v", err)
+	}
+	j, err := Of(token)
+	if err != nil {
+		t.Fatal(err)
+	}
+	verifier, err := NewRSAPSSSignerWithOptions(AlgPS256, nil, &priv.PublicKey, WithRSAPSSOptions(&rsa.PSSOptions{SaltLength: rsa.PSSSaltLengthAuto}))
+	if err != nil {
+		t.Fatalf("verifier: %v", err)
+	}
+	if !j.VerifyWith(verifier) {
+		t.Fatal("verify with custom PSS options failed")
+	}
+	failing, err := NewRSAPSSSignerWithOptions(AlgPS256, priv, nil, WithSignerRandomReader(errReader{}))
+	if err != nil {
+		t.Fatalf("failing signer: %v", err)
+	}
+	if sig := failing.Sign("a", "b"); sig != "" {
+		t.Fatalf("signature with failing random reader = %q, want empty", sig)
+	}
+}
+
 func TestECDSASigner_RoundTrip(t *testing.T) {
 	cases := []struct {
 		alg   string
@@ -97,6 +131,32 @@ func TestECDSASigner_RoundTrip(t *testing.T) {
 		}
 	}
 }
+
+func TestECDSASignerWithOptionsRandomReader(t *testing.T) {
+	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+	signer, err := NewECDSASignerWithOptions(AlgES256, priv, nil, WithSignerRandomReader(rand.Reader))
+	if err != nil {
+		t.Fatalf("NewECDSASignerWithOptions: %v", err)
+	}
+	token, err := New().SetPayload("u", 1).SetSigner(signer).Sign()
+	if err != nil {
+		t.Fatalf("sign: %v", err)
+	}
+	j, err := Of(token)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !j.VerifyWith(signer) {
+		t.Fatal("verify with custom ECDSA random reader failed")
+	}
+}
+
+type errReader struct{}
+
+func (errReader) Read([]byte) (int, error) { return 0, errors.New("boom") }
 
 func TestECDSASigner_CurveMismatch(t *testing.T) {
 	priv, err := ecdsa.GenerateKey(elliptic.P384(), rand.Reader)

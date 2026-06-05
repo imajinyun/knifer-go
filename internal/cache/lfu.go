@@ -17,6 +17,7 @@ func NewLFUCacheWithOptions[K comparable, V any](opts ...Option[K, V]) *LFUCache
 	cfg := applyOptions(opts)
 	c := NewLFUCacheWithTimeout[K, V](cfg.capacity, cfg.timeout)
 	applyListener(&c.abstractCache, cfg.listener)
+	applyClock(&c.abstractCache, cfg.clock)
 	return c
 }
 
@@ -38,7 +39,7 @@ func lfuPrune[K comparable, V any](c *abstractCache[K, V]) int {
 	var minObj *CacheObj[K, V]
 	for _, key := range c.cacheMap.keysInOrder() {
 		co, _ := c.cacheMap.get(key)
-		if co.isExpired() {
+		if co.isExpired(c.now()) {
 			c.removeWithoutLock(key)
 			count++
 			continue

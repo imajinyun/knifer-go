@@ -78,6 +78,11 @@ func WithListener[K comparable, V any](listener CacheListener[K, V]) Option[K, V
 	return cache.WithListener[K, V](listener)
 }
 
+// WithClock sets the time source used for cache expiration checks.
+func WithClock[K comparable, V any](clock func() time.Time) Option[K, V] {
+	return cache.WithClock[K, V](clock)
+}
+
 // NewFIFO creates a FIFO cache.
 func NewFIFO[K comparable, V any](capacity int) *FIFOCache[K, V] {
 	return &FIFOCache[K, V]{FIFOCache: cache.NewFIFO[K, V](capacity)}
@@ -146,4 +151,9 @@ func NewTimedScheduled[K comparable, V any](timeout, schedulePruneDelay time.Dur
 // NewWeak creates a weak-style timed cache.
 func NewWeak[K comparable, V any](timeout time.Duration) *WeakCache[K, V] {
 	return &WeakCache[K, V]{WeakCache: cache.NewWeak[K, V](timeout)}
+}
+
+// NewWeakWithOptions creates a weak-style timed cache customized by options.
+func NewWeakWithOptions[K comparable, V any](opts ...Option[K, *V]) *WeakCache[K, V] {
+	return &WeakCache[K, V]{WeakCache: cache.NewWeakWithOptions[K, V](opts...)}
 }

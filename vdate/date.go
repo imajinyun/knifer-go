@@ -9,6 +9,9 @@ import (
 // Error is the date module error type.
 type Error = dateimpl.DateError
 
+// ParseOption customizes date parsing helpers.
+type ParseOption = dateimpl.ParseOption
+
 const (
 	NormPattern         = dateimpl.NormPattern
 	NormDatePattern     = dateimpl.NormDatePattern
@@ -20,14 +23,23 @@ const (
 	UTCPattern          = dateimpl.UTCPattern
 )
 
-func Now() time.Time                                  { return dateimpl.Now() }
-func Today() time.Time                                { return dateimpl.Today() }
-func Format(t time.Time, layout string) string        { return dateimpl.FormatDate(t, layout) }
-func FormatNorm(t time.Time) string                   { return dateimpl.FormatDateNorm(t) }
-func FormatDateOnly(t time.Time) string               { return dateimpl.FormatDateOnly(t) }
-func FormatTimeOnly(t time.Time) string               { return dateimpl.FormatTimeOnly(t) }
-func Parse(s string) (time.Time, error)               { return dateimpl.ParseDate(s) }
-func ParseLayout(s, layout string) (time.Time, error) { return dateimpl.ParseDateLayout(s, layout) }
+func Now() time.Time                                   { return dateimpl.Now() }
+func Today() time.Time                                 { return dateimpl.Today() }
+func Format(t time.Time, layout string) string         { return dateimpl.FormatDate(t, layout) }
+func FormatNorm(t time.Time) string                    { return dateimpl.FormatDateNorm(t) }
+func FormatDateOnly(t time.Time) string                { return dateimpl.FormatDateOnly(t) }
+func FormatTimeOnly(t time.Time) string                { return dateimpl.FormatTimeOnly(t) }
+func Parse(s string) (time.Time, error)                { return dateimpl.ParseDate(s) }
+func ParseLayout(s, layout string) (time.Time, error)  { return dateimpl.ParseDateLayout(s, layout) }
+func WithLocation(location *time.Location) ParseOption { return dateimpl.WithLocation(location) }
+func ParseWithOptions(s string, opts ...ParseOption) (time.Time, error) {
+	return dateimpl.ParseDateWithOptions(s, opts...)
+}
+
+func ParseLayoutWithOptions(s, layout string, opts ...ParseOption) (time.Time, error) {
+	return dateimpl.ParseDateLayoutWithOptions(s, layout, opts...)
+}
+
 func BeginOfDay(t time.Time) time.Time                { return dateimpl.BeginOfDay(t) }
 func EndOfDay(t time.Time) time.Time                  { return dateimpl.EndOfDay(t) }
 func BeginOfMonth(t time.Time) time.Time              { return dateimpl.BeginOfMonth(t) }

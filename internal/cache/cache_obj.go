@@ -16,12 +16,12 @@ type CacheObj[K comparable, V any] struct {
 }
 
 // newCacheObj creates a CacheObj with its last access time set to now.
-func newCacheObj[K comparable, V any](key K, value V, ttl time.Duration) *CacheObj[K, V] {
+func newCacheObj[K comparable, V any](key K, value V, ttl time.Duration, now time.Time) *CacheObj[K, V] {
 	return &CacheObj[K, V]{
 		key:        key,
 		value:      value,
 		ttl:        ttl,
-		lastAccess: time.Now().UnixNano(),
+		lastAccess: now.UnixNano(),
 	}
 }
 
@@ -59,21 +59,21 @@ func (c *CacheObj[K, V]) ExpiredTime() (time.Time, bool) {
 }
 
 // isExpired reports whether the entry has expired relative to last access time.
-func (c *CacheObj[K, V]) isExpired() bool {
+func (c *CacheObj[K, V]) isExpired(now time.Time) bool {
 	if c.ttl <= 0 {
 		return false
 	}
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	return time.Now().UnixNano()-c.lastAccess > int64(c.ttl)
+	return now.UnixNano()-c.lastAccess > int64(c.ttl)
 }
 
 // get returns the value and updates access count and, optionally, last access time.
-func (c *CacheObj[K, V]) get(updateLastAccess bool) V {
+func (c *CacheObj[K, V]) get(updateLastAccess bool, now time.Time) V {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if updateLastAccess {
-		c.lastAccess = time.Now().UnixNano()
+		c.lastAccess = now.UnixNano()
 	}
 	c.accessCount++
 	return c.value

@@ -14,6 +14,12 @@ type Response = httpx.HTTPResponse
 // SaveOption customizes response file saving.
 type SaveOption = httpx.SaveOption
 
+// ContentDecoder decodes a response body for a Content-Encoding value.
+type ContentDecoder = httpx.ContentDecoder
+
+// ServerOption customizes SimpleServer construction.
+type ServerOption = httpx.ServerOption
+
 // Method represents an HTTP method.
 type Method = httpx.Method
 

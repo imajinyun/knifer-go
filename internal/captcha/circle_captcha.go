@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"image"
 	"image/png"
-
-	randutil "github.com/imajinyun/go-knifer/internal/rand"
 )
 
 // CircleCaptcha mirrors CircleCaptcha and uses interference circles.
@@ -42,13 +40,13 @@ func (c *CircleCaptcha) CreateCode() {
 	fillBackground(img, c.bg())
 	half := c.Height >> 1
 	for i := 0; i < c.InterfereCount; i++ {
-		cx := randutil.RandomInt(c.Width)
-		cy := randutil.RandomInt(c.Height)
-		rx := randutil.RandomInt(atLeastOne(half))
-		ry := randutil.RandomInt(atLeastOne(half))
-		drawOval(img, cx, cy, rx, ry, randomColor())
+		cx := c.randInt(c.Width)
+		cy := c.randInt(c.Height)
+		rx := c.randInt(atLeastOne(half))
+		ry := c.randInt(atLeastOne(half))
+		drawOval(img, cx, cy, rx, ry, c.randColor())
 	}
-	drawString(img, c.code, c.Width, c.Height, computeScale(c.Height))
+	drawString(img, c.code, c.Width, c.Height, computeScale(c.Height), c.randColor)
 
 	var buf bytes.Buffer
 	_ = png.Encode(&buf, img)

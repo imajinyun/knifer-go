@@ -20,6 +20,8 @@ type Scheduler struct {
 	// executor controls goroutine usage for task execution and may be replaced with a concurrency-limited executor.
 	executor func(func())
 	idFunc   func() string
+	nowFunc  func() time.Time
+	sleeper  func(time.Duration, <-chan struct{}) bool
 }
 
 // SchedulerOption customizes scheduler construction.
@@ -49,6 +51,24 @@ func WithIDGenerator(idFunc func() string) SchedulerOption {
 	}
 }
 
+// WithClock sets the time source used by the scheduler timer.
+func WithClock(clock func() time.Time) SchedulerOption {
+	return func(s *Scheduler) {
+		if clock != nil {
+			s.nowFunc = clock
+		}
+	}
+}
+
+// WithSleeper sets the sleep function used by the scheduler timer.
+func WithSleeper(sleeper func(time.Duration, <-chan struct{}) bool) SchedulerOption {
+	return func(s *Scheduler) {
+		if sleeper != nil {
+			s.sleeper = sleeper
+		}
+	}
+}
+
 // NewScheduler creates a Scheduler.
 func NewScheduler() *Scheduler {
 	return NewSchedulerWithOptions()
@@ -65,12 +85,28 @@ func NewSchedulerWithOptions(opts ...SchedulerOption) *Scheduler {
 	s.listenerMgr = newListenerManager()
 	s.executor = func(fn func()) { go fn() }
 	s.idFunc = generateID
+	s.nowFunc = time.Now
+	s.sleeper = defaultTimerSleep
 	for _, opt := range opts {
 		if opt != nil {
 			opt(s)
 		}
 	}
 	return s
+}
+
+func (s *Scheduler) nowMillis() int64 {
+	if s.nowFunc != nil {
+		return s.nowFunc().UnixMilli()
+	}
+	return time.Now().UnixMilli()
+}
+
+func (s *Scheduler) sleep(d time.Duration, stopCh <-chan struct{}) bool {
+	if s.sleeper != nil {
+		return s.sleeper(d, stopCh)
+	}
+	return defaultTimerSleep(d, stopCh)
 }
 
 // Config returns the scheduler config.

@@ -3,6 +3,7 @@ package vjwt
 import (
 	"crypto/ecdsa"
 	"crypto/rsa"
+	"io"
 
 	jwtimpl "github.com/imajinyun/go-knifer/internal/jwt"
 )
@@ -73,14 +74,39 @@ func NewRSASigner(algorithm string, priv *rsa.PrivateKey, pub *rsa.PublicKey) (J
 	return jwtimpl.NewRSASigner(algorithm, priv, pub)
 }
 
+// NewRSASignerWithOptions creates an RSA signer for RS256, RS384, or RS512 with options.
+func NewRSASignerWithOptions(algorithm string, priv *rsa.PrivateKey, pub *rsa.PublicKey, opts ...SignerOption) (JWTSigner, error) {
+	return jwtimpl.NewRSASignerWithOptions(algorithm, priv, pub, opts...)
+}
+
 // NewRSAPSSSigner creates an RSA-PSS signer for PS256, PS384, or PS512.
 func NewRSAPSSSigner(algorithm string, priv *rsa.PrivateKey, pub *rsa.PublicKey) (JWTSigner, error) {
 	return jwtimpl.NewRSAPSSSigner(algorithm, priv, pub)
 }
 
+// NewRSAPSSSignerWithOptions creates an RSA-PSS signer for PS256, PS384, or PS512 with options.
+func NewRSAPSSSignerWithOptions(algorithm string, priv *rsa.PrivateKey, pub *rsa.PublicKey, opts ...SignerOption) (JWTSigner, error) {
+	return jwtimpl.NewRSAPSSSignerWithOptions(algorithm, priv, pub, opts...)
+}
+
 // NewECDSASigner creates an ECDSA signer for ES256, ES384, or ES512.
 func NewECDSASigner(algorithm string, priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) (JWTSigner, error) {
 	return jwtimpl.NewECDSASigner(algorithm, priv, pub)
+}
+
+// NewECDSASignerWithOptions creates an ECDSA signer for ES256, ES384, or ES512 with options.
+func NewECDSASignerWithOptions(algorithm string, priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey, opts ...SignerOption) (JWTSigner, error) {
+	return jwtimpl.NewECDSASignerWithOptions(algorithm, priv, pub, opts...)
+}
+
+// WithSignerRandomReader sets the random source used by RSA-PSS and ECDSA signing.
+func WithSignerRandomReader(reader io.Reader) SignerOption {
+	return jwtimpl.WithSignerRandomReader(reader)
+}
+
+// WithRSAPSSOptions sets RSA-PSS options used by RSA-PSS signing and verification.
+func WithRSAPSSOptions(opts *rsa.PSSOptions) SignerOption {
+	return jwtimpl.WithRSAPSSOptions(opts)
 }
 
 // HS256 creates an HS256 signer.

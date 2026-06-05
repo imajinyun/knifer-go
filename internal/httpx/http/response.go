@@ -18,14 +18,70 @@ import (
 
 // HTTPResponse wraps http.Response and provides convenient readers, aligned with the utility toolkit-http HttpResponse.
 type HTTPResponse struct {
-	resp     *http.Response
-	body     []byte
-	bodyRead bool
-	once     sync.Once
-	err      error
+	resp         *http.Response
+	body         []byte
+	bodyRead     bool
+	once         sync.Once
+	err          error
+	decodeConfig responseDecodeConfig
 }
 
-func wrapResponse(r *http.Response) *HTTPResponse { return &HTTPResponse{resp: r} }
+func wrapResponse(r *http.Response, cfg responseDecodeConfig) *HTTPResponse {
+	return &HTTPResponse{resp: r, decodeConfig: cfg.normalized()}
+}
+
+// ContentDecoder decodes a response body for a Content-Encoding value.
+type ContentDecoder func(io.Reader) (io.ReadCloser, error)
+
+type responseDecodeConfig struct {
+	autoDecode bool
+	decoders   map[string]ContentDecoder
+}
+
+func defaultResponseDecodeConfig() responseDecodeConfig {
+	return responseDecodeConfig{
+		autoDecode: true,
+		decoders: map[string]ContentDecoder{
+			"gzip":    gzipDecoder,
+			"deflate": deflateDecoder,
+		},
+	}
+}
+
+func (c responseDecodeConfig) normalized() responseDecodeConfig {
+	if c.decoders == nil {
+		c.decoders = defaultResponseDecodeConfig().decoders
+		return c
+	}
+	cloned := make(map[string]ContentDecoder, len(c.decoders))
+	for enc, decoder := range c.decoders {
+		if decoder != nil {
+			cloned[enc] = decoder
+		}
+	}
+	c.decoders = cloned
+	return c
+}
+
+func (c *responseDecodeConfig) setDecoder(encoding string, decoder ContentDecoder) {
+	encoding = normalizeEncoding(encoding)
+	if encoding == "" {
+		return
+	}
+	if c.decoders == nil {
+		c.decoders = defaultResponseDecodeConfig().decoders
+	}
+	cloned := make(map[string]ContentDecoder, len(c.decoders)+1)
+	for enc, existing := range c.decoders {
+		cloned[enc] = existing
+	}
+	if decoder == nil {
+		delete(cloned, encoding)
+	} else {
+		cloned[encoding] = decoder
+	}
+	c.decoders = cloned
+}
 
 type saveConfig struct {
 	filePerm        fs.FileMode
@@ -150,7 +206,7 @@ func (r *HTTPResponse) Bytes() []byte {
 				r.err = NewHTTPError("close response body failed", err)
 			}
 		}()
-		reader, err := decodedBody(r.resp)
+		reader, err := r.decodedBody()
 		if err != nil {
 			r.err = err
 			return
@@ -244,7 +300,7 @@ func (r *HTTPResponse) writeBodyTo(w io.Writer) (int64, error) {
 			r.err = NewHTTPError("close response body failed", err)
 		}
 	}()
-	reader, err := decodedBody(r.resp)
+	reader, err := r.decodedBody()
 	if err != nil {
 		r.err = err
 		return 0, err
@@ -276,28 +332,32 @@ func (r *HTTPResponse) fileName() string {
 	return ""
 }
 
-func decodedBody(resp *http.Response) (io.Reader, error) {
-	enc := strings.ToLower(resp.Header.Get(string(HeaderContentEncoding)))
-	switch enc {
-	case "gzip":
-		gr, err := gzip.NewReader(resp.Body)
-		if err != nil {
-			// Some servers may declare gzip without compressing; try to fall back.
-			if err == io.EOF {
-				return bytes.NewReader(nil), nil
-			}
-			return nil, NewHTTPError("gzip reader init failed", err)
-		}
-		return gr, nil
-	case "deflate":
-		zr, err := zlib.NewReader(resp.Body)
-		if err != nil {
-			return nil, NewHTTPError("deflate reader init failed", err)
-		}
-		return zr, nil
-	default:
-		return resp.Body, nil
+func (r *HTTPResponse) decodedBody() (io.Reader, error) {
+	if r.resp == nil || r.resp.Body == nil || !r.decodeConfig.autoDecode {
+		return r.resp.Body, nil
 	}
+	enc := normalizeEncoding(r.resp.Header.Get(string(HeaderContentEncoding)))
+	decoder := r.decodeConfig.decoders[enc]
+	if decoder == nil {
+		return r.resp.Body, nil
+	}
+	reader, err := decoder(r.resp.Body)
+	if err != nil {
+		if enc == "gzip" && err == io.EOF {
+			// Some servers may declare gzip without compressing; try to fall back.
+			return bytes.NewReader(nil), nil
+		}
+		return nil, NewHTTPError(enc+" reader init failed", err)
+	}
+	return reader, nil
+}
+
+func gzipDecoder(r io.Reader) (io.ReadCloser, error) { return gzip.NewReader(r) }
+
+func deflateDecoder(r io.Reader) (io.ReadCloser, error) { return zlib.NewReader(r) }
+
+func normalizeEncoding(encoding string) string {
+	return strings.ToLower(strings.TrimSpace(encoding))
 }
 
 var charsetRegex = regexp.MustCompile(`(?i)charset\s*=\s*([a-z0-9-]+)`)

@@ -1,7 +1,11 @@
 package vhttp_test
 
 import (
+	"bytes"
+	"compress/gzip"
+	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -57,6 +61,54 @@ func TestFacadeRequestOptions(t *testing.T) {
 	}
 	if got := resp.Body(); got != "yes:vhttp-test/1.0" {
 		t.Fatalf("Body() = %q, want option headers", got)
+	}
+}
+
+func TestFacadeResponseDecodeOptions(t *testing.T) {
+	gzipServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Encoding", "gzip")
+		gz := gzip.NewWriter(w)
+		_, _ = gz.Write([]byte("gzipped"))
+		_ = gz.Close()
+	}))
+	defer gzipServer.Close()
+
+	compressed := vhttp.Get(gzipServer.URL, vhttp.WithAutoDecodeResponse(false)).Execute().Bytes()
+	if bytes.Contains(compressed, []byte("gzipped")) || len(compressed) == 0 {
+		t.Fatalf("body should remain compressed, got %q", compressed)
+	}
+
+	customServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Encoding", "upper")
+		_, _ = w.Write([]byte("hello"))
+	}))
+	defer customServer.Close()
+
+	decoder := func(r io.Reader) (io.ReadCloser, error) {
+		data, err := io.ReadAll(r)
+		if err != nil {
+			return nil, err
+		}
+		return io.NopCloser(strings.NewReader(strings.ToUpper(string(data)))), nil
+	}
+	if got := vhttp.Get(customServer.URL, vhttp.WithContentDecoder("upper", decoder)).Execute().Body(); got != "HELLO" {
+		t.Fatalf("custom decoded body = %q", got)
+	}
+}
+
+func TestFacadeSimpleServerOptions(t *testing.T) {
+	server := vhttp.NewSimpleServerAddrWithOptions("127.0.0.1:0",
+		vhttp.WithReadHeaderTimeout(time.Second),
+		vhttp.WithReadTimeout(time.Second),
+		vhttp.WithWriteTimeout(time.Second),
+		vhttp.WithIdleTimeout(time.Second),
+		vhttp.WithHTTPServer(&http.Server{Addr: "127.0.0.1:0"}),
+	)
+	if server == nil {
+		t.Fatal("NewSimpleServerAddrWithOptions returned nil")
+	}
+	if err := server.StopWithContext(context.Background()); err != nil {
+		t.Fatalf("StopWithContext on idle server = %v", err)
 	}
 }
 

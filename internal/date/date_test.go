@@ -33,6 +33,25 @@ func TestFormatAndParse(t *testing.T) {
 	}
 }
 
+func TestParseDateWithOptionsLocation(t *testing.T) {
+	loc := time.FixedZone("biz", 8*60*60)
+	parsed, err := ParseDateWithOptions("2024-07-15 10:20:30", WithLocation(loc))
+	if err != nil {
+		t.Fatalf("ParseDateWithOptions err: %v", err)
+	}
+	if parsed.Location() != loc || parsed.Format(NormPattern) != "2024-07-15 10:20:30" {
+		t.Fatalf("ParseDateWithOptions location = %v, %s", parsed.Location(), parsed.Format(NormPattern))
+	}
+
+	parsed, err = ParseDateLayoutWithOptions("2024/07/15 10:20:30", "2006/01/02 15:04:05", WithLocation(loc))
+	if err != nil {
+		t.Fatalf("ParseDateLayoutWithOptions err: %v", err)
+	}
+	if parsed.Location() != loc || parsed.Format(NormPattern) != "2024-07-15 10:20:30" {
+		t.Fatalf("ParseDateLayoutWithOptions location = %v, %s", parsed.Location(), parsed.Format(NormPattern))
+	}
+}
+
 func TestBeginEndOf(t *testing.T) {
 	tt := time.Date(2024, 7, 15, 10, 20, 30, 123, time.Local)
 	if FormatDateNorm(BeginOfDay(tt)) != "2024-07-15 00:00:00" {

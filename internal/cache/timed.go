@@ -28,6 +28,7 @@ func NewTimedCacheWithOptions[K comparable, V any](opts ...Option[K, V]) *TimedC
 	cfg := applyOptions(opts)
 	c := NewTimedCache[K, V](cfg.timeout)
 	applyListener(&c.abstractCache, cfg.listener)
+	applyClock(&c.abstractCache, cfg.clock)
 	return c
 }
 
@@ -41,7 +42,7 @@ func timedPrune[K comparable, V any](c *abstractCache[K, V]) int {
 	count := 0
 	for _, key := range c.cacheMap.keysInOrder() {
 		co, _ := c.cacheMap.get(key)
-		if co.isExpired() {
+		if co.isExpired(c.now()) {
 			c.removeWithoutLock(key)
 			count++
 		}

@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"image"
 	"image/png"
-
-	randutil "github.com/imajinyun/go-knifer/internal/rand"
 )
 
 // LineCaptcha mirrors the utility toolkit LineCaptcha and uses interference lines.
@@ -47,15 +45,15 @@ func (c *LineCaptcha) renderPNG(code string) []byte {
 	fillBackground(img, c.bg())
 	// Interference lines.
 	for i := 0; i < c.InterfereCount; i++ {
-		xs := randutil.RandomInt(c.Width)
-		ys := randutil.RandomInt(c.Height)
-		xe := xs + randutil.RandomInt(atLeastOne(c.Width/8))
-		ye := ys + randutil.RandomInt(atLeastOne(c.Height/8))
-		drawLine(img, xs, ys, xe, ye, randomColor())
+		xs := c.randInt(c.Width)
+		ys := c.randInt(c.Height)
+		xe := xs + c.randInt(atLeastOne(c.Width/8))
+		ye := ys + c.randInt(atLeastOne(c.Height/8))
+		drawLine(img, xs, ys, xe, ye, c.randColor())
 	}
 	// Characters.
 	scale := computeScale(c.Height)
-	drawString(img, code, c.Width, c.Height, scale)
+	drawString(img, code, c.Width, c.Height, scale, c.randColor)
 
 	var buf bytes.Buffer
 	_ = png.Encode(&buf, img)

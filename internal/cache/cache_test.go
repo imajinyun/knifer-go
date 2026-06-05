@@ -207,6 +207,24 @@ func TestCacheOptions(t *testing.T) {
 	}
 }
 
+func TestCacheWithClock(t *testing.T) {
+	base := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	now := base
+	c := NewTimedWithOptions[string, int](
+		WithTimeout[string, int](time.Second),
+		WithClock[string, int](func() time.Time { return now }),
+	)
+	c.Put("a", 1)
+	now = base.Add(500 * time.Millisecond)
+	if v, ok := c.Get("a"); !ok || v != 1 {
+		t.Fatalf("expected value before custom-clock expiry, got %d ok=%v", v, ok)
+	}
+	now = base.Add(2 * time.Second)
+	if _, ok := c.GetWithUpdate("a", false); ok {
+		t.Fatalf("expected custom clock to expire entry")
+	}
+}
+
 func TestNoCache(t *testing.T) {
 	c := NewNo[string, int]()
 	c.Put("a", 1)

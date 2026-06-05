@@ -6,6 +6,7 @@ type cacheConfig[K comparable, V any] struct {
 	capacity int
 	timeout  time.Duration
 	listener CacheListener[K, V]
+	clock    func() time.Time
 }
 
 // Option customizes cache construction.
@@ -26,6 +27,11 @@ func WithListener[K comparable, V any](listener CacheListener[K, V]) Option[K, V
 	return func(c *cacheConfig[K, V]) { c.listener = listener }
 }
 
+// WithClock sets the time source used for cache expiration checks.
+func WithClock[K comparable, V any](clock func() time.Time) Option[K, V] {
+	return func(c *cacheConfig[K, V]) { c.clock = clock }
+}
+
 func applyOptions[K comparable, V any](opts []Option[K, V]) cacheConfig[K, V] {
 	cfg := cacheConfig[K, V]{}
 	for _, opt := range opts {
@@ -40,4 +46,8 @@ func applyListener[K comparable, V any](c *abstractCache[K, V], listener CacheLi
 	if listener != nil {
 		c.listener = listener
 	}
+}
+
+func applyClock[K comparable, V any](c *abstractCache[K, V], clock func() time.Time) {
+	c.setClock(clock)
 }

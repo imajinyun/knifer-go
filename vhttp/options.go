@@ -2,6 +2,7 @@ package vhttp
 
 import (
 	"crypto/tls"
+	"io"
 	"net/http"
 	"time"
 
@@ -46,3 +47,13 @@ func WithContentType(ct string) RequestOption { return httpx.WithContentType(ct)
 
 // WithCharset sets a per-request charset at construction time.
 func WithCharset(charset string) RequestOption { return httpx.WithCharset(charset) }
+
+// WithAutoDecodeResponse controls whether response bodies are decoded by Content-Encoding.
+func WithAutoDecodeResponse(autoDecode bool) RequestOption {
+	return httpx.WithAutoDecodeResponse(autoDecode)
+}
+
+// WithContentDecoder registers a per-request response body decoder for encoding.
+func WithContentDecoder(encoding string, decoder func(io.Reader) (io.ReadCloser, error)) RequestOption {
+	return httpx.WithContentDecoder(encoding, decoder)
+}

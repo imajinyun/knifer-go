@@ -18,9 +18,40 @@ type ConsoleLog struct {
 	// out / errOut 可由测试注入；为 nil 时使用 os.Stdout / os.Stderr。
 	out    io.Writer
 	errOut io.Writer
+	// clock / timeLayout 可由测试注入；为空时使用 time.Now / 默认布局。
+	clock      func() time.Time
+	timeLayout string
 }
 
 const consoleLogTimeLayout = "2006-01-02 15:04:05"
+
+// ConsoleLogOption customizes console logger construction.
+type ConsoleLogOption func(*ConsoleLog)
+
+// WithLogTimeLayout sets the timestamp layout used by console log output.
+func WithLogTimeLayout(layout string) ConsoleLogOption {
+	return func(c *ConsoleLog) {
+		if layout != "" {
+			c.timeLayout = layout
+		}
+	}
+}
+
+// WithLogClock sets the clock used to render console log timestamps.
+func WithLogClock(clock func() time.Time) ConsoleLogOption {
+	return func(c *ConsoleLog) {
+		if clock != nil {
+			c.clock = clock
+		}
+	}
+}
+
+// WithLogOutput sets the output writers used by console log output.
+func WithLogOutput(out, errOut io.Writer) ConsoleLogOption {
+	return func(c *ConsoleLog) {
+		c.SetOutput(out, errOut)
+	}
+}
 
 var (
 	consoleLevelMu sync.RWMutex
@@ -43,7 +74,21 @@ func GetConsoleLevel() Level {
 
 // NewConsoleLog 创建一个使用控制台输出的 Log 实例。
 func NewConsoleLog(name string) *ConsoleLog {
-	c := &ConsoleLog{name: name}
+	return NewConsoleLogWithOptions(name)
+}
+
+// NewConsoleLogWithOptions 创建一个使用控制台输出的 Log 实例，并应用构造选项。
+func NewConsoleLogWithOptions(name string, opts ...ConsoleLogOption) *ConsoleLog {
+	c := &ConsoleLog{
+		name:       name,
+		clock:      time.Now,
+		timeLayout: consoleLogTimeLayout,
+	}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(c)
+		}
+	}
 	c.AbstractLog = &AbstractLog{
 		Core:        c.write,
 		IsEnabledFn: func(level Level) bool { return GetConsoleLevel() <= level },
@@ -60,10 +105,24 @@ func (c *ConsoleLog) SetOutput(out, errOut io.Writer) {
 	c.errOut = errOut
 }
 
+func (c *ConsoleLog) now() time.Time {
+	if c.clock != nil {
+		return c.clock()
+	}
+	return time.Now()
+}
+
+func (c *ConsoleLog) layout() string {
+	if c.timeLayout != "" {
+		return c.timeLayout
+	}
+	return consoleLogTimeLayout
+}
+
 // write 是底层写入逻辑，由 AbstractLog.Core 调用。
 func (c *ConsoleLog) write(level Level, err error, format string, args ...any) {
 	msg := renderLogMessage(format, args...)
-	line := fmt.Sprintf("[%s] [%-5s] %s: %s", time.Now().Format(consoleLogTimeLayout), level.String(), c.name, msg)
+	line := fmt.Sprintf("[%s] [%-5s] %s: %s", c.now().Format(c.layout()), level.String(), c.name, msg)
 	if err != nil {
 		line = line + " | error: " + err.Error()
 	}

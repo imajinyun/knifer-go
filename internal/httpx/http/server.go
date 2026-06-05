@@ -3,10 +3,14 @@ package http
 import (
 	"context"
 	"fmt"
+	"log"
+	"net"
 	"net/http"
 	"strings"
 	"time"
 )
+
+const defaultReadHeaderTimeout = 10 * time.Second
 
 // SimpleServer is a simple HTTP server, aligned with the utility toolkit-http SimpleServer.
 type SimpleServer struct {
@@ -15,22 +19,107 @@ type SimpleServer struct {
 	server *http.Server
 }
 
+// ServerOption customizes SimpleServer construction.
+type ServerOption func(*http.Server)
+
 // NewSimpleServer creates a simple server on the specified port.
 func NewSimpleServer(port int) *SimpleServer {
-	return NewSimpleServerAddr(fmt.Sprintf(":%d", port))
+	return NewSimpleServerWithOptions(port)
+}
+
+// NewSimpleServerWithOptions creates a simple server on the specified port with options.
+func NewSimpleServerWithOptions(port int, opts ...ServerOption) *SimpleServer {
+	return NewSimpleServerAddrWithOptions(fmt.Sprintf(":%d", port), opts...)
 }
 
 // NewSimpleServerAddr creates a simple server with the specified listen address.
 func NewSimpleServerAddr(addr string) *SimpleServer {
+	return NewSimpleServerAddrWithOptions(addr)
+}
+
+// NewSimpleServerAddrWithOptions creates a simple server with the specified listen address and options.
+func NewSimpleServerAddrWithOptions(addr string, opts ...ServerOption) *SimpleServer {
 	mux := http.NewServeMux()
+	server := &http.Server{
+		Addr:              addr,
+		Handler:           mux,
+		ReadHeaderTimeout: defaultReadHeaderTimeout,
+	}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(server)
+		}
+	}
+	if server.Addr == "" {
+		server.Addr = addr
+	}
+	if server.Handler == nil {
+		server.Handler = mux
+	}
 	return &SimpleServer{
-		addr: addr,
-		mux:  mux,
-		server: &http.Server{
-			Addr:              addr,
-			Handler:           mux,
-			ReadHeaderTimeout: 10 * time.Second,
-		},
+		addr:   server.Addr,
+		mux:    mux,
+		server: server,
+	}
+}
+
+// WithReadHeaderTimeout sets the server read-header timeout.
+func WithReadHeaderTimeout(timeout time.Duration) ServerOption {
+	return func(s *http.Server) { s.ReadHeaderTimeout = timeout }
+}
+
+// WithReadTimeout sets the server read timeout.
+func WithReadTimeout(timeout time.Duration) ServerOption {
+	return func(s *http.Server) { s.ReadTimeout = timeout }
+}
+
+// WithWriteTimeout sets the server write timeout.
+func WithWriteTimeout(timeout time.Duration) ServerOption {
+	return func(s *http.Server) { s.WriteTimeout = timeout }
+}
+
+// WithIdleTimeout sets the server idle timeout.
+func WithIdleTimeout(timeout time.Duration) ServerOption {
+	return func(s *http.Server) { s.IdleTimeout = timeout }
+}
+
+// WithServerErrorLog sets the server error logger.
+func WithServerErrorLog(logger *log.Logger) ServerOption {
+	return func(s *http.Server) { s.ErrorLog = logger }
+}
+
+// WithBaseContext sets the server base context function.
+func WithBaseContext(baseContext func(net.Listener) context.Context) ServerOption {
+	return func(s *http.Server) { s.BaseContext = baseContext }
+}
+
+// WithConnContext sets the server connection context function.
+func WithConnContext(connContext func(context.Context, net.Conn) context.Context) ServerOption {
+	return func(s *http.Server) { s.ConnContext = connContext }
+}
+
+// WithHTTPServer copies supported settings from server into the created SimpleServer.
+func WithHTTPServer(server *http.Server) ServerOption {
+	return func(s *http.Server) {
+		if server == nil {
+			return
+		}
+		s.Addr = server.Addr
+		s.Handler = server.Handler
+		s.DisableGeneralOptionsHandler = server.DisableGeneralOptionsHandler
+		s.TLSConfig = server.TLSConfig
+		s.ReadTimeout = server.ReadTimeout
+		s.ReadHeaderTimeout = server.ReadHeaderTimeout
+		s.WriteTimeout = server.WriteTimeout
+		s.IdleTimeout = server.IdleTimeout
+		s.MaxHeaderBytes = server.MaxHeaderBytes
+		s.TLSNextProto = server.TLSNextProto
+		s.ConnState = server.ConnState
+		s.ErrorLog = server.ErrorLog
+		s.BaseContext = server.BaseContext
+		s.ConnContext = server.ConnContext
+		s.HTTP2 = server.HTTP2
+		s.Protocols = server.Protocols
 	}
 }
 
@@ -80,6 +169,14 @@ func (s *SimpleServer) StartAsync() <-chan error {
 func (s *SimpleServer) Stop(timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
+	return s.StopWithContext(ctx)
+}
+
+// StopWithContext shuts down the server gracefully using ctx.
+func (s *SimpleServer) StopWithContext(ctx context.Context) error {
+	if ctx == nil {
+		ctx = context.Background()
+	}
 	return s.server.Shutdown(ctx)
 }
 

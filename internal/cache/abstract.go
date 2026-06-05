@@ -25,6 +25,7 @@ type abstractCache[K comparable, V any] struct {
 	listener  CacheListener[K, V]
 	hitCount  int64
 	missCount int64
+	clock     func() time.Time
 
 	// existCustomTimeout records whether any entry uses a non-default TTL.
 	existCustomTimeout bool
@@ -41,12 +42,26 @@ func (c *abstractCache[K, V]) init(capacity int, timeout time.Duration, prune pr
 	c.timeout = timeout
 	c.pruneFn = prune
 	c.cacheMap = newLinkedMap[K, V](capacity)
+	c.clock = time.Now
 }
 
 func (c *abstractCache[K, V]) Capacity() int          { return c.capacity }
 func (c *abstractCache[K, V]) Timeout() time.Duration { return c.timeout }
 func (c *abstractCache[K, V]) HitCount() int64        { return atomic.LoadInt64(&c.hitCount) }
 func (c *abstractCache[K, V]) MissCount() int64       { return atomic.LoadInt64(&c.missCount) }
+
+func (c *abstractCache[K, V]) setClock(clock func() time.Time) {
+	if clock != nil {
+		c.clock = clock
+	}
+}
+
+func (c *abstractCache[K, V]) now() time.Time {
+	if c.clock != nil {
+		return c.clock()
+	}
+	return time.Now()
+}
 
 // IsFull reports whether the cache has reached its configured capacity.
 func (c *abstractCache[K, V]) IsFull() bool {
@@ -91,7 +106,7 @@ func (c *abstractCache[K, V]) PutWithTimeout(key K, value V, timeout time.Durati
 }
 
 func (c *abstractCache[K, V]) putLocked(key K, value V, timeout time.Duration) {
-	co := newCacheObj(key, value, timeout)
+	co := newCacheObj(key, value, timeout, c.now())
 	if timeout > 0 && timeout != c.timeout {
 		c.existCustomTimeout = true
 	}
@@ -127,14 +142,14 @@ func (c *abstractCache[K, V]) getLocked(key K, updateLastAccess bool) (V, bool) 
 		atomic.AddInt64(&c.missCount, 1)
 		return zero, false
 	}
-	if co.isExpired() {
+	if co.isExpired(c.now()) {
 		// Remove expired entries immediately so future lookups do not see them.
 		c.cacheMap.remove(key)
 		c.notifyRemove(co.key, co.value)
 		atomic.AddInt64(&c.missCount, 1)
 		return zero, false
 	}
-	v := co.get(updateLastAccess)
+	v := co.get(updateLastAccess, c.now())
 	atomic.AddInt64(&c.hitCount, 1)
 	c.afterGet(key)
 	return v, true
@@ -190,7 +205,7 @@ func (c *abstractCache[K, V]) ContainsKey(key K) bool {
 	if !ok {
 		return false
 	}
-	if co.isExpired() {
+	if co.isExpired(c.now()) {
 		c.cacheMap.remove(key)
 		c.notifyRemove(co.key, co.value)
 		return false
@@ -237,7 +252,7 @@ func (c *abstractCache[K, V]) Values() []V {
 	defer c.mu.Unlock()
 	out := make([]V, 0, c.cacheMap.size())
 	for _, co := range c.cacheMap.valuesInOrder() {
-		if !co.isExpired() {
+		if !co.isExpired(c.now()) {
 			out = append(out, co.value)
 		}
 	}

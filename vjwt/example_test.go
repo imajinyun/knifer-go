@@ -1,6 +1,8 @@
 package vjwt_test
 
 import (
+	"crypto/rand"
+	"crypto/rsa"
 	"errors"
 	"fmt"
 
@@ -23,4 +25,16 @@ func ExampleCreateTokenWithOptions() {
 	parsed, parseErr := vjwt.ParseToken(token)
 	fmt.Println(err == nil, parseErr == nil, parsed.Payload(vjwt.JWTPayloadSubject))
 	// Output: true true alice
+}
+
+func ExampleNewRSAPSSSignerWithOptions() {
+	priv, _ := rsa.GenerateKey(rand.Reader, 2048)
+	signer, err := vjwt.NewRSAPSSSignerWithOptions(
+		vjwt.JWTAlgPS256,
+		priv,
+		nil,
+		vjwt.WithRSAPSSOptions(&rsa.PSSOptions{SaltLength: rsa.PSSSaltLengthAuto}),
+	)
+	fmt.Println(err == nil, signer.Algorithm())
+	// Output: true PS256
 }

@@ -1,6 +1,11 @@
 package vlog
 
-import logx "github.com/imajinyun/go-knifer/internal/log"
+import (
+	"io"
+	"time"
+
+	logx "github.com/imajinyun/go-knifer/internal/log"
+)
 
 // LogLevel is the logging level used by the logging facade.
 type LogLevel = logx.Level
@@ -22,6 +27,9 @@ type ConsoleLog = logx.ConsoleLog
 
 // ConsoleColorLog is a console logger with ANSI colors.
 type ConsoleColorLog = logx.ConsoleColorLog
+
+// ConsoleLogOption customizes console logger construction.
+type ConsoleLogOption = logx.ConsoleLogOption
 
 // ColorFactory maps log levels to ANSI colors.
 type ColorFactory = logx.ColorFactory
@@ -51,8 +59,27 @@ const (
 // NewConsoleLog creates a console logger by name.
 func NewConsoleLog(name string) *ConsoleLog { return logx.NewConsoleLog(name) }
 
+// NewConsoleLogWithOptions creates a console logger customized by options.
+func NewConsoleLogWithOptions(name string, opts ...ConsoleLogOption) *ConsoleLog {
+	return logx.NewConsoleLogWithOptions(name, opts...)
+}
+
 // NewConsoleColorLog creates a colored console logger by name.
 func NewConsoleColorLog(name string) *ConsoleColorLog { return logx.NewConsoleColorLog(name) }
+
+// NewConsoleColorLogWithOptions creates a colored console logger customized by options.
+func NewConsoleColorLogWithOptions(name string, opts ...ConsoleLogOption) *ConsoleColorLog {
+	return logx.NewConsoleColorLogWithOptions(name, opts...)
+}
+
+// WithLogTimeLayout sets the timestamp layout used by console log output.
+func WithLogTimeLayout(layout string) ConsoleLogOption { return logx.WithLogTimeLayout(layout) }
+
+// WithLogClock sets the clock used to render console log timestamps.
+func WithLogClock(clock func() time.Time) ConsoleLogOption { return logx.WithLogClock(clock) }
+
+// WithLogOutput sets the output writers used by console log output.
+func WithLogOutput(out, errOut io.Writer) ConsoleLogOption { return logx.WithLogOutput(out, errOut) }
 
 // Logger returns a cached logger by name.
 func Logger(name string) Log { return logx.Get(name) }

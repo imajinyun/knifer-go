@@ -98,3 +98,29 @@ func TestFacadeCacheOptions(t *testing.T) {
 		t.Fatalf("Timed options not applied: capacity=%d timeout=%s", timed.Capacity(), timed.Timeout())
 	}
 }
+
+func TestFacadeCacheWithClock(t *testing.T) {
+	base := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	now := base
+	timed := vcache.NewTimedWithOptions[string, int](
+		vcache.WithTimeout[string, int](time.Second),
+		vcache.WithClock[string, int](func() time.Time { return now }),
+	)
+	timed.Put("a", 1)
+	now = base.Add(2 * time.Second)
+	if _, ok := timed.Get("a"); ok {
+		t.Fatal("expected timed cache entry to expire with custom clock")
+	}
+
+	now = base
+	weak := vcache.NewWeakWithOptions[string, int](
+		vcache.WithTimeout[string, *int](time.Second),
+		vcache.WithClock[string, *int](func() time.Time { return now }),
+	)
+	v := 7
+	weak.Put("a", &v)
+	now = base.Add(2 * time.Second)
+	if _, ok := weak.Get("a"); ok {
+		t.Fatal("expected weak cache entry to expire with custom clock")
+	}
+}

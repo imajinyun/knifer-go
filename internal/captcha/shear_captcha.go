@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"image"
 	"image/png"
-
-	randutil "github.com/imajinyun/go-knifer/internal/rand"
 )
 
 // ShearCaptcha mirrors the utility toolkit ShearCaptcha and applies distortion.
@@ -42,11 +40,11 @@ func (c *ShearCaptcha) CreateCode() {
 	fillBackground(img, c.bg())
 
 	// 1) Characters.
-	drawString(img, c.code, c.Width, c.Height, computeScale(c.Height))
+	drawString(img, c.code, c.Width, c.Height, computeScale(c.Height), c.randColor)
 
 	// 2) Distortion.
-	shearX(img, c.bg())
-	shearY(img, c.bg())
+	shearX(img, c.bg(), c.randIntRange, c.randInt)
+	shearY(img, c.bg(), c.randIntRange)
 
 	// 3) Thick interference line.
 	thickness := c.InterfereCount
@@ -54,10 +52,10 @@ func (c *ShearCaptcha) CreateCode() {
 		thickness = 4
 	}
 	x1 := 0
-	y1 := randutil.RandomInt(c.Height) + 1
+	y1 := c.randInt(c.Height) + 1
 	x2 := c.Width
-	y2 := randutil.RandomInt(c.Height) + 1
-	drawThickLine(img, x1, y1, x2, y2, thickness, randomColor())
+	y2 := c.randInt(c.Height) + 1
+	drawThickLine(img, x1, y1, x2, y2, thickness, c.randColor())
 
 	var buf bytes.Buffer
 	_ = png.Encode(&buf, img)

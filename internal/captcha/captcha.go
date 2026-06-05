@@ -40,6 +40,8 @@ type AbstractCaptcha struct {
 	Background     color.Color // Background color; nil means white.
 
 	generator CodeGenerator
+	randomInt func(max int) int
+	colorFunc func() color.Color
 	code      string
 	imgBytes  []byte
 }
@@ -54,6 +56,8 @@ type captchaConfig struct {
 	setGIFRepeat   bool
 	gifDelay       int
 	setGIFDelay    bool
+	randomInt      func(max int) int
+	colorFunc      func() color.Color
 }
 
 // CaptchaOption customizes captcha construction.
@@ -98,6 +102,16 @@ func WithGIFDelay(delay int) CaptchaOption {
 	}
 }
 
+// WithRandomInt sets the random integer function used while rendering captcha images.
+func WithRandomInt(randomInt func(max int) int) CaptchaOption {
+	return func(c *captchaConfig) { c.randomInt = randomInt }
+}
+
+// WithColorFunc sets the color function used while rendering captcha images.
+func WithColorFunc(colorFunc func() color.Color) CaptchaOption {
+	return func(c *captchaConfig) { c.colorFunc = colorFunc }
+}
+
 func applyCaptchaOptions(c *AbstractCaptcha, opts []CaptchaOption) captchaConfig {
 	cfg := captchaConfig{}
 	for _, opt := range opts {
@@ -116,6 +130,12 @@ func applyCaptchaOptions(c *AbstractCaptcha, opts []CaptchaOption) captchaConfig
 	}
 	if cfg.setInterfere {
 		c.InterfereCount = cfg.interfereCount
+	}
+	if cfg.randomInt != nil {
+		c.randomInt = cfg.randomInt
+	}
+	if cfg.colorFunc != nil {
+		c.colorFunc = cfg.colorFunc
 	}
 	return cfg
 }
@@ -260,6 +280,37 @@ func (a *AbstractCaptcha) bg() color.Color {
 		return color.White
 	}
 	return a.Background
+}
+
+func (a *AbstractCaptcha) randInt(max int) int {
+	if max <= 0 {
+		return 0
+	}
+	if a.randomInt != nil {
+		v := a.randomInt(max)
+		if v < 0 {
+			return 0
+		}
+		if v >= max {
+			return v % max
+		}
+		return v
+	}
+	return defaultRandomInt(max)
+}
+
+func (a *AbstractCaptcha) randIntRange(min, max int) int {
+	if max <= min {
+		return min
+	}
+	return min + a.randInt(max-min)
+}
+
+func (a *AbstractCaptcha) randColor() color.Color {
+	if a.colorFunc != nil {
+		return a.colorFunc()
+	}
+	return randomColor(a.randInt)
 }
 
 // VerifyIgnoreCase compares code and input case-insensitively for compatibility helpers.

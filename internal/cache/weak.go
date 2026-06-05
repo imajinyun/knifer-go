@@ -23,6 +23,7 @@ type WeakCache[K comparable, V any] struct {
 	listener CacheListener[K, *V]
 	hits     int64
 	misses   int64
+	clock    func() time.Time
 }
 
 type weakEntry[V any] struct {
@@ -37,7 +38,32 @@ func NewWeakCache[K comparable, V any](timeout time.Duration) *WeakCache[K, V] {
 	return &WeakCache[K, V]{
 		entries: make(map[K]*weakEntry[V]),
 		timeout: timeout,
+		clock:   time.Now,
 	}
+}
+
+// NewWeakCacheWithOptions creates a weak-reference-like cache customized by options.
+func NewWeakCacheWithOptions[K comparable, V any](opts ...Option[K, *V]) *WeakCache[K, V] {
+	cfg := applyOptions(opts)
+	c := NewWeakCache[K, V](cfg.timeout)
+	if cfg.listener != nil {
+		c.listener = cfg.listener
+	}
+	c.setClock(cfg.clock)
+	return c
+}
+
+func (c *WeakCache[K, V]) setClock(clock func() time.Time) {
+	if clock != nil {
+		c.clock = clock
+	}
+}
+
+func (c *WeakCache[K, V]) now() time.Time {
+	if c.clock != nil {
+		return c.clock()
+	}
+	return time.Now()
 }
 
 // SetListener sets the removal listener and returns the cache for chaining.
@@ -64,7 +90,7 @@ func (c *WeakCache[K, V]) PutWithTimeout(key K, value *V, timeout time.Duration)
 	}
 	c.entries[key] = &weakEntry[V]{
 		ref:        value,
-		lastAccess: time.Now().UnixNano(),
+		lastAccess: c.now().UnixNano(),
 		ttl:        timeout,
 	}
 	// Use a finalizer to remove the entry after the pointed value is collected.
@@ -84,13 +110,14 @@ func (c *WeakCache[K, V]) Get(key K) (*V, bool) {
 		c.misses++
 		return nil, false
 	}
-	if e.ttl > 0 && time.Now().UnixNano()-e.lastAccess > int64(e.ttl) {
+	now := c.now().UnixNano()
+	if e.ttl > 0 && now-e.lastAccess > int64(e.ttl) {
 		delete(c.entries, key)
 		c.notifyRemove(key, e.ref)
 		c.misses++
 		return nil, false
 	}
-	e.lastAccess = time.Now().UnixNano()
+	e.lastAccess = now
 	c.hits++
 	return e.ref, true
 }
@@ -128,7 +155,7 @@ func (c *WeakCache[K, V]) Prune() int {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	count := 0
-	now := time.Now().UnixNano()
+	now := c.now().UnixNano()
 	for k, e := range c.entries {
 		if e.ttl > 0 && now-e.lastAccess > int64(e.ttl) {
 			delete(c.entries, k)

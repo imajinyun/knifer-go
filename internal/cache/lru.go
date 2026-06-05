@@ -17,6 +17,7 @@ func NewLRUCacheWithOptions[K comparable, V any](opts ...Option[K, V]) *LRUCache
 	cfg := applyOptions(opts)
 	c := NewLRUCacheWithTimeout[K, V](cfg.capacity, cfg.timeout)
 	applyListener(&c.abstractCache, cfg.listener)
+	applyClock(&c.abstractCache, cfg.clock)
 	return c
 }
 
@@ -44,7 +45,7 @@ func lruPrune[K comparable, V any](c *abstractCache[K, V]) int {
 	if c.isPruneExpiredActive() {
 		for _, key := range c.cacheMap.keysInOrder() {
 			co, _ := c.cacheMap.get(key)
-			if co.isExpired() {
+			if co.isExpired(c.now()) {
 				c.removeWithoutLock(key)
 				count++
 			}

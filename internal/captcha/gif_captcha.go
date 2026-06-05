@@ -6,8 +6,6 @@ import (
 	"image/color"
 	"image/color/palette"
 	"image/gif"
-
-	randutil "github.com/imajinyun/go-knifer/internal/rand"
 )
 
 // GifCaptcha mirrors the utility toolkit GifCaptcha and renders animated GIF captchas.
@@ -68,14 +66,14 @@ func (c *GifCaptcha) CreateCode() {
 		// Interference circles.
 		half := c.Height >> 1
 		for i := 0; i < c.InterfereCount; i++ {
-			cx := randutil.RandomInt(c.Width)
-			cy := randutil.RandomInt(c.Height)
-			rx := randutil.RandomInt(atLeastOne(half))
-			ry := randutil.RandomInt(atLeastOne(half))
-			drawOval(rgba, cx, cy, rx, ry, randomColor())
+			cx := c.randInt(c.Width)
+			cy := c.randInt(c.Height)
+			rx := c.randInt(atLeastOne(half))
+			ry := c.randInt(atLeastOne(half))
+			drawOval(rgba, cx, cy, rx, ry, c.randColor())
 		}
 		// Characters: highlight the current hi position.
-		drawCodeFrame(rgba, c.code, hi, c.Width, c.Height)
+		drawCodeFrame(rgba, c.code, hi, c.Width, c.Height, c.randInt, c.randColor)
 
 		// Convert to a paletted frame.
 		p := image.NewPaletted(rgba.Bounds(), pal)
@@ -127,7 +125,7 @@ var _ ICaptcha = (*GifCaptcha)(nil)
 
 // drawCodeFrame draws one GIF frame; the highlighted index uses a vivid color,
 // while other positions use pale colors.
-func drawCodeFrame(img *image.RGBA, code string, highlight, w, h int) {
+func drawCodeFrame(img *image.RGBA, code string, highlight, w, h int, randomInt func(max int) int, colorFunc func() color.Color) {
 	scale := computeScale(h)
 	charW := fontWidth*scale + scale
 	totalW := charW * len(code)
@@ -137,11 +135,11 @@ func drawCodeFrame(img *image.RGBA, code string, highlight, w, h int) {
 	for i := 0; i < len(code); i++ {
 		var c color.Color
 		if i == highlight {
-			c = randomColor()
+			c = colorFunc()
 		} else {
-			r := uint8(160 + randutil.RandomInt(80))
-			g := uint8(160 + randutil.RandomInt(80))
-			b := uint8(160 + randutil.RandomInt(80))
+			r := uint8(160 + randomInt(80))
+			g := uint8(160 + randomInt(80))
+			b := uint8(160 + randomInt(80))
 			c = color.RGBA{R: r, G: g, B: b, A: 255}
 		}
 		drawChar(img, code[i], startX+i*charW, startY, scale, c)

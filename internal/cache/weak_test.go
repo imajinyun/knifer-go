@@ -30,6 +30,25 @@ func TestWeakCacheTimeout(t *testing.T) {
 	}
 }
 
+func TestWeakCacheWithClock(t *testing.T) {
+	base := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	now := base
+	c := NewWeakWithOptions[string, int](
+		WithTimeout[string, *int](time.Second),
+		WithClock[string, *int](func() time.Time { return now }),
+	)
+	v := 42
+	c.Put("a", &v)
+	now = base.Add(500 * time.Millisecond)
+	if got, ok := c.Get("a"); !ok || got == nil || *got != 42 {
+		t.Fatalf("expected value before custom-clock expiry, got %v ok=%v", got, ok)
+	}
+	now = base.Add(2 * time.Second)
+	if _, ok := c.Get("a"); ok {
+		t.Fatalf("expected custom clock to expire weak entry")
+	}
+}
+
 // Verify that a later GC can clean a weak entry once external strong references
 // disappear. Finalizer scheduling is not fully deterministic, so the test uses
 // several GC cycles and small sleeps to improve stability.

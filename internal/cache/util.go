@@ -69,6 +69,11 @@ func NewWeak[K comparable, V any](timeout time.Duration) *WeakCache[K, V] {
 	return NewWeakCache[K, V](timeout)
 }
 
+// NewWeakWithOptions creates a weak-reference-like cache customized by options.
+func NewWeakWithOptions[K comparable, V any](opts ...Option[K, *V]) *WeakCache[K, V] {
+	return NewWeakCacheWithOptions[K, V](opts...)
+}
+
 // NewNo creates a no-op cache.
 func NewNo[K comparable, V any]() *NoCache[K, V] {
 	return NewNoCache[K, V]()

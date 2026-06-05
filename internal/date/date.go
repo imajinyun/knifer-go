@@ -20,6 +20,31 @@ const (
 	UTCPattern          = "2006-01-02T15:04:05Z"
 )
 
+type parseConfig struct {
+	location *time.Location
+}
+
+// ParseOption customizes date parsing helpers.
+type ParseOption func(*parseConfig)
+
+// WithLocation sets the time zone used when parsing layouts without zone information.
+func WithLocation(location *time.Location) ParseOption {
+	return func(c *parseConfig) { c.location = location }
+}
+
+func applyParseOptions(opts []ParseOption) parseConfig {
+	cfg := parseConfig{location: time.Local}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.location == nil {
+		cfg.location = time.Local
+	}
+	return cfg
+}
+
 // Now returns the current local time.
 func Now() time.Time { return time.Now() }
 
@@ -45,6 +70,12 @@ func FormatTimeOnly(t time.Time) string { return t.Format(NormTimePattern) }
 
 // ParseDate parses common date/time formats in the local time zone.
 func ParseDate(s string) (time.Time, error) {
+	return ParseDateWithOptions(s)
+}
+
+// ParseDateWithOptions parses common date/time formats with explicit options.
+func ParseDateWithOptions(s string, opts ...ParseOption) (time.Time, error) {
+	cfg := applyParseOptions(opts)
 	s = strings.TrimSpace(s)
 	if s == "" {
 		return time.Time{}, invalidDateInputf("empty date string")
@@ -63,7 +94,7 @@ func ParseDate(s string) (time.Time, error) {
 		"2006-01-02T15:04:05",
 	}
 	for _, p := range patterns {
-		if t, err := time.ParseInLocation(p, s, time.Local); err == nil {
+		if t, err := time.ParseInLocation(p, s, cfg.location); err == nil {
 			return t, nil
 		}
 	}
@@ -72,7 +103,13 @@ func ParseDate(s string) (time.Time, error) {
 
 // ParseDateLayout parses s with the specified Go layout in the local time zone.
 func ParseDateLayout(s, layout string) (time.Time, error) {
-	t, err := time.ParseInLocation(layout, s, time.Local)
+	return ParseDateLayoutWithOptions(s, layout)
+}
+
+// ParseDateLayoutWithOptions parses s with the specified Go layout and explicit options.
+func ParseDateLayoutWithOptions(s, layout string, opts ...ParseOption) (time.Time, error) {
+	cfg := applyParseOptions(opts)
+	t, err := time.ParseInLocation(layout, s, cfg.location)
 	if err != nil {
 		return time.Time{}, wrapDateParse("parse date with layout", err)
 	}

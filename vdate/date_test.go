@@ -22,6 +22,13 @@ func TestDateFacade(t *testing.T) {
 	if got, err := ParseLayout("2026/05/30", "2006/01/02"); err != nil || got.Day() != 30 {
 		t.Fatalf("ParseLayout = %v, %v", got, err)
 	}
+	loc := time.FixedZone("facade", 8*60*60)
+	if got, err := ParseWithOptions("2026-05-30", WithLocation(loc)); err != nil || got.Location() != loc {
+		t.Fatalf("ParseWithOptions = %v, %v", got, err)
+	}
+	if got, err := ParseLayoutWithOptions("2026/05/30", "2006/01/02", WithLocation(loc)); err != nil || got.Location() != loc {
+		t.Fatalf("ParseLayoutWithOptions = %v, %v", got, err)
+	}
 	if BeginOfDay(base).Hour() != 0 || EndOfDay(base).Hour() != 23 {
 		t.Fatal("begin/end day failed")
 	}

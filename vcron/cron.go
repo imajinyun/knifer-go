@@ -78,6 +78,14 @@ func WithExecutor(exec func(func())) SchedulerOption { return cron.WithExecutor(
 // WithIDGenerator sets the task id generator used by Schedule and ScheduleFunc.
 func WithIDGenerator(idFunc func() string) SchedulerOption { return cron.WithIDGenerator(idFunc) }
 
+// WithClock sets the time source used by the scheduler timer.
+func WithClock(clock func() time.Time) SchedulerOption { return cron.WithClock(clock) }
+
+// WithSleeper sets the sleep function used by the scheduler timer.
+func WithSleeper(sleeper func(time.Duration, <-chan struct{}) bool) SchedulerOption {
+	return cron.WithSleeper(sleeper)
+}
+
 // NewSchedulerWithOptions creates a cron scheduler customized by options.
 func NewSchedulerWithOptions(opts ...SchedulerOption) *Scheduler {
 	return cron.NewSchedulerWithOptions(opts...)

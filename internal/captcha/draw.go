@@ -9,12 +9,14 @@ import (
 	randutil "github.com/imajinyun/go-knifer/internal/rand"
 )
 
+func defaultRandomInt(max int) int { return randutil.RandomInt(max) }
+
 // randomColor returns a random RGBA color.
-func randomColor() color.RGBA {
+func randomColor(randomInt func(max int) int) color.RGBA {
 	return color.RGBA{
-		R: uint8(randutil.RandomInt(256)),
-		G: uint8(randutil.RandomInt(256)),
-		B: uint8(randutil.RandomInt(256)),
+		R: uint8(randomInt(256)),
+		G: uint8(randomInt(256)),
+		B: uint8(randomInt(256)),
 		A: 255,
 	}
 }
@@ -91,27 +93,27 @@ func drawChar(img *image.RGBA, ch byte, x, y int, scale int, c color.Color) {
 }
 
 // drawString draws evenly spaced characters with random colors, centered in the image.
-func drawString(img *image.RGBA, code string, w, h int, scale int) {
+func drawString(img *image.RGBA, code string, w, h int, scale int, colorFunc func() color.Color) {
 	charW := fontWidth*scale + scale
 	totalW := charW * len(code)
 	startX := (w - totalW) / 2
 	charH := fontHeight * scale
 	startY := (h - charH) / 2
 	for i := 0; i < len(code); i++ {
-		c := randomColor()
+		c := colorFunc()
 		drawChar(img, code[i], startX+i*charW, startY, scale, c)
 	}
 }
 
 // shearX applies a sinusoidal distortion along the X direction.
-func shearX(img *image.RGBA, bg color.Color) {
+func shearX(img *image.RGBA, bg color.Color, randomIntRange func(min, max int) int, randomInt func(max int) int) {
 	w := img.Bounds().Dx()
 	h := img.Bounds().Dy()
-	period := randutil.RandomIntRange(w/4, w)
+	period := randomIntRange(w/4, w)
 	if period == 0 {
 		period = w
 	}
-	phase := float64(randutil.RandomInt(2))
+	phase := float64(randomInt(2))
 	for y := 0; y < h; y++ {
 		d := int(float64(period>>1) * math.Sin(float64(y)/float64(period)+2*math.Pi*phase))
 		for x := w - 1; x >= 0; x-- {
@@ -127,10 +129,10 @@ func shearX(img *image.RGBA, bg color.Color) {
 }
 
 // shearY applies a sinusoidal distortion along the Y direction.
-func shearY(img *image.RGBA, bg color.Color) {
+func shearY(img *image.RGBA, bg color.Color, randomIntRange func(min, max int) int) {
 	w := img.Bounds().Dx()
 	h := img.Bounds().Dy()
-	period := randutil.RandomIntRange(h/4, h)
+	period := randomIntRange(h/4, h)
 	if period == 0 {
 		period = h
 	}

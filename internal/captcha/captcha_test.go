@@ -139,14 +139,30 @@ func TestGifCaptcha(t *testing.T) {
 }
 
 func TestCaptchaOptionsAndWriteOptions(t *testing.T) {
+	colorCalls := 0
+	randomCalls := 0
 	c := NewLineCaptchaWithOptions(100, 40,
 		WithGenerator(fixedGenerator{code: "ABCD"}),
 		WithBackground(color.Black),
 		WithInterfereCount(0),
+		WithRandomInt(func(max int) int {
+			randomCalls++
+			return 0
+		}),
+		WithColorFunc(func() color.Color {
+			colorCalls++
+			return color.RGBA{R: 1, G: 2, B: 3, A: 255}
+		}),
 	)
 	c.CreateCode()
 	if c.Code() != "ABCD" || !c.Verify("ABCD") || c.Verify("abcd") {
 		t.Fatalf("custom generator not applied: code=%q", c.Code())
+	}
+	if colorCalls != len("ABCD") {
+		t.Fatalf("custom color func calls=%d, want %d", colorCalls, len("ABCD"))
+	}
+	if randomCalls != 0 {
+		t.Fatalf("custom random func should not be called when interference is disabled and color func is set, got %d", randomCalls)
 	}
 	path := filepath.Join(t.TempDir(), "nested", "captcha.png")
 	if err := c.WriteToFileWithOptions(path, WithFilePerm(0o600), WithDirPerm(0o700)); err != nil {

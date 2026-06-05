@@ -41,6 +41,7 @@ type HTTPRequest struct {
 	basicPass    string
 	hasBasic     bool
 	httpClient   *http.Client
+	decodeConfig responseDecodeConfig
 }
 
 type formFile struct {
@@ -68,6 +69,7 @@ func NewRequest(method Method, rawURL string, opts ...RequestOption) *HTTPReques
 		maxRedirects: GetGlobalMaxRedirects(),
 		tlsSkip:      IsTrustAnyHost(),
 		userAgent:    GetGlobalUserAgent(),
+		decodeConfig: defaultResponseDecodeConfig(),
 	}
 	for _, opt := range opts {
 		if opt != nil {
@@ -161,6 +163,16 @@ func WithContentType(ct string) RequestOption { return func(r *HTTPRequest) { r.
 
 // WithCharset sets a per-request charset at construction time.
 func WithCharset(charset string) RequestOption { return func(r *HTTPRequest) { r.Charset(charset) } }
+
+// WithAutoDecodeResponse controls whether response bodies are decoded by Content-Encoding.
+func WithAutoDecodeResponse(autoDecode bool) RequestOption {
+	return func(r *HTTPRequest) { r.decodeConfig.autoDecode = autoDecode }
+}
+
+// WithContentDecoder registers a per-request response body decoder for encoding.
+func WithContentDecoder(encoding string, decoder ContentDecoder) RequestOption {
+	return func(r *HTTPRequest) { r.decodeConfig.setDecoder(encoding, decoder) }
+}
 
 // Method sets the HTTP method.
 func (r *HTTPRequest) Method(m Method) *HTTPRequest { r.method = m; return r }
@@ -481,7 +493,7 @@ func (r *HTTPRequest) doExecute() (*HTTPResponse, error) {
 	if err != nil {
 		return nil, NewHTTPError("send request failed", err)
 	}
-	return wrapResponse(resp), nil
+	return wrapResponse(resp, r.decodeConfig), nil
 }
 
 func toString(v any) string {

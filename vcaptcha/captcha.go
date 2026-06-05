@@ -64,6 +64,16 @@ func WithGIFRepeat(repeat int) CaptchaOption { return captcha.WithGIFRepeat(repe
 // WithGIFDelay sets the animated GIF frame delay in 1/100 second units.
 func WithGIFDelay(delay int) CaptchaOption { return captcha.WithGIFDelay(delay) }
 
+// WithRandomInt sets the random integer function used while rendering captcha images.
+func WithRandomInt(randomInt func(max int) int) CaptchaOption {
+	return captcha.WithRandomInt(randomInt)
+}
+
+// WithColorFunc sets the color function used while rendering captcha images.
+func WithColorFunc(colorFunc func() color.Color) CaptchaOption {
+	return captcha.WithColorFunc(colorFunc)
+}
+
 // WithFilePerm sets the file permission used by WriteToFileWithOptions.
 func WithFilePerm(perm fs.FileMode) WriteOption { return captcha.WithFilePerm(perm) }
 

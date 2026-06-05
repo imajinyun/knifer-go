@@ -3,7 +3,6 @@ package log
 import (
 	"fmt"
 	"sync"
-	"time"
 )
 
 // ANSI 颜色码。
@@ -67,7 +66,12 @@ type ConsoleColorLog struct {
 
 // NewConsoleColorLog 创建一个带颜色的控制台日志实例。
 func NewConsoleColorLog(name string) *ConsoleColorLog {
-	base := NewConsoleLog(name)
+	return NewConsoleColorLogWithOptions(name)
+}
+
+// NewConsoleColorLogWithOptions 创建一个带颜色的控制台日志实例，并应用构造选项。
+func NewConsoleColorLogWithOptions(name string, opts ...ConsoleLogOption) *ConsoleColorLog {
+	base := NewConsoleLogWithOptions(name, opts...)
 	c := &ConsoleColorLog{ConsoleLog: base}
 	// 替换 Core 为彩色实现。
 	base.Core = c.write
@@ -80,7 +84,7 @@ func (c *ConsoleColorLog) write(level Level, err error, format string, args ...a
 	color := getColorFactory()(level)
 	line := fmt.Sprintf(
 		"%s[%s]%s %s[%-5s]%s %s%s%s: %s",
-		ansiWhite, time.Now().Format(consoleLogTimeLayout), ansiReset,
+		ansiWhite, c.now().Format(c.layout()), ansiReset,
 		color, level.String(), ansiReset,
 		ansiCyan, c.name, ansiReset,
 		msg,

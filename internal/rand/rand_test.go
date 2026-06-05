@@ -1,6 +1,8 @@
 package rand
 
 import (
+	"errors"
+	mathrand "math/rand"
 	"strings"
 	"testing"
 )
@@ -50,6 +52,42 @@ func TestRandomBytes(t *testing.T) {
 		t.Fatalf("RandomBytes len: %d", len(b))
 	}
 }
+
+func TestRandomWithOptionsUsesPerCallSource(t *testing.T) {
+	src := mathrand.New(mathrand.NewSource(1))
+	if got := RandomIntWithOptions(100, WithRandomSource(src)); got != 81 {
+		t.Fatalf("RandomIntWithOptions = %d, want 81", got)
+	}
+	src = mathrand.New(mathrand.NewSource(1))
+	if got := RandomStringFromWithOptions("abc", 5, WithRandomSource(src)); got != "caccb" {
+		t.Fatalf("RandomStringFromWithOptions = %q", got)
+	}
+	src = mathrand.New(mathrand.NewSource(1))
+	if got := RandomEleWithOptions([]string{"a", "b", "c"}, WithRandomSource(src)); got != "c" {
+		t.Fatalf("RandomEleWithOptions = %q", got)
+	}
+}
+
+func TestRandomBytesWithOptionsReaderAndStrictMode(t *testing.T) {
+	b, err := RandomBytesWithOptions(4, WithRandomReader(strings.NewReader("abcd")), WithStrictCryptoRandom())
+	if err != nil || string(b) != "abcd" {
+		t.Fatalf("RandomBytesWithOptions = %q, %v", b, err)
+	}
+
+	_, err = RandomBytesWithOptions(4, WithRandomReader(errReader{}), WithStrictCryptoRandom())
+	if err == nil {
+		t.Fatal("RandomBytesWithOptions strict mode should return reader error")
+	}
+
+	b, err = RandomBytesWithOptions(4, WithRandomReader(errReader{}), WithRandomSource(mathrand.New(mathrand.NewSource(1))))
+	if err != nil || len(b) != 4 {
+		t.Fatalf("RandomBytesWithOptions fallback = %v, %v", b, err)
+	}
+}
+
+type errReader struct{}
+
+func (errReader) Read([]byte) (int, error) { return 0, errors.New("boom") }
 
 func TestFillRandomBytesFallbackKeepsLength(t *testing.T) {
 	buf := make([]byte, 8)
