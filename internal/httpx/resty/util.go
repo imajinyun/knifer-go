@@ -53,20 +53,40 @@ func PostJSON(rawURL, jsonStr string) string { return Post(rawURL).BodyJSON(json
 
 // DownloadString downloads remote text.
 func DownloadString(rawURL, customCharset string) string {
+	return DownloadStringWithOptions(rawURL, customCharset)
+}
+
+// DownloadStringWithOptions downloads remote text with per-request options.
+func DownloadStringWithOptions(rawURL, customCharset string, opts ...RequestOption) string {
 	_ = customCharset
-	return Get(rawURL).Execute().Body()
+	return Get(rawURL, opts...).Execute().Body()
 }
 
 // DownloadFile downloads to a file, using URL or response headers for the file name when dest is a directory.
 func DownloadFile(rawURL, dest string, opts ...SaveOption) (int64, error) {
-	return Get(rawURL).Execute().SaveAs(dest, opts...)
+	return DownloadFileWithOptions(rawURL, dest, nil, opts...)
+}
+
+// DownloadFileWithOptions downloads to a file with per-request and per-save options.
+func DownloadFileWithOptions(rawURL, dest string, requestOpts []RequestOption, saveOpts ...SaveOption) (int64, error) {
+	return Get(rawURL, requestOpts...).Execute().SaveAs(dest, saveOpts...)
 }
 
 // Download downloads to a Writer.
-func Download(rawURL string, w io.Writer) (int64, error) { return Get(rawURL).Execute().WriteTo(w) }
+func Download(rawURL string, w io.Writer) (int64, error) { return DownloadWithOptions(rawURL, w) }
+
+// DownloadWithOptions downloads to a Writer with per-request options.
+func DownloadWithOptions(rawURL string, w io.Writer, opts ...RequestOption) (int64, error) {
+	return Get(rawURL, opts...).Execute().WriteTo(w)
+}
 
 // DownloadBytes downloads and returns bytes.
-func DownloadBytes(rawURL string) []byte { return Get(rawURL).Execute().Bytes() }
+func DownloadBytes(rawURL string) []byte { return DownloadBytesWithOptions(rawURL) }
+
+// DownloadBytesWithOptions downloads and returns bytes with per-request options.
+func DownloadBytesWithOptions(rawURL string, opts ...RequestOption) []byte {
+	return Get(rawURL, opts...).Execute().Bytes()
+}
 
 // ToParams converts a map to a URL query string.
 func ToParams(m map[string]any) string { return urlimpl.EncodeQueryMap(m) }

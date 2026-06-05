@@ -36,6 +36,16 @@ func CreateTokenWithHeaders(headers, payload map[string]any, key []byte) (string
 	return jwtimpl.CreateTokenWithHeaders(headers, payload, key)
 }
 
+// CreateTokenWithAlgorithm creates a token with an explicit HMAC algorithm.
+func CreateTokenWithAlgorithm(payload map[string]any, key []byte, algorithm string) (string, error) {
+	return jwtimpl.CreateTokenWithAlgorithm(payload, key, algorithm)
+}
+
+// CreateTokenWithHeadersAndAlgorithm creates a token with headers and an explicit HMAC algorithm.
+func CreateTokenWithHeadersAndAlgorithm(headers, payload map[string]any, key []byte, algorithm string) (string, error) {
+	return jwtimpl.CreateTokenWithHeadersAndAlgorithm(headers, payload, key, algorithm)
+}
+
 // CreateTokenWithSigner delegates to the internal jwt implementation.
 func CreateTokenWithSigner(payload map[string]any, signer JWTSigner) (string, error) {
 	return jwtimpl.CreateTokenWithSigner(payload, signer)

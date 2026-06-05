@@ -24,6 +24,21 @@ func TestDownloadString(t *testing.T) {
 	}
 }
 
+func TestDownloadStringWithOptions(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("X-Token") != "secret" {
+			http.Error(w, "missing option header", http.StatusTeapot)
+			return
+		}
+		_, _ = w.Write([]byte("with-options"))
+	}))
+	defer srv.Close()
+
+	if got := DownloadStringWithOptions(srv.URL, "", WithHeader("X-Token", "secret")); got != "with-options" {
+		t.Fatalf("body: %q", got)
+	}
+}
+
 func TestDownloadBytes(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte{0x01, 0x02, 0x03})
@@ -32,6 +47,22 @@ func TestDownloadBytes(t *testing.T) {
 
 	got := DownloadBytes(srv.URL)
 	if !bytes.Equal(got, []byte{0x01, 0x02, 0x03}) {
+		t.Fatalf("bytes: %v", got)
+	}
+}
+
+func TestDownloadBytesWithOptions(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("X-Mode") != "bytes" {
+			http.Error(w, "missing option header", http.StatusBadRequest)
+			return
+		}
+		_, _ = w.Write([]byte{0x04, 0x05, 0x06})
+	}))
+	defer srv.Close()
+
+	got := DownloadBytesWithOptions(srv.URL, WithHeader("X-Mode", "bytes"))
+	if !bytes.Equal(got, []byte{0x04, 0x05, 0x06}) {
 		t.Fatalf("bytes: %v", got)
 	}
 }
@@ -48,6 +79,26 @@ func TestDownloadToWriter(t *testing.T) {
 		t.Fatalf("err: %v", err)
 	}
 	if n != int64(len("write-me")) || buf.String() != "write-me" {
+		t.Fatalf("got %d bytes %q", n, buf.String())
+	}
+}
+
+func TestDownloadWithOptions(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("X-Mode") != "writer" {
+			http.Error(w, "missing option header", http.StatusBadRequest)
+			return
+		}
+		_, _ = w.Write([]byte("write-options"))
+	}))
+	defer srv.Close()
+
+	buf := &bytes.Buffer{}
+	n, err := DownloadWithOptions(srv.URL, buf, WithHeader("X-Mode", "writer"))
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+	if n != int64(len("write-options")) || buf.String() != "write-options" {
 		t.Fatalf("got %d bytes %q", n, buf.String())
 	}
 }
@@ -72,6 +123,33 @@ func TestDownloadFileToFile(t *testing.T) {
 		t.Fatalf("read: %v", err)
 	}
 	if string(data) != "file-content" {
+		t.Fatalf("content: %q", string(data))
+	}
+}
+
+func TestDownloadFileWithOptions(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("X-Mode") != "file" {
+			http.Error(w, "missing option header", http.StatusBadRequest)
+			return
+		}
+		_, _ = w.Write([]byte("file-options"))
+	}))
+	defer srv.Close()
+
+	dir := t.TempDir()
+	n, err := DownloadFileWithOptions(srv.URL, dir, []RequestOption{WithHeader("X-Mode", "file")}, WithSaveDefaultFilename("out.txt"))
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+	if n != int64(len("file-options")) {
+		t.Fatalf("size: %d", n)
+	}
+	data, err := os.ReadFile(filepath.Join(dir, "out.txt"))
+	if err != nil {
+		t.Fatalf("read: %v", err)
+	}
+	if string(data) != "file-options" {
 		t.Fatalf("content: %q", string(data))
 	}
 }

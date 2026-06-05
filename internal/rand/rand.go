@@ -4,6 +4,7 @@ package rand
 import (
 	cryptorand "crypto/rand"
 	mathrand "math/rand"
+	"sync"
 	"time"
 )
 
@@ -17,13 +18,25 @@ const (
 	BaseCharNumberUC = BaseChar + "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + BaseNumber
 )
 
-var defaultRand = mathrand.New(mathrand.NewSource(time.Now().UnixNano()))
+var (
+	defaultRandMu sync.Mutex
+	defaultRand   = mathrand.New(mathrand.NewSource(time.Now().UnixNano()))
+)
+
+// SetSeed resets the package-level pseudo-random source seed.
+func SetSeed(seed int64) {
+	defaultRandMu.Lock()
+	defer defaultRandMu.Unlock()
+	defaultRand.Seed(seed)
+}
 
 // RandomInt returns a random integer in [0, max). Non-positive max returns 0.
 func RandomInt(max int) int {
 	if max <= 0 {
 		return 0
 	}
+	defaultRandMu.Lock()
+	defer defaultRandMu.Unlock()
 	return defaultRand.Intn(max)
 }
 
@@ -32,17 +45,31 @@ func RandomIntRange(min, max int) int {
 	if max <= min {
 		return min
 	}
+	defaultRandMu.Lock()
+	defer defaultRandMu.Unlock()
 	return min + defaultRand.Intn(max-min)
 }
 
 // RandomLong returns a non-negative random int64.
-func RandomLong() int64 { return defaultRand.Int63() }
+func RandomLong() int64 {
+	defaultRandMu.Lock()
+	defer defaultRandMu.Unlock()
+	return defaultRand.Int63()
+}
 
 // RandomFloat returns a random float64 in [0.0, 1.0).
-func RandomFloat() float64 { return defaultRand.Float64() }
+func RandomFloat() float64 {
+	defaultRandMu.Lock()
+	defer defaultRandMu.Unlock()
+	return defaultRand.Float64()
+}
 
 // RandomBool returns a random boolean.
-func RandomBool() bool { return defaultRand.Intn(2) == 0 }
+func RandomBool() bool {
+	defaultRandMu.Lock()
+	defer defaultRandMu.Unlock()
+	return defaultRand.Intn(2) == 0
+}
 
 // RandomBytes returns n cryptographically secure random bytes when possible.
 func RandomBytes(n int) []byte {
@@ -57,6 +84,8 @@ func RandomBytes(n int) []byte {
 func fillRandomBytes(buf []byte) {
 	if _, err := cryptorand.Read(buf); err != nil {
 		// Fall back to math/rand when crypto/rand is unavailable.
+		defaultRandMu.Lock()
+		defer defaultRandMu.Unlock()
 		for i := range buf {
 			buf[i] = byte(defaultRand.Intn(256))
 		}
@@ -79,6 +108,8 @@ func RandomStringFrom(charset string, n int) string {
 	}
 	rs := []rune(charset)
 	out := make([]rune, n)
+	defaultRandMu.Lock()
+	defer defaultRandMu.Unlock()
 	for i := 0; i < n; i++ {
 		out[i] = rs[defaultRand.Intn(len(rs))]
 	}
@@ -91,5 +122,7 @@ func RandomEle[T any](a []T) T {
 		var zero T
 		return zero
 	}
+	defaultRandMu.Lock()
+	defer defaultRandMu.Unlock()
 	return a[defaultRand.Intn(len(a))]
 }

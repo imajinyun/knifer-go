@@ -16,6 +16,8 @@ type DecryptFunc func(cipherText string) (string, error)
 
 // LoadOptions controls file/remote loading behavior.
 type LoadOptions struct {
+	// Context controls cancellation for remote loading. Timeout is applied on top when set.
+	Context context.Context
 	// AllowInclude enables include/import keys in loaded configs.
 	AllowInclude bool
 	// IncludeKeys are keys used to discover included files. Defaults to include/import.
@@ -24,8 +26,14 @@ type LoadOptions struct {
 	Decrypt DecryptFunc
 	// RemoteClient is used by LoadRemote. Defaults to http.DefaultClient.
 	RemoteClient *http.Client
+	// Headers are added to remote config requests.
+	Headers http.Header
+	// RequestFactory optionally builds remote config requests. When set, Headers are applied after factory creation.
+	RequestFactory func(ctx context.Context, rawURL string) (*http.Request, error)
 	// Timeout bounds remote loading when RemoteClient has no timeout.
 	Timeout time.Duration
+	// MaxBytes limits local and remote config bytes. Non-positive means unlimited.
+	MaxBytes int64
 }
 
 // LoadWithOptions reads and parses a configuration file with advanced options.
@@ -93,7 +101,7 @@ func loadFile(path string, opts LoadOptions, seen map[string]bool) (*Conf, error
 	seen[abs] = true
 	defer delete(seen, abs)
 
-	b, err := os.ReadFile(path) // #nosec G304 G703 -- configuration loader intentionally reads caller-provided paths.
+	b, err := readFileLimit(path, opts.MaxBytes) // #nosec G304 G703 -- configuration loader intentionally reads caller-provided paths.
 	if err != nil {
 		return nil, wrapConfigIO("read config file "+path, err)
 	}
@@ -135,15 +143,36 @@ func loadRemote(rawURL string, opts LoadOptions) (*Conf, error) {
 	if client == nil {
 		client = http.DefaultClient
 	}
+	ctx := opts.Context
+	if ctx == nil {
+		ctx = context.Background()
+	}
 	timeout := opts.Timeout
 	if timeout <= 0 {
 		timeout = 10 * time.Second
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, rawURL, nil)
+	var req *http.Request
+	var err error
+	if opts.RequestFactory != nil {
+		req, err = opts.RequestFactory(ctx, rawURL)
+	} else {
+		req, err = http.NewRequestWithContext(ctx, http.MethodGet, rawURL, nil)
+	}
 	if err != nil {
 		return nil, invalidInputf("invalid remote config url %s: %s", rawURL, err.Error())
+	}
+	if req == nil {
+		return nil, invalidInputf("invalid remote config url %s: request factory returned nil", rawURL)
+	}
+	if req.Context() != ctx {
+		req = req.WithContext(ctx)
+	}
+	for key, values := range opts.Headers {
+		for _, value := range values {
+			req.Header.Add(key, value)
+		}
 	}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -153,7 +182,7 @@ func loadRemote(rawURL string, opts LoadOptions) (*Conf, error) {
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return nil, invalidInputf("fetch remote config %s: unexpected status %d", rawURL, resp.StatusCode)
 	}
-	b, err := io.ReadAll(resp.Body)
+	b, err := readAllLimit(resp.Body, opts.MaxBytes)
 	if err != nil {
 		return nil, wrapConfigIO("read remote config "+rawURL, err)
 	}
@@ -166,6 +195,30 @@ func loadRemote(rawURL string, opts LoadOptions) (*Conf, error) {
 		return nil, err
 	}
 	return c.DecryptValues(opts.Decrypt)
+}
+
+func readFileLimit(path string, maxBytes int64) ([]byte, error) {
+	f, err := os.Open(path) // #nosec G304 -- configuration loader intentionally reads caller-provided paths.
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = f.Close() }()
+	return readAllLimit(f, maxBytes)
+}
+
+func readAllLimit(r io.Reader, maxBytes int64) ([]byte, error) {
+	if maxBytes <= 0 {
+		return io.ReadAll(r)
+	}
+	limited := &io.LimitedReader{R: r, N: maxBytes + 1}
+	b, err := io.ReadAll(limited)
+	if err != nil {
+		return nil, err
+	}
+	if int64(len(b)) > maxBytes {
+		return nil, invalidInputf("config exceeds max bytes: %d", maxBytes)
+	}
+	return b, nil
 }
 
 func includeKeys(opts LoadOptions) []string {

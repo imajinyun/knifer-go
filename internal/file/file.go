@@ -30,11 +30,24 @@ type dirConfig struct {
 // DirOption customizes directory helpers.
 type DirOption func(*dirConfig)
 
+type readConfig struct {
+	maxBytes         int64
+	initialLineBytes int
+	maxLineBytes     int
+}
+
+// ReadOption customizes file and stream read helpers.
+type ReadOption func(*readConfig)
+
 func defaultWriteConfig() writeConfig {
 	return writeConfig{filePerm: 0o644, dirPerm: 0o755, overwrite: true, createParents: true}
 }
 
 func defaultDirConfig() dirConfig { return dirConfig{dirPerm: 0o755} }
+
+func defaultReadConfig() readConfig {
+	return readConfig{initialLineBytes: 64 * 1024, maxLineBytes: 1024 * 1024}
+}
 
 // WithFilePerm sets the file permission used when creating files.
 func WithFilePerm(perm fs.FileMode) WriteOption { return func(c *writeConfig) { c.filePerm = perm } }
@@ -54,6 +67,15 @@ func WithCreateParents(create bool) WriteOption {
 
 // WithMkdirPerm sets the directory permission used by Mkdir.
 func WithMkdirPerm(perm fs.FileMode) DirOption { return func(c *dirConfig) { c.dirPerm = perm } }
+
+// WithMaxBytes limits how many bytes a read helper may consume. Non-positive means unlimited.
+func WithMaxBytes(n int64) ReadOption { return func(c *readConfig) { c.maxBytes = n } }
+
+// WithInitialLineBuffer sets the initial scanner buffer for line reads.
+func WithInitialLineBuffer(n int) ReadOption { return func(c *readConfig) { c.initialLineBytes = n } }
+
+// WithMaxLineBytes sets the maximum scanner token size for line reads.
+func WithMaxLineBytes(n int) ReadOption { return func(c *readConfig) { c.maxLineBytes = n } }
 
 func applyWriteOptions(opts []WriteOption) writeConfig {
 	cfg := defaultWriteConfig()
@@ -75,12 +97,39 @@ func applyDirOptions(opts []DirOption) dirConfig {
 	return cfg
 }
 
+func applyReadOptions(opts []ReadOption) readConfig {
+	cfg := defaultReadConfig()
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.initialLineBytes <= 0 {
+		cfg.initialLineBytes = 64 * 1024
+	}
+	if cfg.maxLineBytes <= 0 {
+		cfg.maxLineBytes = 1024 * 1024
+	}
+	if cfg.maxLineBytes < cfg.initialLineBytes {
+		cfg.maxLineBytes = cfg.initialLineBytes
+	}
+	return cfg
+}
+
 // ReadAll reads all data from r.
-func ReadAll(r io.Reader) ([]byte, error) { return io.ReadAll(r) }
+func ReadAll(r io.Reader) ([]byte, error) { return ReadAllWithOptions(r) }
+
+// ReadAllWithOptions reads data from r with per-call read options.
+func ReadAllWithOptions(r io.Reader, opts ...ReadOption) ([]byte, error) {
+	return readAllLimit(r, applyReadOptions(opts).maxBytes)
+}
 
 // ReadString reads all data from r and returns it as a string.
-func ReadString(r io.Reader) (string, error) {
-	b, err := ReadAll(r)
+func ReadString(r io.Reader) (string, error) { return ReadStringWithOptions(r) }
+
+// ReadStringWithOptions reads data from r as a string with per-call read options.
+func ReadStringWithOptions(r io.Reader, opts ...ReadOption) (string, error) {
+	b, err := ReadAllWithOptions(r, opts...)
 	if err != nil {
 		return "", err
 	}
@@ -88,15 +137,27 @@ func ReadString(r io.Reader) (string, error) {
 }
 
 // ReadLines reads all lines from r. The scanner buffer is enlarged to support lines up to 1 MiB.
-func ReadLines(r io.Reader) ([]string, error) {
+func ReadLines(r io.Reader) ([]string, error) { return ReadLinesWithOptions(r) }
+
+// ReadLinesWithOptions reads all lines from r with per-call line options.
+func ReadLinesWithOptions(r io.Reader, opts ...ReadOption) ([]string, error) {
+	cfg := applyReadOptions(opts)
+	var limited *io.LimitedReader
+	if cfg.maxBytes > 0 {
+		limited = &io.LimitedReader{R: r, N: cfg.maxBytes + 1}
+		r = limited
+	}
 	scanner := bufio.NewScanner(r)
-	scanner.Buffer(make([]byte, 64*1024), 1024*1024)
+	scanner.Buffer(make([]byte, cfg.initialLineBytes), cfg.maxLineBytes)
 	var lines []string
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
 	if err := scanner.Err(); err != nil {
 		return nil, err
+	}
+	if limited != nil && limited.N == 0 {
+		return nil, invalidInputf("read exceeds max bytes: %d", cfg.maxBytes)
 	}
 	return lines, nil
 }
@@ -133,31 +194,43 @@ func IsDirectory(path string) bool {
 }
 
 // FileReadString reads the whole file as a string.
-func FileReadString(path string) (string, error) {
-	b, err := os.ReadFile(path)
+func FileReadString(path string) (string, error) { return FileReadStringWithOptions(path) }
+
+// FileReadStringWithOptions reads a file as a string with per-call read options.
+func FileReadStringWithOptions(path string, opts ...ReadOption) (string, error) {
+	b, err := FileReadBytesWithOptions(path, opts...)
 	if err != nil {
-		return "", wrapFileIO("read file "+path, err)
+		return "", err
 	}
 	return string(b), nil
 }
 
 // FileReadBytes reads all bytes from a file.
-func FileReadBytes(path string) ([]byte, error) {
-	b, err := os.ReadFile(path)
+func FileReadBytes(path string) ([]byte, error) { return FileReadBytesWithOptions(path) }
+
+// FileReadBytesWithOptions reads bytes from a file with per-call read options.
+func FileReadBytesWithOptions(path string, opts ...ReadOption) ([]byte, error) {
+	f, err := os.Open(path)
 	if err != nil {
 		return nil, wrapFileIO("read file "+path, err)
 	}
-	return b, nil
+	defer CloseQuietly(f)
+	b, err := ReadAllWithOptions(f, opts...)
+	return b, wrapFileIO("read file "+path, err)
 }
 
 // FileReadLines reads all lines from a file.
-func FileReadLines(path string) ([]string, error) {
+func FileReadLines(path string) ([]string, error) { return FileReadLinesWithOptions(path) }
+
+// FileReadLinesWithOptions reads all lines from a file with per-call read options.
+func FileReadLinesWithOptions(path string, opts ...ReadOption) ([]string, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, wrapFileIO("open file "+path, err)
 	}
 	defer CloseQuietly(f)
-	return ReadLines(f)
+	lines, err := ReadLinesWithOptions(f, opts...)
+	return lines, wrapFileIO("read lines from file "+path, err)
 }
 
 // FileWriteString writes content to a file, overwriting existing data and creating parent directories.
@@ -281,6 +354,21 @@ func writeFile(path string, data []byte, flag int, perm fs.FileMode) error {
 		return wrapFileIO("write file "+path, err)
 	}
 	return nil
+}
+
+func readAllLimit(r io.Reader, maxBytes int64) ([]byte, error) {
+	if maxBytes <= 0 {
+		return io.ReadAll(r)
+	}
+	limited := &io.LimitedReader{R: r, N: maxBytes + 1}
+	b, err := io.ReadAll(limited)
+	if err != nil {
+		return nil, err
+	}
+	if int64(len(b)) > maxBytes {
+		return nil, invalidInputf("read exceeds max bytes: %d", maxBytes)
+	}
+	return b, nil
 }
 
 // MainName returns the file name without its extension; parent directories are ignored.

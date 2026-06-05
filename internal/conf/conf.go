@@ -230,6 +230,9 @@ func (s *Conf) ApplyProfile(profile string) *Conf {
 	profile = strings.TrimSpace(profile)
 	prefix := "profile." + profile
 	for group, m := range s.data {
+		if profile != "" && group == "profile" {
+			continue
+		}
 		if profile != "" && (group == prefix || strings.HasPrefix(group, prefix+".")) {
 			continue
 		}
@@ -250,6 +253,25 @@ func (s *Conf) ApplyProfile(profile string) *Conf {
 		}
 		for k, v := range m {
 			out.SetByGroup(targetGroup, k, v)
+		}
+	}
+	if profileGroup := s.data["profile"]; len(profileGroup) > 0 {
+		keyPrefix := profile + "."
+		for k, v := range profileGroup {
+			if !strings.HasPrefix(k, keyPrefix) {
+				continue
+			}
+			rest := strings.TrimPrefix(k, keyPrefix)
+			if rest == "" {
+				continue
+			}
+			targetGroup := defaultGroup
+			targetKey := rest
+			if idx := strings.LastIndex(rest, "."); idx >= 0 {
+				targetGroup = rest[:idx]
+				targetKey = rest[idx+1:]
+			}
+			out.SetByGroup(targetGroup, targetKey, v)
 		}
 	}
 	return out

@@ -31,6 +31,26 @@ func TestReadLines(t *testing.T) {
 	}
 }
 
+func TestReadOptions(t *testing.T) {
+	if got, err := ReadStringWithOptions(ReaderFromString("abc"), WithMaxBytes(3)); err != nil || got != "abc" {
+		t.Fatalf("ReadStringWithOptions exact limit = %q, %v", got, err)
+	}
+	if _, err := ReadStringWithOptions(ReaderFromString("abcd"), WithMaxBytes(3)); err == nil {
+		t.Fatal("ReadStringWithOptions over limit error = nil")
+	}
+
+	lines, err := ReadLinesWithOptions(ReaderFromString("abc"), WithMaxBytes(3), WithInitialLineBuffer(1), WithMaxLineBytes(4))
+	if err != nil {
+		t.Fatalf("ReadLinesWithOptions exact limit: %v", err)
+	}
+	if len(lines) != 1 || lines[0] != "abc" {
+		t.Fatalf("ReadLinesWithOptions lines = %v", lines)
+	}
+	if _, err := ReadLinesWithOptions(ReaderFromString("abcd"), WithMaxBytes(3), WithMaxLineBytes(4)); err == nil {
+		t.Fatal("ReadLinesWithOptions over limit error = nil")
+	}
+}
+
 func TestFileWriteRead(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "sub", "a.txt")
@@ -68,6 +88,9 @@ func TestFileLines(t *testing.T) {
 	}
 	if len(lines) != 3 || lines[2] != "z" {
 		t.Fatalf("lines: %v", lines)
+	}
+	if _, err := FileReadLinesWithOptions(path, WithMaxBytes(2)); err == nil {
+		t.Fatal("FileReadLinesWithOptions over limit error = nil")
 	}
 }
 

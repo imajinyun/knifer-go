@@ -13,6 +13,20 @@ func CreateTokenWithHeaders(headers, payload map[string]any, key []byte) (string
 	return j.Sign()
 }
 
+// CreateTokenWithAlgorithm creates a token with an explicit HMAC algorithm.
+func CreateTokenWithAlgorithm(payload map[string]any, key []byte, algorithm string) (string, error) {
+	return CreateTokenWithHeadersAndAlgorithm(nil, payload, key, algorithm)
+}
+
+// CreateTokenWithHeadersAndAlgorithm creates a token with headers and an explicit HMAC algorithm.
+func CreateTokenWithHeadersAndAlgorithm(headers, payload map[string]any, key []byte, algorithm string) (string, error) {
+	j := New().AddHeaders(headers).AddPayloads(payload)
+	if err := j.SetKeyWithAlgorithm(key, algorithm); err != nil {
+		return "", err
+	}
+	return j.Sign()
+}
+
 // CreateTokenWithSigner 使用自定义签名器创建 token。
 func CreateTokenWithSigner(payload map[string]any, signer JWTSigner) (string, error) {
 	return CreateTokenWithHeadersAndSigner(nil, payload, signer)
@@ -34,6 +48,18 @@ func Verify(token string, key []byte) bool {
 		return false
 	}
 	return j.SetKey(key).Verify()
+}
+
+// VerifyStrict verifies a token using the header algorithm without fallback.
+func VerifyStrict(token string, key []byte) bool {
+	j, err := Of(token)
+	if err != nil {
+		return false
+	}
+	if err := j.SetKeyStrict(key); err != nil {
+		return false
+	}
+	return j.Verify()
 }
 
 // VerifyWithSigner 使用自定义 signer 校验 token。

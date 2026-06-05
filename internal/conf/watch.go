@@ -33,7 +33,7 @@ func WatchWithOptions(path string, opts WatchOptions, onChange func(*Conf, error
 	if opts.Interval <= 0 {
 		opts.Interval = time.Second
 	}
-	last, err := snapshot(path, opts.CompareContent)
+	last, err := snapshot(path, opts.CompareContent, opts.LoadOptions.MaxBytes)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func WatchWithOptions(path string, opts WatchOptions, onChange func(*Conf, error
 		for {
 			select {
 			case <-ticker.C:
-				current, statErr := snapshot(path, opts.CompareContent)
+				current, statErr := snapshot(path, opts.CompareContent, opts.LoadOptions.MaxBytes)
 				if statErr != nil {
 					onChange(nil, statErr)
 					continue
@@ -74,14 +74,14 @@ func WatchWithOptions(path string, opts WatchOptions, onChange func(*Conf, error
 	return func() { close(stop); <-done }, nil
 }
 
-func snapshot(path string, compareContent bool) (WatchEvent, error) {
+func snapshot(path string, compareContent bool, maxBytes int64) (WatchEvent, error) {
 	info, err := os.Stat(path)
 	if err != nil {
 		return WatchEvent{}, wrapConfigIO("stat config file "+path, err)
 	}
 	event := WatchEvent{Path: path, ModTime: info.ModTime(), Size: info.Size()}
 	if compareContent {
-		b, err := os.ReadFile(path) // #nosec G304 -- watcher intentionally reads the configured file path.
+		b, err := readFileLimit(path, maxBytes) // #nosec G304 -- watcher intentionally reads the configured file path.
 		if err != nil {
 			return WatchEvent{}, wrapConfigIO("read config file "+path, err)
 		}

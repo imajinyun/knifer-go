@@ -16,6 +16,19 @@ func TestRandomIntRange(t *testing.T) {
 	}
 }
 
+func TestSetSeedMakesPseudoRandomDeterministic(t *testing.T) {
+	SetSeed(42)
+	firstInt := RandomInt(1000)
+	firstString := RandomString(8)
+	SetSeed(42)
+	if got := RandomInt(1000); got != firstInt {
+		t.Fatalf("RandomInt after SetSeed = %d, want %d", got, firstInt)
+	}
+	if got := RandomString(8); got != firstString {
+		t.Fatalf("RandomString after SetSeed = %q, want %q", got, firstString)
+	}
+}
+
 func TestRandomString(t *testing.T) {
 	s := RandomString(10)
 	if len(s) != 10 {

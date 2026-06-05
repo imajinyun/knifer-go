@@ -33,6 +33,27 @@ func TestUtil_CreateWithSigner(t *testing.T) {
 	}
 }
 
+func TestUtil_CreateAndVerifyStrictWithAlgorithm(t *testing.T) {
+	key := []byte("secret")
+	tok, err := CreateTokenWithAlgorithm(map[string]any{"a": 1}, key, AlgHS512)
+	if err != nil {
+		t.Fatalf("create: %v", err)
+	}
+	parsed, err := ParseToken(tok)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	if parsed.Algorithm() != AlgHS512 {
+		t.Fatalf("alg = %q, want %q", parsed.Algorithm(), AlgHS512)
+	}
+	if !VerifyStrict(tok, key) {
+		t.Fatal("VerifyStrict failed")
+	}
+	if _, err := CreateTokenWithAlgorithm(map[string]any{"a": 1}, key, "bad"); err == nil {
+		t.Fatal("CreateTokenWithAlgorithm bad alg error = nil")
+	}
+}
+
 func TestUtil_ParseToken(t *testing.T) {
 	tok := "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9" +
 		".eyJsb2dpblR5cGUiOiJsb2dpbiIsImxvZ2luSWQiOiJhZG1pbiIsImRldmljZSI6ImRlZmF1bHQtZGV2aWNlIiwiZWZmIjoxNjc4Mjg1NzEzOTM1LCJyblN0ciI6IkVuMTczWFhvWUNaaVZUWFNGOTNsN1pabGtOalNTd0pmIn0" +

@@ -25,7 +25,17 @@ func WithSaveDefaultFilename(name string) SaveOption { return httpx.WithSaveDefa
 // Download downloads rawURL into w.
 func Download(rawURL string, w io.Writer) (int64, error) { return httpx.Download(rawURL, w) }
 
+// DownloadWithOptions downloads rawURL into w with per-request options.
+func DownloadWithOptions(rawURL string, w io.Writer, opts ...RequestOption) (int64, error) {
+	return httpx.DownloadWithOptions(rawURL, w, opts...)
+}
+
 // DownloadFile downloads rawURL to dest.
 func DownloadFile(rawURL, dest string, opts ...SaveOption) (int64, error) {
 	return httpx.DownloadFile(rawURL, dest, opts...)
+}
+
+// DownloadFileWithOptions downloads rawURL to dest with per-request and per-save options.
+func DownloadFileWithOptions(rawURL, dest string, requestOpts []RequestOption, saveOpts ...SaveOption) (int64, error) {
+	return httpx.DownloadFileWithOptions(rawURL, dest, requestOpts, saveOpts...)
 }

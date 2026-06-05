@@ -20,3 +20,6 @@ func Numbers(n int) string                    { return randimpl.RandomNumbers(n)
 func StringUpper(n int) string                { return randimpl.RandomStringUpper(n) }
 func StringFrom(charset string, n int) string { return randimpl.RandomStringFrom(charset, n) }
 func Ele[T any](a []T) T                      { return randimpl.RandomEle(a) }
+
+// SetSeed resets the package-level pseudo-random source seed.
+func SetSeed(seed int64) { randimpl.SetSeed(seed) }

@@ -84,6 +84,26 @@ func (j *JWT) SetKey(key []byte) *JWT {
 	return j.SetSigner(signer)
 }
 
+// SetKeyWithAlgorithm sets the signer with an explicit algorithm and returns any signer creation error.
+func (j *JWT) SetKeyWithAlgorithm(key []byte, algorithm string) error {
+	algorithm = strings.ToUpper(strings.TrimSpace(algorithm))
+	if algorithm == "" {
+		algorithm = AlgHS256
+	}
+	signer, err := CreateSigner(algorithm, key)
+	if err != nil {
+		return err
+	}
+	j.SetHeader(HeaderAlgorithm, algorithm)
+	j.SetSigner(signer)
+	return nil
+}
+
+// SetKeyStrict sets the signer using the header alg without silently falling back.
+func (j *JWT) SetKeyStrict(key []byte) error {
+	return j.SetKeyWithAlgorithm(key, j.Algorithm())
+}
+
 // SetSigner 设置签名器；若 header 中无 alg 字段则自动写入。
 func (j *JWT) SetSigner(signer JWTSigner) *JWT {
 	j.signer = signer
@@ -284,5 +304,13 @@ func (j *JWT) Validate(leeway int64) bool {
 	if !j.Verify() {
 		return false
 	}
-	return ValidateDate(j, time.Now(), leeway) == nil
+	return j.ValidateAt(time.Now(), leeway)
+}
+
+// ValidateAt validates signature and time claims at the provided time.
+func (j *JWT) ValidateAt(now time.Time, leeway int64) bool {
+	if !j.Verify() {
+		return false
+	}
+	return ValidateDate(j, now, leeway) == nil
 }

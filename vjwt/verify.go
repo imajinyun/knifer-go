@@ -19,6 +19,11 @@ func Verify(token string, key []byte) bool {
 	return jwtimpl.Verify(token, key)
 }
 
+// VerifyStrict verifies a token using the header algorithm without fallback.
+func VerifyStrict(token string, key []byte) bool {
+	return jwtimpl.VerifyStrict(token, key)
+}
+
 // VerifyWithSigner delegates to the internal jwt implementation.
 func VerifyWithSigner(token string, signer JWTSigner) bool {
 	return jwtimpl.VerifyWithSigner(token, signer)

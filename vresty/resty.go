@@ -152,13 +152,38 @@ func PostJSON(rawURL, jsonStr string) string { return restyimpl.PostJSON(rawURL,
 // Download downloads rawURL into w.
 func Download(rawURL string, w io.Writer) (int64, error) { return restyimpl.Download(rawURL, w) }
 
+// DownloadWithOptions downloads rawURL into w with per-request options.
+func DownloadWithOptions(rawURL string, w io.Writer, opts ...RequestOption) (int64, error) {
+	return restyimpl.DownloadWithOptions(rawURL, w, opts...)
+}
+
 // DownloadFile downloads rawURL to dest.
 func DownloadFile(rawURL, dest string, opts ...SaveOption) (int64, error) {
 	return restyimpl.DownloadFile(rawURL, dest, opts...)
 }
 
+// DownloadFileWithOptions downloads rawURL to dest with per-request and per-save options.
+func DownloadFileWithOptions(rawURL, dest string, requestOpts []RequestOption, saveOpts ...SaveOption) (int64, error) {
+	return restyimpl.DownloadFileWithOptions(rawURL, dest, requestOpts, saveOpts...)
+}
+
 // DownloadBytes downloads and returns bytes.
 func DownloadBytes(rawURL string) []byte { return restyimpl.DownloadBytes(rawURL) }
+
+// DownloadBytesWithOptions downloads and returns bytes with per-request options.
+func DownloadBytesWithOptions(rawURL string, opts ...RequestOption) []byte {
+	return restyimpl.DownloadBytesWithOptions(rawURL, opts...)
+}
+
+// DownloadString downloads remote text.
+func DownloadString(rawURL, customCharset string) string {
+	return restyimpl.DownloadString(rawURL, customCharset)
+}
+
+// DownloadStringWithOptions downloads remote text with per-request options.
+func DownloadStringWithOptions(rawURL, customCharset string, opts ...RequestOption) string {
+	return restyimpl.DownloadStringWithOptions(rawURL, customCharset, opts...)
+}
 
 // SetGlobalTimeout sets the global HTTP timeout.
 func SetGlobalTimeout(d time.Duration) { restyimpl.SetGlobalTimeout(d) }
