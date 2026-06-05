@@ -22,6 +22,15 @@ func NewTimedCache[K comparable, V any](timeout time.Duration) *TimedCache[K, V]
 	return c
 }
 
+// NewTimedCacheWithOptions creates a timed cache customized by options.
+// Capacity is ignored because TimedCache is expiration-only and has no capacity limit.
+func NewTimedCacheWithOptions[K comparable, V any](opts ...Option[K, V]) *TimedCache[K, V] {
+	cfg := applyOptions(opts)
+	c := NewTimedCache[K, V](cfg.timeout)
+	applyListener(&c.abstractCache, cfg.listener)
+	return c
+}
+
 // SetListener sets the removal listener and returns the cache for chaining.
 func (c *TimedCache[K, V]) SetListener(l CacheListener[K, V]) Cache[K, V] {
 	c.listener = l

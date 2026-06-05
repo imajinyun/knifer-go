@@ -2,6 +2,7 @@ package vcron_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/imajinyun/go-knifer/vcron"
 )
@@ -48,6 +49,29 @@ func TestFacadeSchedulerLifecycle(t *testing.T) {
 
 	if !vcron.CronRemove(id) {
 		t.Fatal("expected task to be removed")
+	}
+}
+
+func TestFacadeSchedulerWithOptions(t *testing.T) {
+	loc := time.FixedZone("facade", 8*60*60)
+	s := vcron.NewSchedulerWithOptions(
+		vcron.WithLocation(loc),
+		vcron.WithMatchSecond(true),
+		vcron.WithIDGenerator(func() string { return "facade-task" }),
+		vcron.WithExecutor(func(fn func()) { fn() }),
+	)
+	if s.Config().Location != loc {
+		t.Fatalf("scheduler location = %v, want %v", s.Config().Location, loc)
+	}
+	if !s.IsMatchSecond() {
+		t.Fatal("scheduler should match seconds")
+	}
+	id, err := s.ScheduleFunc("* * * * * *", func() {})
+	if err != nil {
+		t.Fatalf("ScheduleFunc with options: %v", err)
+	}
+	if id != "facade-task" {
+		t.Fatalf("scheduled id = %q, want facade-task", id)
 	}
 }
 

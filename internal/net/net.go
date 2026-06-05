@@ -202,18 +202,33 @@ func IsUsableLocalPortWithOptions(port int, opts ...PortOption) bool {
 // GetUsableLocalPort returns an available local TCP port in the default range.
 func GetUsableLocalPort() (int, error) { return GetUsableLocalPortInRange(PortRangeMin, PortRangeMax) }
 
+// GetUsableLocalPortWithOptions returns an available local port in the default range with custom probe options.
+func GetUsableLocalPortWithOptions(opts ...PortOption) (int, error) {
+	return GetUsableLocalPortInRangeWithOptions(PortRangeMin, PortRangeMax, opts...)
+}
+
 // GetUsableLocalPortFrom returns an available local TCP port from minPort to max.
 func GetUsableLocalPortFrom(minPort int) (int, error) {
 	return GetUsableLocalPortInRange(minPort, PortRangeMax)
 }
 
+// GetUsableLocalPortFromWithOptions returns an available local port from minPort to max with custom probe options.
+func GetUsableLocalPortFromWithOptions(minPort int, opts ...PortOption) (int, error) {
+	return GetUsableLocalPortInRangeWithOptions(minPort, PortRangeMax, opts...)
+}
+
 // GetUsableLocalPortInRange returns an available local TCP port in [minPort, maxPort].
 func GetUsableLocalPortInRange(minPort, maxPort int) (int, error) {
+	return GetUsableLocalPortInRangeWithOptions(minPort, maxPort)
+}
+
+// GetUsableLocalPortInRangeWithOptions returns an available local port in [minPort, maxPort] with custom probe options.
+func GetUsableLocalPortInRangeWithOptions(minPort, maxPort int, opts ...PortOption) (int, error) {
 	if minPort < 0 || maxPort > PortRangeMax || minPort > maxPort {
 		return 0, fmt.Errorf("invalid port range: %d-%d", minPort, maxPort)
 	}
 	for port := minPort; port <= maxPort; port++ {
-		if IsUsableLocalPort(port) {
+		if IsUsableLocalPortWithOptions(port, opts...) {
 			return port, nil
 		}
 	}
@@ -222,12 +237,17 @@ func GetUsableLocalPortInRange(minPort, maxPort int) (int, error) {
 
 // GetUsableLocalPorts returns up to numRequested available ports in [minPort, maxPort].
 func GetUsableLocalPorts(numRequested, minPort, maxPort int) ([]int, error) {
+	return GetUsableLocalPortsWithOptions(numRequested, minPort, maxPort)
+}
+
+// GetUsableLocalPortsWithOptions returns up to numRequested available ports in [minPort, maxPort] with custom probe options.
+func GetUsableLocalPortsWithOptions(numRequested, minPort, maxPort int, opts ...PortOption) ([]int, error) {
 	if numRequested <= 0 {
 		return nil, nil
 	}
 	ports := make([]int, 0, numRequested)
 	for port := minPort; port <= maxPort && len(ports) < numRequested; port++ {
-		if IsUsableLocalPort(port) {
+		if IsUsableLocalPortWithOptions(port, opts...) {
 			ports = append(ports, port)
 		}
 	}

@@ -12,6 +12,14 @@ func NewLFUCache[K comparable, V any](capacity int) *LFUCache[K, V] {
 	return NewLFUCacheWithTimeout[K, V](capacity, 0)
 }
 
+// NewLFUCacheWithOptions creates an LFU cache customized by options.
+func NewLFUCacheWithOptions[K comparable, V any](opts ...Option[K, V]) *LFUCache[K, V] {
+	cfg := applyOptions(opts)
+	c := NewLFUCacheWithTimeout[K, V](cfg.capacity, cfg.timeout)
+	applyListener(&c.abstractCache, cfg.listener)
+	return c
+}
+
 // NewLFUCacheWithTimeout creates an LFU cache with a default timeout.
 func NewLFUCacheWithTimeout[K comparable, V any](capacity int, timeout time.Duration) *LFUCache[K, V] {
 	c := &LFUCache[K, V]{}

@@ -50,13 +50,14 @@ type readConfig struct {
 type ReadOption func(*readConfig)
 
 type writeConfig struct {
-	sheet       string
-	startRow    int
-	startCol    int
-	dirPerm     fs.FileMode
-	filePerm    fs.FileMode
-	overwrite   bool
-	saveOptions []excelize.Options
+	sheet         string
+	startRow      int
+	startCol      int
+	dirPerm       fs.FileMode
+	filePerm      fs.FileMode
+	overwrite     bool
+	createParents bool
+	saveOptions   []excelize.Options
 }
 
 // WriteOption customizes Excel write helpers.
@@ -65,7 +66,7 @@ type WriteOption func(*writeConfig)
 func defaultReadConfig() readConfig { return readConfig{} }
 
 func defaultWriteConfig() writeConfig {
-	return writeConfig{sheet: DefaultSheetName, startRow: 1, startCol: 1, dirPerm: 0o750, filePerm: 0o644, overwrite: true}
+	return writeConfig{sheet: DefaultSheetName, startRow: 1, startCol: 1, dirPerm: 0o750, filePerm: 0o644, overwrite: true, createParents: true}
 }
 
 // WithReadSheet selects the worksheet read by read helpers.
@@ -100,6 +101,11 @@ func WithFilePerm(perm fs.FileMode) WriteOption { return func(c *writeConfig) { 
 // WithOverwrite controls whether an existing workbook may be replaced.
 func WithOverwrite(overwrite bool) WriteOption {
 	return func(c *writeConfig) { c.overwrite = overwrite }
+}
+
+// WithCreateParents controls whether write helpers create parent directories.
+func WithCreateParents(create bool) WriteOption {
+	return func(c *writeConfig) { c.createParents = create }
 }
 
 // WithSaveOptions sets excelize options used when saving workbooks.
@@ -193,8 +199,10 @@ func writeRows(path string, rows [][]string, cfg writeConfig) error {
 	if err := setRows(f, sheet, rows, cfg.startRow, cfg.startCol); err != nil {
 		return err
 	}
-	if err := ensureParentDir(path, cfg.dirPerm); err != nil {
-		return err
+	if cfg.createParents {
+		if err := ensureParentDir(path, cfg.dirPerm); err != nil {
+			return err
+		}
 	}
 	return saveWorkbook(f, path, cfg)
 }
@@ -206,8 +214,10 @@ func WriteSheets(path string, sheets map[string][][]string, opts ...WriteOption)
 	defer func() { _ = f.Close() }()
 
 	if len(sheets) == 0 {
-		if err := ensureParentDir(path, cfg.dirPerm); err != nil {
-			return err
+		if cfg.createParents {
+			if err := ensureParentDir(path, cfg.dirPerm); err != nil {
+				return err
+			}
 		}
 		return saveWorkbook(f, path, cfg)
 	}
@@ -229,8 +239,10 @@ func WriteSheets(path string, sheets map[string][][]string, opts ...WriteOption)
 			return err
 		}
 	}
-	if err := ensureParentDir(path, cfg.dirPerm); err != nil {
-		return err
+	if cfg.createParents {
+		if err := ensureParentDir(path, cfg.dirPerm); err != nil {
+			return err
+		}
 	}
 	return saveWorkbook(f, path, cfg)
 }

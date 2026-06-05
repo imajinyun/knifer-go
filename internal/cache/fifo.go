@@ -12,6 +12,14 @@ func NewFIFOCache[K comparable, V any](capacity int) *FIFOCache[K, V] {
 	return NewFIFOCacheWithTimeout[K, V](capacity, 0)
 }
 
+// NewFIFOCacheWithOptions creates a FIFO cache customized by options.
+func NewFIFOCacheWithOptions[K comparable, V any](opts ...Option[K, V]) *FIFOCache[K, V] {
+	cfg := applyOptions(opts)
+	c := NewFIFOCacheWithTimeout[K, V](cfg.capacity, cfg.timeout)
+	applyListener(&c.abstractCache, cfg.listener)
+	return c
+}
+
 // NewFIFOCacheWithTimeout creates a FIFO cache with a default timeout.
 func NewFIFOCacheWithTimeout[K comparable, V any](capacity int, timeout time.Duration) *FIFOCache[K, V] {
 	c := &FIFOCache[K, V]{}

@@ -114,8 +114,18 @@ type nanoIDConfig struct {
 	length   int
 }
 
+type snowflakeConfig struct {
+	workerID      int64
+	datacenterID  int64
+	timeFunc      func() int64
+	tilNextMillis func(lastTimestamp int64, now func() int64) int64
+}
+
 // NanoIDOption customizes NanoIdWithOptions.
 type NanoIDOption func(*nanoIDConfig)
+
+// SnowflakeOption customizes Snowflake construction.
+type SnowflakeOption func(*snowflakeConfig)
 
 // WithNanoIDRandomReader sets the random source used by NanoIdWithOptions.
 func WithNanoIDRandomReader(reader io.Reader) NanoIDOption {
@@ -144,6 +154,50 @@ func applyNanoIDOptions(opts []NanoIDOption) nanoIDConfig {
 	}
 	if cfg.alphabet == "" {
 		cfg.alphabet = nanoIDAlphabet
+	}
+	return cfg
+}
+
+// WithSnowflakeWorkerID sets the generator worker id.
+func WithSnowflakeWorkerID(workerID int64) SnowflakeOption {
+	return func(c *snowflakeConfig) { c.workerID = workerID }
+}
+
+// WithSnowflakeDatacenterID sets the generator datacenter id.
+func WithSnowflakeDatacenterID(datacenterID int64) SnowflakeOption {
+	return func(c *snowflakeConfig) { c.datacenterID = datacenterID }
+}
+
+// WithSnowflakeTimeFunc sets the millisecond time source used by the generator.
+func WithSnowflakeTimeFunc(timeFunc func() int64) SnowflakeOption {
+	return func(c *snowflakeConfig) {
+		if timeFunc != nil {
+			c.timeFunc = timeFunc
+		}
+	}
+}
+
+// WithSnowflakeWaitFunc sets the wait function used when the sequence overflows within the same millisecond.
+func WithSnowflakeWaitFunc(waitFunc func(lastTimestamp int64, now func() int64) int64) SnowflakeOption {
+	return func(c *snowflakeConfig) {
+		if waitFunc != nil {
+			c.tilNextMillis = waitFunc
+		}
+	}
+}
+
+func applySnowflakeOptions(opts []SnowflakeOption) snowflakeConfig {
+	cfg := snowflakeConfig{timeFunc: currentMillis, tilNextMillis: waitNextMillis}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.timeFunc == nil {
+		cfg.timeFunc = currentMillis
+	}
+	if cfg.tilNextMillis == nil {
+		cfg.tilNextMillis = waitNextMillis
 	}
 	return cfg
 }
@@ -235,6 +289,15 @@ type Snowflake struct {
 // Multiple standalone generators with the same worker/datacenter pair may produce duplicate IDs.
 func CreateSnowflake(workerID, datacenterID int64) *Snowflake {
 	return newSnowflake(workerID, datacenterID)
+}
+
+// CreateSnowflakeWithOptions creates a standalone Snowflake generator customized by options.
+func CreateSnowflakeWithOptions(opts ...SnowflakeOption) *Snowflake {
+	cfg := applySnowflakeOptions(opts)
+	s := newSnowflake(cfg.workerID, cfg.datacenterID)
+	s.timeFunc = cfg.timeFunc
+	s.tilNextMillis = cfg.tilNextMillis
+	return s
 }
 
 // GetSnowflake returns the default singleton Snowflake generator.

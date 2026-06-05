@@ -59,20 +59,27 @@ func MustExit(ctx context.Context, err error) { errimpl.MustExit(ctx, err) }
 // Init configures logrus output and optional Sentry forwarding.
 func Init(sentryDSN string) { errimpl.Init(sentryDSN) }
 
+// WithSentryDSN sets the DSN used for Sentry forwarding.
 func WithSentryDSN(dsn string) InitOption { return errimpl.WithSentryDSN(dsn) }
 
+// WithSentryEnvKey sets the environment variable key used to resolve the Sentry DSN.
 func WithSentryEnvKey(key string) InitOption { return errimpl.WithSentryEnvKey(key) }
 
+// WithLogOutput sets the log output writer.
 func WithLogOutput(output io.Writer) InitOption { return errimpl.WithLogOutput(output) }
 
+// WithLogFormatter sets the logrus formatter used by InitWithOptions.
 func WithLogFormatter(formatter logrus.Formatter) InitOption {
 	return errimpl.WithLogFormatter(formatter)
 }
 
+// WithReportCaller controls whether logrus reports caller information.
 func WithReportCaller(reportCaller bool) InitOption { return errimpl.WithReportCaller(reportCaller) }
 
+// WithSentryLevels sets which log levels are forwarded to Sentry.
 func WithSentryLevels(levels ...logrus.Level) InitOption { return errimpl.WithSentryLevels(levels...) }
 
+// InitWithOptions configures logrus output and optional Sentry forwarding with options.
 func InitWithOptions(opts ...InitOption) { errimpl.InitWithOptions(opts...) }
 
 // Wrap creates a recoverable function wrapper.
@@ -91,10 +98,13 @@ func RecoverWithoutError(f func(), format string, args ...any) error {
 // GetStackTrace captures the current goroutine stack trace.
 func GetStackTrace(skip int) StackTrace { return errimpl.GetStackTrace(skip) }
 
+// WithStackSkip sets how many caller frames to skip while capturing a stack trace.
 func WithStackSkip(skip int) StackTraceOption { return errimpl.WithStackSkip(skip) }
 
+// WithStackDepth limits the number of captured stack frames.
 func WithStackDepth(depth int) StackTraceOption { return errimpl.WithStackDepth(depth) }
 
+// GetStackTraceWithOptions captures the current goroutine stack trace with options.
 func GetStackTraceWithOptions(opts ...StackTraceOption) StackTrace {
 	return errimpl.GetStackTraceWithOptions(opts...)
 }

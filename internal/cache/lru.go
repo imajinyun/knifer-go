@@ -12,6 +12,14 @@ func NewLRUCache[K comparable, V any](capacity int) *LRUCache[K, V] {
 	return NewLRUCacheWithTimeout[K, V](capacity, 0)
 }
 
+// NewLRUCacheWithOptions creates an LRU cache customized by options.
+func NewLRUCacheWithOptions[K comparable, V any](opts ...Option[K, V]) *LRUCache[K, V] {
+	cfg := applyOptions(opts)
+	c := NewLRUCacheWithTimeout[K, V](cfg.capacity, cfg.timeout)
+	applyListener(&c.abstractCache, cfg.listener)
+	return c
+}
+
 // NewLRUCacheWithTimeout creates an LRU cache with a default timeout.
 func NewLRUCacheWithTimeout[K comparable, V any](capacity int, timeout time.Duration) *LRUCache[K, V] {
 	c := &LRUCache[K, V]{}

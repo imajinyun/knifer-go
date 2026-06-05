@@ -27,6 +27,9 @@ type CacheObj[K comparable, V any] struct {
 	*cache.CacheObj[K, V]
 }
 
+// Option customizes cache construction.
+type Option[K comparable, V any] = cache.Option[K, V]
+
 // FIFOCache is a first-in-first-out cache.
 type FIFOCache[K comparable, V any] struct {
 	*cache.FIFOCache[K, V]
@@ -60,9 +63,29 @@ type WeakCache[K comparable, V any] struct {
 // Supplier supplies values lazily.
 type Supplier[V any] func() (V, error)
 
+// WithCapacity sets the maximum number of entries; 0 means unlimited.
+func WithCapacity[K comparable, V any](capacity int) Option[K, V] {
+	return cache.WithCapacity[K, V](capacity)
+}
+
+// WithTimeout sets the default entry expiration duration; 0 means no expiration.
+func WithTimeout[K comparable, V any](timeout time.Duration) Option[K, V] {
+	return cache.WithTimeout[K, V](timeout)
+}
+
+// WithListener sets the removal listener during cache construction.
+func WithListener[K comparable, V any](listener CacheListener[K, V]) Option[K, V] {
+	return cache.WithListener[K, V](listener)
+}
+
 // NewFIFO creates a FIFO cache.
 func NewFIFO[K comparable, V any](capacity int) *FIFOCache[K, V] {
 	return &FIFOCache[K, V]{FIFOCache: cache.NewFIFO[K, V](capacity)}
+}
+
+// NewFIFOWithOptions creates a FIFO cache customized by options.
+func NewFIFOWithOptions[K comparable, V any](opts ...Option[K, V]) *FIFOCache[K, V] {
+	return &FIFOCache[K, V]{FIFOCache: cache.NewFIFOWithOptions[K, V](opts...)}
 }
 
 // NewFIFOWithTimeout creates a FIFO cache with timeout.
@@ -75,6 +98,11 @@ func NewLFU[K comparable, V any](capacity int) *LFUCache[K, V] {
 	return &LFUCache[K, V]{LFUCache: cache.NewLFU[K, V](capacity)}
 }
 
+// NewLFUWithOptions creates an LFU cache customized by options.
+func NewLFUWithOptions[K comparable, V any](opts ...Option[K, V]) *LFUCache[K, V] {
+	return &LFUCache[K, V]{LFUCache: cache.NewLFUWithOptions[K, V](opts...)}
+}
+
 // NewLFUWithTimeout creates an LFU cache with timeout.
 func NewLFUWithTimeout[K comparable, V any](capacity int, timeout time.Duration) *LFUCache[K, V] {
 	return &LFUCache[K, V]{LFUCache: cache.NewLFUWithTimeout[K, V](capacity, timeout)}
@@ -83,6 +111,11 @@ func NewLFUWithTimeout[K comparable, V any](capacity int, timeout time.Duration)
 // NewLRU creates an LRU cache.
 func NewLRU[K comparable, V any](capacity int) *LRUCache[K, V] {
 	return &LRUCache[K, V]{LRUCache: cache.NewLRU[K, V](capacity)}
+}
+
+// NewLRUWithOptions creates an LRU cache customized by options.
+func NewLRUWithOptions[K comparable, V any](opts ...Option[K, V]) *LRUCache[K, V] {
+	return &LRUCache[K, V]{LRUCache: cache.NewLRUWithOptions[K, V](opts...)}
 }
 
 // NewLRUWithTimeout creates an LRU cache with timeout.
@@ -98,6 +131,11 @@ func NewNoCache[K comparable, V any]() *NoCache[K, V] {
 // NewTimed creates a timed cache.
 func NewTimed[K comparable, V any](timeout time.Duration) *TimedCache[K, V] {
 	return &TimedCache[K, V]{TimedCache: cache.NewTimed[K, V](timeout)}
+}
+
+// NewTimedWithOptions creates a timed cache customized by options.
+func NewTimedWithOptions[K comparable, V any](opts ...Option[K, V]) *TimedCache[K, V] {
+	return &TimedCache[K, V]{TimedCache: cache.NewTimedWithOptions[K, V](opts...)}
 }
 
 // NewTimedScheduled creates a timed cache with scheduled pruning.

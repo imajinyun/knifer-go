@@ -16,14 +16,30 @@ func IsUsableLocalPortWithOptions(port int, opts ...PortOption) bool {
 
 func GetUsableLocalPort() (int, error) { return netimpl.GetUsableLocalPort() }
 
+func GetUsableLocalPortWithOptions(opts ...PortOption) (int, error) {
+	return netimpl.GetUsableLocalPortWithOptions(opts...)
+}
+
 func GetUsableLocalPortFrom(minPort int) (int, error) { return netimpl.GetUsableLocalPortFrom(minPort) }
+
+func GetUsableLocalPortFromWithOptions(minPort int, opts ...PortOption) (int, error) {
+	return netimpl.GetUsableLocalPortFromWithOptions(minPort, opts...)
+}
 
 func GetUsableLocalPortInRange(minPort, maxPort int) (int, error) {
 	return netimpl.GetUsableLocalPortInRange(minPort, maxPort)
 }
 
+func GetUsableLocalPortInRangeWithOptions(minPort, maxPort int, opts ...PortOption) (int, error) {
+	return netimpl.GetUsableLocalPortInRangeWithOptions(minPort, maxPort, opts...)
+}
+
 func GetUsableLocalPorts(numRequested, minPort, maxPort int) ([]int, error) {
 	return netimpl.GetUsableLocalPorts(numRequested, minPort, maxPort)
+}
+
+func GetUsableLocalPortsWithOptions(numRequested, minPort, maxPort int, opts ...PortOption) ([]int, error) {
+	return netimpl.GetUsableLocalPortsWithOptions(numRequested, minPort, maxPort, opts...)
 }
 
 func NewLocalPortGenerator(beginPort int) *LocalPortGenerator {

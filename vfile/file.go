@@ -85,26 +85,33 @@ func ReadFileLinesWithOptions(path string, opts ...ReadOption) ([]string, error)
 	return fileimpl.FileReadLinesWithOptions(path, opts...)
 }
 
+// WriteFileString writes content to path, creating parent directories by default.
 func WriteFileString(path, content string, opts ...WriteOption) error {
 	return fileimpl.FileWriteString(path, content, opts...)
 }
 
+// WriteFileBytes writes data to path, creating parent directories by default.
 func WriteFileBytes(path string, data []byte, opts ...WriteOption) error {
 	return fileimpl.FileWriteBytes(path, data, opts...)
 }
 
+// AppendFileString appends content to path, creating parent directories by default.
 func AppendFileString(path, content string, opts ...WriteOption) error {
 	return fileimpl.FileAppendString(path, content, opts...)
 }
 
+// Mkdir creates dir with directory options.
 func Mkdir(dir string, opts ...DirOption) error { return fileimpl.Mkdir(dir, opts...) }
 
+// Touch creates path when missing and updates its timestamp.
 func Touch(path string, opts ...WriteOption) error {
 	return fileimpl.Touch(path, opts...)
 }
 
+// Del removes path recursively.
 func Del(path string) error { return fileimpl.Del(path) }
 
+// CopyFile copies src to dst, creating destination parents by default.
 func CopyFile(src, dst string, opts ...WriteOption) error {
 	return fileimpl.FileCopy(src, dst, opts...)
 }

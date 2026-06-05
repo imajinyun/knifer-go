@@ -66,3 +66,35 @@ func TestFacadeCacheListener(t *testing.T) {
 		t.Fatalf("expected listener to receive 'a', got %q", removedKey)
 	}
 }
+
+func TestFacadeCacheOptions(t *testing.T) {
+	var removedKey string
+	fifo := vcache.NewFIFOWithOptions[string, int](
+		vcache.WithCapacity[string, int](1),
+		vcache.WithTimeout[string, int](time.Second),
+		vcache.WithListener[string, int](vcache.CacheListenerFunc[string, int](func(key string, value int) {
+			removedKey = key
+		})),
+	)
+	if fifo.Capacity() != 1 || fifo.Timeout() != time.Second {
+		t.Fatalf("FIFO options not applied: capacity=%d timeout=%s", fifo.Capacity(), fifo.Timeout())
+	}
+	fifo.Put("a", 1)
+	fifo.Put("b", 2)
+	if removedKey != "a" {
+		t.Fatalf("expected listener to receive 'a', got %q", removedKey)
+	}
+
+	lfu := vcache.NewLFUWithOptions[string, int](vcache.WithCapacity[string, int](2), vcache.WithTimeout[string, int](time.Second))
+	if lfu.Capacity() != 2 || lfu.Timeout() != time.Second {
+		t.Fatalf("LFU options not applied: capacity=%d timeout=%s", lfu.Capacity(), lfu.Timeout())
+	}
+	lru := vcache.NewLRUWithOptions[string, int](vcache.WithCapacity[string, int](2), vcache.WithTimeout[string, int](time.Second))
+	if lru.Capacity() != 2 || lru.Timeout() != time.Second {
+		t.Fatalf("LRU options not applied: capacity=%d timeout=%s", lru.Capacity(), lru.Timeout())
+	}
+	timed := vcache.NewTimedWithOptions[string, int](vcache.WithTimeout[string, int](time.Second))
+	if timed.Capacity() != 0 || timed.Timeout() != time.Second {
+		t.Fatalf("Timed options not applied: capacity=%d timeout=%s", timed.Capacity(), timed.Timeout())
+	}
+}

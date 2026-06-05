@@ -26,13 +26,13 @@ func WithMaxRedirects(n int) RequestOption { return httpx.WithMaxRedirects(n) }
 // WithSkipTLSVerify sets per-request TLS verification behavior.
 func WithSkipTLSVerify(b bool) RequestOption { return httpx.WithSkipTLSVerify(b) }
 
-// WithTLSConfig sets a per-request TLS config.
+// WithTLSConfig sets a per-request TLS config. It is ignored when WithClient or WithTransport is set.
 func WithTLSConfig(cfg *tls.Config) RequestOption { return httpx.WithTLSConfig(cfg) }
 
-// WithTransport sets a per-request RoundTripper.
+// WithTransport sets a per-request RoundTripper and takes precedence over WithTLSConfig.
 func WithTransport(t http.RoundTripper) RequestOption { return httpx.WithTransport(t) }
 
-// WithClient sets a per-request HTTP client.
+// WithClient sets a per-request HTTP client and takes precedence over WithTransport and WithTLSConfig.
 func WithClient(c *http.Client) RequestOption { return httpx.WithClient(c) }
 
 // WithCookieJar sets a per-request CookieJar. nil disables cookie management for this request.

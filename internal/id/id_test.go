@@ -85,6 +85,23 @@ func TestSnowflake(t *testing.T) {
 	}
 }
 
+func TestSnowflakeOptions(t *testing.T) {
+	now := int64(1288834974657)
+	sf := CreateSnowflakeWithOptions(
+		WithSnowflakeWorkerID(3),
+		WithSnowflakeDatacenterID(4),
+		WithSnowflakeTimeFunc(func() int64 { return now }),
+	)
+	if sf.WorkerID() != 3 || sf.DatacenterID() != 4 {
+		t.Fatalf("snowflake option ids: worker=%d datacenter=%d", sf.WorkerID(), sf.DatacenterID())
+	}
+	id1 := sf.NextID()
+	id2 := sf.NextID()
+	if id1 <= 0 || id2 <= id1 {
+		t.Fatalf("snowflake option IDs should be positive and increasing: %d %d", id1, id2)
+	}
+}
+
 func TestNormalizeSnowflakeIDUsesProvidedMax(t *testing.T) {
 	if got := normalizeSnowflakeID(14, 5); got != 2 {
 		t.Fatalf("normalizeSnowflakeID should use provided max: got %d", got)

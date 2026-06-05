@@ -36,6 +36,9 @@ func WithFilePerm(perm fs.FileMode) WriteOption { return poiimpl.WithFilePerm(pe
 // WithOverwrite controls whether an existing workbook may be replaced.
 func WithOverwrite(overwrite bool) WriteOption { return poiimpl.WithOverwrite(overwrite) }
 
+// WithCreateParents controls whether write helpers create parent directories.
+func WithCreateParents(create bool) WriteOption { return poiimpl.WithCreateParents(create) }
+
 // WithSaveOptions sets excelize options used when saving workbooks.
 func WithSaveOptions(opts ...excelize.Options) WriteOption { return poiimpl.WithSaveOptions(opts...) }
 

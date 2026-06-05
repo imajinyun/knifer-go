@@ -53,6 +53,22 @@ func TestWrapperAndStackFacade(t *testing.T) {
 	}
 }
 
+func TestStackTraceWithOptionsFacade(t *testing.T) {
+	stack := verr.GetStackTraceWithOptions(verr.WithStackSkip(0), verr.WithStackDepth(4))
+	if len(stack) == 0 || len(stack) > 4 {
+		t.Fatalf("GetStackTraceWithOptions length = %d, want 1..4", len(stack))
+	}
+	formatted := fmt.Sprintf("%+v", stack)
+	if !strings.Contains(formatted, "TestStackTraceWithOptionsFacade") {
+		t.Fatalf("formatted stack = %q, want current test", formatted)
+	}
+}
+
+func TestInitWithOptionsFacade(t *testing.T) {
+	var b strings.Builder
+	verr.InitWithOptions(verr.WithLogOutput(&b), verr.WithReportCaller(false))
+}
+
 func TestMustExitFacade(t *testing.T) {
 	verr.MustExit(context.Background(), nil)
 	want := errors.New("exit")

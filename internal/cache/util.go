@@ -7,6 +7,11 @@ func NewFIFO[K comparable, V any](capacity int) *FIFOCache[K, V] {
 	return NewFIFOCache[K, V](capacity)
 }
 
+// NewFIFOWithOptions creates a FIFO cache customized by options.
+func NewFIFOWithOptions[K comparable, V any](opts ...Option[K, V]) *FIFOCache[K, V] {
+	return NewFIFOCacheWithOptions[K, V](opts...)
+}
+
 // NewFIFOWithTimeout creates a FIFO cache with a default timeout.
 func NewFIFOWithTimeout[K comparable, V any](capacity int, timeout time.Duration) *FIFOCache[K, V] {
 	return NewFIFOCacheWithTimeout[K, V](capacity, timeout)
@@ -15,6 +20,11 @@ func NewFIFOWithTimeout[K comparable, V any](capacity int, timeout time.Duration
 // NewLFU creates an LFU cache.
 func NewLFU[K comparable, V any](capacity int) *LFUCache[K, V] {
 	return NewLFUCache[K, V](capacity)
+}
+
+// NewLFUWithOptions creates an LFU cache customized by options.
+func NewLFUWithOptions[K comparable, V any](opts ...Option[K, V]) *LFUCache[K, V] {
+	return NewLFUCacheWithOptions[K, V](opts...)
 }
 
 // NewLFUWithTimeout creates an LFU cache with a default timeout.
@@ -27,6 +37,11 @@ func NewLRU[K comparable, V any](capacity int) *LRUCache[K, V] {
 	return NewLRUCache[K, V](capacity)
 }
 
+// NewLRUWithOptions creates an LRU cache customized by options.
+func NewLRUWithOptions[K comparable, V any](opts ...Option[K, V]) *LRUCache[K, V] {
+	return NewLRUCacheWithOptions[K, V](opts...)
+}
+
 // NewLRUWithTimeout creates an LRU cache with a default timeout.
 func NewLRUWithTimeout[K comparable, V any](capacity int, timeout time.Duration) *LRUCache[K, V] {
 	return NewLRUCacheWithTimeout[K, V](capacity, timeout)
@@ -35,6 +50,11 @@ func NewLRUWithTimeout[K comparable, V any](capacity int, timeout time.Duration)
 // NewTimed creates a timed cache.
 func NewTimed[K comparable, V any](timeout time.Duration) *TimedCache[K, V] {
 	return NewTimedCache[K, V](timeout)
+}
+
+// NewTimedWithOptions creates a timed cache customized by options.
+func NewTimedWithOptions[K comparable, V any](opts ...Option[K, V]) *TimedCache[K, V] {
+	return NewTimedCacheWithOptions[K, V](opts...)
 }
 
 // NewTimedScheduled creates a timed cache and starts background pruning.

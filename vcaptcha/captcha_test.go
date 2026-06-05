@@ -1,10 +1,19 @@
 package vcaptcha_test
 
 import (
+	"image/color"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/imajinyun/go-knifer/vcaptcha"
 )
+
+type fixedGenerator struct{ code string }
+
+func (g fixedGenerator) Generate() string { return g.code }
+
+func (g fixedGenerator) Verify(code, userInput string) bool { return code == userInput }
 
 func TestFacadeRandomGenerator(t *testing.T) {
 	g := vcaptcha.NewRandomGenerator(4)
@@ -63,5 +72,54 @@ func TestFacadeCircleCaptcha(t *testing.T) {
 	code := c.Code()
 	if len(code) == 0 {
 		t.Fatal("expected circle captcha to have non-empty code")
+	}
+}
+
+func TestFacadeCaptchaOptions(t *testing.T) {
+	line := vcaptcha.NewLineCaptchaWithOptions(100, 40,
+		vcaptcha.WithGenerator(fixedGenerator{code: "ABCD"}),
+		vcaptcha.WithBackground(color.Black),
+		vcaptcha.WithInterfereCount(0),
+	)
+	if got := line.Code(); got != "ABCD" {
+		t.Fatalf("line captcha code = %q, want ABCD", got)
+	}
+	if !line.Verify("ABCD") {
+		t.Fatal("line captcha should verify fixed code")
+	}
+
+	circle := vcaptcha.NewCircleCaptchaWithOptions(100, 40, vcaptcha.WithGenerator(fixedGenerator{code: "WXYZ"}))
+	if got := circle.Code(); got != "WXYZ" {
+		t.Fatalf("circle captcha code = %q, want WXYZ", got)
+	}
+	shear := vcaptcha.NewShearCaptchaWithOptions(100, 40, vcaptcha.WithGenerator(fixedGenerator{code: "EFGH"}))
+	if got := shear.Code(); got != "EFGH" {
+		t.Fatalf("shear captcha code = %q, want EFGH", got)
+	}
+	gif := vcaptcha.NewGifCaptchaWithOptions(100, 40, vcaptcha.WithGenerator(fixedGenerator{code: "IJKL"}), vcaptcha.WithGIFRepeat(1), vcaptcha.WithGIFDelay(5))
+	if got := gif.Code(); got != "IJKL" {
+		t.Fatalf("gif captcha code = %q, want IJKL", got)
+	}
+	if gif.Repeat != 1 || gif.Delay != 5 {
+		t.Fatalf("gif options not applied: repeat=%d delay=%d", gif.Repeat, gif.Delay)
+	}
+}
+
+func TestFacadeCaptchaWriteOptions(t *testing.T) {
+	c := vcaptcha.NewLineCaptchaWithOptions(100, 40, vcaptcha.WithGenerator(fixedGenerator{code: "ABCD"}))
+	c.CreateCode()
+	path := filepath.Join(t.TempDir(), "nested", "captcha.png")
+	if err := c.WriteToFileWithOptions(path, vcaptcha.WithFilePerm(0o600), vcaptcha.WithDirPerm(0o700)); err != nil {
+		t.Fatalf("WriteToFileWithOptions: %v", err)
+	}
+	info, err := os.Stat(path)
+	if err != nil {
+		t.Fatalf("stat captcha file: %v", err)
+	}
+	if got := info.Mode().Perm(); got != 0o600 {
+		t.Fatalf("captcha file perm = %o, want 600", got)
+	}
+	if err := c.WriteToFileWithOptions(path, vcaptcha.WithOverwrite(false)); err == nil {
+		t.Fatal("WriteToFileWithOptions should reject overwrite=false for existing file")
 	}
 }

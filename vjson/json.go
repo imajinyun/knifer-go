@@ -17,6 +17,9 @@ type EncodeOption = jsonx.EncodeOption
 // FormatOption customizes raw JSON string formatting.
 type FormatOption = jsonx.FormatOption
 
+// ParseOption customizes JSON parsing helpers.
+type ParseOption = jsonx.ParseOption
+
 // Error is the JSON module error type.
 type Error = jsonx.JSONError
 
@@ -63,17 +66,35 @@ func WithFormatIndentWidth(n int) FormatOption { return jsonx.WithFormatIndentWi
 // WithFormatSpaceAfterKey controls whether a space is written after ':'.
 func WithFormatSpaceAfterKey(space bool) FormatOption { return jsonx.WithFormatSpaceAfterKey(space) }
 
+// WithParseConfig sets the JSON config used by parsing helpers.
+func WithParseConfig(cfg *Config) ParseOption { return jsonx.WithParseConfig(cfg) }
+
 // IsNull reports whether v is nil or JSON null.
 func IsNull(v any) bool { return jsonx.IsNull(v) }
 
 // Parse automatically detects and parses JSON.
 func Parse(src any) (any, error) { return jsonx.Parse(src) }
 
+// ParseWithOptions automatically detects and parses JSON with options.
+func ParseWithOptions(src any, opts ...ParseOption) (any, error) {
+	return jsonx.ParseWithOptions(src, opts...)
+}
+
 // ParseObj parses src as a JSON object.
 func ParseObj(src any) (*Object, error) { return jsonx.ParseObj(src) }
 
+// ParseObjWithOptions parses src as a JSON object with options.
+func ParseObjWithOptions(src any, opts ...ParseOption) (*Object, error) {
+	return jsonx.ParseObjWithOptions(src, opts...)
+}
+
 // ParseArray parses src as a JSON array.
 func ParseArray(src any) (*Array, error) { return jsonx.ParseArray(src) }
+
+// ParseArrayWithOptions parses src as a JSON array with options.
+func ParseArrayWithOptions(src any, opts ...ParseOption) (*Array, error) {
+	return jsonx.ParseArrayWithOptions(src, opts...)
+}
 
 // ToStr serializes v to compact JSON.
 func ToStr(v any, opts ...EncodeOption) (string, error) { return jsonx.ToJSONStr(v, opts...) }

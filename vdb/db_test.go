@@ -24,6 +24,24 @@ func TestFacadeBuilder(t *testing.T) {
 	}
 }
 
+func TestFacadeBuilderOptionsWrapperPrecedence(t *testing.T) {
+	sqlText, _, err := NewBuilder(WithDialect(DialectMySQL)).Select("id").From("users").SQL()
+	if err != nil {
+		t.Fatalf("SQL() with dialect option error = %v", err)
+	}
+	if sqlText != "SELECT `id` FROM `users`" {
+		t.Fatalf("SQL() with dialect default wrapper = %q", sqlText)
+	}
+
+	sqlText, _, err = NewBuilder(WithDialect(DialectMySQL), WithWrapper(NewWrapper("\"", "\""))).Select("id").From("users").SQL()
+	if err != nil {
+		t.Fatalf("SQL() with wrapper option error = %v", err)
+	}
+	if sqlText != `SELECT "id" FROM "users"` {
+		t.Fatalf("SQL() with explicit wrapper = %q", sqlText)
+	}
+}
+
 func TestFacadeNamedSQL(t *testing.T) {
 	named, err := ParseNamed("select * from users where id=:id", map[string]any{"id": 1}, DialectQuestion)
 	if err != nil {

@@ -10,8 +10,15 @@ type encodeConfig struct {
 	indent int
 }
 
+type parseConfig struct {
+	cfg *Config
+}
+
 // EncodeOption customizes JSON serialization helpers.
 type EncodeOption func(*encodeConfig)
+
+// ParseOption customizes JSON parsing helpers.
+type ParseOption func(*parseConfig)
 
 func defaultEncodeConfig(indent int) encodeConfig {
 	return encodeConfig{cfg: NewConfig(), indent: indent}
@@ -45,6 +52,15 @@ func WithDateFormat(layout string) EncodeOption {
 	}
 }
 
+// WithParseConfig sets the JSON config used by parsing helpers.
+func WithParseConfig(cfg *Config) ParseOption {
+	return func(c *parseConfig) {
+		if cfg != nil {
+			c.cfg = cfg
+		}
+	}
+}
+
 func applyEncodeOptions(defaultIndent int, opts []EncodeOption) encodeConfig {
 	cfg := defaultEncodeConfig(defaultIndent)
 	for _, opt := range opts {
@@ -55,8 +71,24 @@ func applyEncodeOptions(defaultIndent int, opts []EncodeOption) encodeConfig {
 	return cfg
 }
 
+func applyParseOptions(opts []ParseOption) parseConfig {
+	cfg := parseConfig{cfg: NewConfig()}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	return cfg
+}
+
 // Parse 自动判断 JSON 类型：对象/数组/基础值。
 func Parse(src any) (any, error) { return ParseWithConfig(src, nil) }
+
+// ParseWithOptions automatically detects and parses JSON with options.
+func ParseWithOptions(src any, opts ...ParseOption) (any, error) {
+	cfg := applyParseOptions(opts)
+	return ParseWithConfig(src, cfg.cfg)
+}
 
 // ParseWithConfig 解析并使用配置。
 func ParseWithConfig(src any, cfg *Config) (any, error) {
@@ -77,6 +109,12 @@ func ParseWithConfig(src any, cfg *Config) (any, error) {
 // ParseObj 强制解析为 JSONObject。
 func ParseObj(src any) (*JSONObject, error) { return ParseObjWithConfig(src, nil) }
 
+// ParseObjWithOptions parses src as a JSON object with options.
+func ParseObjWithOptions(src any, opts ...ParseOption) (*JSONObject, error) {
+	cfg := applyParseOptions(opts)
+	return ParseObjWithConfig(src, cfg.cfg)
+}
+
 // ParseObjWithConfig 解析为 JSONObject。
 func ParseObjWithConfig(src any, cfg *Config) (*JSONObject, error) {
 	v, err := ParseWithConfig(src, cfg)
@@ -91,6 +129,12 @@ func ParseObjWithConfig(src any, cfg *Config) (*JSONObject, error) {
 
 // ParseArray 强制解析为 JSONArray。
 func ParseArray(src any) (*JSONArray, error) { return ParseArrayWithConfig(src, nil) }
+
+// ParseArrayWithOptions parses src as a JSON array with options.
+func ParseArrayWithOptions(src any, opts ...ParseOption) (*JSONArray, error) {
+	cfg := applyParseOptions(opts)
+	return ParseArrayWithConfig(src, cfg.cfg)
+}
 
 // ParseArrayWithConfig 解析为 JSONArray。
 func ParseArrayWithConfig(src any, cfg *Config) (*JSONArray, error) {

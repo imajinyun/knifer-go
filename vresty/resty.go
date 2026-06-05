@@ -107,10 +107,10 @@ func WithMaxRedirects(n int) RequestOption { return restyimpl.WithMaxRedirects(n
 // WithSkipTLSVerify sets per-request TLS verification behavior.
 func WithSkipTLSVerify(b bool) RequestOption { return restyimpl.WithSkipTLSVerify(b) }
 
-// WithTLSConfig sets a per-request TLS config.
+// WithTLSConfig sets a per-request TLS config. It is ignored when WithRestyClient is set.
 func WithTLSConfig(cfg *tls.Config) RequestOption { return restyimpl.WithTLSConfig(cfg) }
 
-// WithRestyClient sets a per-request resty client.
+// WithRestyClient sets a per-request resty client and takes precedence over WithTLSConfig.
 func WithRestyClient(c *grestry.Client) RequestOption { return restyimpl.WithRestyClient(c) }
 
 // WithUserAgent sets a per-request User-Agent.
