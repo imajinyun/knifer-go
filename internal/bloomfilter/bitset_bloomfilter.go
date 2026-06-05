@@ -16,6 +16,42 @@ type BitSetBloomFilter struct {
 	hashFunctionNumber int
 }
 
+type bitSetBloomFilterConfig struct {
+	c int
+	n int
+	k int
+}
+
+// BitSetBloomFilterOption customizes BitSetBloomFilter construction.
+type BitSetBloomFilterOption func(*bitSetBloomFilterConfig)
+
+// WithBitSetCapacity sets the preallocated maximum record count.
+func WithBitSetCapacity(c int) BitSetBloomFilterOption {
+	return func(cfg *bitSetBloomFilterConfig) { cfg.c = c }
+}
+
+// WithExpectedElements sets the expected record count.
+func WithExpectedElements(n int) BitSetBloomFilterOption {
+	return func(cfg *bitSetBloomFilterConfig) { cfg.n = n }
+}
+
+// WithHashFunctionNumber sets the number of hash functions, in range [1, 8].
+func WithHashFunctionNumber(k int) BitSetBloomFilterOption {
+	return func(cfg *bitSetBloomFilterConfig) { cfg.k = k }
+}
+
+// NewBitSetBloomFilterWithOptions creates a BitSetBloomFilter from functional options.
+// WithBitSetCapacity, WithExpectedElements, and WithHashFunctionNumber are required.
+func NewBitSetBloomFilterWithOptions(opts ...BitSetBloomFilterOption) *BitSetBloomFilter {
+	cfg := bitSetBloomFilterConfig{}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	return NewBitSetBloomFilter(cfg.c, cfg.n, cfg.k)
+}
+
 // NewBitSetBloomFilter creates a Bloom filter with c*k bits.
 //
 // c is the preallocated maximum record count, typically twice the expected inserted count.

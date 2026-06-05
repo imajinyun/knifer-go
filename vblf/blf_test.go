@@ -32,6 +32,34 @@ func TestFacadeFuncFilter(t *testing.T) {
 	}
 }
 
+func TestFacadeOptionsConstructors(t *testing.T) {
+	bitset := vblf.NewBitSetBloomFilterWithOptions(
+		vblf.WithBitSetCapacity(1000),
+		vblf.WithExpectedElements(5),
+		vblf.WithHashFunctionNumber(3),
+	)
+	if !bitset.Add("hello") || !bitset.Contains("hello") {
+		t.Fatal("expected options-created bitset filter to contain value")
+	}
+
+	bitmap := vblf.NewBitMapBloomFilterWithOptions(
+		vblf.WithBitMapSize(5),
+		vblf.WithBloomFilters(vblf.NewFNVFilter(1<<20), vblf.NewRSFilter(1<<20)),
+	)
+	if !bitmap.Add("world") || !bitmap.Contains("world") {
+		t.Fatal("expected options-created bitmap filter to contain value")
+	}
+
+	fn := vblf.NewFuncFilterWithOptions(
+		vblf.WithMaxValue(1000),
+		vblf.WithMachineNum(vblf.BloomMachine64),
+		vblf.WithHashFunc(func(s string) int64 { return int64(vblf.JavaDefaultHash(s)) }),
+	)
+	if !fn.Add("test") || !fn.Contains("test") {
+		t.Fatal("expected options-created func filter to contain value")
+	}
+}
+
 func TestFacadeHashFunctions(t *testing.T) {
 	// smoke test: hash functions should return consistent values
 	h1 := vblf.BloomRSHash("abc")

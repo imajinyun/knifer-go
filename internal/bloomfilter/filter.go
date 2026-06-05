@@ -20,8 +20,55 @@ type FuncFilter struct {
 	hashFunc HashFunc
 }
 
+type funcFilterConfig struct {
+	maxValue   int64
+	machineNum int
+	hashFunc   HashFunc
+}
+
+// FuncFilterOption customizes FuncFilter construction.
+type FuncFilterOption func(*funcFilterConfig)
+
+// WithMaxValue sets the maximum hash value range for FuncFilter.
+func WithMaxValue(maxValue int64) FuncFilterOption {
+	return func(c *funcFilterConfig) { c.maxValue = maxValue }
+}
+
+// WithMachineNum sets the backing bitmap machine word size for FuncFilter.
+func WithMachineNum(machineNum int) FuncFilterOption {
+	return func(c *funcFilterConfig) { c.machineNum = machineNum }
+}
+
+// WithHashFunc sets the hash function used by FuncFilter.
+func WithHashFunc(hashFunc HashFunc) FuncFilterOption {
+	return func(c *funcFilterConfig) {
+		if hashFunc != nil {
+			c.hashFunc = hashFunc
+		}
+	}
+}
+
 // DefaultMachineNum is the default machine word size for FuncFilter.
 var DefaultMachineNum = Machine32
+
+func defaultFuncFilterConfig() funcFilterConfig {
+	return funcFilterConfig{
+		machineNum: DefaultMachineNum,
+		hashFunc:   func(s string) int64 { return int64(JavaDefaultHash(s)) },
+	}
+}
+
+// NewFuncFilterWithOptions creates a FuncFilter from functional options.
+// WithMaxValue is required. If WithHashFunc is omitted, JavaDefaultHash is used.
+func NewFuncFilterWithOptions(opts ...FuncFilterOption) *FuncFilter {
+	cfg := defaultFuncFilterConfig()
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	return NewFuncFilterWithMachineNum(cfg.maxValue, cfg.machineNum, cfg.hashFunc)
+}
 
 // NewFuncFilter creates a FuncFilter with the default machine word size.
 func NewFuncFilter(maxValue int64, hashFunc HashFunc) *FuncFilter {

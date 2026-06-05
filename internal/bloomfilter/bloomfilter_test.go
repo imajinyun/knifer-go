@@ -28,6 +28,23 @@ func TestBitSetBloomFilter_AddAndContains(t *testing.T) {
 	}
 }
 
+func TestBitSetBloomFilterWithOptions(t *testing.T) {
+	bf := NewBitSetBloomFilterWithOptions(
+		WithBitSetCapacity(10000),
+		WithExpectedElements(100),
+		WithHashFunctionNumber(4),
+	)
+	if bf.bitSetSize != 40000 {
+		t.Fatalf("bitSetSize = %d, want 40000", bf.bitSetSize)
+	}
+	if bf.hashFunctionNumber != 4 {
+		t.Fatalf("hashFunctionNumber = %d, want 4", bf.hashFunctionNumber)
+	}
+	if !bf.Add("hello") || !bf.Contains("hello") {
+		t.Fatal("options-created bitset filter should add and contain value")
+	}
+}
+
 func TestBitSetBloomFilter_PanicOnInvalidParams(t *testing.T) {
 	cases := []func(){
 		func() { NewBitSetBloomFilter(0, 1, 1) },
@@ -77,6 +94,27 @@ func TestBitMapBloomFilter_CustomFilters(t *testing.T) {
 	}
 }
 
+func TestBitMapBloomFilterWithOptions(t *testing.T) {
+	bf := NewBitMapBloomFilterWithOptions(WithBitMapSize(5))
+	if len(bf.filters) != 5 {
+		t.Fatalf("default filter count = %d, want 5", len(bf.filters))
+	}
+	if !bf.Add("foo") || !bf.Contains("foo") {
+		t.Fatal("options-created bitmap filter should add and contain value")
+	}
+
+	custom := NewBitMapBloomFilterWithOptions(
+		WithBitMapSize(5),
+		WithBloomFilters(NewFNVFilter(1<<20), NewRSFilter(1<<20)),
+	)
+	if len(custom.filters) != 2 {
+		t.Fatalf("custom filter count = %d, want 2", len(custom.filters))
+	}
+	if !custom.Add("bar") || !custom.Contains("bar") {
+		t.Fatal("custom options-created bitmap filter should add and contain value")
+	}
+}
+
 func TestFuncFilter_MachineNum(t *testing.T) {
 	f := NewFuncFilterWithMachineNum(1024, Machine64,
 		func(s string) int64 { return int64(JavaDefaultHash(s)) })
@@ -85,6 +123,27 @@ func TestFuncFilter_MachineNum(t *testing.T) {
 	}
 	if !f.Contains("x") {
 		t.Fatal()
+	}
+}
+
+func TestFuncFilterWithOptions(t *testing.T) {
+	f := NewFuncFilterWithOptions(
+		WithMaxValue(1024),
+		WithMachineNum(Machine64),
+		WithHashFunc(func(s string) int64 { return int64(JavaDefaultHash(s)) }),
+	)
+	if _, ok := f.bm.(*LongMap); !ok {
+		t.Fatalf("backing bitmap = %T, want *LongMap", f.bm)
+	}
+	if !f.Add("x") || !f.Contains("x") {
+		t.Fatal("options-created func filter should add and contain value")
+	}
+}
+
+func TestFuncFilterWithOptionsUsesDefaultHash(t *testing.T) {
+	f := NewFuncFilterWithOptions(WithMaxValue(1024))
+	if !f.Add("default") || !f.Contains("default") {
+		t.Fatal("options-created func filter should use default hash function")
 	}
 }
 

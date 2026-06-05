@@ -19,6 +19,11 @@ func NewFuncFilterWithMachineNum(maxValue int64, machineNum int, hashFunc HashFu
 	return bloomfilter.NewFuncFilterWithMachineNum(maxValue, machineNum, hashFunc)
 }
 
+// NewFuncFilterFromOptions delegates to the internal bloomfilter implementation.
+func NewFuncFilterFromOptions(opts ...FuncFilterOption) *FuncFilter {
+	return bloomfilter.NewFuncFilterWithOptions(opts...)
+}
+
 // NewDefaultFilter delegates to the internal bloomfilter implementation.
 func NewDefaultFilter(maxValue int64) *FuncFilter {
 	return bloomfilter.NewDefaultFilter(maxValue)
@@ -139,7 +144,17 @@ func CreateBitSet(c, n, k int) *BitSetBloomFilter {
 	return bloomfilter.CreateBitSet(c, n, k)
 }
 
+// CreateBitSetWithOptions delegates to the internal bloomfilter implementation.
+func CreateBitSetWithOptions(opts ...BitSetBloomFilterOption) *BitSetBloomFilter {
+	return bloomfilter.NewBitSetBloomFilterWithOptions(opts...)
+}
+
 // CreateBitMap delegates to the internal bloomfilter implementation.
 func CreateBitMap(m int) *BitMapBloomFilter {
 	return bloomfilter.CreateBitMap(m)
+}
+
+// CreateBitMapWithOptions delegates to the internal bloomfilter implementation.
+func CreateBitMapWithOptions(opts ...BitMapBloomFilterOption) *BitMapBloomFilter {
+	return bloomfilter.NewBitMapBloomFilterWithOptions(opts...)
 }
