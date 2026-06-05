@@ -1,6 +1,7 @@
 package url
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 	"unicode"
 )
 
@@ -41,6 +43,103 @@ const (
 	// WarURLSeparator separates a war URL from an entry path.
 	WarURLSeparator = "*/"
 )
+
+type resourceConfig struct {
+	ctx         context.Context
+	client      *http.Client
+	headers     http.Header
+	timeout     time.Duration
+	checkStatus bool
+}
+
+// ResourceOption customizes URL resource helpers such as OpenWithOptions and ContentLengthWithOptions.
+type ResourceOption func(*resourceConfig)
+
+// WithContext sets the context used by HTTP resource requests.
+func WithContext(ctx context.Context) ResourceOption { return func(c *resourceConfig) { c.ctx = ctx } }
+
+// WithHTTPClient sets the HTTP client used by HTTP resource requests.
+func WithHTTPClient(client *http.Client) ResourceOption {
+	return func(c *resourceConfig) { c.client = client }
+}
+
+// WithHeader adds an HTTP header to HTTP resource requests.
+func WithHeader(name, value string) ResourceOption {
+	return func(c *resourceConfig) {
+		if c.headers == nil {
+			c.headers = make(http.Header)
+		}
+		c.headers.Add(name, value)
+	}
+}
+
+// WithHeaders adds HTTP headers to HTTP resource requests.
+func WithHeaders(headers http.Header) ResourceOption {
+	return func(c *resourceConfig) {
+		if c.headers == nil {
+			c.headers = make(http.Header)
+		}
+		for key, values := range headers {
+			for _, value := range values {
+				c.headers.Add(key, value)
+			}
+		}
+	}
+}
+
+// WithTimeout bounds HTTP resource requests. Non-positive values mean no extra timeout.
+func WithTimeout(timeout time.Duration) ResourceOption {
+	return func(c *resourceConfig) { c.timeout = timeout }
+}
+
+// WithCheckStatus makes HTTP resource helpers reject non-2xx responses.
+func WithCheckStatus(check bool) ResourceOption {
+	return func(c *resourceConfig) { c.checkStatus = check }
+}
+
+func applyResourceOptions(opts []ResourceOption) resourceConfig {
+	cfg := resourceConfig{ctx: context.Background(), client: http.DefaultClient}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.ctx == nil {
+		cfg.ctx = context.Background()
+	}
+	if cfg.client == nil {
+		cfg.client = http.DefaultClient
+	}
+	return cfg
+}
+
+type normalizeConfig struct {
+	defaultScheme string
+}
+
+// NormalizeOption customizes URL normalization.
+type NormalizeOption func(*normalizeConfig)
+
+// WithDefaultScheme sets the scheme used when NormalizeWithOptions receives a URL without scheme.
+func WithDefaultScheme(scheme string) NormalizeOption {
+	return func(c *normalizeConfig) { c.defaultScheme = scheme }
+}
+
+func applyNormalizeOptions(opts []NormalizeOption) normalizeConfig {
+	cfg := normalizeConfig{defaultScheme: "http"}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	cfg.defaultScheme = strings.TrimSpace(cfg.defaultScheme)
+	if cfg.defaultScheme == "" {
+		cfg.defaultScheme = "http"
+	}
+	cfg.defaultScheme = strings.TrimSuffix(cfg.defaultScheme, "://")
+	cfg.defaultScheme = strings.TrimSuffix(cfg.defaultScheme, ":")
+	return cfg
+}
 
 // Parse parses raw into a URL. Empty input returns nil without error.
 func Parse(raw string) (*neturl.URL, error) {
@@ -218,12 +317,17 @@ func IsJarFileURL(u *neturl.URL) bool {
 
 // Open opens a URL resource. It supports http, https, file URLs, and plain file paths.
 func Open(raw string) (io.ReadCloser, error) {
+	return OpenWithOptions(raw)
+}
+
+// OpenWithOptions opens a URL resource with per-call options.
+func OpenWithOptions(raw string, opts ...ResourceOption) (io.ReadCloser, error) {
 	u, err := neturl.Parse(raw)
 	if err != nil {
 		return nil, err
 	}
 	if u.Scheme == "http" || u.Scheme == "https" {
-		resp, err := http.Get(raw) //nolint:gosec // Utility helper intentionally follows the provided URL.
+		resp, err := doResourceRequest(raw, http.MethodGet, applyResourceOptions(opts))
 		if err != nil {
 			return nil, err
 		}
@@ -239,6 +343,11 @@ func Open(raw string) (io.ReadCloser, error) {
 
 // ContentLength returns the resource content length. Unknown lengths return -1.
 func ContentLength(raw string) (int64, error) {
+	return ContentLengthWithOptions(raw)
+}
+
+// ContentLengthWithOptions returns the resource content length with per-call options.
+func ContentLengthWithOptions(raw string, opts ...ResourceOption) (int64, error) {
 	if raw == "" {
 		return -1, nil
 	}
@@ -247,7 +356,7 @@ func ContentLength(raw string) (int64, error) {
 		return -1, err
 	}
 	if u.Scheme == "http" || u.Scheme == "https" {
-		resp, err := http.Head(raw) //nolint:gosec // Utility helper intentionally follows the provided URL.
+		resp, err := doResourceRequest(raw, http.MethodHead, applyResourceOptions(opts))
 		if err != nil {
 			return -1, err
 		}
@@ -268,13 +377,51 @@ func ContentLength(raw string) (int64, error) {
 // Size returns the resource size.
 func Size(raw string) (int64, error) { return ContentLength(raw) }
 
+// SizeWithOptions returns the resource size with per-call options.
+func SizeWithOptions(raw string, opts ...ResourceOption) (int64, error) {
+	return ContentLengthWithOptions(raw, opts...)
+}
+
+func doResourceRequest(raw, method string, cfg resourceConfig) (*http.Response, error) {
+	ctx := cfg.ctx
+	if cfg.timeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, cfg.timeout)
+		defer cancel()
+	}
+	req, err := http.NewRequestWithContext(ctx, method, raw, nil)
+	if err != nil {
+		return nil, err
+	}
+	for key, values := range cfg.headers {
+		for _, value := range values {
+			req.Header.Add(key, value)
+		}
+	}
+	resp, err := cfg.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	if cfg.checkStatus && (resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices) {
+		defer func() { _ = resp.Body.Close() }()
+		return nil, fmt.Errorf("unexpected http status %d for %s", resp.StatusCode, raw)
+	}
+	return resp, nil
+}
+
 // Normalize normalizes a URL string by adding a default scheme and cleaning slashes.
 func Normalize(raw string, encodePath, replaceSlash bool) string {
+	return NormalizeWithOptions(raw, encodePath, replaceSlash)
+}
+
+// NormalizeWithOptions normalizes a URL string with per-call options.
+func NormalizeWithOptions(raw string, encodePath, replaceSlash bool, opts ...NormalizeOption) string {
 	if strings.TrimSpace(raw) == "" {
 		return raw
 	}
+	cfg := applyNormalizeOptions(opts)
 	sep := strings.Index(raw, "://")
-	protocol := "http://"
+	protocol := cfg.defaultScheme + "://"
 	body := raw
 	if sep > 0 {
 		protocol = raw[:sep+3]

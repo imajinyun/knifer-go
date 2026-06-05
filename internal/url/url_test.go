@@ -1,9 +1,13 @@
 package url
 
 import (
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestEncodeBlankAndParseHTTP(t *testing.T) {
@@ -23,12 +27,44 @@ func TestNormalizeAndComplete(t *testing.T) {
 	if got := Normalize("\\example.com\\a b", true, true); got != "http://example.com/a%20b" {
 		t.Fatalf("Normalize: %q", got)
 	}
+	if got := NormalizeWithOptions("example.com/a", false, false, WithDefaultScheme("https")); got != "https://example.com/a" {
+		t.Fatalf("NormalizeWithOptions: %q", got)
+	}
 	got, err := Complete("example.com/dir/", "a.html")
 	if err != nil {
 		t.Fatalf("Complete: %v", err)
 	}
 	if got != "http://example.com/dir/a.html" {
 		t.Fatalf("Complete got %q", got)
+	}
+}
+
+func TestOpenAndContentLengthWithOptions(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("X-Token") != "secret" {
+			http.Error(w, "missing token", http.StatusUnauthorized)
+			return
+		}
+		w.Header().Set("Content-Length", "4")
+		_, _ = w.Write([]byte("body"))
+	}))
+	defer srv.Close()
+
+	r, err := OpenWithOptions(srv.URL, WithHeader("X-Token", "secret"), WithTimeout(time.Second), WithCheckStatus(true))
+	if err != nil {
+		t.Fatalf("OpenWithOptions: %v", err)
+	}
+	data, err := io.ReadAll(r)
+	_ = r.Close()
+	if err != nil || string(data) != "body" {
+		t.Fatalf("body = %q, %v", data, err)
+	}
+	length, err := ContentLengthWithOptions(srv.URL, WithHeader("X-Token", "secret"), WithCheckStatus(true))
+	if err != nil || length != 4 {
+		t.Fatalf("ContentLengthWithOptions = %d, %v", length, err)
+	}
+	if _, err := OpenWithOptions(srv.URL, WithCheckStatus(true)); err == nil {
+		t.Fatal("OpenWithOptions status check error = nil")
 	}
 }
 

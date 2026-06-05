@@ -21,6 +21,10 @@ const (
 
 type (
 	TLSConfigBuilder   = netimpl.TLSConfigBuilder
+	Dialer             = netimpl.Dialer
+	PingOption         = netimpl.PingOption
+	ResolveOption      = netimpl.ResolveOption
+	PortOption         = netimpl.PortOption
 	UploadSetting      = netimpl.UploadSetting
 	UploadSaveOption   = netimpl.UploadSaveOption
 	MultipartFormData  = netimpl.MultipartFormData

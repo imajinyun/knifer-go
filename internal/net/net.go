@@ -1,6 +1,7 @@
 package net
 
 import (
+	"context"
 	"fmt"
 	stdnet "net"
 	"net/http"
@@ -18,15 +19,179 @@ const (
 	PortRangeMax = 0xFFFF
 )
 
+// Dialer is the minimal interface used by PingWithOptions to open network connections.
+type Dialer interface {
+	DialContext(ctx context.Context, network, address string) (stdnet.Conn, error)
+}
+
+type pingConfig struct {
+	ctx     context.Context
+	timeout time.Duration
+	ports   []int
+	network string
+	dialer  Dialer
+}
+
+// PingOption customizes PingWithOptions.
+type PingOption func(*pingConfig)
+
+// WithPingContext sets the context used by PingWithOptions.
+func WithPingContext(ctx context.Context) PingOption { return func(c *pingConfig) { c.ctx = ctx } }
+
+// WithPingTimeout sets the timeout for each connection attempt made by PingWithOptions.
+func WithPingTimeout(timeout time.Duration) PingOption {
+	return func(c *pingConfig) { c.timeout = timeout }
+}
+
+// WithPingPorts sets the destination ports PingWithOptions probes.
+func WithPingPorts(ports ...int) PingOption {
+	return func(c *pingConfig) { c.ports = append([]int(nil), ports...) }
+}
+
+// WithPingNetwork sets the network used by PingWithOptions, such as tcp, tcp4, or tcp6.
+func WithPingNetwork(network string) PingOption { return func(c *pingConfig) { c.network = network } }
+
+// WithPingDialer sets the dialer used by PingWithOptions.
+func WithPingDialer(d Dialer) PingOption { return func(c *pingConfig) { c.dialer = d } }
+
+func applyPingOptions(opts []PingOption) pingConfig {
+	cfg := pingConfig{
+		ctx:     context.Background(),
+		timeout: 3 * time.Second,
+		ports:   []int{80, 443},
+		network: "tcp",
+	}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.ctx == nil {
+		cfg.ctx = context.Background()
+	}
+	if cfg.timeout <= 0 {
+		cfg.timeout = 3 * time.Second
+	}
+	if len(cfg.ports) == 0 {
+		cfg.ports = []int{80, 443}
+	}
+	cfg.network = strings.TrimSpace(cfg.network)
+	if cfg.network == "" {
+		cfg.network = "tcp"
+	}
+	if cfg.dialer == nil {
+		cfg.dialer = &stdnet.Dialer{Timeout: cfg.timeout}
+	}
+	return cfg
+}
+
+type resolveConfig struct {
+	ctx       context.Context
+	timeout   time.Duration
+	network   string
+	resolver  *stdnet.Resolver
+	attrNames []string
+}
+
+// ResolveOption customizes DNS and host resolution helpers.
+type ResolveOption func(*resolveConfig)
+
+// WithResolveContext sets the context used by DNS lookups.
+func WithResolveContext(ctx context.Context) ResolveOption {
+	return func(c *resolveConfig) { c.ctx = ctx }
+}
+
+// WithResolveTimeout bounds DNS lookups with a timeout.
+func WithResolveTimeout(timeout time.Duration) ResolveOption {
+	return func(c *resolveConfig) { c.timeout = timeout }
+}
+
+// WithResolveNetwork sets the IP lookup network, such as ip, ip4, or ip6.
+func WithResolveNetwork(network string) ResolveOption {
+	return func(c *resolveConfig) { c.network = network }
+}
+
+// WithResolver sets the resolver used by DNS lookups.
+func WithResolver(resolver *stdnet.Resolver) ResolveOption {
+	return func(c *resolveConfig) { c.resolver = resolver }
+}
+
+// WithDNSTypes sets the DNS record types looked up by GetDNSInfoWithOptions.
+func WithDNSTypes(attrNames ...string) ResolveOption {
+	return func(c *resolveConfig) { c.attrNames = append([]string(nil), attrNames...) }
+}
+
+func applyResolveOptions(opts []ResolveOption) (resolveConfig, context.CancelFunc) {
+	cfg := resolveConfig{ctx: context.Background(), network: "ip", resolver: stdnet.DefaultResolver}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.ctx == nil {
+		cfg.ctx = context.Background()
+	}
+	cancel := func() {}
+	if cfg.timeout > 0 {
+		cfg.ctx, cancel = context.WithTimeout(cfg.ctx, cfg.timeout)
+	}
+	cfg.network = strings.TrimSpace(cfg.network)
+	if cfg.network == "" {
+		cfg.network = "ip"
+	}
+	if cfg.resolver == nil {
+		cfg.resolver = stdnet.DefaultResolver
+	}
+	return cfg, cancel
+}
+
+type portConfig struct {
+	network string
+	host    string
+}
+
+// PortOption customizes local port probing helpers.
+type PortOption func(*portConfig)
+
+// WithPortNetwork sets the network used by local port probes, such as tcp, tcp4, or tcp6.
+func WithPortNetwork(network string) PortOption { return func(c *portConfig) { c.network = network } }
+
+// WithPortHost sets the local host/address used by local port probes.
+func WithPortHost(host string) PortOption { return func(c *portConfig) { c.host = host } }
+
+func applyPortOptions(opts []PortOption) portConfig {
+	cfg := portConfig{network: "tcp", host: "127.0.0.1"}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	cfg.network = strings.TrimSpace(cfg.network)
+	if cfg.network == "" {
+		cfg.network = "tcp"
+	}
+	cfg.host = strings.TrimSpace(cfg.host)
+	if cfg.host == "" {
+		cfg.host = "127.0.0.1"
+	}
+	return cfg
+}
+
 // IsValidPort reports whether port is a valid TCP/UDP port number.
 func IsValidPort(port int) bool { return port >= 0 && port <= PortRangeMax }
 
 // IsUsableLocalPort reports whether port can be bound locally on TCP.
 func IsUsableLocalPort(port int) bool {
+	return IsUsableLocalPortWithOptions(port)
+}
+
+// IsUsableLocalPortWithOptions reports whether port can be bound locally with custom probe options.
+func IsUsableLocalPortWithOptions(port int, opts ...PortOption) bool {
 	if !IsValidPort(port) || port == 0 {
 		return false
 	}
-	ln, err := stdnet.Listen("tcp", stdnet.JoinHostPort("127.0.0.1", strconvPort(port)))
+	cfg := applyPortOptions(opts)
+	ln, err := stdnet.Listen(cfg.network, stdnet.JoinHostPort(cfg.host, strconvPort(port)))
 	if err != nil {
 		return false
 	}
@@ -121,11 +286,26 @@ func CreateAddress(host string, port int) *stdnet.TCPAddr {
 
 // GetIPByHost resolves hostName to the first IP string.
 func GetIPByHost(hostName string) string {
-	ips, err := stdnet.LookupIP(hostName)
+	ips, err := GetIPByHostWithOptions(hostName)
 	if err != nil || len(ips) == 0 {
 		return hostName
 	}
-	return ips[0].String()
+	return ips[0]
+}
+
+// GetIPByHostWithOptions resolves hostName to IP strings with custom resolver options.
+func GetIPByHostWithOptions(hostName string, opts ...ResolveOption) ([]string, error) {
+	cfg, cancel := applyResolveOptions(opts)
+	defer cancel()
+	ips, err := cfg.resolver.LookupIP(cfg.ctx, cfg.network, hostName)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]string, 0, len(ips))
+	for _, ip := range ips {
+		out = append(out, ip.String())
+	}
+	return out, nil
 }
 
 // GetNetworkInterface returns a network interface by name.
@@ -297,11 +477,23 @@ func NetCat(host string, port int, data []byte, timeout time.Duration) error {
 
 // Ping checks whether an IP or host is reachable by opening a TCP connection to common ports.
 func Ping(ip string, timeout time.Duration) bool {
-	if timeout <= 0 {
-		timeout = 3 * time.Second
-	}
-	for _, port := range []string{"80", "443"} {
-		conn, err := stdnet.DialTimeout("tcp", stdnet.JoinHostPort(ip, port), timeout)
+	return PingWithOptions(ip, WithPingTimeout(timeout))
+}
+
+// PingWithOptions checks whether an IP or host is reachable with custom probe options.
+func PingWithOptions(ip string, opts ...PingOption) bool {
+	cfg := applyPingOptions(opts)
+	for _, port := range cfg.ports {
+		if !IsValidPort(port) {
+			continue
+		}
+		ctx := cfg.ctx
+		cancel := func() {}
+		if cfg.timeout > 0 {
+			ctx, cancel = context.WithTimeout(cfg.ctx, cfg.timeout)
+		}
+		conn, err := cfg.dialer.DialContext(ctx, cfg.network, stdnet.JoinHostPort(ip, strconvPort(port)))
+		cancel()
 		if err == nil {
 			_ = conn.Close()
 			return true
@@ -350,6 +542,14 @@ func ParseCookies(cookieStr string) []*http.Cookie {
 
 // GetDNSInfo looks up DNS records by attribute names such as A, CNAME, MX, NS, or TXT.
 func GetDNSInfo(hostName string, attrNames ...string) ([]string, error) {
+	return GetDNSInfoWithOptions(hostName, WithDNSTypes(attrNames...))
+}
+
+// GetDNSInfoWithOptions looks up DNS records with custom resolver options.
+func GetDNSInfoWithOptions(hostName string, opts ...ResolveOption) ([]string, error) {
+	cfg, cancel := applyResolveOptions(opts)
+	defer cancel()
+	attrNames := cfg.attrNames
 	if len(attrNames) == 0 {
 		attrNames = []string{"A"}
 	}
@@ -357,27 +557,25 @@ func GetDNSInfo(hostName string, attrNames ...string) ([]string, error) {
 	for _, attr := range attrNames {
 		switch strings.ToUpper(attr) {
 		case "A", "AAAA":
-			ips, err := stdnet.LookupIP(hostName)
+			network := "ip4"
+			if strings.ToUpper(attr) == "AAAA" {
+				network = "ip6"
+			}
+			ips, err := cfg.resolver.LookupIP(cfg.ctx, network, hostName)
 			if err != nil {
 				return out, err
 			}
 			for _, ip := range ips {
-				if strings.ToUpper(attr) == "A" && ip.To4() == nil {
-					continue
-				}
-				if strings.ToUpper(attr) == "AAAA" && ip.To4() != nil {
-					continue
-				}
 				out = append(out, ip.String())
 			}
 		case "CNAME":
-			v, err := stdnet.LookupCNAME(hostName)
+			v, err := cfg.resolver.LookupCNAME(cfg.ctx, hostName)
 			if err != nil {
 				return out, err
 			}
 			out = append(out, v)
 		case "MX":
-			mxs, err := stdnet.LookupMX(hostName)
+			mxs, err := cfg.resolver.LookupMX(cfg.ctx, hostName)
 			if err != nil {
 				return out, err
 			}
@@ -385,7 +583,7 @@ func GetDNSInfo(hostName string, attrNames ...string) ([]string, error) {
 				out = append(out, mx.Host)
 			}
 		case "NS":
-			nss, err := stdnet.LookupNS(hostName)
+			nss, err := cfg.resolver.LookupNS(cfg.ctx, hostName)
 			if err != nil {
 				return out, err
 			}
@@ -393,7 +591,7 @@ func GetDNSInfo(hostName string, attrNames ...string) ([]string, error) {
 				out = append(out, ns.Host)
 			}
 		case "TXT":
-			txts, err := stdnet.LookupTXT(hostName)
+			txts, err := cfg.resolver.LookupTXT(cfg.ctx, hostName)
 			if err != nil {
 				return out, err
 			}

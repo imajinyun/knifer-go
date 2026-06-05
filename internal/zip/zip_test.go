@@ -3,6 +3,7 @@ package zip
 import (
 	archivezip "archive/zip"
 	"bytes"
+	"compress/flate"
 	"errors"
 	"os"
 	"path/filepath"
@@ -87,6 +88,42 @@ func TestZipEntriesAppendReadAndLimit(t *testing.T) {
 	}
 }
 
+func TestArchiveOptions(t *testing.T) {
+	tmp := t.TempDir()
+	archive := filepath.Join(tmp, "entries.zip")
+	entries := []EntryData{{Name: "a.txt", Data: []byte("abcd")}}
+	if err := ZipEntriesWithOptions(archive, entries, WithFilePerm(0o600), WithCompressionLevel(flate.BestSpeed)); err != nil {
+		t.Fatalf("ZipEntriesWithOptions: %v", err)
+	}
+	info, err := os.Stat(archive)
+	if err != nil {
+		t.Fatalf("stat archive: %v", err)
+	}
+	if got := info.Mode().Perm(); got != 0o600 {
+		t.Fatalf("archive perm = %o, want 600", got)
+	}
+	if err := ZipEntriesWithOptions(archive, entries, WithOverwrite(false)); !errors.Is(err, os.ErrExist) {
+		t.Fatalf("overwrite false err = %v, want exists", err)
+	}
+	if _, err := GetBytesWithOptions(archive, "a.txt", WithMaxBytes(3)); err == nil {
+		t.Fatal("GetBytesWithOptions over limit error = nil")
+	}
+	dest := filepath.Join(tmp, "dest")
+	if err := UnzipToWithOptions(archive, dest, WithDirPerm(0o700), WithFilePerm(0o600), WithPreserveMode(false)); err != nil {
+		t.Fatalf("UnzipToWithOptions: %v", err)
+	}
+	fileInfo, err := os.Stat(filepath.Join(dest, "a.txt"))
+	if err != nil {
+		t.Fatalf("stat extracted: %v", err)
+	}
+	if got := fileInfo.Mode().Perm(); got != 0o600 {
+		t.Fatalf("extracted perm = %o, want 600", got)
+	}
+	if err := UnzipToWithOptions(archive, dest, WithOverwrite(false)); !errors.Is(err, os.ErrExist) {
+		t.Fatalf("unzip overwrite false err = %v, want exists", err)
+	}
+}
+
 func TestGzipAndZlib(t *testing.T) {
 	data := []byte("hello compression")
 	gz, err := Gzip(data)
@@ -104,6 +141,12 @@ func TestGzipAndZlib(t *testing.T) {
 	out, err = UnZlib(z)
 	if err != nil || !bytes.Equal(out, data) {
 		t.Fatalf("UnZlib: %q %v", out, err)
+	}
+	if _, err := UnGzipWithOptions(gz, WithMaxBytes(3)); err == nil {
+		t.Fatal("UnGzipWithOptions over limit error = nil")
+	}
+	if _, err := UnZlibWithOptions(z, WithMaxBytes(3)); err == nil {
+		t.Fatal("UnZlibWithOptions over limit error = nil")
 	}
 }
 

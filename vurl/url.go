@@ -1,8 +1,11 @@
 package vurl
 
 import (
+	"context"
 	"io"
+	"net/http"
 	"net/url"
+	"time"
 
 	urlimpl "github.com/imajinyun/go-knifer/internal/url"
 )
@@ -39,8 +42,35 @@ const (
 // URLBuilder builds URLs from scheme, host, path, query, and fragment parts.
 type URLBuilder = urlimpl.URLBuilder
 
+// ResourceOption customizes URL resource helpers.
+type ResourceOption = urlimpl.ResourceOption
+
+// NormalizeOption customizes URL normalization.
+type NormalizeOption = urlimpl.NormalizeOption
+
 // NewURLBuilder creates an empty URL builder.
 func NewURLBuilder() *URLBuilder { return urlimpl.NewURLBuilder() }
+
+// WithContext sets the context used by HTTP resource requests.
+func WithContext(ctx context.Context) ResourceOption { return urlimpl.WithContext(ctx) }
+
+// WithHTTPClient sets the HTTP client used by HTTP resource requests.
+func WithHTTPClient(client *http.Client) ResourceOption { return urlimpl.WithHTTPClient(client) }
+
+// WithHeader adds an HTTP header to HTTP resource requests.
+func WithHeader(name, value string) ResourceOption { return urlimpl.WithHeader(name, value) }
+
+// WithHeaders adds HTTP headers to HTTP resource requests.
+func WithHeaders(headers http.Header) ResourceOption { return urlimpl.WithHeaders(headers) }
+
+// WithTimeout bounds HTTP resource requests.
+func WithTimeout(timeout time.Duration) ResourceOption { return urlimpl.WithTimeout(timeout) }
+
+// WithCheckStatus makes HTTP resource helpers reject non-2xx responses.
+func WithCheckStatus(check bool) ResourceOption { return urlimpl.WithCheckStatus(check) }
+
+// WithDefaultScheme sets the scheme used when NormalizeWithOptions receives a URL without scheme.
+func WithDefaultScheme(scheme string) NormalizeOption { return urlimpl.WithDefaultScheme(scheme) }
 
 // NewHTTPURLBuilder creates an HTTP URL builder.
 func NewHTTPURLBuilder(host string) *URLBuilder { return urlimpl.NewHTTPURLBuilder(host) }
@@ -133,15 +163,35 @@ func IsJarFileURL(u *url.URL) bool { return urlimpl.IsJarFileURL(u) }
 // Open opens a URL resource. It supports http, https, file URLs, and plain file paths.
 func Open(raw string) (io.ReadCloser, error) { return urlimpl.Open(raw) }
 
+// OpenWithOptions opens a URL resource with per-call options.
+func OpenWithOptions(raw string, opts ...ResourceOption) (io.ReadCloser, error) {
+	return urlimpl.OpenWithOptions(raw, opts...)
+}
+
 // ContentLength returns the resource content length. Unknown lengths return -1.
 func ContentLength(raw string) (int64, error) { return urlimpl.ContentLength(raw) }
+
+// ContentLengthWithOptions returns the resource content length with per-call options.
+func ContentLengthWithOptions(raw string, opts ...ResourceOption) (int64, error) {
+	return urlimpl.ContentLengthWithOptions(raw, opts...)
+}
 
 // Size returns the resource size.
 func Size(raw string) (int64, error) { return urlimpl.Size(raw) }
 
+// SizeWithOptions returns the resource size with per-call options.
+func SizeWithOptions(raw string, opts ...ResourceOption) (int64, error) {
+	return urlimpl.SizeWithOptions(raw, opts...)
+}
+
 // Normalize normalizes a URL string by adding a default scheme and cleaning slashes.
 func Normalize(raw string, encodePath, replaceSlash bool) string {
 	return urlimpl.Normalize(raw, encodePath, replaceSlash)
+}
+
+// NormalizeWithOptions normalizes a URL string with per-call options.
+func NormalizeWithOptions(raw string, encodePath, replaceSlash bool, opts ...NormalizeOption) string {
+	return urlimpl.NormalizeWithOptions(raw, encodePath, replaceSlash, opts...)
 }
 
 // BuildQuery converts a map to a URL query string.

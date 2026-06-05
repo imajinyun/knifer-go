@@ -1,10 +1,16 @@
 package net
 
 import (
+	"bytes"
 	"crypto/tls"
 	"math/big"
+	"mime/multipart"
+	stdnet "net"
+	"net/http"
 	"reflect"
+	"strconv"
 	"testing"
+	"time"
 )
 
 func TestIPv4Helpers(t *testing.T) {
@@ -58,6 +64,22 @@ func TestPortAndMiscHelpers(t *testing.T) {
 	if !IsValidPort(65535) || IsValidPort(70000) {
 		t.Fatal("IsValidPort failed")
 	}
+	ln, err := stdnet.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("listen local port: %v", err)
+	}
+	defer func() { _ = ln.Close() }()
+	_, portStr, err := stdnet.SplitHostPort(ln.Addr().String())
+	if err != nil {
+		t.Fatalf("split listener address: %v", err)
+	}
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		t.Fatalf("parse listener port: %v", err)
+	}
+	if IsUsableLocalPortWithOptions(port, WithPortHost("127.0.0.1")) {
+		t.Fatal("IsUsableLocalPortWithOptions should reject an occupied port")
+	}
 	if HideIPPart("192.168.1.2") != "192.168.1.*" {
 		t.Fatal("HideIPPart failed")
 	}
@@ -73,6 +95,97 @@ func TestPortAndMiscHelpers(t *testing.T) {
 	if len(ParseCookies("a=1; b=2")) != 2 {
 		t.Fatal("ParseCookies failed")
 	}
+}
+
+func TestPingWithOptions(t *testing.T) {
+	ln, err := stdnet.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("listen local port: %v", err)
+	}
+	defer func() { _ = ln.Close() }()
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		conn, err := ln.Accept()
+		if err == nil {
+			_ = conn.Close()
+		}
+	}()
+	_, portStr, err := stdnet.SplitHostPort(ln.Addr().String())
+	if err != nil {
+		t.Fatalf("split listener address: %v", err)
+	}
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		t.Fatalf("parse listener port: %v", err)
+	}
+	if !PingWithOptions("127.0.0.1", WithPingPorts(port), WithPingTimeout(time.Second), WithPingNetwork("tcp")) {
+		t.Fatal("PingWithOptions failed to reach local listener")
+	}
+	<-done
+}
+
+func TestResolveWithOptions(t *testing.T) {
+	ips, err := GetIPByHostWithOptions("localhost", WithResolveNetwork("ip4"), WithResolveTimeout(time.Second))
+	if err != nil {
+		t.Fatalf("GetIPByHostWithOptions: %v", err)
+	}
+	if len(ips) == 0 {
+		t.Fatal("GetIPByHostWithOptions returned no IPs")
+	}
+	dns, err := GetDNSInfoWithOptions("localhost", WithDNSTypes("A"), WithResolveTimeout(time.Second))
+	if err != nil {
+		t.Fatalf("GetDNSInfoWithOptions: %v", err)
+	}
+	if len(dns) == 0 {
+		t.Fatal("GetDNSInfoWithOptions returned no A records")
+	}
+}
+
+func TestMultipartFileExts(t *testing.T) {
+	req := multipartRequest(t, "avatar", "a.txt", "hello")
+	setting := NewUploadSetting()
+	setting.FileExts = []string{".jpg"}
+	setting.AllowFileExts = true
+	if _, err := ParseMultipartForm(req, setting); err == nil {
+		t.Fatal("ParseMultipartForm should reject extension outside allow list")
+	}
+
+	req = multipartRequest(t, "avatar", "a.txt", "hello")
+	setting.FileExts = []string{"txt"}
+	setting.AllowFileExts = true
+	if _, err := ParseMultipartForm(req, setting); err != nil {
+		t.Fatalf("ParseMultipartForm should accept allowed extension: %v", err)
+	}
+
+	req = multipartRequest(t, "avatar", "a.exe", "hello")
+	setting.FileExts = []string{".exe"}
+	setting.AllowFileExts = false
+	if _, err := ParseMultipartForm(req, setting); err == nil {
+		t.Fatal("ParseMultipartForm should reject extension in deny list")
+	}
+}
+
+func multipartRequest(t *testing.T, field, filename, content string) *http.Request {
+	t.Helper()
+	body := &bytes.Buffer{}
+	w := multipart.NewWriter(body)
+	part, err := w.CreateFormFile(field, filename)
+	if err != nil {
+		t.Fatalf("create form file: %v", err)
+	}
+	if _, err := part.Write([]byte(content)); err != nil {
+		t.Fatalf("write form file: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("close multipart writer: %v", err)
+	}
+	req, err := http.NewRequest(http.MethodPost, "/upload", body)
+	if err != nil {
+		t.Fatalf("new request: %v", err)
+	}
+	req.Header.Set("Content-Type", w.FormDataContentType())
+	return req
 }
 
 func TestTLSHelpers(t *testing.T) {

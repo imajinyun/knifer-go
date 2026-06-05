@@ -1,12 +1,14 @@
 package net
 
 import (
+	"fmt"
 	"io"
 	"io/fs"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // UploadSetting configures multipart form parsing and file saving.
@@ -75,6 +77,9 @@ type MultipartFormData struct {
 
 // ParseMultipartForm parses multipart/form-data from an HTTP request.
 func ParseMultipartForm(r *http.Request, setting UploadSetting) (*MultipartFormData, error) {
+	if setting.MaxFileSize <= 0 {
+		setting.MaxFileSize = 32 << 20
+	}
 	if setting.MemoryThreshold <= 0 {
 		setting.MemoryThreshold = 32 << 20
 	}
@@ -82,7 +87,50 @@ func ParseMultipartForm(r *http.Request, setting UploadSetting) (*MultipartFormD
 	if err := r.ParseMultipartForm(setting.MemoryThreshold); err != nil { //nolint:gosec // request body is bounded by MaxBytesReader above.
 		return nil, err
 	}
+	if err := validateMultipartFileExts(r.MultipartForm, setting); err != nil {
+		return nil, err
+	}
 	return &MultipartFormData{Form: r.MultipartForm, loaded: true}, nil
+}
+
+func validateMultipartFileExts(form *multipart.Form, setting UploadSetting) error {
+	if form == nil || len(setting.FileExts) == 0 {
+		return nil
+	}
+	exts := make(map[string]struct{}, len(setting.FileExts))
+	for _, ext := range setting.FileExts {
+		ext = normalizeUploadExt(ext)
+		if ext != "" {
+			exts[ext] = struct{}{}
+		}
+	}
+	if len(exts) == 0 {
+		return nil
+	}
+	for _, files := range form.File {
+		for _, file := range files {
+			ext := normalizeUploadExt(filepath.Ext(file.Filename))
+			_, matched := exts[ext]
+			if setting.AllowFileExts && !matched {
+				return fmt.Errorf("uploaded file %q extension %q is not allowed", file.Filename, ext)
+			}
+			if !setting.AllowFileExts && matched {
+				return fmt.Errorf("uploaded file %q extension %q is denied", file.Filename, ext)
+			}
+		}
+	}
+	return nil
+}
+
+func normalizeUploadExt(ext string) string {
+	ext = strings.ToLower(strings.TrimSpace(ext))
+	if ext == "" {
+		return ""
+	}
+	if !strings.HasPrefix(ext, ".") {
+		ext = "." + ext
+	}
+	return ext
 }
 
 // IsLoaded reports whether the form has been parsed.

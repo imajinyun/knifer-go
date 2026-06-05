@@ -41,6 +41,77 @@ type StreamEntry struct {
 	Reader io.Reader
 }
 
+type archiveConfig struct {
+	dirPerm           os.FileMode
+	filePerm          os.FileMode
+	overwrite         bool
+	preserveMode      bool
+	compressionMethod uint16
+	compressionLevel  int
+	maxBytes          int64
+}
+
+// ArchiveOption customizes ZIP/GZIP/ZLIB archive helpers per call.
+type ArchiveOption func(*archiveConfig)
+
+func defaultArchiveConfig() archiveConfig {
+	return archiveConfig{
+		dirPerm:           0o750,
+		filePerm:          0o644,
+		overwrite:         true,
+		preserveMode:      true,
+		compressionMethod: archivezip.Deflate,
+		compressionLevel:  flate.DefaultCompression,
+	}
+}
+
+// WithDirPerm sets the directory permission used when creating archive output/extract directories.
+func WithDirPerm(perm os.FileMode) ArchiveOption { return func(c *archiveConfig) { c.dirPerm = perm } }
+
+// WithFilePerm sets the file permission used when archive metadata is not preserved.
+func WithFilePerm(perm os.FileMode) ArchiveOption {
+	return func(c *archiveConfig) { c.filePerm = perm }
+}
+
+// WithOverwrite controls whether an existing output/extracted file may be overwritten.
+func WithOverwrite(overwrite bool) ArchiveOption {
+	return func(c *archiveConfig) { c.overwrite = overwrite }
+}
+
+// WithPreserveMode controls whether extracted files keep mode bits from the archive.
+func WithPreserveMode(preserve bool) ArchiveOption {
+	return func(c *archiveConfig) { c.preserveMode = preserve }
+}
+
+// WithCompressionMethod sets the ZIP compression method used for newly created entries.
+func WithCompressionMethod(method uint16) ArchiveOption {
+	return func(c *archiveConfig) { c.compressionMethod = method }
+}
+
+// WithCompressionLevel sets the deflate compression level used for newly created entries.
+func WithCompressionLevel(level int) ArchiveOption {
+	return func(c *archiveConfig) { c.compressionLevel = level }
+}
+
+// WithMaxBytes limits bytes read from archive entries or decompressed streams. Non-positive means unlimited.
+func WithMaxBytes(n int64) ArchiveOption { return func(c *archiveConfig) { c.maxBytes = n } }
+
+func applyArchiveOptions(opts []ArchiveOption) archiveConfig {
+	cfg := defaultArchiveConfig()
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.dirPerm == 0 {
+		cfg.dirPerm = 0o750
+	}
+	if cfg.filePerm == 0 {
+		cfg.filePerm = 0o644
+	}
+	return cfg
+}
+
 // Open opens a ZIP file for reading.
 func Open(path string) (*archivezip.ReadCloser, error) { return archivezip.OpenReader(path) }
 
@@ -76,17 +147,32 @@ func ZipFiles(dest string, withSrcDir bool, srcFiles ...string) (err error) {
 	return ZipFilesFilter(dest, withSrcDir, nil, srcFiles...)
 }
 
+// ZipFilesWithOptions creates a ZIP archive from source files or directories with per-call options.
+func ZipFilesWithOptions(dest string, withSrcDir bool, srcFiles []string, opts ...ArchiveOption) (err error) {
+	return ZipFilesFilterWithOptions(dest, withSrcDir, nil, srcFiles, opts...)
+}
+
 // ZipFilesFilter creates a ZIP archive and filters source paths.
 func ZipFilesFilter(dest string, withSrcDir bool, filter FileFilter, srcFiles ...string) (err error) {
+	return ZipFilesFilterWithOptions(dest, withSrcDir, filter, srcFiles)
+}
+
+// ZipFilesFilterWithOptions creates a ZIP archive with source filtering and per-call options.
+func ZipFilesFilterWithOptions(dest string, withSrcDir bool, filter FileFilter, srcFiles []string, opts ...ArchiveOption) (err error) {
+	cfg := applyArchiveOptions(opts)
 	if err := validateZipTarget(dest, srcFiles...); err != nil {
 		return err
 	}
 	if dir := filepath.Dir(dest); dir != "." {
-		if err := os.MkdirAll(dir, 0o750); err != nil {
+		if err := os.MkdirAll(dir, cfg.dirPerm); err != nil {
 			return err
 		}
 	}
-	out, err := os.Create(dest) // #nosec G304 -- destination path is an explicit caller-provided archive output.
+	flag := os.O_CREATE | os.O_WRONLY | os.O_TRUNC
+	if !cfg.overwrite {
+		flag |= os.O_EXCL
+	}
+	out, err := os.OpenFile(dest, flag, cfg.filePerm) // #nosec G304 -- destination path is an explicit caller-provided archive output.
 	if err != nil {
 		return err
 	}
@@ -95,12 +181,23 @@ func ZipFilesFilter(dest string, withSrcDir bool, filter FileFilter, srcFiles ..
 			err = closeErr
 		}
 	}()
-	return ZipToWriter(out, withSrcDir, filter, srcFiles...)
+	return ZipToWriterWithOptions(out, withSrcDir, filter, srcFiles, opts...)
 }
 
 // ZipToWriter writes source files or directories into out as a ZIP archive.
 func ZipToWriter(out io.Writer, withSrcDir bool, filter FileFilter, srcFiles ...string) (err error) {
+	return ZipToWriterWithOptions(out, withSrcDir, filter, srcFiles)
+}
+
+// ZipToWriterWithOptions writes source files or directories into out as a ZIP archive with per-call options.
+func ZipToWriterWithOptions(out io.Writer, withSrcDir bool, filter FileFilter, srcFiles []string, opts ...ArchiveOption) (err error) {
+	cfg := applyArchiveOptions(opts)
 	zw := archivezip.NewWriter(out)
+	if cfg.compressionMethod == archivezip.Deflate && cfg.compressionLevel != flate.DefaultCompression {
+		zw.RegisterCompressor(archivezip.Deflate, func(w io.Writer) (io.WriteCloser, error) {
+			return flate.NewWriter(w, cfg.compressionLevel)
+		})
+	}
 	defer func() {
 		if closeErr := zw.Close(); err == nil {
 			err = closeErr
@@ -120,7 +217,7 @@ func ZipToWriter(out io.Writer, withSrcDir bool, filter FileFilter, srcFiles ...
 			base = src
 			name = ""
 		}
-		if err := addPath(zw, src, base, name, filter); err != nil {
+		if err := addPath(zw, src, base, name, filter, cfg); err != nil {
 			return err
 		}
 	}
@@ -139,12 +236,22 @@ func ZipBytes(zipFile, path string, data []byte) error {
 
 // ZipEntries creates or overwrites zipFile and adds in-memory entries.
 func ZipEntries(zipFile string, entries ...EntryData) (err error) {
+	return ZipEntriesWithOptions(zipFile, entries)
+}
+
+// ZipEntriesWithOptions creates or overwrites zipFile and adds in-memory entries with per-call options.
+func ZipEntriesWithOptions(zipFile string, entries []EntryData, opts ...ArchiveOption) (err error) {
+	cfg := applyArchiveOptions(opts)
 	if dir := filepath.Dir(zipFile); dir != "." {
-		if err := os.MkdirAll(dir, 0o750); err != nil {
+		if err := os.MkdirAll(dir, cfg.dirPerm); err != nil {
 			return err
 		}
 	}
-	out, err := os.Create(zipFile) // #nosec G304 -- destination path is an explicit caller-provided archive output.
+	flag := os.O_CREATE | os.O_WRONLY | os.O_TRUNC
+	if !cfg.overwrite {
+		flag |= os.O_EXCL
+	}
+	out, err := os.OpenFile(zipFile, flag, cfg.filePerm) // #nosec G304 -- destination path is an explicit caller-provided archive output.
 	if err != nil {
 		return err
 	}
@@ -153,26 +260,41 @@ func ZipEntries(zipFile string, entries ...EntryData) (err error) {
 			err = closeErr
 		}
 	}()
-	return ZipEntriesToWriter(out, entries...)
+	return ZipEntriesToWriterWithOptions(out, entries, opts...)
 }
 
 // ZipEntriesToWriter writes in-memory entries into out as a ZIP archive.
 func ZipEntriesToWriter(out io.Writer, entries ...EntryData) (err error) {
+	return ZipEntriesToWriterWithOptions(out, entries)
+}
+
+// ZipEntriesToWriterWithOptions writes in-memory entries into out as a ZIP archive with per-call options.
+func ZipEntriesToWriterWithOptions(out io.Writer, entries []EntryData, opts ...ArchiveOption) (err error) {
 	streams := make([]StreamEntry, 0, len(entries))
 	for _, entry := range entries {
 		streams = append(streams, StreamEntry{Name: entry.Name, Reader: bytes.NewReader(entry.Data)})
 	}
-	return ZipStreamsToWriter(out, streams...)
+	return ZipStreamsToWriterWithOptions(out, streams, opts...)
 }
 
 // ZipStreams creates or overwrites zipFile and adds stream entries.
 func ZipStreams(zipFile string, entries ...StreamEntry) (err error) {
+	return ZipStreamsWithOptions(zipFile, entries)
+}
+
+// ZipStreamsWithOptions creates or overwrites zipFile and adds stream entries with per-call options.
+func ZipStreamsWithOptions(zipFile string, entries []StreamEntry, opts ...ArchiveOption) (err error) {
+	cfg := applyArchiveOptions(opts)
 	if dir := filepath.Dir(zipFile); dir != "." {
-		if err := os.MkdirAll(dir, 0o750); err != nil {
+		if err := os.MkdirAll(dir, cfg.dirPerm); err != nil {
 			return err
 		}
 	}
-	out, err := os.Create(zipFile) // #nosec G304 -- destination path is an explicit caller-provided archive output.
+	flag := os.O_CREATE | os.O_WRONLY | os.O_TRUNC
+	if !cfg.overwrite {
+		flag |= os.O_EXCL
+	}
+	out, err := os.OpenFile(zipFile, flag, cfg.filePerm) // #nosec G304 -- destination path is an explicit caller-provided archive output.
 	if err != nil {
 		return err
 	}
@@ -181,12 +303,23 @@ func ZipStreams(zipFile string, entries ...StreamEntry) (err error) {
 			err = closeErr
 		}
 	}()
-	return ZipStreamsToWriter(out, entries...)
+	return ZipStreamsToWriterWithOptions(out, entries, opts...)
 }
 
 // ZipStreamsToWriter writes stream entries into out as a ZIP archive.
 func ZipStreamsToWriter(out io.Writer, entries ...StreamEntry) (err error) {
+	return ZipStreamsToWriterWithOptions(out, entries)
+}
+
+// ZipStreamsToWriterWithOptions writes stream entries into out as a ZIP archive with per-call options.
+func ZipStreamsToWriterWithOptions(out io.Writer, entries []StreamEntry, opts ...ArchiveOption) (err error) {
+	cfg := applyArchiveOptions(opts)
 	zw := archivezip.NewWriter(out)
+	if cfg.compressionMethod == archivezip.Deflate && cfg.compressionLevel != flate.DefaultCompression {
+		zw.RegisterCompressor(archivezip.Deflate, func(w io.Writer) (io.WriteCloser, error) {
+			return flate.NewWriter(w, cfg.compressionLevel)
+		})
+	}
 	defer func() {
 		if closeErr := zw.Close(); err == nil {
 			err = closeErr
@@ -197,7 +330,9 @@ func ZipStreamsToWriter(out io.Writer, entries ...StreamEntry) (err error) {
 		if err != nil {
 			return err
 		}
-		w, err := zw.Create(name)
+		header := &archivezip.FileHeader{Name: name, Method: cfg.compressionMethod}
+		header.SetMode(cfg.filePerm)
+		w, err := zw.CreateHeader(header)
 		if err != nil {
 			return err
 		}
@@ -219,12 +354,17 @@ func UnzipTo(zipFile, destDir string) error { return UnzipToLimit(zipFile, destD
 
 // UnzipToLimit extracts zipFile into destDir and optionally limits total uncompressed size.
 func UnzipToLimit(zipFile, destDir string, limit int64) error {
+	return UnzipToWithOptions(zipFile, destDir, WithMaxBytes(limit))
+}
+
+// UnzipToWithOptions extracts zipFile into destDir with per-call options.
+func UnzipToWithOptions(zipFile, destDir string, opts ...ArchiveOption) error {
 	r, err := archivezip.OpenReader(zipFile)
 	if err != nil {
 		return err
 	}
 	defer func() { _ = r.Close() }()
-	return UnzipReaderToLimit(&r.Reader, destDir, limit)
+	return UnzipReaderToWithOptions(&r.Reader, destDir, opts...)
 }
 
 // UnzipReaderTo extracts archive reader contents into destDir.
@@ -234,15 +374,21 @@ func UnzipReaderTo(r *archivezip.Reader, destDir string) error {
 
 // UnzipReaderToLimit extracts archive reader contents into destDir and optionally limits total size.
 func UnzipReaderToLimit(r *archivezip.Reader, destDir string, limit int64) error {
+	return UnzipReaderToWithOptions(r, destDir, WithMaxBytes(limit))
+}
+
+// UnzipReaderToWithOptions extracts archive reader contents into destDir with per-call options.
+func UnzipReaderToWithOptions(r *archivezip.Reader, destDir string, opts ...ArchiveOption) error {
+	cfg := applyArchiveOptions(opts)
 	if r == nil {
 		return invalidInputf("zip reader is nil")
 	}
-	if err := os.MkdirAll(destDir, 0o750); err != nil {
+	if err := os.MkdirAll(destDir, cfg.dirPerm); err != nil {
 		return err
 	}
 	var total int64
 	for _, f := range r.File {
-		if limit > 0 {
+		if cfg.maxBytes > 0 {
 			if f.UncompressedSize64 > uint64(maxInt64) {
 				return invalidInputf("uncompressed size exceeds int64 limit")
 			}
@@ -251,11 +397,11 @@ func UnzipReaderToLimit(r *archivezip.Reader, destDir string, limit int64) error
 				return invalidInputf("uncompressed size exceeds int64 limit")
 			}
 			total += size
-			if total > limit {
+			if total > cfg.maxBytes {
 				return invalidInputf("uncompressed size exceeds limit")
 			}
 		}
-		if err := extractFile(f, destDir); err != nil {
+		if err := extractFile(f, destDir, cfg); err != nil {
 			return err
 		}
 	}
@@ -284,12 +430,17 @@ func Get(zipFile, name string) (io.ReadCloser, error) {
 
 // GetBytes returns the content of the named entry in zipFile.
 func GetBytes(zipFile, name string) ([]byte, error) {
+	return GetBytesWithOptions(zipFile, name)
+}
+
+// GetBytesWithOptions returns the content of the named entry in zipFile with per-call options.
+func GetBytesWithOptions(zipFile, name string, opts ...ArchiveOption) ([]byte, error) {
 	rc, err := Get(zipFile, name)
 	if err != nil {
 		return nil, err
 	}
 	defer func() { _ = rc.Close() }()
-	return io.ReadAll(rc)
+	return readAllLimit(rc, applyArchiveOptions(opts).maxBytes)
 }
 
 // Read walks every archive entry and calls consumer.
@@ -373,7 +524,12 @@ func GzipReader(r io.Reader, estimatedLength int) ([]byte, error) {
 }
 
 // UnGzip decompresses gzip data.
-func UnGzip(data []byte) ([]byte, error) { return UnGzipReader(bytes.NewReader(data), len(data)) }
+func UnGzip(data []byte) ([]byte, error) { return UnGzipWithOptions(data) }
+
+// UnGzipWithOptions decompresses gzip data with per-call options.
+func UnGzipWithOptions(data []byte, opts ...ArchiveOption) ([]byte, error) {
+	return UnGzipReaderWithOptions(bytes.NewReader(data), len(data), opts...)
+}
 
 // Gunzip decompresses gzip data.
 func Gunzip(data []byte) ([]byte, error) { return UnGzip(data) }
@@ -386,9 +542,15 @@ func UnGzipString(data []byte) (string, error) {
 
 // UnGzipReader decompresses all gzip bytes from r.
 func UnGzipReader(r io.Reader, estimatedLength int) ([]byte, error) {
+	return UnGzipReaderWithOptions(r, estimatedLength)
+}
+
+// UnGzipReaderWithOptions decompresses gzip bytes from r with per-call options.
+func UnGzipReaderWithOptions(r io.Reader, estimatedLength int, opts ...ArchiveOption) ([]byte, error) {
 	if estimatedLength <= 0 {
 		estimatedLength = defaultBufferSize
 	}
+	cfg := applyArchiveOptions(opts)
 	zr, err := gzip.NewReader(r)
 	if err != nil {
 		return nil, err
@@ -396,7 +558,7 @@ func UnGzipReader(r io.Reader, estimatedLength int) ([]byte, error) {
 	defer func() { _ = zr.Close() }()
 	var buf bytes.Buffer
 	buf.Grow(estimatedLength)
-	_, err = io.Copy(&buf, zr) // #nosec G110 -- this low-level helper intentionally decompresses caller-provided gzip data.
+	err = copyLimit(&buf, zr, cfg.maxBytes) // #nosec G110 -- this low-level helper intentionally decompresses caller-provided gzip data.
 	return buf.Bytes(), err
 }
 
@@ -448,7 +610,12 @@ func ZlibReader(r io.Reader, level, estimatedLength int) ([]byte, error) {
 }
 
 // UnZlib decompresses zlib data.
-func UnZlib(data []byte) ([]byte, error) { return UnZlibReader(bytes.NewReader(data), len(data)) }
+func UnZlib(data []byte) ([]byte, error) { return UnZlibWithOptions(data) }
+
+// UnZlibWithOptions decompresses zlib data with per-call options.
+func UnZlibWithOptions(data []byte, opts ...ArchiveOption) ([]byte, error) {
+	return UnZlibReaderWithOptions(bytes.NewReader(data), len(data), opts...)
+}
 
 // Unzlib decompresses zlib data.
 func Unzlib(data []byte) ([]byte, error) { return UnZlib(data) }
@@ -461,9 +628,15 @@ func UnZlibString(data []byte) (string, error) {
 
 // UnZlibReader decompresses all zlib bytes from r.
 func UnZlibReader(r io.Reader, estimatedLength int) ([]byte, error) {
+	return UnZlibReaderWithOptions(r, estimatedLength)
+}
+
+// UnZlibReaderWithOptions decompresses zlib bytes from r with per-call options.
+func UnZlibReaderWithOptions(r io.Reader, estimatedLength int, opts ...ArchiveOption) ([]byte, error) {
 	if estimatedLength <= 0 {
 		estimatedLength = defaultBufferSize
 	}
+	cfg := applyArchiveOptions(opts)
 	zr, err := zlib.NewReader(r)
 	if err != nil {
 		return nil, err
@@ -471,7 +644,7 @@ func UnZlibReader(r io.Reader, estimatedLength int) ([]byte, error) {
 	defer func() { _ = zr.Close() }()
 	var buf bytes.Buffer
 	buf.Grow(estimatedLength)
-	_, err = io.Copy(&buf, zr) // #nosec G110 -- this low-level helper intentionally decompresses caller-provided zlib data.
+	err = copyLimit(&buf, zr, cfg.maxBytes) // #nosec G110 -- this low-level helper intentionally decompresses caller-provided zlib data.
 	return buf.Bytes(), err
 }
 
@@ -514,7 +687,7 @@ func appendWithFilter(zipPath, srcPath string, filter FileFilter) error {
 		base = srcPath
 		name = ""
 	}
-	if err := addPath(zw, srcPath, base, name, filter); err != nil {
+	if err := addPath(zw, srcPath, base, name, filter, defaultArchiveConfig()); err != nil {
 		_ = zw.Close()
 		_ = tmp.Close()
 		_ = os.Remove(tmpPath)
@@ -532,7 +705,7 @@ func appendWithFilter(zipPath, srcPath string, filter FileFilter) error {
 	return os.Rename(tmpPath, zipPath)
 }
 
-func addPath(zw *archivezip.Writer, path, base, name string, filter FileFilter) error {
+func addPath(zw *archivezip.Writer, path, base, name string, filter FileFilter, cfg archiveConfig) error {
 	info, err := os.Lstat(path)
 	if err != nil {
 		return err
@@ -583,22 +756,22 @@ func addPath(zw *archivezip.Writer, path, base, name string, filter FileFilter) 
 			if zipName != "" {
 				childName = filepath.Join(zipName, entry.Name())
 			}
-			if err := addPath(zw, child, base, childName, filter); err != nil {
+			if err := addPath(zw, child, base, childName, filter, cfg); err != nil {
 				return err
 			}
 		}
 		return nil
 	}
-	return addFile(zw, path, zipName, info)
+	return addFile(zw, path, zipName, info, cfg)
 }
 
-func addFile(zw *archivezip.Writer, path, zipName string, info os.FileInfo) error {
+func addFile(zw *archivezip.Writer, path, zipName string, info os.FileInfo, cfg archiveConfig) error {
 	header, err := archivezip.FileInfoHeader(info)
 	if err != nil {
 		return err
 	}
 	header.Name = zipName
-	header.Method = archivezip.Deflate
+	header.Method = cfg.compressionMethod
 	header.SetMode(info.Mode())
 	w, err := zw.CreateHeader(header)
 	if err != nil {
@@ -621,15 +794,19 @@ func addFile(zw *archivezip.Writer, path, zipName string, info os.FileInfo) erro
 	return err
 }
 
-func extractFile(f *archivezip.File, destDir string) error {
+func extractFile(f *archivezip.File, destDir string, cfg archiveConfig) error {
 	target, err := safeZipTarget(destDir, f.Name)
 	if err != nil {
 		return err
 	}
 	if f.FileInfo().IsDir() {
-		return os.MkdirAll(target, f.Mode())
+		perm := cfg.dirPerm
+		if cfg.preserveMode {
+			perm = f.Mode()
+		}
+		return os.MkdirAll(target, perm)
 	}
-	if err := os.MkdirAll(filepath.Dir(target), 0o750); err != nil {
+	if err := os.MkdirAll(filepath.Dir(target), cfg.dirPerm); err != nil {
 		return err
 	}
 	r, err := f.Open()
@@ -637,7 +814,15 @@ func extractFile(f *archivezip.File, destDir string) error {
 		return err
 	}
 	defer func() { _ = r.Close() }()
-	w, err := os.OpenFile(target, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, f.Mode()) // #nosec G304 -- target is validated by safeZipTarget before extraction.
+	perm := cfg.filePerm
+	if cfg.preserveMode {
+		perm = f.Mode()
+	}
+	flag := os.O_CREATE | os.O_WRONLY | os.O_TRUNC
+	if !cfg.overwrite {
+		flag |= os.O_EXCL
+	}
+	w, err := os.OpenFile(target, flag, perm) // #nosec G304 -- target is validated by safeZipTarget before extraction.
 	if err != nil {
 		return err
 	}
@@ -646,6 +831,37 @@ func extractFile(f *archivezip.File, destDir string) error {
 		return err
 	}
 	return w.Close()
+}
+
+func readAllLimit(r io.Reader, maxBytes int64) ([]byte, error) {
+	if maxBytes <= 0 {
+		return io.ReadAll(r)
+	}
+	limited := &io.LimitedReader{R: r, N: maxBytes + 1}
+	b, err := io.ReadAll(limited)
+	if err != nil {
+		return nil, err
+	}
+	if int64(len(b)) > maxBytes {
+		return nil, invalidInputf("archive data exceeds max bytes: %d", maxBytes)
+	}
+	return b, nil
+}
+
+func copyLimit(dst io.Writer, src io.Reader, maxBytes int64) error {
+	if maxBytes <= 0 {
+		_, err := io.Copy(dst, src)
+		return err
+	}
+	limited := &io.LimitedReader{R: src, N: maxBytes + 1}
+	n, err := io.Copy(dst, limited)
+	if err != nil {
+		return err
+	}
+	if n > maxBytes {
+		return invalidInputf("archive data exceeds max bytes: %d", maxBytes)
+	}
+	return nil
 }
 
 func copyExistingEntry(zw *archivezip.Writer, f *archivezip.File) error {
