@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"runtime/debug"
+	"sync"
 
 	"github.com/hashicorp/go-multierror"
 	knifer "github.com/imajinyun/go-knifer"
@@ -16,6 +17,11 @@ type LogFunc func(ctx context.Context, level logrus.Level, err error, stack stri
 
 // DebugStackFunc captures the current goroutine stack.
 type DebugStackFunc func() []byte
+
+var defaultLogFuncState = struct {
+	sync.RWMutex
+	logFunc LogFunc
+}{logFunc: logrusLogFunc}
 
 type stackConfig struct {
 	debugStack DebugStackFunc
@@ -46,7 +52,32 @@ func applyStackOptions(opts []StackOption) stackConfig {
 	return cfg
 }
 
-func defaultLogFunc(ctx context.Context, level logrus.Level, err error, stack string, format string, args ...any) {
+// ConfigureDefaultLogFunc sets the package-level logger used when callers do
+// not provide an explicit LogFunc. Passing nil restores the logrus-backed
+// default logger.
+func ConfigureDefaultLogFunc(logFunc LogFunc) {
+	defaultLogFuncState.Lock()
+	defer defaultLogFuncState.Unlock()
+	if logFunc == nil {
+		defaultLogFuncState.logFunc = logrusLogFunc
+		return
+	}
+	defaultLogFuncState.logFunc = logFunc
+}
+
+// ResetDefaultLogFunc restores the package-level logger to the logrus-backed default.
+func ResetDefaultLogFunc() { ConfigureDefaultLogFunc(nil) }
+
+func getDefaultLogFunc() LogFunc {
+	defaultLogFuncState.RLock()
+	defer defaultLogFuncState.RUnlock()
+	if defaultLogFuncState.logFunc == nil {
+		return logrusLogFunc
+	}
+	return defaultLogFuncState.logFunc
+}
+
+func logrusLogFunc(ctx context.Context, level logrus.Level, err error, stack string, format string, args ...any) {
 	logrus.WithContext(ctx).
 		WithError(err).
 		WithField("stack", stack).

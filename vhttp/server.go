@@ -63,6 +63,9 @@ func WithListenAndServeFunc(listenAndServe ListenAndServeFunc) ServerOption {
 	return httpx.WithListenAndServeFunc(listenAndServe)
 }
 
+// ResetServerStarters clears pending starter functions registered while applying server options.
+func ResetServerStarters() { httpx.ResetServerStarters() }
+
 // CreateServer delegates to the internal httpx implementation.
 func CreateServer(port int) *SimpleServer {
 	return httpx.CreateServer(port)

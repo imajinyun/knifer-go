@@ -2,6 +2,7 @@ package errx
 
 import (
 	"fmt"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -33,6 +34,35 @@ func TestGetStackTraceWithOptions(t *testing.T) {
 	stack := GetStackTraceWithOptions(WithStackSkip(0), WithStackDepth(2))
 	if len(stack) == 0 || len(stack) > 2 {
 		t.Fatalf("GetStackTraceWithOptions len = %d", len(stack))
+	}
+}
+
+func TestStackFrameCacheResetAndDisable(t *testing.T) {
+	ResetStackFrameCache()
+	var pcs [1]uintptr
+	runtime.Callers(0, pcs[:])
+	// copy into caller-provided slice while preserving the captured PC.
+	callers := func(_ int, out []uintptr) int {
+		out[0] = pcs[0]
+		return 1
+	}
+	resolver := func(uintptr) (string, int, string, bool) {
+		return "/virtual/custom.go", 123, "virtual.Custom", true
+	}
+
+	stack := GetStackTraceWithOptions(WithCallersFunc(callers), WithFuncForPCFunc(resolver))
+	if got := fmt.Sprintf("%s:%d:%n", stack[0], stack[0], stack[0]); got != "custom.go:123:Custom" {
+		t.Fatalf("cached custom frame = %q", got)
+	}
+
+	ResetStackFrameCache()
+	if got := fmt.Sprintf("%s:%d:%n", stack[0], stack[0], stack[0]); got == "custom.go:123:Custom" {
+		t.Fatalf("ResetStackFrameCache should clear custom metadata, got %q", got)
+	}
+
+	stack = GetStackTraceWithOptions(WithCallersFunc(callers), WithFuncForPCFunc(resolver), WithStackFrameCache(false))
+	if got := fmt.Sprintf("%s:%d:%n", stack[0], stack[0], stack[0]); got == "custom.go:123:Custom" {
+		t.Fatalf("WithStackFrameCache(false) should not store custom metadata, got %q", got)
 	}
 }
 

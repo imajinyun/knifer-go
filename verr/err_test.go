@@ -10,6 +10,7 @@ import (
 
 	knifer "github.com/imajinyun/go-knifer"
 	"github.com/imajinyun/go-knifer/verr"
+	"github.com/sirupsen/logrus"
 )
 
 func TestCollectorFacade(t *testing.T) {
@@ -106,4 +107,30 @@ func TestMustExitFacade(t *testing.T) {
 		}
 	}()
 	verr.MustExit(context.Background(), want)
+}
+
+func TestDefaultLogFuncFacade(t *testing.T) {
+	verr.ResetDefaultLogFunc()
+	t.Cleanup(verr.ResetDefaultLogFunc)
+
+	want := errors.New("facade default logger")
+	called := 0
+	verr.ConfigureDefaultLogFunc(func(ctx context.Context, level logrus.Level, err error, stack string, format string, args ...any) {
+		called++
+		if level != logrus.ErrorLevel {
+			t.Fatalf("logger level = %s, want error", level)
+		}
+		if !verr.ErrorIs(err, want) {
+			t.Fatalf("logger err = %v, want %v", err, want)
+		}
+		if format != "facade logger" {
+			t.Fatalf("logger format = %q, want facade logger", format)
+		}
+	})
+	if got := verr.Recover(func() error { return want }, "facade logger"); !verr.ErrorIs(got, want) {
+		t.Fatalf("Recover() = %v, want %v", got, want)
+	}
+	if called != 1 {
+		t.Fatalf("configured logger called %d times, want 1", called)
+	}
 }

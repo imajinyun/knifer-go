@@ -35,14 +35,14 @@ func WithExitPanicFunc(panicFunc func(error)) ExitOption {
 func defaultPanicFunc(err error) { panic(err) }
 
 func applyExitOptions(opts []ExitOption) exitConfig {
-	cfg := exitConfig{logFunc: defaultLogFunc, panicFunc: defaultPanicFunc}
+	cfg := exitConfig{logFunc: getDefaultLogFunc(), panicFunc: defaultPanicFunc}
 	for _, opt := range opts {
 		if opt != nil {
 			opt(&cfg)
 		}
 	}
 	if cfg.logFunc == nil {
-		cfg.logFunc = defaultLogFunc
+		cfg.logFunc = getDefaultLogFunc()
 	}
 	if cfg.panicFunc == nil {
 		cfg.panicFunc = defaultPanicFunc

@@ -31,7 +31,7 @@ func NewCollector() *Collector {
 		level:        logrus.ErrorLevel,
 		ctx:          context.Background(),
 		timerFactory: newCollectorTimer,
-		logFunc:      defaultLogFunc,
+		logFunc:      getDefaultLogFunc(),
 	}
 }
 
@@ -228,7 +228,7 @@ func (c *Collector) log(err error, format string, args ...any) {
 	stackOptions := append([]StackOption(nil), c.stackOptions...)
 	c.mux.Unlock()
 	if logFunc == nil {
-		logFunc = defaultLogFunc
+		logFunc = getDefaultLogFunc()
 	}
 	logFunc(ctx, level, err, GetStackWithOptions(err, stackOptions...), format, args...)
 }

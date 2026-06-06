@@ -29,6 +29,21 @@ type ListenAndServeFunc func(*http.Server) error
 
 var serverStarters sync.Map
 
+func storeServerStarter(server *http.Server, listenAndServe ListenAndServeFunc) {
+	serverStarters.Store(server, listenAndServe)
+}
+
+func takeServerStarter(server *http.Server) (ListenAndServeFunc, bool) {
+	starter, ok := serverStarters.LoadAndDelete(server)
+	if !ok {
+		return nil, false
+	}
+	return starter.(ListenAndServeFunc), true
+}
+
+// ResetServerStarters clears pending starter functions registered while applying server options.
+func ResetServerStarters() { serverStarters.Clear() }
+
 // NewSimpleServer creates a simple server on the specified port.
 func NewSimpleServer(port int) *SimpleServer {
 	return NewSimpleServerWithOptions(port)
@@ -52,6 +67,7 @@ func NewSimpleServerAddrWithOptions(addr string, opts ...ServerOption) *SimpleSe
 		Handler:           mux,
 		ReadHeaderTimeout: defaultReadHeaderTimeout,
 	}
+	defer serverStarters.Delete(server)
 	for _, opt := range opts {
 		if opt != nil {
 			opt(server)
@@ -64,8 +80,8 @@ func NewSimpleServerAddrWithOptions(addr string, opts ...ServerOption) *SimpleSe
 		server.Handler = mux
 	}
 	listenAndServe := defaultListenAndServe
-	if starter, ok := serverStarters.LoadAndDelete(server); ok {
-		listenAndServe = starter.(ListenAndServeFunc)
+	if starter, ok := takeServerStarter(server); ok {
+		listenAndServe = starter
 	}
 	return &SimpleServer{
 		addr:           server.Addr,
@@ -81,7 +97,7 @@ func defaultListenAndServe(server *http.Server) error { return server.ListenAndS
 func WithListenAndServeFunc(listenAndServe ListenAndServeFunc) ServerOption {
 	return func(s *http.Server) {
 		if listenAndServe != nil {
-			serverStarters.Store(s, listenAndServe)
+			storeServerStarter(s, listenAndServe)
 		}
 	}
 }

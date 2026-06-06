@@ -38,6 +38,14 @@ func WithTransportProvider(provider func() http.RoundTripper) RequestOption {
 	return httpx.WithTransportProvider(provider)
 }
 
+// ConfigureDefaultTransportProvider sets the provider used to initialize the shared default transport.
+func ConfigureDefaultTransportProvider(provider func() *http.Transport) {
+	httpx.ConfigureDefaultTransportProvider(provider)
+}
+
+// ResetDefaultTransport clears the cached shared default transport and restores the standard provider.
+func ResetDefaultTransport() { httpx.ResetDefaultTransport() }
+
 // WithClient sets a per-request HTTP client and takes precedence over WithTransport and WithTLSConfig.
 func WithClient(c *http.Client) RequestOption { return httpx.WithClient(c) }
 

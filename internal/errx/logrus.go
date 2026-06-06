@@ -60,7 +60,7 @@ func (w *Wrapper) Exec(ctx context.Context) (err error) {
 		if err != nil && w.log {
 			logger := w.logger
 			if logger == nil {
-				logger = defaultLogFunc
+				logger = getDefaultLogFunc()
 			}
 			logger(ctx, w.level, err, GetStackWithOptions(err, w.stackOptions...), w.format, w.args...)
 		}

@@ -15,8 +15,9 @@ import (
 )
 
 var (
-	defaultTransportMu sync.Mutex
-	defaultTransport   *http.Transport
+	defaultTransportMu       sync.Mutex
+	defaultTransport         *http.Transport
+	defaultTransportProvider = cloneDefaultTransport
 )
 
 func cloneDefaultTransport() *http.Transport {
@@ -30,10 +31,32 @@ func getDefaultTransport() *http.Transport {
 	defaultTransportMu.Lock()
 	defer defaultTransportMu.Unlock()
 	if defaultTransport == nil {
-		defaultTransport = cloneDefaultTransport()
+		defaultTransport = defaultTransportProvider()
+		if defaultTransport == nil {
+			defaultTransport = cloneDefaultTransport()
+		}
 	}
 	return defaultTransport
 }
+
+// ConfigureDefaultTransportProvider sets the provider used to initialize the shared default transport.
+// Passing nil restores the provider that clones http.DefaultTransport. Existing idle connections are closed.
+func ConfigureDefaultTransportProvider(provider func() *http.Transport) {
+	defaultTransportMu.Lock()
+	defer defaultTransportMu.Unlock()
+	if defaultTransport != nil {
+		defaultTransport.CloseIdleConnections()
+	}
+	defaultTransport = nil
+	if provider == nil {
+		defaultTransportProvider = cloneDefaultTransport
+		return
+	}
+	defaultTransportProvider = provider
+}
+
+// ResetDefaultTransport clears the cached shared default transport and restores the standard provider.
+func ResetDefaultTransport() { ConfigureDefaultTransportProvider(nil) }
 
 // HTTPRequest is a chainable HTTP request builder, aligned with the utility toolkit-http HttpRequest.
 type HTTPRequest struct {

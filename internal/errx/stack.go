@@ -15,6 +15,7 @@ type stackTraceConfig struct {
 	depth     int
 	callers   CallersFunc
 	funcForPC FuncForPCFunc
+	cache     bool
 }
 
 // CallersFunc captures call stack PCs.
@@ -54,8 +55,13 @@ func WithFuncForPCFunc(fn FuncForPCFunc) StackTraceOption {
 	}
 }
 
+// WithStackFrameCache controls whether captured frame metadata is stored in the package-level cache.
+func WithStackFrameCache(enabled bool) StackTraceOption {
+	return func(c *stackTraceConfig) { c.cache = enabled }
+}
+
 func applyStackTraceOptions(skip int, opts []StackTraceOption) stackTraceConfig {
-	cfg := stackTraceConfig{skip: skip, depth: 32, callers: runtime.Callers, funcForPC: defaultFuncForPC}
+	cfg := stackTraceConfig{skip: skip, depth: 32, callers: runtime.Callers, funcForPC: defaultFuncForPC, cache: true}
 	for _, opt := range opts {
 		if opt != nil {
 			opt(&cfg)
@@ -84,6 +90,9 @@ type frameInfo struct {
 }
 
 var capturedFrameInfo sync.Map
+
+// ResetStackFrameCache clears cached stack frame metadata captured by GetStackTraceWithOptions.
+func ResetStackFrameCache() { capturedFrameInfo.Clear() }
 
 func defaultFuncForPC(pc uintptr) (string, int, string, bool) {
 	fn := runtime.FuncForPC(pc)
@@ -210,7 +219,9 @@ func GetStackTraceWithOptions(opts ...StackTraceOption) StackTrace {
 		stack[idx] = Frame(frame)
 		pc := Frame(frame).pc()
 		file, line, name, ok := cfg.funcForPC(pc)
-		capturedFrameInfo.Store(pc, frameInfo{file: file, line: line, name: name, ok: ok})
+		if cfg.cache {
+			capturedFrameInfo.Store(pc, frameInfo{file: file, line: line, name: name, ok: ok})
+		}
 	}
 	return stack
 }

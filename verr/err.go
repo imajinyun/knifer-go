@@ -183,6 +183,12 @@ func WithCallersFunc(callers CallersFunc) StackTraceOption { return errimpl.With
 // WithFuncForPCFunc sets the resolver used to format captured stack frames.
 func WithFuncForPCFunc(fn FuncForPCFunc) StackTraceOption { return errimpl.WithFuncForPCFunc(fn) }
 
+// WithStackFrameCache controls whether captured frame metadata is stored in the package-level cache.
+func WithStackFrameCache(enabled bool) StackTraceOption { return errimpl.WithStackFrameCache(enabled) }
+
+// ResetStackFrameCache clears cached stack frame metadata captured by GetStackTraceWithOptions.
+func ResetStackFrameCache() { errimpl.ResetStackFrameCache() }
+
 // WithDebugStackFunc sets the function used when err does not carry a stack.
 func WithDebugStackFunc(fn DebugStackFunc) StackOption { return errimpl.WithDebugStackFunc(fn) }
 
@@ -196,6 +202,12 @@ func WithExitLogFunc(logFunc LogFunc) ExitOption { return errimpl.WithExitLogFun
 
 // WithExitPanicFunc sets the panic function used by MustExitWithOptions.
 func WithExitPanicFunc(panicFunc func(error)) ExitOption { return errimpl.WithExitPanicFunc(panicFunc) }
+
+// ConfigureDefaultLogFunc sets the package-level logger used by errx helpers when no logger is provided.
+func ConfigureDefaultLogFunc(logFunc LogFunc) { errimpl.ConfigureDefaultLogFunc(logFunc) }
+
+// ResetDefaultLogFunc restores the package-level logger to the logrus-backed default.
+func ResetDefaultLogFunc() { errimpl.ResetDefaultLogFunc() }
 
 // GetStackTraceWithOptions captures the current goroutine stack trace with options.
 func GetStackTraceWithOptions(opts ...StackTraceOption) StackTrace {

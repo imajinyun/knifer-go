@@ -438,6 +438,26 @@ func TestTransportProviderEvaluatedWhenBuildingClient(t *testing.T) {
 	}
 }
 
+func TestDefaultTransportProviderCanBeConfiguredAndReset(t *testing.T) {
+	custom := &http.Transport{MaxIdleConnsPerHost: 7}
+	ConfigureDefaultTransportProvider(func() *http.Transport { return custom })
+	t.Cleanup(ResetDefaultTransport)
+
+	client := Get("https://example.com").buildClient()
+	if client.Transport != custom {
+		t.Fatalf("configured default transport = %p, want %p", client.Transport, custom)
+	}
+
+	ResetDefaultTransport()
+	client = Get("https://example.com").buildClient()
+	if client.Transport == custom {
+		t.Fatal("ResetDefaultTransport should clear configured transport")
+	}
+	if _, ok := client.Transport.(*http.Transport); !ok {
+		t.Fatalf("reset default transport type = %T, want *http.Transport", client.Transport)
+	}
+}
+
 type roundTripperFunc func(*http.Request) (*http.Response, error)
 
 func (f roundTripperFunc) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }

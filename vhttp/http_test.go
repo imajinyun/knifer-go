@@ -91,6 +91,27 @@ func TestFacadeTransportProviderOption(t *testing.T) {
 	}
 }
 
+func TestFacadeDefaultTransportProviderLifecycle(t *testing.T) {
+	custom := &http.Transport{MaxIdleConnsPerHost: 5}
+	vhttp.ConfigureDefaultTransportProvider(func() *http.Transport { return custom })
+	t.Cleanup(vhttp.ResetDefaultTransport)
+
+	providerCalls := 0
+	resp := vhttp.Get("https://example.com",
+		vhttp.WithTransportProvider(func() http.RoundTripper {
+			providerCalls++
+			return roundTripperFunc(func(req *http.Request) (*http.Response, error) {
+				return &http.Response{StatusCode: http.StatusOK, Body: io.NopCloser(strings.NewReader("ok")), Header: http.Header{}, Request: req}, nil
+			})
+		}),
+	).Execute()
+	if resp.Err() != nil || resp.Body() != "ok" || providerCalls != 1 {
+		t.Fatalf("per-request transport provider resp=%q err=%v calls=%d", resp.Body(), resp.Err(), providerCalls)
+	}
+
+	vhttp.ResetDefaultTransport()
+}
+
 func TestFacadeCreateWithOptions(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/redirect" {
@@ -163,6 +184,23 @@ func TestFacadeSimpleServerOptions(t *testing.T) {
 	}
 	if err := server.StopWithContext(context.Background()); err != nil {
 		t.Fatalf("StopWithContext on idle server = %v", err)
+	}
+}
+
+func TestFacadeServerStarterLifecycle(t *testing.T) {
+	vhttp.ResetServerStarters()
+	t.Cleanup(vhttp.ResetServerStarters)
+
+	called := 0
+	server := vhttp.NewSimpleServerAddrWithOptions("127.0.0.1:0", vhttp.WithListenAndServeFunc(func(server *http.Server) error {
+		called++
+		return http.ErrServerClosed
+	}))
+	if err := server.Start(); err != http.ErrServerClosed {
+		t.Fatalf("Start() = %v, want ErrServerClosed", err)
+	}
+	if called != 1 {
+		t.Fatalf("custom starter called %d times, want 1", called)
 	}
 }
 
