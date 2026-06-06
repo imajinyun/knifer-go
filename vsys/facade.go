@@ -39,6 +39,11 @@ func GetUserInfo() *UserInfo {
 	return system.GetUserInfo()
 }
 
+// GetUserInfoWithOptions delegates to the internal system implementation.
+func GetUserInfoWithOptions(opts ...UserInfoOption) *UserInfo {
+	return system.GetUserInfoWithOptions(opts...)
+}
+
 // GetGoInfo delegates to the internal system implementation.
 func GetGoInfo() *GoInfo {
 	return system.GetGoInfo()
@@ -97,4 +102,9 @@ func GetBool(key string, def bool) bool {
 // NewUserInfo delegates to the internal system implementation.
 func NewUserInfo() *UserInfo {
 	return system.NewUserInfo()
+}
+
+// NewUserInfoWithOptions delegates to the internal system implementation.
+func NewUserInfoWithOptions(opts ...UserInfoOption) *UserInfo {
+	return system.NewUserInfoWithOptions(opts...)
 }

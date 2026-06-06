@@ -22,6 +22,9 @@ type CaptchaOption = captcha.CaptchaOption
 // WriteOption customizes captcha file output.
 type WriteOption = captcha.WriteOption
 
+// GeneratorOption customizes captcha code generation.
+type GeneratorOption = captcha.GeneratorOption
+
 // AbstractCaptcha contains common captcha fields and behavior.
 type AbstractCaptcha = captcha.AbstractCaptcha
 
@@ -69,6 +72,11 @@ func WithRandomInt(randomInt func(max int) int) CaptchaOption {
 	return captcha.WithRandomInt(randomInt)
 }
 
+// WithGeneratorRandomInt sets the random integer function used while generating captcha codes.
+func WithGeneratorRandomInt(randomInt func(max int) int) GeneratorOption {
+	return captcha.WithGeneratorRandomInt(randomInt)
+}
+
 // WithColorFunc sets the color function used while rendering captcha images.
 func WithColorFunc(colorFunc func() color.Color) CaptchaOption {
 	return captcha.WithColorFunc(colorFunc)
@@ -96,6 +104,16 @@ func NewRandomGeneratorWithBase(base string, length int) *RandomGenerator {
 
 // NewMathGenerator creates a math captcha generator.
 func NewMathGenerator() *MathGenerator { return captcha.NewMathGenerator() }
+
+// GenRandomGeneratorWithOptions generates a random captcha string with per-call options.
+func GenRandomGeneratorWithOptions(generator *RandomGenerator, opts ...GeneratorOption) string {
+	return generator.GenWithOptions(opts...)
+}
+
+// GenMathGeneratorWithOptions generates a math captcha string with per-call options.
+func GenMathGeneratorWithOptions(generator *MathGenerator, opts ...GeneratorOption) string {
+	return generator.GenWithOptions(opts...)
+}
 
 // NewLineCaptcha creates a line-interference captcha.
 func NewLineCaptcha(width, height int) *LineCaptcha { return captcha.NewLineCaptcha(width, height) }

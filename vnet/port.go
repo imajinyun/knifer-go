@@ -45,3 +45,7 @@ func GetUsableLocalPortsWithOptions(numRequested, minPort, maxPort int, opts ...
 func NewLocalPortGenerator(beginPort int) *LocalPortGenerator {
 	return netimpl.NewLocalPortGenerator(beginPort)
 }
+
+func NewLocalPortGeneratorWithOptions(beginPort int, opts ...PortOption) *LocalPortGenerator {
+	return netimpl.NewLocalPortGeneratorWithOptions(beginPort, opts...)
+}

@@ -293,10 +293,22 @@ func readXMLReader(r io.Reader, cfg parseConfig) (*Document, error) {
 
 // ReadBySAX streams XML tokens from reader to handler.
 func ReadBySAX(r io.Reader, handler TokenHandler) error {
+	return ReadBySAXWithOptions(r, handler)
+}
+
+// ReadBySAXWithOptions streams XML tokens from reader to handler with custom parse options.
+func ReadBySAXWithOptions(r io.Reader, handler TokenHandler, opts ...ParseOption) error {
 	if handler == nil {
 		return nil
 	}
+	cfg := applyParse(opts)
+	if cfg.maxBytes > 0 {
+		r = io.LimitReader(r, cfg.maxBytes)
+	}
 	dec := stdxml.NewDecoder(r)
+	dec.Strict = cfg.strict
+	dec.CharsetReader = cfg.charsetReader
+	dec.Entity = cfg.entity
 	for {
 		tok, err := dec.Token()
 		if errors.Is(err, io.EOF) {
@@ -305,14 +317,38 @@ func ReadBySAX(r io.Reader, handler TokenHandler) error {
 		if err != nil {
 			return wrapInvalidInput("vxml: sax decode", err)
 		}
+		if !cfg.namespaceAware {
+			tok = stripTokenNamespace(tok)
+		}
 		if err := handler(tok); err != nil {
 			return err
 		}
 	}
 }
 
+func stripTokenNamespace(tok stdxml.Token) stdxml.Token {
+	switch t := tok.(type) {
+	case stdxml.StartElement:
+		t.Name.Space = ""
+		for i := range t.Attr {
+			t.Attr[i].Name.Space = ""
+		}
+		return t
+	case stdxml.EndElement:
+		t.Name.Space = ""
+		return t
+	default:
+		return tok
+	}
+}
+
 // ReadBySAXFile streams XML tokens from file.
 func ReadBySAXFile(path string, handler TokenHandler) (err error) {
+	return ReadBySAXFileWithOptions(path, handler)
+}
+
+// ReadBySAXFileWithOptions streams XML tokens from file with custom parse options.
+func ReadBySAXFileWithOptions(path string, handler TokenHandler, opts ...ParseOption) (err error) {
 	// #nosec G304 -- SDK file helper intentionally opens the caller-provided XML path.
 	f, err := os.Open(path)
 	if err != nil {
@@ -323,7 +359,7 @@ func ReadBySAXFile(path string, handler TokenHandler) (err error) {
 			err = closeErr
 		}
 	}()
-	return ReadBySAX(f, handler)
+	return ReadBySAXWithOptions(f, handler, opts...)
 }
 
 // ---------------------------------------------------------------------------

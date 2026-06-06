@@ -135,7 +135,13 @@ func applyWriteOptions(opts []WriteOption) writeConfig {
 
 // SheetNames returns all worksheet names in path.
 func SheetNames(path string) ([]string, error) {
-	f, err := excelize.OpenFile(path)
+	return SheetNamesWithOptions(path)
+}
+
+// SheetNamesWithOptions returns all worksheet names in path with custom open options.
+func SheetNamesWithOptions(path string, opts ...ReadOption) ([]string, error) {
+	cfg := applyReadOptions(opts)
+	f, err := excelize.OpenFile(path, cfg.openOptions...)
 	if err != nil {
 		return nil, err
 	}
@@ -156,7 +162,13 @@ func ReadRows(path string, opts ...ReadOption) ([][]string, error) {
 
 // ReadSheetRows reads rows from sheet in path.
 func ReadSheetRows(path, sheet string) ([][]string, error) {
-	f, err := excelize.OpenFile(path)
+	return ReadSheetRowsWithOptions(path, sheet)
+}
+
+// ReadSheetRowsWithOptions reads rows from sheet in path with custom open options.
+func ReadSheetRowsWithOptions(path, sheet string, opts ...ReadOption) ([][]string, error) {
+	cfg := applyReadOptions(opts)
+	f, err := excelize.OpenFile(path, cfg.openOptions...)
 	if err != nil {
 		return nil, err
 	}

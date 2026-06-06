@@ -7,6 +7,79 @@ import (
 	"strings"
 )
 
+type userInfoConfig struct {
+	currentUser func() (*user.User, error)
+	getenv      func(string) string
+	getwd       func() (string, error)
+	tempDir     func() string
+}
+
+// UserInfoOption customizes user information collection per call.
+type UserInfoOption func(*userInfoConfig)
+
+// WithCurrentUserFunc sets the function used to discover the current OS user.
+func WithCurrentUserFunc(fn func() (*user.User, error)) UserInfoOption {
+	return func(c *userInfoConfig) {
+		if fn != nil {
+			c.currentUser = fn
+		}
+	}
+}
+
+// WithUserEnvLookup sets the environment lookup function used by NewUserInfoWithOptions.
+func WithUserEnvLookup(lookup func(string) string) UserInfoOption {
+	return func(c *userInfoConfig) {
+		if lookup != nil {
+			c.getenv = lookup
+		}
+	}
+}
+
+// WithWorkingDirFunc sets the function used to discover the current working directory.
+func WithWorkingDirFunc(fn func() (string, error)) UserInfoOption {
+	return func(c *userInfoConfig) {
+		if fn != nil {
+			c.getwd = fn
+		}
+	}
+}
+
+// WithTempDirFunc sets the function used to discover the temporary directory.
+func WithTempDirFunc(fn func() string) UserInfoOption {
+	return func(c *userInfoConfig) {
+		if fn != nil {
+			c.tempDir = fn
+		}
+	}
+}
+
+func applyUserInfoOptions(opts []UserInfoOption) userInfoConfig {
+	cfg := userInfoConfig{
+		currentUser: user.Current,
+		getenv:      os.Getenv,
+		getwd:       os.Getwd,
+		tempDir:     os.TempDir,
+	}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.currentUser == nil {
+		cfg.currentUser = user.Current
+	}
+	if cfg.getenv == nil {
+		cfg.getenv = os.Getenv
+	}
+	if cfg.getwd == nil {
+		cfg.getwd = os.Getwd
+	}
+	if cfg.tempDir == nil {
+		cfg.tempDir = os.TempDir
+	}
+	return cfg
+}
+
 // UserInfo describes current logged-in user information.
 type UserInfo struct {
 	Name       string
@@ -19,27 +92,33 @@ type UserInfo struct {
 
 // NewUserInfo creates current user information.
 func NewUserInfo() *UserInfo {
+	return NewUserInfoWithOptions()
+}
+
+// NewUserInfoWithOptions creates current user information with per-call options.
+func NewUserInfoWithOptions(opts ...UserInfoOption) *UserInfo {
+	cfg := applyUserInfoOptions(opts)
 	u := &UserInfo{}
 
-	if cur, err := user.Current(); err == nil && cur != nil {
+	if cur, err := cfg.currentUser(); err == nil && cur != nil {
 		u.Name = cur.Username
 		u.HomeDir = fixPath(cur.HomeDir)
 	} else {
-		u.Name = os.Getenv("USER")
+		u.Name = cfg.getenv("USER")
 		if u.Name == "" {
-			u.Name = os.Getenv("USERNAME")
+			u.Name = cfg.getenv("USERNAME")
 		}
-		u.HomeDir = fixPath(os.Getenv("HOME"))
+		u.HomeDir = fixPath(cfg.getenv("HOME"))
 	}
 
-	if dir, err := os.Getwd(); err == nil {
+	if dir, err := cfg.getwd(); err == nil {
 		u.CurrentDir = fixPath(dir)
 	}
-	u.TempDir = fixPath(os.TempDir())
+	u.TempDir = fixPath(cfg.tempDir())
 
-	lang, country := parseLocale(os.Getenv("LANG"))
+	lang, country := parseLocale(cfg.getenv("LANG"))
 	if lang == "" {
-		lang, country = parseLocale(os.Getenv("LC_ALL"))
+		lang, country = parseLocale(cfg.getenv("LC_ALL"))
 	}
 	u.Language = lang
 	u.Country = country

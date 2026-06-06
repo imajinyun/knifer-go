@@ -128,6 +128,41 @@ url=postgres://${db.host}/${name:app}
 	}
 }
 
+func TestExpandWithOptionsUsesCustomEnvLookup(t *testing.T) {
+	s, err := Parse(`
+host=${ENV:CONF_HOST}
+base=http://${host}:${port:8080}
+[db]
+url=postgres://${ENV:CONF_DB_HOST}/${name:app}
+`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	lookup := func(key string) string {
+		switch key {
+		case "CONF_HOST":
+			return "option.local"
+		case "CONF_DB_HOST":
+			return "db.option.local"
+		default:
+			return ""
+		}
+	}
+	if got := s.GetExpandedWithOptions("host", WithEnvLookup(lookup)); got != "option.local" {
+		t.Fatalf("GetExpandedWithOptions(host) = %q", got)
+	}
+	if got := s.GetExpandedWithOptions("base", WithEnvLookup(lookup)); got != "http://option.local:8080" {
+		t.Fatalf("GetExpandedWithOptions(base) = %q", got)
+	}
+	if got := s.GetByGroupExpandedWithOptions("db", "url", WithEnvLookup(lookup)); got != "postgres://db.option.local/app" {
+		t.Fatalf("GetByGroupExpandedWithOptions(db.url) = %q", got)
+	}
+	expanded := s.ExpandWithOptions(WithEnvLookup(lookup))
+	if got := expanded.Get("host"); got != "option.local" {
+		t.Fatalf("ExpandWithOptions host = %q", got)
+	}
+}
+
 func TestParseYAMLFullAndBind(t *testing.T) {
 	s, err := ParseYAMLFull(`
 app: demo

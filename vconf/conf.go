@@ -17,6 +17,8 @@ type (
 	LoadOptions = confimpl.LoadOptions
 	// DecryptFunc decrypts encrypted configuration values.
 	DecryptFunc = confimpl.DecryptFunc
+	// ExpandOption customizes configuration variable expansion per call.
+	ExpandOption = confimpl.ExpandOption
 	// FieldRule describes one schema validation rule.
 	FieldRule = confimpl.FieldRule
 	// Schema describes configuration validation rules.
@@ -64,6 +66,9 @@ func LoadRemoteWithOptions(rawURL string, opts LoadOptions) (*Conf, error) {
 
 // Merge merges configurations in order. Later configurations override earlier ones.
 func Merge(configs ...*Conf) *Conf { return confimpl.Merge(configs...) }
+
+// WithEnvLookup sets the environment lookup function used for ${ENV:NAME} placeholders.
+func WithEnvLookup(lookup func(string) string) ExpandOption { return confimpl.WithEnvLookup(lookup) }
 
 // Base64Decrypt decodes base64 encrypted configuration values.
 func Base64Decrypt(cipherText string) (string, error) { return confimpl.Base64Decrypt(cipherText) }

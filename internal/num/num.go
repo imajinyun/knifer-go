@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"io"
 	"math"
 	"math/big"
 	"strconv"
@@ -20,6 +21,35 @@ var factorials = [...]uint64{
 	39916800, 479001600, 6227020800, 87178291200, 1307674368000,
 	20922789888000, 355687428096000, 6402373705728000,
 	121645100408832000, 2432902008176640000,
+}
+
+type randomNumberConfig struct {
+	randomReader io.Reader
+}
+
+// RandomNumberOption customizes random-number generation per call.
+type RandomNumberOption func(*randomNumberConfig)
+
+// WithRandomReader sets the random source used by Gen*WithOptions helpers.
+func WithRandomReader(reader io.Reader) RandomNumberOption {
+	return func(c *randomNumberConfig) {
+		if reader != nil {
+			c.randomReader = reader
+		}
+	}
+}
+
+func applyRandomNumberOptions(opts []RandomNumberOption) randomNumberConfig {
+	cfg := randomNumberConfig{randomReader: cryptorand.Reader}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.randomReader == nil {
+		cfg.randomReader = cryptorand.Reader
+	}
+	return cfg
 }
 
 // This file provides numeric helper functions for arithmetic, parsing, formatting,
@@ -288,21 +318,32 @@ func IsPrimes(n int) bool {
 
 // GenerateRandomNumber returns size unique random integers in [begin, end).
 func GenerateRandomNumber(begin, end, size int) []int {
-	return GenerateRandomNumberWithSeed(begin, end, size, Range(begin, end, 1))
+	return GenRandomNumberWithOptions(begin, end, size)
+}
+
+// GenRandomNumberWithOptions returns size unique random integers in [begin, end) with per-call options.
+func GenRandomNumberWithOptions(begin, end, size int, opts ...RandomNumberOption) []int {
+	return GenRandomNumberWithSeedWithOptions(begin, end, size, Range(begin, end, 1), opts...)
 }
 
 // GenerateRandomNumberWithSeed picks size unique values from seed.
 func GenerateRandomNumberWithSeed(begin, end, size int, seed []int) []int {
+	return GenRandomNumberWithSeedWithOptions(begin, end, size, seed)
+}
+
+// GenRandomNumberWithSeedWithOptions picks size unique values from seed with per-call options.
+func GenRandomNumberWithSeedWithOptions(begin, end, size int, seed []int, opts ...RandomNumberOption) []int {
 	if begin > end {
 		begin, end = end, begin
 	}
 	if size < 0 || end-begin < size || len(seed) < size {
 		return []int{}
 	}
+	cfg := applyRandomNumberOptions(opts)
 	pool := append([]int(nil), seed...)
 	out := make([]int, size)
 	for i := 0; i < size; i++ {
-		j := secureIntn(len(pool) - i)
+		j := secureIntnWithReader(cfg.randomReader, len(pool)-i)
 		out[i] = pool[j]
 		pool[j] = pool[len(pool)-1-i]
 	}
@@ -311,15 +352,21 @@ func GenerateRandomNumberWithSeed(begin, end, size int, seed []int) []int {
 
 // GenerateBySet returns size unique random integers in [begin, end).
 func GenerateBySet(begin, end, size int) []int {
+	return GenBySetWithOptions(begin, end, size)
+}
+
+// GenBySetWithOptions returns size unique random integers in [begin, end) with per-call options.
+func GenBySetWithOptions(begin, end, size int, opts ...RandomNumberOption) []int {
 	if begin > end {
 		begin, end = end, begin
 	}
 	if size < 0 || end-begin < size {
 		return []int{}
 	}
+	cfg := applyRandomNumberOptions(opts)
 	set := make(map[int]struct{}, size)
 	for len(set) < size {
-		set[begin+secureIntn(end-begin)] = struct{}{}
+		set[begin+secureIntnWithReader(cfg.randomReader, end-begin)] = struct{}{}
 	}
 	out := make([]int, 0, size)
 	for v := range set {
@@ -1135,10 +1182,17 @@ func (p *expressionParser) parseTerm() (float64, error) {
 }
 
 func secureIntn(max int) int {
+	return secureIntnWithReader(cryptorand.Reader, max)
+}
+
+func secureIntnWithReader(reader io.Reader, max int) int {
 	if max <= 0 {
 		return 0
 	}
-	n, err := cryptorand.Int(cryptorand.Reader, big.NewInt(int64(max)))
+	if reader == nil {
+		reader = cryptorand.Reader
+	}
+	n, err := cryptorand.Int(reader, big.NewInt(int64(max)))
 	if err != nil {
 		return 0
 	}

@@ -14,6 +14,35 @@ import (
 
 const defaultGroup = ""
 
+type expandConfig struct {
+	envLookup func(string) string
+}
+
+// ExpandOption customizes configuration variable expansion per call.
+type ExpandOption func(*expandConfig)
+
+// WithEnvLookup sets the environment lookup function used for ${ENV:NAME} placeholders.
+func WithEnvLookup(lookup func(string) string) ExpandOption {
+	return func(c *expandConfig) {
+		if lookup != nil {
+			c.envLookup = lookup
+		}
+	}
+}
+
+func applyExpandOptions(opts []ExpandOption) expandConfig {
+	cfg := expandConfig{envLookup: os.Getenv}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.envLookup == nil {
+		cfg.envLookup = os.Getenv
+	}
+	return cfg
+}
+
 // Conf stores grouped key-value configuration.
 type Conf struct {
 	data map[string]map[string]string
@@ -81,6 +110,11 @@ func (s *Conf) Get(key string) string { return s.GetByGroup(defaultGroup, key) }
 // GetExpanded returns a value from default group after variable expansion.
 func (s *Conf) GetExpanded(key string) string { return s.GetByGroupExpanded(defaultGroup, key) }
 
+// GetExpandedWithOptions returns a value from default group after variable expansion with per-call options.
+func (s *Conf) GetExpandedWithOptions(key string, opts ...ExpandOption) string {
+	return s.GetByGroupExpandedWithOptions(defaultGroup, key, opts...)
+}
+
 // GetOrDefault 从默认分组获取配置值，不存在时返回 def。GetOrDefault returns a value from the default group or def when absent.
 func (s *Conf) GetOrDefault(key, def string) string {
 	if v, ok := s.Lookup(defaultGroup, key); ok {
@@ -97,11 +131,17 @@ func (s *Conf) GetByGroup(group, key string) string {
 
 // GetByGroupExpanded returns a grouped value after variable expansion.
 func (s *Conf) GetByGroupExpanded(group, key string) string {
+	return s.GetByGroupExpandedWithOptions(group, key)
+}
+
+// GetByGroupExpandedWithOptions returns a grouped value after variable expansion with per-call options.
+func (s *Conf) GetByGroupExpandedWithOptions(group, key string, opts ...ExpandOption) string {
 	v, ok := s.Lookup(group, key)
 	if !ok {
 		return ""
 	}
-	return s.expandValue(group, v, map[string]bool{})
+	cfg := applyExpandOptions(opts)
+	return s.expandValue(group, v, map[string]bool{}, cfg)
 }
 
 // Lookup 获取指定分组中的配置值并返回是否存在。Lookup returns a grouped value and whether it exists.
@@ -209,13 +249,19 @@ func (s *Conf) ToMap() map[string]map[string]string {
 
 // Expand returns a copy with ${key}, ${group.key}, ${ENV:NAME}, and ${key:default} placeholders resolved.
 func (s *Conf) Expand() *Conf {
+	return s.ExpandWithOptions()
+}
+
+// ExpandWithOptions returns a copy with placeholders resolved using per-call options.
+func (s *Conf) ExpandWithOptions(opts ...ExpandOption) *Conf {
 	out := New()
 	if s == nil || s.data == nil {
 		return out
 	}
+	cfg := applyExpandOptions(opts)
 	for group, m := range s.data {
 		for key, value := range m {
-			out.SetByGroup(group, key, s.expandValue(group, value, map[string]bool{group + "." + key: true}))
+			out.SetByGroup(group, key, s.expandValue(group, value, map[string]bool{group + "." + key: true}, cfg))
 		}
 	}
 	return out
@@ -399,10 +445,10 @@ func splitList(text string) []string {
 	return parts
 }
 
-func (s *Conf) expandValue(group, value string, seen map[string]bool) string {
+func (s *Conf) expandValue(group, value string, seen map[string]bool, cfg expandConfig) string {
 	return os.Expand(value, func(name string) string {
 		if strings.HasPrefix(name, "ENV:") {
-			return os.Getenv(strings.TrimPrefix(name, "ENV:"))
+			return cfg.envLookup(strings.TrimPrefix(name, "ENV:"))
 		}
 		key, fallback, hasFallback := strings.Cut(name, ":")
 		lookupGroup := group
@@ -426,7 +472,7 @@ func (s *Conf) expandValue(group, value string, seen map[string]bool) string {
 		}
 		seen[seenKey] = true
 		defer delete(seen, seenKey)
-		return s.expandValue(lookupGroup, v, seen)
+		return s.expandValue(lookupGroup, v, seen, cfg)
 	})
 }
 

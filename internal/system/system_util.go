@@ -41,6 +41,11 @@ func GetUserInfo() *UserInfo {
 	return userInfo
 }
 
+// GetUserInfoWithOptions returns uncached user information collected with per-call options.
+func GetUserInfoWithOptions(opts ...UserInfoOption) *UserInfo {
+	return NewUserInfoWithOptions(opts...)
+}
+
 // GetGoInfo returns cached Go runtime metadata.
 func GetGoInfo() *GoInfo {
 	goOnce.Do(func() { goInfo = NewGoInfo() })

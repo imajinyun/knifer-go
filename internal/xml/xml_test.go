@@ -100,6 +100,19 @@ func TestReadVariantsSAXXPathAndFile(t *testing.T) {
 	if err := ReadBySAX(strings.NewReader(`<root>`), nil); err != nil {
 		t.Fatalf("ReadBySAX nil handler should ignore input: %v", err)
 	}
+	var nsStarts []stdxml.Name
+	if err := ReadBySAXWithOptions(strings.NewReader(`<root xmlns:p="urn:p"><p:a>1</p:a></root>`), func(tok stdxml.Token) error {
+		if start, ok := tok.(stdxml.StartElement); ok {
+			nsStarts = append(nsStarts, start.Name)
+		}
+		return nil
+	}, WithNamespaceAware(false)); err != nil {
+		t.Fatalf("ReadBySAXWithOptions namespace-aware false: %v", err)
+	}
+	if !reflect.DeepEqual(nsStarts, []stdxml.Name{{Local: "root"}, {Local: "a"}}) {
+		t.Fatalf("ReadBySAXWithOptions names = %#v", nsStarts)
+	}
+	assertXMLInvalidInput(t, ReadBySAXWithOptions(strings.NewReader(`<root><a/></root>`), func(stdxml.Token) error { return nil }, WithMaxBytes(6)))
 	handlerErr := errors.New("handler stop")
 	if err := ReadBySAX(strings.NewReader(`<root/>`), func(stdxml.Token) error { return handlerErr }); !errors.Is(err, handlerErr) {
 		t.Fatalf("ReadBySAX handler err = %v", err)
@@ -137,6 +150,15 @@ func TestReadVariantsSAXXPathAndFile(t *testing.T) {
 		return nil
 	}); err != nil || !reflect.DeepEqual(saxFileStarts, []string{"root", "a", "a"}) {
 		t.Fatalf("ReadBySAXFile starts=%v err=%v", saxFileStarts, err)
+	}
+	saxFileStarts = nil
+	if err := ReadBySAXFileWithOptions(tmp, func(tok stdxml.Token) error {
+		if start, ok := tok.(stdxml.StartElement); ok {
+			saxFileStarts = append(saxFileStarts, start.Name.Local)
+		}
+		return nil
+	}, WithStrict(true)); err != nil || !reflect.DeepEqual(saxFileStarts, []string{"root", "a", "a"}) {
+		t.Fatalf("ReadBySAXFileWithOptions starts=%v err=%v", saxFileStarts, err)
 	}
 
 	var out strings.Builder

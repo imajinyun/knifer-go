@@ -104,6 +104,21 @@ func TestPortAndMiscHelpers(t *testing.T) {
 	if IsUsableLocalPortWithOptions(port, WithPortHost("127.0.0.1")) {
 		t.Fatal("IsUsableLocalPortWithOptions should reject an occupied port")
 	}
+	g := NewLocalPortGeneratorWithOptions(port, WithPortHost("127.0.0.1"))
+	generated, err := g.Generate()
+	if err != nil {
+		t.Fatalf("LocalPortGenerator.Generate with options: %v", err)
+	}
+	if generated <= port || generated > PortRangeMax {
+		t.Fatalf("LocalPortGenerator generated %d, want > %d", generated, port)
+	}
+	next, err := g.GenerateWithOptions(WithPortHost("127.0.0.1"))
+	if err != nil {
+		t.Fatalf("LocalPortGenerator.GenerateWithOptions: %v", err)
+	}
+	if next <= generated || next > PortRangeMax {
+		t.Fatalf("LocalPortGenerator next generated %d, want > %d", next, generated)
+	}
 	if HideIPPart("192.168.1.2") != "192.168.1.*" {
 		t.Fatal("HideIPPart failed")
 	}
@@ -151,7 +166,8 @@ func TestPingWithOptions(t *testing.T) {
 
 func TestConnectHelpersWithOptionsUseDialerNetworkAndTimeout(t *testing.T) {
 	dialer := &recordingDialer{data: make(chan []byte, 1)}
-	conn, err := ConnectWithOptions("example.com", 8080,
+	conn, err := ConnectWithOptions(
+		"example.com", 8080,
 		WithConnectNetwork("tcp4"),
 		WithConnectTimeout(time.Second),
 		WithConnectDialer(dialer),

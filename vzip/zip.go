@@ -71,6 +71,11 @@ func GetStream(entry *archivezip.File) (io.ReadCloser, error) { return zipimpl.G
 // Append appends srcPath into zipPath by rewriting the archive.
 func Append(zipPath, srcPath string) error { return zipimpl.Append(zipPath, srcPath) }
 
+// AppendWithOptions appends srcPath into zipPath by rewriting the archive with per-call options.
+func AppendWithOptions(zipPath, srcPath string, opts ...ArchiveOption) error {
+	return zipimpl.AppendWithOptions(zipPath, srcPath, opts...)
+}
+
 // Zip creates an archive next to srcPath and returns the archive path.
 func Zip(srcPath string) (string, error) { return zipimpl.Zip(srcPath) }
 
@@ -218,6 +223,11 @@ func ListFileNames(zipFile, dir string) ([]string, error) { return zipimpl.ListF
 // Gzip compresses data using gzip.
 func Gzip(data []byte) ([]byte, error) { return zipimpl.Gzip(data) }
 
+// GzipWithOptions compresses data using gzip with per-call options.
+func GzipWithOptions(data []byte, opts ...ArchiveOption) ([]byte, error) {
+	return zipimpl.GzipWithOptions(data, opts...)
+}
+
 // GzipString compresses text using gzip.
 func GzipString(content string) ([]byte, error) { return zipimpl.GzipString(content) }
 
@@ -227,6 +237,11 @@ func GzipFile(path string) ([]byte, error) { return zipimpl.GzipFile(path) }
 // GzipReader compresses all bytes from r using gzip.
 func GzipReader(r io.Reader, estimatedLength int) ([]byte, error) {
 	return zipimpl.GzipReader(r, estimatedLength)
+}
+
+// GzipReaderWithOptions compresses all bytes from r using gzip with per-call options.
+func GzipReaderWithOptions(r io.Reader, estimatedLength int, opts ...ArchiveOption) ([]byte, error) {
+	return zipimpl.GzipReaderWithOptions(r, estimatedLength, opts...)
 }
 
 // UnGzip decompresses gzip data.

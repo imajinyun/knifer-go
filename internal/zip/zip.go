@@ -148,7 +148,12 @@ func GetStream(entry *archivezip.File) (io.ReadCloser, error) {
 
 // Append appends srcPath into zipPath by rewriting the archive.
 func Append(zipPath, srcPath string) error {
-	return appendWithFilter(zipPath, srcPath, nil)
+	return AppendWithOptions(zipPath, srcPath)
+}
+
+// AppendWithOptions appends srcPath into zipPath by rewriting the archive with per-call options.
+func AppendWithOptions(zipPath, srcPath string, opts ...ArchiveOption) error {
+	return appendWithFilter(zipPath, srcPath, opts...)
 }
 
 // Zip creates an archive next to srcPath and returns the archive path.
@@ -514,7 +519,12 @@ func ListFileNames(zipFile, dir string) ([]string, error) {
 }
 
 // Gzip compresses data using gzip.
-func Gzip(data []byte) ([]byte, error) { return GzipReader(bytes.NewReader(data), len(data)) }
+func Gzip(data []byte) ([]byte, error) { return GzipWithOptions(data) }
+
+// GzipWithOptions compresses data using gzip with per-call options.
+func GzipWithOptions(data []byte, opts ...ArchiveOption) ([]byte, error) {
+	return GzipReaderWithOptions(bytes.NewReader(data), len(data), opts...)
+}
 
 // GzipString compresses text using gzip.
 func GzipString(content string) ([]byte, error) { return Gzip([]byte(content)) }
@@ -536,12 +546,21 @@ func GzipFile(path string) ([]byte, error) {
 
 // GzipReader compresses all bytes from r using gzip.
 func GzipReader(r io.Reader, estimatedLength int) ([]byte, error) {
+	return GzipReaderWithOptions(r, estimatedLength)
+}
+
+// GzipReaderWithOptions compresses all bytes from r using gzip with per-call options.
+func GzipReaderWithOptions(r io.Reader, estimatedLength int, opts ...ArchiveOption) ([]byte, error) {
 	if estimatedLength <= 0 {
 		estimatedLength = defaultBufferSize
 	}
+	cfg := applyArchiveOptions(opts)
 	var buf bytes.Buffer
 	buf.Grow(estimatedLength)
-	w := gzip.NewWriter(&buf)
+	w, err := gzip.NewWriterLevel(&buf, cfg.compressionLevel)
+	if err != nil {
+		return nil, err
+	}
 	if _, err := io.Copy(w, r); err != nil {
 		_ = w.Close()
 		return nil, err
@@ -677,13 +696,20 @@ func UnZlibReaderWithOptions(r io.Reader, estimatedLength int, opts ...ArchiveOp
 	return buf.Bytes(), err
 }
 
-func appendWithFilter(zipPath, srcPath string, filter FileFilter) error {
+func appendWithFilter(zipPath, srcPath string, opts ...ArchiveOption) error {
+	cfg := applyArchiveOptions(opts)
+	filter := cfg.filter
 	tmp, err := os.CreateTemp(filepath.Dir(zipPath), ".zip-append-*.zip")
 	if err != nil {
 		return err
 	}
 	tmpPath := tmp.Name()
 	zw := archivezip.NewWriter(tmp)
+	if cfg.compressionMethod == archivezip.Deflate && cfg.compressionLevel != flate.DefaultCompression {
+		zw.RegisterCompressor(archivezip.Deflate, func(w io.Writer) (io.WriteCloser, error) {
+			return flate.NewWriter(w, cfg.compressionLevel)
+		})
+	}
 	if _, err := os.Stat(zipPath); err == nil {
 		r, err := archivezip.OpenReader(zipPath)
 		if err != nil {
@@ -716,7 +742,7 @@ func appendWithFilter(zipPath, srcPath string, filter FileFilter) error {
 		base = srcPath
 		name = ""
 	}
-	if err := addPath(zw, srcPath, base, name, filter, defaultArchiveConfig()); err != nil {
+	if err := addPath(zw, srcPath, base, name, filter, cfg); err != nil {
 		_ = zw.Close()
 		_ = tmp.Close()
 		_ = os.Remove(tmpPath)

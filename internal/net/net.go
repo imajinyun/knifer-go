@@ -310,19 +310,33 @@ func GetUsableLocalPortsWithOptions(numRequested, minPort, maxPort int, opts ...
 }
 
 // LocalPortGenerator generates available local ports from a moving cursor.
-type LocalPortGenerator struct{ next int }
+type LocalPortGenerator struct {
+	next int
+	opts []PortOption
+}
 
 // NewLocalPortGenerator creates a local port generator.
 func NewLocalPortGenerator(beginPort int) *LocalPortGenerator {
-	return &LocalPortGenerator{next: beginPort}
+	return NewLocalPortGeneratorWithOptions(beginPort)
+}
+
+// NewLocalPortGeneratorWithOptions creates a local port generator with custom probe options.
+func NewLocalPortGeneratorWithOptions(beginPort int, opts ...PortOption) *LocalPortGenerator {
+	return &LocalPortGenerator{next: beginPort, opts: append([]PortOption(nil), opts...)}
 }
 
 // Generate returns the next available local port.
 func (g *LocalPortGenerator) Generate() (int, error) {
+	return g.GenerateWithOptions()
+}
+
+// GenerateWithOptions returns the next available local port with per-call probe options.
+func (g *LocalPortGenerator) GenerateWithOptions(opts ...PortOption) (int, error) {
 	if g == nil {
 		return 0, fmt.Errorf("nil local port generator")
 	}
-	port, err := GetUsableLocalPortInRange(g.next, PortRangeMax)
+	allOpts := append(append([]PortOption(nil), g.opts...), opts...)
+	port, err := GetUsableLocalPortInRangeWithOptions(g.next, PortRangeMax, allOpts...)
 	if err != nil {
 		return 0, err
 	}

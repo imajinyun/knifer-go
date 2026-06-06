@@ -43,6 +43,11 @@ func NewRandomGeneratorWithBase(base string, length int) *RandomGenerator {
 
 // Generate returns a random string.
 func (g *RandomGenerator) Generate() string {
+	return g.GenWithOptions()
+}
+
+// GenWithOptions returns a random string with per-call options.
+func (g *RandomGenerator) GenWithOptions(opts ...GeneratorOption) string {
 	base := g.BaseStr
 	if base == "" {
 		base = randutil.BaseCharNumberUC
@@ -53,8 +58,9 @@ func (g *RandomGenerator) Generate() string {
 	}
 	runes := []rune(base)
 	out := make([]rune, n)
+	cfg := applyGeneratorOptions(opts)
 	for i := 0; i < n; i++ {
-		out[i] = runes[randutil.RandomInt(len(runes))]
+		out[i] = runes[normalizeRandomIndex(cfg.randomInt(len(runes)), len(runes))]
 	}
 	return string(out)
 }
@@ -71,6 +77,35 @@ func (g *RandomGenerator) Verify(code, userInput string) bool {
 // MathGenerator mirrors the utility toolkit MathGenerator.
 // ---------------------------------------------------------------------------
 const mathOperators = "+-*"
+
+type generatorConfig struct {
+	randomInt func(max int) int
+}
+
+// GeneratorOption customizes captcha code generation per call.
+type GeneratorOption func(*generatorConfig)
+
+// WithGeneratorRandomInt sets the random integer function used by Gen*WithOptions helpers.
+func WithGeneratorRandomInt(randomInt func(max int) int) GeneratorOption {
+	return func(c *generatorConfig) {
+		if randomInt != nil {
+			c.randomInt = randomInt
+		}
+	}
+}
+
+func applyGeneratorOptions(opts []GeneratorOption) generatorConfig {
+	cfg := generatorConfig{randomInt: randutil.RandomInt}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.randomInt == nil {
+		cfg.randomInt = randutil.RandomInt
+	}
+	return cfg
+}
 
 // MathGenerator generates expression captchas such as "12+3 =" and verifies
 // user input by evaluating the expression.
@@ -99,18 +134,24 @@ func (g *MathGenerator) Length() int { return g.NumberLength*2 + 2 }
 
 // Generate returns an "a op b=" expression padded with spaces on the right.
 func (g *MathGenerator) Generate() string {
+	return g.GenWithOptions()
+}
+
+// GenWithOptions returns an "a op b=" expression padded with spaces on the right with per-call options.
+func (g *MathGenerator) GenWithOptions(opts ...GeneratorOption) string {
 	limit := g.limit()
-	op := mathOperators[randutil.RandomInt(len(mathOperators))]
-	a := randutil.RandomInt(limit)
+	cfg := applyGeneratorOptions(opts)
+	op := mathOperators[normalizeRandomIndex(cfg.randomInt(len(mathOperators)), len(mathOperators))]
+	a := normalizeRandomIndex(cfg.randomInt(limit), limit)
 	var b int
 	if !g.ResultHasNegativeNumber && op == '-' {
 		if a == 0 {
 			b = 0
 		} else {
-			b = randutil.RandomInt(a)
+			b = normalizeRandomIndex(cfg.randomInt(a), a)
 		}
 	} else {
-		b = randutil.RandomInt(limit)
+		b = normalizeRandomIndex(cfg.randomInt(limit), limit)
 	}
 	n1 := padRight(strconv.Itoa(a), g.NumberLength, ' ')
 	n2 := padRight(strconv.Itoa(b), g.NumberLength, ' ')
@@ -149,6 +190,16 @@ func padRight(s string, n int, c byte) string {
 		pad[i] = c
 	}
 	return s + string(pad)
+}
+
+func normalizeRandomIndex(v, max int) int {
+	if max <= 0 {
+		return 0
+	}
+	if v < 0 {
+		v = -v
+	}
+	return v % max
 }
 
 // evalMathExpr parses a simple padded integer expression in "a op b=" form.

@@ -35,7 +35,17 @@ func ParseXML(xmlStr string, opts ...ParseOption) (*Document, error) {
 // ReadBySAX streams XML tokens from reader to handler.
 func ReadBySAX(r io.Reader, handler TokenHandler) error { return xmlimpl.ReadBySAX(r, handler) }
 
+// ReadBySAXWithOptions streams XML tokens from reader to handler with custom parse options.
+func ReadBySAXWithOptions(r io.Reader, handler TokenHandler, opts ...ParseOption) error {
+	return xmlimpl.ReadBySAXWithOptions(r, handler, opts...)
+}
+
 // ReadBySAXFile streams XML tokens from file.
 func ReadBySAXFile(path string, handler TokenHandler) error {
 	return xmlimpl.ReadBySAXFile(path, handler)
+}
+
+// ReadBySAXFileWithOptions streams XML tokens from file with custom parse options.
+func ReadBySAXFileWithOptions(path string, handler TokenHandler, opts ...ParseOption) error {
+	return xmlimpl.ReadBySAXFileWithOptions(path, handler, opts...)
 }

@@ -29,6 +29,13 @@ func TestWriteAndReadSheetRows(t *testing.T) {
 	if !reflect.DeepEqual(sheets, []string{"Scores"}) {
 		t.Fatalf("SheetNames = %#v", sheets)
 	}
+	sheets, err = SheetNamesWithOptions(path, WithOpenOptions())
+	if err != nil {
+		t.Fatalf("SheetNamesWithOptions: %v", err)
+	}
+	if !reflect.DeepEqual(sheets, []string{"Scores"}) {
+		t.Fatalf("SheetNamesWithOptions = %#v", sheets)
+	}
 
 	got, err := ReadRows(path)
 	if err != nil {
@@ -44,6 +51,13 @@ func TestWriteAndReadSheetRows(t *testing.T) {
 	}
 	if !reflect.DeepEqual(got, rows) {
 		t.Fatalf("ReadSheetRows = %#v, want %#v", got, rows)
+	}
+	got, err = ReadSheetRowsWithOptions(path, "Scores", WithOpenOptions())
+	if err != nil {
+		t.Fatalf("ReadSheetRowsWithOptions: %v", err)
+	}
+	if !reflect.DeepEqual(got, rows) {
+		t.Fatalf("ReadSheetRowsWithOptions = %#v, want %#v", got, rows)
 	}
 }
 

@@ -51,6 +51,19 @@ func TestRandomGenerator_CustomBase(t *testing.T) {
 	}
 }
 
+func TestRandomGenerator_GenWithOptions(t *testing.T) {
+	g := NewRandomGeneratorWithBase("abcd", 4)
+	idx := 0
+	code := g.GenWithOptions(WithGeneratorRandomInt(func(max int) int {
+		v := idx
+		idx++
+		return v % max
+	}))
+	if code != "abcd" {
+		t.Fatalf("GenWithOptions code = %q, want abcd", code)
+	}
+}
+
 func TestMathGenerator_GenerateAndVerify(t *testing.T) {
 	g := NewMathGenerator()
 	for i := 0; i < 50; i++ {
@@ -65,6 +78,23 @@ func TestMathGenerator_GenerateAndVerify(t *testing.T) {
 		if !g.Verify(code, strconv.Itoa(v)) {
 			t.Fatalf("verify failed: code=%q want=%d", code, v)
 		}
+	}
+}
+
+func TestMathGenerator_GenWithOptions(t *testing.T) {
+	g := NewMathGeneratorWith(1, false)
+	values := []int{1, 7, 3}
+	idx := 0
+	code := g.GenWithOptions(WithGeneratorRandomInt(func(max int) int {
+		v := values[idx]
+		idx++
+		return v % max
+	}))
+	if code != "7-3=" {
+		t.Fatalf("GenWithOptions code = %q, want 7-3=", code)
+	}
+	if !g.Verify(code, "4") {
+		t.Fatalf("GenWithOptions code should verify: %q", code)
 	}
 }
 

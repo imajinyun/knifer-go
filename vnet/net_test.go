@@ -82,6 +82,14 @@ func TestVNetFacadeOptions(t *testing.T) {
 	if vnet.IsUsableLocalPortWithOptions(port, vnet.WithPortHost("127.0.0.1")) {
 		t.Fatal("IsUsableLocalPortWithOptions should reject occupied port")
 	}
+	g := vnet.NewLocalPortGeneratorWithOptions(port, vnet.WithPortHost("127.0.0.1"))
+	generated, err := g.Generate()
+	if err != nil {
+		t.Fatalf("LocalPortGenerator.Generate with options: %v", err)
+	}
+	if generated <= port || generated > vnet.PortRangeMax {
+		t.Fatalf("LocalPortGenerator generated %d, want > %d", generated, port)
+	}
 	freePort, err := vnet.GetUsableLocalPortInRangeWithOptions(port+1, port+20, vnet.WithPortHost("127.0.0.1"))
 	if err != nil || freePort < port+1 || freePort > port+20 {
 		t.Fatalf("GetUsableLocalPortInRangeWithOptions = %d, %v", freePort, err)
@@ -102,7 +110,8 @@ func TestVNetFacadeOptions(t *testing.T) {
 
 func TestVNetConnectOptionsFacade(t *testing.T) {
 	dialer := &recordingDialer{data: make(chan []byte, 1)}
-	conn, err := vnet.ConnectWithOptions("example.com", 8080,
+	conn, err := vnet.ConnectWithOptions(
+		"example.com", 8080,
 		vnet.WithConnectNetwork("tcp4"),
 		vnet.WithConnectTimeout(time.Second),
 		vnet.WithConnectDialer(dialer),

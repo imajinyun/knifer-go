@@ -3,6 +3,7 @@ package system
 import (
 	"bytes"
 	"os"
+	"os/user"
 	"runtime"
 	"strings"
 	"testing"
@@ -67,6 +68,50 @@ func TestUserInfo(t *testing.T) {
 	}
 	if !strings.Contains(u.String(), "User Name:") {
 		t.Errorf("UserInfo.String 缺少 caption")
+	}
+}
+
+func TestUserInfoWithOptions(t *testing.T) {
+	u := NewUserInfoWithOptions(
+		WithCurrentUserFunc(func() (*user.User, error) {
+			return &user.User{Username: "option-user", HomeDir: "/home/option"}, nil
+		}),
+		WithWorkingDirFunc(func() (string, error) { return "/work/option", nil }),
+		WithTempDirFunc(func() string { return "/tmp/option" }),
+		WithUserEnvLookup(func(key string) string {
+			if key == "LANG" {
+				return "zh_CN.UTF-8"
+			}
+			return ""
+		}),
+	)
+	sep := string(os.PathSeparator)
+	if u.GetName() != "option-user" || u.GetHomeDir() != "/home/option"+sep || u.GetCurrentDir() != "/work/option"+sep || u.GetTempDir() != "/tmp/option"+sep {
+		t.Fatalf("NewUserInfoWithOptions paths = %#v", u)
+	}
+	if u.GetLanguage() != "zh" || u.GetCountry() != "CN" {
+		t.Fatalf("NewUserInfoWithOptions locale = %s/%s", u.GetLanguage(), u.GetCountry())
+	}
+
+	fallback := GetUserInfoWithOptions(
+		WithCurrentUserFunc(func() (*user.User, error) { return nil, os.ErrNotExist }),
+		WithWorkingDirFunc(func() (string, error) { return "/cwd/fallback", nil }),
+		WithTempDirFunc(func() string { return "/tmp/fallback" }),
+		WithUserEnvLookup(func(key string) string {
+			switch key {
+			case "USER":
+				return "env-user"
+			case "HOME":
+				return "/home/env"
+			case "LC_ALL":
+				return "en_US.UTF-8"
+			default:
+				return ""
+			}
+		}),
+	)
+	if fallback.GetName() != "env-user" || fallback.GetHomeDir() != "/home/env"+sep || fallback.GetLanguage() != "en" || fallback.GetCountry() != "US" {
+		t.Fatalf("GetUserInfoWithOptions fallback = %#v", fallback)
 	}
 }
 

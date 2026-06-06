@@ -3,6 +3,7 @@ package vzip_test
 import (
 	archivezip "archive/zip"
 	"bytes"
+	"compress/flate"
 	"errors"
 	"io"
 	"os"
@@ -105,6 +106,46 @@ func TestFacadeZipOptions(t *testing.T) {
 	}
 	if _, err := vzip.UnZlibWithOptions(zlibBytes, vzip.WithMaxBytes(4)); err == nil {
 		t.Fatal("UnZlibWithOptions should reject content larger than max bytes")
+	}
+}
+
+func TestFacadeZipAppendAndGzipOptions(t *testing.T) {
+	tmp := t.TempDir()
+	archive := filepath.Join(tmp, "append.zip")
+	if err := vzip.ZipEntries(archive, vzip.EntryData{Name: "a.txt", Data: []byte("a")}); err != nil {
+		t.Fatalf("ZipEntries: %v", err)
+	}
+	keepFile := filepath.Join(tmp, "keep.txt")
+	if err := os.WriteFile(keepFile, []byte("keep"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	filter := func(path string, info os.FileInfo) bool {
+		return info.IsDir() || filepath.Ext(path) == ".txt"
+	}
+	if err := vzip.AppendWithOptions(archive, keepFile, vzip.WithFileFilter(filter), vzip.WithCompressionLevel(flate.BestSpeed)); err != nil {
+		t.Fatalf("AppendWithOptions: %v", err)
+	}
+	data, err := vzip.GetBytes(archive, "keep.txt")
+	if err != nil || string(data) != "keep" {
+		t.Fatalf("appended keep.txt = %q, %v", data, err)
+	}
+
+	payload := []byte("hello gzip options")
+	gz, err := vzip.GzipWithOptions(payload, vzip.WithCompressionLevel(flate.BestSpeed))
+	if err != nil {
+		t.Fatalf("GzipWithOptions: %v", err)
+	}
+	out, err := vzip.UnGzip(gz)
+	if err != nil || !bytes.Equal(out, payload) {
+		t.Fatalf("UnGzip = %q, %v", out, err)
+	}
+	gz, err = vzip.GzipReaderWithOptions(bytes.NewReader(payload), 0, vzip.WithCompressionLevel(flate.NoCompression))
+	if err != nil {
+		t.Fatalf("GzipReaderWithOptions: %v", err)
+	}
+	out, err = vzip.UnGzip(gz)
+	if err != nil || !bytes.Equal(out, payload) {
+		t.Fatalf("UnGzip reader = %q, %v", out, err)
 	}
 }
 
