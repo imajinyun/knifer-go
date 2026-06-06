@@ -1,6 +1,9 @@
 package socket
 
-import "runtime"
+import (
+	"runtime"
+	"time"
+)
 
 // DefaultBufferSize is aligned with the utility toolkit IoUtil.DEFAULT_BUFFER_SIZE at 8 KB.
 const DefaultBufferSize = 8 * 1024
@@ -20,6 +23,9 @@ type SocketConfig struct {
 	ReadBufferSize int
 	// WriteBufferSize is the write buffer size.
 	WriteBufferSize int
+
+	// Clock returns the current time used to derive read/write deadlines. nil means time.Now.
+	Clock func() time.Time
 }
 
 // ConfigOption customizes SocketConfig creation.
@@ -48,6 +54,15 @@ func WithReadBufferSize(n int) ConfigOption {
 // WithWriteBufferSize sets the write buffer size.
 func WithWriteBufferSize(n int) ConfigOption {
 	return func(c *SocketConfig) { c.WriteBufferSize = n }
+}
+
+// WithClock sets the clock used to derive read/write deadlines.
+func WithClock(clock func() time.Time) ConfigOption {
+	return func(c *SocketConfig) {
+		if clock != nil {
+			c.Clock = clock
+		}
+	}
 }
 
 // NewSocketConfig creates the default configuration.
@@ -122,5 +137,13 @@ func (c *SocketConfig) SetReadBufferSize(n int) *SocketConfig {
 // SetWriteBufferSize sets the write buffer size.
 func (c *SocketConfig) SetWriteBufferSize(n int) *SocketConfig {
 	c.WriteBufferSize = n
+	return c
+}
+
+// SetClock sets the clock used to derive read/write deadlines.
+func (c *SocketConfig) SetClock(clock func() time.Time) *SocketConfig {
+	if clock != nil {
+		c.Clock = clock
+	}
 	return c
 }

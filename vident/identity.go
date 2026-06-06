@@ -21,6 +21,9 @@ const (
 // IDCardInfo contains parsed information from a mainland China identity card.
 type IDCardInfo = identityimpl.IDCardInfo
 
+// AgeOption customizes AgeWithOptions.
+type AgeOption = identityimpl.AgeOption
+
 // RegionCardInfo contains parsed validation information for Hong Kong, Macau or Taiwan cards.
 type RegionCardInfo = identityimpl.RegionCardInfo
 
@@ -63,6 +66,17 @@ func BirthDate(idCard string) (time.Time, bool) { return identityimpl.BirthDate(
 
 // Age returns the current age encoded in idCard.
 func Age(idCard string) (int, bool) { return identityimpl.Age(idCard) }
+
+// WithAgeTime sets the time used by AgeWithOptions.
+func WithAgeTime(at time.Time) AgeOption { return identityimpl.WithAgeTime(at) }
+
+// WithAgeClock sets the clock used by AgeWithOptions.
+func WithAgeClock(clock func() time.Time) AgeOption { return identityimpl.WithAgeClock(clock) }
+
+// AgeWithOptions returns the age encoded in idCard using custom time options.
+func AgeWithOptions(idCard string, opts ...AgeOption) (int, bool) {
+	return identityimpl.AgeWithOptions(idCard, opts...)
+}
 
 // AgeAt returns the age encoded in idCard at the specified time.
 func AgeAt(idCard string, at time.Time) (int, bool) { return identityimpl.AgeAt(idCard, at) }

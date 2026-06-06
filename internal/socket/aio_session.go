@@ -19,6 +19,7 @@ type AioSession struct {
 
 	readTimeout  time.Duration
 	writeTimeout time.Duration
+	clock        func() time.Time
 
 	closed atomic.Bool
 	mu     sync.Mutex
@@ -45,7 +46,15 @@ func NewAioSession(conn net.Conn, ioAction IoAction[*bytes.Buffer], cfg *SocketC
 		scratch:      make([]byte, readSize),
 		readTimeout:  time.Duration(cfg.ReadTimeout) * time.Millisecond,
 		writeTimeout: time.Duration(cfg.WriteTimeout) * time.Millisecond,
+		clock:        cfg.Clock,
 	}
+}
+
+func (s *AioSession) now() time.Time {
+	if s.clock != nil {
+		return s.clock()
+	}
+	return time.Now()
 }
 
 // Conn returns the underlying connection.
@@ -81,7 +90,7 @@ func (s *AioSession) doRead() bool {
 		return false
 	}
 	if s.readTimeout > 0 {
-		_ = s.conn.SetReadDeadline(time.Now().Add(s.readTimeout))
+		_ = s.conn.SetReadDeadline(s.now().Add(s.readTimeout))
 	} else {
 		_ = s.conn.SetReadDeadline(time.Time{})
 	}
@@ -114,7 +123,7 @@ func (s *AioSession) Write(data []byte) (int, error) {
 		return 0, NewSocketErrorMsg("session is closed")
 	}
 	if s.writeTimeout > 0 {
-		_ = s.conn.SetWriteDeadline(time.Now().Add(s.writeTimeout))
+		_ = s.conn.SetWriteDeadline(s.now().Add(s.writeTimeout))
 	} else {
 		_ = s.conn.SetWriteDeadline(time.Time{})
 	}

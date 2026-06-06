@@ -16,6 +16,46 @@ type JWT struct {
 	tokens  []string // 解析时保存的三段原始 base64 串
 }
 
+type validateConfig struct {
+	now    func() time.Time
+	leeway int64
+}
+
+// ValidateOption customizes JWT ValidateWithOptions.
+type ValidateOption func(*validateConfig)
+
+// WithValidateTime sets the time used by ValidateWithOptions.
+func WithValidateTime(now time.Time) ValidateOption {
+	return func(c *validateConfig) { c.now = func() time.Time { return now } }
+}
+
+// WithValidateClock sets the clock used by ValidateWithOptions.
+func WithValidateClock(clock func() time.Time) ValidateOption {
+	return func(c *validateConfig) {
+		if clock != nil {
+			c.now = clock
+		}
+	}
+}
+
+// WithValidateLeeway sets the leeway in seconds used by ValidateWithOptions.
+func WithValidateLeeway(leeway int64) ValidateOption {
+	return func(c *validateConfig) { c.leeway = leeway }
+}
+
+func applyValidateOptions(opts []ValidateOption) validateConfig {
+	cfg := validateConfig{now: time.Now}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.now == nil {
+		cfg.now = time.Now
+	}
+	return cfg
+}
+
 // New 创建一个空 JWT。
 func New() *JWT {
 	return &JWT{
@@ -305,6 +345,12 @@ func (j *JWT) Validate(leeway int64) bool {
 		return false
 	}
 	return j.ValidateAt(time.Now(), leeway)
+}
+
+// ValidateWithOptions validates signature and time claims using custom validation options.
+func (j *JWT) ValidateWithOptions(opts ...ValidateOption) bool {
+	cfg := applyValidateOptions(opts)
+	return j.ValidateAt(cfg.now(), cfg.leeway)
 }
 
 // ValidateAt validates signature and time claims at the provided time.

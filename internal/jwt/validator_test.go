@@ -145,3 +145,31 @@ func TestValidateLeeway(t *testing.T) {
 		t.Fatalf("should pass with leeway: %v", err)
 	}
 }
+
+func TestValidateWithOptions(t *testing.T) {
+	now := time.Now()
+	tok, err := New().
+		SetPayload("sub", "options").
+		SetIssuedAt(now).
+		SetNotBefore(now.Add(3 * time.Second)).
+		SetExpiresAt(now.Add(3 * time.Second)).
+		SetKey([]byte("123456")).
+		Sign()
+	if err != nil {
+		t.Fatalf("sign: %v", err)
+	}
+	j, err := Of(tok)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	j.SetKey([]byte("123456"))
+	if j.ValidateWithOptions(WithValidateTime(now.Add(-4 * time.Second))) {
+		t.Fatal("ValidateWithOptions should reject token before nbf without leeway")
+	}
+	if !j.ValidateWithOptions(
+		WithValidateClock(func() time.Time { return now.Add(-4 * time.Second) }),
+		WithValidateLeeway(10),
+	) {
+		t.Fatal("ValidateWithOptions should accept token within configured leeway")
+	}
+}

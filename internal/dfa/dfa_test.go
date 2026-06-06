@@ -50,6 +50,24 @@ func TestStopRunes(t *testing.T) {
 	}
 }
 
+func TestWordTreeOptions(t *testing.T) {
+	tree := NewWordTreeWithOptions(WithCharFilter(func(r rune) bool { return r != '-' })).AddWord("t-io")
+	if got := tree.MatchAll("tio"); !reflect.DeepEqual(got, []string{"tio"}) {
+		t.Fatalf("NewWordTreeWithOptions MatchAll() = %#v", got)
+	}
+}
+
+func TestInitWithOptions(t *testing.T) {
+	InitWithOptions([]string{"t-io"}, WithCharFilter(func(r rune) bool { return r != '-' }))
+	if !Contains("tio") {
+		t.Fatal("InitWithOptions should apply custom char filter")
+	}
+	InitStringWithOptions("a-b", 0, WithCharFilter(func(r rune) bool { return r != '-' }))
+	if !Contains("ab") {
+		t.Fatal("InitStringWithOptions should apply custom char filter")
+	}
+}
+
 func TestAddWordWithFilteredRune(t *testing.T) {
 	tree := NewWordTree().AddWord("hello(")
 	if got := tree.MatchAllLimit("hello", -1); !reflect.DeepEqual(got, []string{"hello"}) {

@@ -93,6 +93,16 @@ func TestIDCardFields(t *testing.T) {
 	if !ok || age != 75 {
 		t.Fatalf("AgeAt(on birthday) = %d, %v", age, ok)
 	}
+	age, ok = AgeWithOptions(id, WithAgeTime(time.Date(2024, 12, 31, 0, 0, 0, 0, time.Local)))
+	if !ok || age != 75 {
+		t.Fatalf("AgeWithOptions(WithAgeTime) = %d, %v", age, ok)
+	}
+	age, ok = AgeWithOptions(id, WithAgeClock(func() time.Time {
+		return time.Date(2024, 12, 30, 0, 0, 0, 0, time.Local)
+	}))
+	if !ok || age != 74 {
+		t.Fatalf("AgeWithOptions(WithAgeClock) = %d, %v", age, ok)
+	}
 	gender, ok := GenderOf(id)
 	if !ok || gender != GenderFemale {
 		t.Fatalf("GenderOf() = %d, %v", gender, ok)

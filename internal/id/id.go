@@ -119,6 +119,8 @@ type snowflakeConfig struct {
 	datacenterID  int64
 	timeFunc      func() int64
 	tilNextMillis func(lastTimestamp int64, now func() int64) int64
+	workerSet     bool
+	datacenterSet bool
 }
 
 // NanoIDOption customizes NanoIdWithOptions.
@@ -160,12 +162,18 @@ func applyNanoIDOptions(opts []NanoIDOption) nanoIDConfig {
 
 // WithSnowflakeWorkerID sets the generator worker id.
 func WithSnowflakeWorkerID(workerID int64) SnowflakeOption {
-	return func(c *snowflakeConfig) { c.workerID = workerID }
+	return func(c *snowflakeConfig) {
+		c.workerID = workerID
+		c.workerSet = true
+	}
 }
 
 // WithSnowflakeDatacenterID sets the generator datacenter id.
 func WithSnowflakeDatacenterID(datacenterID int64) SnowflakeOption {
-	return func(c *snowflakeConfig) { c.datacenterID = datacenterID }
+	return func(c *snowflakeConfig) {
+		c.datacenterID = datacenterID
+		c.datacenterSet = true
+	}
 }
 
 // WithSnowflakeTimeFunc sets the millisecond time source used by the generator.
@@ -198,6 +206,17 @@ func applySnowflakeOptions(opts []SnowflakeOption) snowflakeConfig {
 	}
 	if cfg.tilNextMillis == nil {
 		cfg.tilNextMillis = waitNextMillis
+	}
+	return cfg
+}
+
+func applyDefaultSnowflakeOptions(opts []SnowflakeOption) snowflakeConfig {
+	cfg := applySnowflakeOptions(opts)
+	if !cfg.datacenterSet {
+		cfg.datacenterID = GetDataCenterID(snowflakeMaxDatacenterID)
+	}
+	if !cfg.workerSet {
+		cfg.workerID = GetWorkerID(cfg.datacenterID, snowflakeMaxWorkerID)
 	}
 	return cfg
 }
@@ -294,20 +313,37 @@ func CreateSnowflake(workerID, datacenterID int64) *Snowflake {
 // CreateSnowflakeWithOptions creates a standalone Snowflake generator customized by options.
 func CreateSnowflakeWithOptions(opts ...SnowflakeOption) *Snowflake {
 	cfg := applySnowflakeOptions(opts)
-	s := newSnowflake(cfg.workerID, cfg.datacenterID)
-	s.timeFunc = cfg.timeFunc
-	s.tilNextMillis = cfg.tilNextMillis
-	return s
+	return newSnowflakeWithConfig(cfg)
 }
 
 // GetSnowflake returns the default singleton Snowflake generator.
 func GetSnowflake() *Snowflake {
+	return GetSnowflakeWithOptions()
+}
+
+// GetSnowflakeWithOptions returns the default singleton Snowflake generator.
+// If the default singleton has not been created yet, opts customize its worker,
+// datacenter, clock, and wait strategy. Once created, later calls return the
+// existing singleton; use ConfigureDefaultSnowflake to replace it deliberately.
+func GetSnowflakeWithOptions(opts ...SnowflakeOption) *Snowflake {
 	if v := defaultSnowflake.Load(); v != nil {
 		return v.(*Snowflake)
 	}
-	dc := GetDataCenterID(snowflakeMaxDatacenterID)
-	worker := GetWorkerID(dc, snowflakeMaxWorkerID)
-	sf := GetSnowflakeWithWorkerDataCenter(worker, dc)
+	cfg := applyDefaultSnowflakeOptions(opts)
+	sf := newSnowflakeWithConfig(cfg)
+	if defaultSnowflake.CompareAndSwap(nil, sf) {
+		return sf
+	}
+	return defaultSnowflake.Load().(*Snowflake)
+}
+
+// ConfigureDefaultSnowflake replaces the default singleton Snowflake generator.
+// It is intended for applications that want deterministic singleton settings at
+// startup or tests that need a controlled clock. Existing standalone or
+// worker/datacenter singleton generators are not modified.
+func ConfigureDefaultSnowflake(opts ...SnowflakeOption) *Snowflake {
+	cfg := applyDefaultSnowflakeOptions(opts)
+	sf := newSnowflakeWithConfig(cfg)
 	defaultSnowflake.Store(sf)
 	return sf
 }
@@ -333,12 +369,31 @@ func GetSnowflakeWithWorkerDataCenter(workerID, datacenterID int64) *Snowflake {
 func newSnowflake(workerID, datacenterID int64) *Snowflake {
 	workerID = normalizeSnowflakeID(workerID, snowflakeMaxWorkerID)
 	datacenterID = normalizeSnowflakeID(datacenterID, snowflakeMaxDatacenterID)
+	return newSnowflakeWithConfig(snowflakeConfig{
+		workerID:      workerID,
+		datacenterID:  datacenterID,
+		timeFunc:      currentMillis,
+		tilNextMillis: waitNextMillis,
+	})
+}
+
+func newSnowflakeWithConfig(cfg snowflakeConfig) *Snowflake {
+	workerID := normalizeSnowflakeID(cfg.workerID, snowflakeMaxWorkerID)
+	datacenterID := normalizeSnowflakeID(cfg.datacenterID, snowflakeMaxDatacenterID)
+	timeFunc := cfg.timeFunc
+	if timeFunc == nil {
+		timeFunc = currentMillis
+	}
+	tilNextMillis := cfg.tilNextMillis
+	if tilNextMillis == nil {
+		tilNextMillis = waitNextMillis
+	}
 	return &Snowflake{
 		workerID:      workerID,
 		datacenterID:  datacenterID,
 		lastTimestamp: -1,
-		timeFunc:      currentMillis,
-		tilNextMillis: waitNextMillis,
+		timeFunc:      timeFunc,
+		tilNextMillis: tilNextMillis,
 	}
 }
 

@@ -85,6 +85,16 @@ func CreateSnowflakeWithOptions(opts ...SnowflakeOption) *Snowflake {
 
 func GetSnowflake() *Snowflake { return idimpl.GetSnowflake() }
 
+// GetSnowflakeWithOptions returns the default singleton Snowflake generator, creating it with options if needed.
+func GetSnowflakeWithOptions(opts ...SnowflakeOption) *Snowflake {
+	return idimpl.GetSnowflakeWithOptions(opts...)
+}
+
+// ConfigureDefaultSnowflake replaces the default singleton Snowflake generator with options.
+func ConfigureDefaultSnowflake(opts ...SnowflakeOption) *Snowflake {
+	return idimpl.ConfigureDefaultSnowflake(opts...)
+}
+
 func GetSnowflakeWithWorker(workerID int64) *Snowflake {
 	return idimpl.GetSnowflakeWithWorker(workerID)
 }

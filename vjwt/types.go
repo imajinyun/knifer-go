@@ -14,6 +14,9 @@ type JWTValidator = jwtimpl.JWTValidator
 // TokenOption customizes CreateTokenWithOptions.
 type TokenOption = jwtimpl.TokenOption
 
+// ValidateOption customizes JWT ValidateWithOptions.
+type ValidateOption = jwtimpl.ValidateOption
+
 // SignerOption customizes asymmetric JWT signers.
 type SignerOption = jwtimpl.SignerOption
 

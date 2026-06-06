@@ -38,9 +38,44 @@ type WordTree struct {
 	charFilter CharFilter
 }
 
+type wordTreeConfig struct {
+	charFilter CharFilter
+}
+
+// WordTreeOption customizes WordTree creation and package-level matcher initialization.
+type WordTreeOption func(*wordTreeConfig)
+
+// WithCharFilter sets the character filter used by a WordTree.
+func WithCharFilter(filter CharFilter) WordTreeOption {
+	return func(c *wordTreeConfig) {
+		if filter != nil {
+			c.charFilter = filter
+		}
+	}
+}
+
+func applyWordTreeOptions(opts []WordTreeOption) wordTreeConfig {
+	cfg := wordTreeConfig{charFilter: IsNotStopChar}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.charFilter == nil {
+		cfg.charFilter = IsNotStopChar
+	}
+	return cfg
+}
+
 // NewWordTree creates an empty word tree using the default stop-rune filter.
 func NewWordTree() *WordTree {
-	return &WordTree{root: newNode(), charFilter: IsNotStopChar}
+	return NewWordTreeWithOptions()
+}
+
+// NewWordTreeWithOptions creates an empty word tree customized by options.
+func NewWordTreeWithOptions(opts ...WordTreeOption) *WordTree {
+	cfg := applyWordTreeOptions(opts)
+	return &WordTree{root: newNode(), charFilter: cfg.charFilter}
 }
 
 // SetCharFilter sets the filter used to decide whether a rune participates in matching.
@@ -275,7 +310,12 @@ func IsInited() bool {
 
 // Init replaces the package-level matcher with words.
 func Init(words []string) {
-	tree := NewWordTree().AddWords(words...)
+	InitWithOptions(words)
+}
+
+// InitWithOptions replaces the package-level matcher with words and initialization options.
+func InitWithOptions(words []string, opts ...WordTreeOption) {
+	tree := NewWordTreeWithOptions(opts...).AddWords(words...)
 	defaultMatcher.Lock()
 	defaultMatcher.tree = tree
 	defaultMatcher.Unlock()
@@ -286,6 +326,11 @@ func InitAsync(words []string) { go Init(words) }
 
 // InitString initializes the package-level matcher from a separated string.
 func InitString(words string, separator rune) {
+	InitStringWithOptions(words, separator)
+}
+
+// InitStringWithOptions initializes the package-level matcher from a separated string and options.
+func InitStringWithOptions(words string, separator rune, opts ...WordTreeOption) {
 	if separator == 0 {
 		separator = DefaultSeparator
 	}
@@ -297,11 +342,16 @@ func InitString(words string, separator rune) {
 			clean = append(clean, part)
 		}
 	}
-	Init(clean)
+	InitWithOptions(clean, opts...)
 }
 
 // InitStringAsync initializes the package-level matcher from a separated string in a new goroutine.
 func InitStringAsync(words string, separator rune) { go InitString(words, separator) }
+
+// InitStringAsyncWithOptions initializes the package-level matcher from a separated string in a new goroutine.
+func InitStringAsyncWithOptions(words string, separator rune, opts ...WordTreeOption) {
+	go InitStringWithOptions(words, separator, opts...)
+}
 
 // SetCharFilter sets the filter used by the package-level matcher.
 func SetCharFilter(filter CharFilter) {

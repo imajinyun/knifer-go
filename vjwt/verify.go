@@ -43,3 +43,14 @@ func ValidateJWTDate(j *JWT, now time.Time, leeway int64) error {
 func ValidateDate(j *JWT, now time.Time, leeway int64) error {
 	return jwtimpl.ValidateDate(j, now, leeway)
 }
+
+// WithValidateTime sets the time used by JWT.ValidateWithOptions.
+func WithValidateTime(now time.Time) ValidateOption { return jwtimpl.WithValidateTime(now) }
+
+// WithValidateClock sets the clock used by JWT.ValidateWithOptions.
+func WithValidateClock(clock func() time.Time) ValidateOption {
+	return jwtimpl.WithValidateClock(clock)
+}
+
+// WithValidateLeeway sets the leeway in seconds used by JWT.ValidateWithOptions.
+func WithValidateLeeway(leeway int64) ValidateOption { return jwtimpl.WithValidateLeeway(leeway) }

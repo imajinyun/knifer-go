@@ -102,6 +102,30 @@ func TestSnowflakeOptions(t *testing.T) {
 	}
 }
 
+func TestDefaultSnowflakeOptions(t *testing.T) {
+	t.Cleanup(func() { ConfigureDefaultSnowflake() })
+	now := int64(1288834974657)
+	sf := ConfigureDefaultSnowflake(
+		WithSnowflakeWorkerID(5),
+		WithSnowflakeDatacenterID(6),
+		WithSnowflakeTimeFunc(func() int64 { return now }),
+	)
+	if sf.WorkerID() != 5 || sf.DatacenterID() != 6 {
+		t.Fatalf("default snowflake option ids: worker=%d datacenter=%d", sf.WorkerID(), sf.DatacenterID())
+	}
+	if GetSnowflake() != sf || GetSnowflakeWithOptions(WithSnowflakeWorkerID(7)) != sf {
+		t.Fatal("default snowflake singleton should keep configured instance")
+	}
+	first := sf.NextID()
+	second := GetSnowflakeNextID()
+	if first <= 0 || second <= first {
+		t.Fatalf("configured default snowflake should generate increasing ids: %d %d", first, second)
+	}
+	if got := GetSnowflakeNextIDStr(); got == "" {
+		t.Fatal("configured default snowflake string id should not be empty")
+	}
+}
+
 func TestNormalizeSnowflakeIDUsesProvidedMax(t *testing.T) {
 	if got := normalizeSnowflakeID(14, 5); got != 2 {
 		t.Fatalf("normalizeSnowflakeID should use provided max: got %d", got)

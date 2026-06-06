@@ -120,6 +120,9 @@ func WithReadBufferSize(n int) ConfigOption { return socketx.WithReadBufferSize(
 // WithWriteBufferSize sets the write buffer size.
 func WithWriteBufferSize(n int) ConfigOption { return socketx.WithWriteBufferSize(n) }
 
+// WithClock sets the clock used to derive socket read/write deadlines.
+func WithClock(clock func() time.Time) ConfigOption { return socketx.WithClock(clock) }
+
 // NewSocketConfigWithOptions creates a socket config customized by options.
 func NewSocketConfigWithOptions(opts ...ConfigOption) *SocketConfig {
 	return socketx.NewSocketConfigWithOptions(opts...)

@@ -11,6 +11,40 @@ const (
 	chinaIDMaxLength = 18
 )
 
+type ageConfig struct {
+	clock func() time.Time
+}
+
+// AgeOption customizes AgeWithOptions.
+type AgeOption func(*ageConfig)
+
+// WithAgeTime sets the time used by AgeWithOptions.
+func WithAgeTime(at time.Time) AgeOption {
+	return func(c *ageConfig) { c.clock = func() time.Time { return at } }
+}
+
+// WithAgeClock sets the clock used by AgeWithOptions.
+func WithAgeClock(clock func() time.Time) AgeOption {
+	return func(c *ageConfig) {
+		if clock != nil {
+			c.clock = clock
+		}
+	}
+}
+
+func applyAgeOptions(opts []AgeOption) ageConfig {
+	cfg := ageConfig{clock: time.Now}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.clock == nil {
+		cfg.clock = time.Now
+	}
+	return cfg
+}
+
 var (
 	idCardPower = [...]int{7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2}
 	cityCodes   = map[string]string{
@@ -317,6 +351,12 @@ func BirthDate(idCard string) (time.Time, bool) {
 
 // Age returns the current age encoded in idCard.
 func Age(idCard string) (int, bool) { return AgeAt(idCard, time.Now()) }
+
+// AgeWithOptions returns the age encoded in idCard using custom time options.
+func AgeWithOptions(idCard string, opts ...AgeOption) (int, bool) {
+	cfg := applyAgeOptions(opts)
+	return AgeAt(idCard, cfg.clock())
+}
 
 // AgeAt returns the age encoded in idCard at the specified time.
 func AgeAt(idCard string, at time.Time) (int, bool) {

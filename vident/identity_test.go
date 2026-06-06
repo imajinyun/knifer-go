@@ -23,6 +23,13 @@ func TestIDCardFacade(t *testing.T) {
 	if !ok || age != 75 {
 		t.Fatalf("AgeAt() = %d, %v", age, ok)
 	}
+	age, ok = vident.AgeWithOptions(
+		"11010519491231002X",
+		vident.WithAgeClock(func() time.Time { return time.Date(2024, 12, 30, 0, 0, 0, 0, time.Local) }),
+	)
+	if !ok || age != 74 {
+		t.Fatalf("AgeWithOptions() = %d, %v", age, ok)
+	}
 	info, ok := vident.ParseIDCard("11010519491231002X")
 	if !ok || info.Province != "北京" || info.Gender != vident.GenderFemale {
 		t.Fatalf("ParseIDCard() = %+v, %v", info, ok)

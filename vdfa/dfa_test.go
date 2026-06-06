@@ -10,6 +10,13 @@ func TestFacadeWordTree(t *testing.T) {
 	}
 }
 
+func TestFacadeWordTreeOptions(t *testing.T) {
+	tree := NewWordTreeWithOptions(WithCharFilter(func(r rune) bool { return r != '-' })).AddWord("t-io")
+	if got := tree.MatchAll("tio"); len(got) != 1 || got[0] != "tio" {
+		t.Fatalf("NewWordTreeWithOptions MatchAll() = %#v", got)
+	}
+}
+
 func TestFacadePackageMatcher(t *testing.T) {
 	Init([]string{"bad", "badword"})
 	if !Contains("a badword") {
@@ -32,5 +39,16 @@ func TestFacadeFilterAny(t *testing.T) {
 	}
 	if got.Text != "a ******" {
 		t.Fatalf("FilterAny() = %#v", got)
+	}
+}
+
+func TestFacadeInitWithOptions(t *testing.T) {
+	InitWithOptions([]string{"a-b"}, WithCharFilter(func(r rune) bool { return r != '-' }))
+	if !Contains("ab") {
+		t.Fatal("InitWithOptions should apply custom char filter")
+	}
+	InitStringWithOptions("x-y", DefaultSeparator, WithCharFilter(func(r rune) bool { return r != '-' }))
+	if !Contains("xy") {
+		t.Fatal("InitStringWithOptions should apply custom char filter")
 	}
 }
