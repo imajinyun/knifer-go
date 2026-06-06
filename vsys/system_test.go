@@ -65,6 +65,35 @@ func TestFacadeGoInfo(t *testing.T) {
 	if info == nil {
 		t.Fatal("expected non-nil go info")
 	}
+	info = vsys.NewGoInfoWithOptions(
+		vsys.WithGoVersionFunc(func() string { return "go-facade" }),
+		vsys.WithGoCompilerFunc(func() string { return "compiler-facade" }),
+		vsys.WithGoRootFunc(func() string { return "/go/facade" }),
+		vsys.WithGoOSFunc(func() string { return "linux" }),
+		vsys.WithGoArchFunc(func() string { return "arm64" }),
+		vsys.WithGoNumCPUFunc(func() int { return 8 }),
+		vsys.WithGoNumCgoCallFunc(func() int64 { return 11 }),
+	)
+	if info.GetVersion() != "go-facade" || info.GetCompiler() != "compiler-facade" || info.GetGOROOT() != "/go/facade" || info.GetGOOS() != "linux" || info.GetGOARCH() != "arm64" || info.GetNumCPU() != 8 || info.NumCgoCalls != 11 {
+		t.Fatalf("NewGoInfoWithOptions = %#v", info)
+	}
+}
+
+func TestFacadeOsInfoOptions(t *testing.T) {
+	info := vsys.NewOsInfoWithOptions(
+		vsys.WithOSNameFunc(func() string { return "windows" }),
+		vsys.WithOSArchFunc(func() string { return "amd64" }),
+		vsys.WithOSVersionFunc(func() string { return "11" }),
+		vsys.WithOSFileSeparatorFunc(func() string { return "\\" }),
+		vsys.WithOSLineSeparatorFunc(func() string { return "\r\n" }),
+		vsys.WithOSPathSeparatorFunc(func() string { return ";" }),
+	)
+	if info.GetName() != "windows" || info.GetArch() != "amd64" || info.GetVersion() != "11" || info.GetFileSeparator() != "\\" || info.GetLineSeparator() != "\r\n" || info.GetPathSeparator() != ";" {
+		t.Fatalf("NewOsInfoWithOptions = %#v", info)
+	}
+	if !info.IsWindows() || info.IsLinux() {
+		t.Fatalf("NewOsInfoWithOptions OS helpers = %#v", info)
+	}
 }
 
 func TestFacadeRuntimeInfo(t *testing.T) {

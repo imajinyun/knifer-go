@@ -9,6 +9,11 @@ func NewGoInfo() *GoInfo {
 	return system.NewGoInfo()
 }
 
+// NewGoInfoWithOptions delegates to the internal system implementation.
+func NewGoInfoWithOptions(opts ...GoInfoOption) *GoInfo {
+	return system.NewGoInfoWithOptions(opts...)
+}
+
 // NewHostInfo delegates to the internal system implementation.
 func NewHostInfo() *HostInfo {
 	return system.NewHostInfo()
@@ -17,6 +22,11 @@ func NewHostInfo() *HostInfo {
 // NewOsInfo delegates to the internal system implementation.
 func NewOsInfo() *OsInfo {
 	return system.NewOsInfo()
+}
+
+// NewOsInfoWithOptions delegates to the internal system implementation.
+func NewOsInfoWithOptions(opts ...OsInfoOption) *OsInfo {
+	return system.NewOsInfoWithOptions(opts...)
 }
 
 // NewRuntimeInfo delegates to the internal system implementation.

@@ -76,6 +76,17 @@ func TestAESRoundTripAndErrors(t *testing.T) {
 	if _, err := vcrypto.GenerateAESKey(15); !errors.Is(err, vcrypto.ErrInvalidKey) {
 		t.Fatalf("GenerateAESKey invalid error = %v", err)
 	}
+	optionKey, err := vcrypto.GenerateAESKeyWithOptions(16, vcrypto.WithRandomReader(bytes.NewReader(bytes.Repeat([]byte{0x42}, 16))))
+	if err != nil {
+		t.Fatalf("GenerateAESKeyWithOptions error = %v", err)
+	}
+	if !bytes.Equal(optionKey, bytes.Repeat([]byte{0x42}, 16)) {
+		t.Fatalf("GenerateAESKeyWithOptions = %x", optionKey)
+	}
+	randomBytes, err := vcrypto.RandomBytesWithOptions(3, vcrypto.WithRandomReader(bytes.NewReader([]byte{1, 2, 3})))
+	if err != nil || !bytes.Equal(randomBytes, []byte{1, 2, 3}) {
+		t.Fatalf("RandomBytesWithOptions = %v, %v", randomBytes, err)
+	}
 	iv := []byte("1234567890123456")
 	plain := []byte("crypto facade")
 	cipherText, err := vcrypto.AESEncryptCBC(plain, key, iv)

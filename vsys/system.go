@@ -22,8 +22,61 @@ type GoInfo = system.GoInfo
 // RuntimeInfo describes current process runtime statistics.
 type RuntimeInfo = system.RuntimeInfo
 
+// GoInfoOption customizes Go runtime metadata collection per call.
+type GoInfoOption = system.GoInfoOption
+
+// OsInfoOption customizes OS information collection per call.
+type OsInfoOption = system.OsInfoOption
+
 // UserInfoOption customizes user information collection per call.
 type UserInfoOption = system.UserInfoOption
+
+// WithGoVersionFunc sets the function used to collect the Go version.
+func WithGoVersionFunc(fn func() string) GoInfoOption { return system.WithGoVersionFunc(fn) }
+
+// WithGoCompilerFunc sets the function used to collect the Go compiler name.
+func WithGoCompilerFunc(fn func() string) GoInfoOption { return system.WithGoCompilerFunc(fn) }
+
+// WithGoRootFunc sets the function used to collect GOROOT.
+func WithGoRootFunc(fn func() string) GoInfoOption { return system.WithGoRootFunc(fn) }
+
+// WithGoOSFunc sets the function used to collect GOOS.
+func WithGoOSFunc(fn func() string) GoInfoOption { return system.WithGoOSFunc(fn) }
+
+// WithGoArchFunc sets the function used to collect GOARCH.
+func WithGoArchFunc(fn func() string) GoInfoOption { return system.WithGoArchFunc(fn) }
+
+// WithGoNumCPUFunc sets the function used to collect the CPU count.
+func WithGoNumCPUFunc(fn func() int) GoInfoOption { return system.WithGoNumCPUFunc(fn) }
+
+// WithGoNumCgoCallFunc sets the function used to collect the cgo call count.
+func WithGoNumCgoCallFunc(fn func() int64) GoInfoOption {
+	return system.WithGoNumCgoCallFunc(fn)
+}
+
+// WithOSNameFunc sets the function used to collect the OS name.
+func WithOSNameFunc(fn func() string) OsInfoOption { return system.WithOSNameFunc(fn) }
+
+// WithOSArchFunc sets the function used to collect the OS architecture.
+func WithOSArchFunc(fn func() string) OsInfoOption { return system.WithOSArchFunc(fn) }
+
+// WithOSVersionFunc sets the function used to collect the OS version.
+func WithOSVersionFunc(fn func() string) OsInfoOption { return system.WithOSVersionFunc(fn) }
+
+// WithOSFileSeparatorFunc sets the function used to collect the file separator.
+func WithOSFileSeparatorFunc(fn func() string) OsInfoOption {
+	return system.WithOSFileSeparatorFunc(fn)
+}
+
+// WithOSLineSeparatorFunc sets the function used to collect the line separator.
+func WithOSLineSeparatorFunc(fn func() string) OsInfoOption {
+	return system.WithOSLineSeparatorFunc(fn)
+}
+
+// WithOSPathSeparatorFunc sets the function used to collect the path-list separator.
+func WithOSPathSeparatorFunc(fn func() string) OsInfoOption {
+	return system.WithOSPathSeparatorFunc(fn)
+}
 
 // WithCurrentUserFunc sets the function used to discover the current OS user.
 func WithCurrentUserFunc(fn func() (*user.User, error)) UserInfoOption {

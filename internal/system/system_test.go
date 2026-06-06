@@ -134,6 +134,38 @@ func TestGoInfo(t *testing.T) {
 	}
 }
 
+func TestGoInfoWithOptions(t *testing.T) {
+	g := NewGoInfoWithOptions(
+		WithGoVersionFunc(func() string { return "go-option" }),
+		WithGoCompilerFunc(func() string { return "compiler-option" }),
+		WithGoRootFunc(func() string { return "/go/root" }),
+		WithGoOSFunc(func() string { return "plan9" }),
+		WithGoArchFunc(func() string { return "wasm" }),
+		WithGoNumCPUFunc(func() int { return 9 }),
+		WithGoNumCgoCallFunc(func() int64 { return 10 }),
+	)
+	if g.GetVersion() != "go-option" || g.GetCompiler() != "compiler-option" || g.GetGOROOT() != "/go/root" || g.GetGOOS() != "plan9" || g.GetGOARCH() != "wasm" || g.GetNumCPU() != 9 || g.NumCgoCalls != 10 {
+		t.Fatalf("NewGoInfoWithOptions = %#v", g)
+	}
+}
+
+func TestOsInfoWithOptions(t *testing.T) {
+	o := NewOsInfoWithOptions(
+		WithOSNameFunc(func() string { return "linux" }),
+		WithOSArchFunc(func() string { return "arm64" }),
+		WithOSVersionFunc(func() string { return "test-version" }),
+		WithOSFileSeparatorFunc(func() string { return "/" }),
+		WithOSLineSeparatorFunc(func() string { return "\n" }),
+		WithOSPathSeparatorFunc(func() string { return ":" }),
+	)
+	if o.GetName() != "linux" || o.GetArch() != "arm64" || o.GetVersion() != "test-version" || o.GetFileSeparator() != "/" || o.GetLineSeparator() != "\n" || o.GetPathSeparator() != ":" {
+		t.Fatalf("NewOsInfoWithOptions = %#v", o)
+	}
+	if !o.IsLinux() || o.IsWindows() {
+		t.Fatalf("NewOsInfoWithOptions OS helpers = %#v", o)
+	}
+}
+
 func TestRuntimeInfo(t *testing.T) {
 	r := GetRuntimeInfo()
 	if r == nil {

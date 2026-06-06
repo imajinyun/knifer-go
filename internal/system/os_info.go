@@ -7,6 +7,107 @@ import (
 	"strings"
 )
 
+type osInfoConfig struct {
+	name          func() string
+	arch          func() string
+	version       func() string
+	fileSeparator func() string
+	lineSeparator func() string
+	pathSeparator func() string
+}
+
+// OsInfoOption customizes OS information collection per call.
+type OsInfoOption func(*osInfoConfig)
+
+// WithOSNameFunc sets the function used to collect the OS name.
+func WithOSNameFunc(fn func() string) OsInfoOption {
+	return func(c *osInfoConfig) {
+		if fn != nil {
+			c.name = fn
+		}
+	}
+}
+
+// WithOSArchFunc sets the function used to collect the OS architecture.
+func WithOSArchFunc(fn func() string) OsInfoOption {
+	return func(c *osInfoConfig) {
+		if fn != nil {
+			c.arch = fn
+		}
+	}
+}
+
+// WithOSVersionFunc sets the function used to collect the OS version.
+func WithOSVersionFunc(fn func() string) OsInfoOption {
+	return func(c *osInfoConfig) {
+		if fn != nil {
+			c.version = fn
+		}
+	}
+}
+
+// WithOSFileSeparatorFunc sets the function used to collect the file separator.
+func WithOSFileSeparatorFunc(fn func() string) OsInfoOption {
+	return func(c *osInfoConfig) {
+		if fn != nil {
+			c.fileSeparator = fn
+		}
+	}
+}
+
+// WithOSLineSeparatorFunc sets the function used to collect the line separator.
+func WithOSLineSeparatorFunc(fn func() string) OsInfoOption {
+	return func(c *osInfoConfig) {
+		if fn != nil {
+			c.lineSeparator = fn
+		}
+	}
+}
+
+// WithOSPathSeparatorFunc sets the function used to collect the path-list separator.
+func WithOSPathSeparatorFunc(fn func() string) OsInfoOption {
+	return func(c *osInfoConfig) {
+		if fn != nil {
+			c.pathSeparator = fn
+		}
+	}
+}
+
+func applyOsInfoOptions(opts []OsInfoOption) osInfoConfig {
+	cfg := osInfoConfig{
+		name:          func() string { return runtime.GOOS },
+		arch:          func() string { return runtime.GOARCH },
+		version:       readOsVersion,
+		fileSeparator: func() string { return string(filepath.Separator) },
+		lineSeparator: lineSeparator,
+		pathSeparator: func() string { return string(os.PathListSeparator) },
+	}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.name == nil {
+		cfg.name = func() string { return runtime.GOOS }
+	}
+	if cfg.arch == nil {
+		cfg.arch = func() string { return runtime.GOARCH }
+	}
+	if cfg.version == nil {
+		cfg.version = readOsVersion
+	}
+	if cfg.fileSeparator == nil {
+		cfg.fileSeparator = func() string { return string(filepath.Separator) }
+	}
+	if cfg.lineSeparator == nil {
+		cfg.lineSeparator = lineSeparator
+	}
+	if cfg.pathSeparator == nil {
+		cfg.pathSeparator = func() string { return string(os.PathListSeparator) }
+	}
+	return cfg
+}
+
 // OsInfo describes current operating system information.
 type OsInfo struct {
 	Name          string
@@ -19,13 +120,19 @@ type OsInfo struct {
 
 // NewOsInfo creates current OS information.
 func NewOsInfo() *OsInfo {
+	return NewOsInfoWithOptions()
+}
+
+// NewOsInfoWithOptions creates OS information using custom providers.
+func NewOsInfoWithOptions(opts ...OsInfoOption) *OsInfo {
+	cfg := applyOsInfoOptions(opts)
 	return &OsInfo{
-		Name:          runtime.GOOS,
-		Arch:          runtime.GOARCH,
-		Version:       readOsVersion(),
-		FileSeparator: string(filepath.Separator),
-		LineSeparator: lineSeparator(),
-		PathSeparator: string(os.PathListSeparator),
+		Name:          cfg.name(),
+		Arch:          cfg.arch(),
+		Version:       cfg.version(),
+		FileSeparator: cfg.fileSeparator(),
+		LineSeparator: cfg.lineSeparator(),
+		PathSeparator: cfg.pathSeparator(),
 	}
 }
 
