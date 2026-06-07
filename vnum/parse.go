@@ -10,6 +10,14 @@ func WithParseFloatFunc(parser func(string, int) (float64, error)) ParseOption {
 	return numimpl.WithParseFloatFunc(parser)
 }
 
+func WithDoubleParseFloatFunc(parser func(string, int) (float64, error)) DoubleOption {
+	return numimpl.WithDoubleParseFloatFunc(parser)
+}
+
+func WithDoubleFormatFloatFunc(formatter func(float64, byte, int, int) string) DoubleOption {
+	return numimpl.WithDoubleFormatFloatFunc(formatter)
+}
+
 func ParseInt(number string) int { return numimpl.ParseInt(number) }
 
 func ParseIntWithOptions(number string, opts ...ParseOption) int {

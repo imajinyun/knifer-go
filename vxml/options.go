@@ -35,6 +35,16 @@ func WithDecoderFactory(factory func(io.Reader) *stdxml.Decoder) ParseOption {
 	return xmlimpl.WithDecoderFactory(factory)
 }
 
+// WithScalarIntParser sets the integer parser used by XML-to-map scalar conversion.
+func WithScalarIntParser(parse func(string, int, int) (int64, error)) ParseOption {
+	return xmlimpl.WithScalarIntParser(parse)
+}
+
+// WithScalarFloatParser sets the float parser used by XML-to-map scalar conversion.
+func WithScalarFloatParser(parse func(string, int) (float64, error)) ParseOption {
+	return xmlimpl.WithScalarFloatParser(parse)
+}
+
 // WithCharset sets the XML declaration charset.
 func WithCharset(s string) WriteOption { return xmlimpl.WithCharset(s) }
 

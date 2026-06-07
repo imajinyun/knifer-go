@@ -6,6 +6,7 @@ import (
 	"math"
 	"math/big"
 	"reflect"
+	"strconv"
 	"testing"
 )
 
@@ -697,6 +698,20 @@ func TestByteUnsignedValidityAndExpressionEdges(t *testing.T) {
 			t.Fatalf("ToDouble(%T) = %v, want %v", tt.input, got, tt.want)
 		}
 	}
+	formatCalled := false
+	parseCalled := false
+	if got := ToDoubleWithOptions(float32(1.25),
+		WithDoubleFormatFloatFunc(func(v float64, fmtByte byte, prec, bitSize int) string {
+			formatCalled = true
+			return strconv.FormatFloat(v*2, fmtByte, prec, bitSize)
+		}),
+		WithDoubleParseFloatFunc(func(s string, bitSize int) (float64, error) {
+			parseCalled = true
+			return strconv.ParseFloat(s, bitSize)
+		}),
+	); got != 2.5 || !formatCalled || !parseCalled {
+		t.Fatalf("ToDoubleWithOptions = %v format=%v parse=%v", got, formatCalled, parseCalled)
+	}
 	calcCases := map[string]float64{
 		"1 + 2 * 3":   7,
 		"(1 + 2) * 3": 9,
@@ -709,6 +724,17 @@ func TestByteUnsignedValidityAndExpressionEdges(t *testing.T) {
 		if err != nil || math.Abs(got-want) > 1e-9 {
 			t.Fatalf("Calculate(%q) = %v, %v, want %v", expr, got, err, want)
 		}
+	}
+	calcParseCalled := false
+	got, err := CalculateWithOptions("5 + 2", WithParseFloatFunc(func(s string, bitSize int) (float64, error) {
+		calcParseCalled = true
+		if s == "5" {
+			return 5, nil
+		}
+		return strconv.ParseFloat(s, bitSize)
+	}))
+	if err != nil || got != 7 || !calcParseCalled {
+		t.Fatalf("CalculateWithOptions = %v, %v called=%v", got, err, calcParseCalled)
 	}
 	invalidExpressions := []string{"", "1+", "(1+2", "1 2", "abc"}
 	for _, expr := range invalidExpressions {

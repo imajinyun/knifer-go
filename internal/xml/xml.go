@@ -120,6 +120,8 @@ type parseConfig struct {
 	maxBytes       int64
 	openFile       func(string) (io.ReadCloser, error)
 	decoderFactory func(io.Reader) *stdxml.Decoder
+	parseInt       func(string, int, int) (int64, error)
+	parseFloat     func(string, int) (float64, error)
 }
 
 func defaultParseConfig() parseConfig {
@@ -138,6 +140,12 @@ func applyParse(opts []ParseOption) parseConfig {
 	}
 	if cfg.decoderFactory == nil {
 		cfg.decoderFactory = stdxml.NewDecoder
+	}
+	if cfg.parseInt == nil {
+		cfg.parseInt = strconv.ParseInt
+	}
+	if cfg.parseFloat == nil {
+		cfg.parseFloat = strconv.ParseFloat
 	}
 	return cfg
 }
@@ -180,6 +188,16 @@ func WithOpenFile(openFile func(string) (io.ReadCloser, error)) ParseOption {
 // WithDecoderFactory sets the XML decoder factory used by DOM and SAX readers.
 func WithDecoderFactory(factory func(io.Reader) *stdxml.Decoder) ParseOption {
 	return func(c *parseConfig) { c.decoderFactory = factory }
+}
+
+// WithScalarIntParser sets the integer parser used by XML-to-map scalar conversion.
+func WithScalarIntParser(parse func(string, int, int) (int64, error)) ParseOption {
+	return func(c *parseConfig) { c.parseInt = parse }
+}
+
+// WithScalarFloatParser sets the float parser used by XML-to-map scalar conversion.
+func WithScalarFloatParser(parse func(string, int) (float64, error)) ParseOption {
+	return func(c *parseConfig) { c.parseFloat = parse }
 }
 
 // ---------------------------------------------------------------------------
@@ -843,22 +861,29 @@ func XMLToMap(xmlStr string) (map[string]any, error) {
 
 // XMLToMapWithOptions parses XML into a nested map with parser options.
 func XMLToMapWithOptions(xmlStr string, opts ...ParseOption) (map[string]any, error) {
+	cfg := applyParse(opts)
 	doc, err := ParseXML(xmlStr, opts...)
 	if err != nil {
 		return nil, err
 	}
 	result := map[string]any{}
 	if doc.Root != nil {
-		addMapValue(result, doc.Root.Name.Local, elementToValue(doc.Root))
+		addMapValue(result, doc.Root.Name.Local, elementToValue(doc.Root, cfg))
 	}
 	return result, nil
 }
 
 // XMLNodeToMap converts an element into a nested map value.
 func XMLNodeToMap(node *Element) map[string]any {
+	return XMLNodeToMapWithOptions(node)
+}
+
+// XMLNodeToMapWithOptions converts an element into a nested map value using custom scalar parsers.
+func XMLNodeToMapWithOptions(node *Element, opts ...ParseOption) map[string]any {
+	cfg := applyParse(opts)
 	result := map[string]any{}
 	if node != nil {
-		addMapValue(result, node.Name.Local, elementToValue(node))
+		addMapValue(result, node.Name.Local, elementToValue(node, cfg))
 	}
 	return result
 }
@@ -885,6 +910,11 @@ func XMLNodeToBeanWithOptions(node *Element, dst any, opts ...BeanOption) error 
 	return mapToBeanWithOptions(XMLNodeToMap(node), dst, opts...)
 }
 
+// XMLNodeToBeanWithParseOptions converts an element tree to a map and decodes it into dst with parser and bean options.
+func XMLNodeToBeanWithParseOptions(node *Element, dst any, parseOpts []ParseOption, beanOpts ...BeanOption) error {
+	return mapToBeanWithOptions(XMLNodeToMapWithOptions(node, parseOpts...), dst, beanOpts...)
+}
+
 // XMLToMapInto parses XML and merges values into result.
 func XMLToMapInto(xmlStr string, result map[string]any) (map[string]any, error) {
 	return XMLToMapIntoWithOptions(xmlStr, result)
@@ -907,10 +937,15 @@ func XMLToMapIntoWithOptions(xmlStr string, result map[string]any, opts ...Parse
 
 // XMLNodeToMapInto converts an element to map and merges values into result.
 func XMLNodeToMapInto(node *Element, result map[string]any) map[string]any {
+	return XMLNodeToMapIntoWithOptions(node, result)
+}
+
+// XMLNodeToMapIntoWithOptions converts an element to map and merges values into result with parser options.
+func XMLNodeToMapIntoWithOptions(node *Element, result map[string]any, opts ...ParseOption) map[string]any {
 	if result == nil {
 		result = map[string]any{}
 	}
-	for k, v := range XMLNodeToMap(node) {
+	for k, v := range XMLNodeToMapWithOptions(node, opts...) {
 		result[k] = v
 	}
 	return result
@@ -1091,23 +1126,23 @@ func writeName(w io.Writer, name stdxml.Name) error {
 	return err
 }
 
-func elementToValue(ele *Element) any {
+func elementToValue(ele *Element, cfg parseConfig) any {
 	obj := map[string]any{}
 	for _, attr := range ele.Attr {
-		obj[attr.Name.Local] = parseScalar(attr.Value)
+		obj[attr.Name.Local] = parseScalar(attr.Value, cfg)
 	}
 	for _, child := range ele.Children {
-		addMapValue(obj, child.Name.Local, elementToValue(child))
+		addMapValue(obj, child.Name.Local, elementToValue(child, cfg))
 	}
 	text := strings.TrimSpace(ele.Text)
 	if len(obj) == 0 {
 		if text == "" {
 			return ""
 		}
-		return parseScalar(text)
+		return parseScalar(text, cfg)
 	}
 	if text != "" {
-		obj[ContentKey] = parseScalar(text)
+		obj[ContentKey] = parseScalar(text, cfg)
 	}
 	return obj
 }
@@ -1124,7 +1159,7 @@ func addMapValue(m map[string]any, key string, value any) {
 	m[key] = value
 }
 
-func parseScalar(s string) any {
+func parseScalar(s string, cfg parseConfig) any {
 	s = strings.TrimSpace(s)
 	switch strings.ToLower(s) {
 	case "true":
@@ -1134,10 +1169,16 @@ func parseScalar(s string) any {
 	case "null":
 		return nil
 	}
-	if i, err := strconv.ParseInt(s, 10, 64); err == nil {
+	if cfg.parseInt == nil {
+		cfg.parseInt = strconv.ParseInt
+	}
+	if cfg.parseFloat == nil {
+		cfg.parseFloat = strconv.ParseFloat
+	}
+	if i, err := cfg.parseInt(s, 10, 64); err == nil {
 		return i
 	}
-	if f, err := strconv.ParseFloat(s, 64); err == nil {
+	if f, err := cfg.parseFloat(s, 64); err == nil {
 		return f
 	}
 	return s

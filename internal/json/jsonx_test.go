@@ -3,6 +3,7 @@ package json
 import (
 	stdjson "encoding/json"
 	"io"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -246,6 +247,84 @@ func TestWrapUsesConfigDecoderFactory(t *testing.T) {
 	}
 	if !called || out != `{"name":"provided"}` {
 		t.Fatalf("decoder factory called=%v out=%s", called, out)
+	}
+}
+
+func TestJSONScalarProviders(t *testing.T) {
+	cfg := NewConfig()
+	cfg.ParseIntFunc = func(s string, base, bitSize int) (int64, error) {
+		if s == "custom-int" {
+			return 77, nil
+		}
+		return strconv.ParseInt(s, base, bitSize)
+	}
+	cfg.ParseFloatFunc = func(s string, bitSize int) (float64, error) {
+		if s == "custom-float" {
+			return 8.5, nil
+		}
+		return strconv.ParseFloat(s, bitSize)
+	}
+	cfg.ParseBoolFunc = func(s string) (bool, error) {
+		if s == "yep" {
+			return true, nil
+		}
+		return false, strconv.ErrSyntax
+	}
+	obj := NewJSONObjectWithConfig(cfg)
+	obj.Set("int", "custom-int").Set("float", "custom-float").Set("bool", "yep")
+	if got := obj.GetInt64("int"); got != 77 {
+		t.Fatalf("custom int = %d", got)
+	}
+	if got := obj.GetFloat64("float"); got != 8.5 {
+		t.Fatalf("custom float = %v", got)
+	}
+	if !obj.GetBool("bool") {
+		t.Fatal("custom bool parser not used")
+	}
+
+	out, err := ToJSONStr(map[string]any{"n": int64(7), "f": 1.25},
+		WithFormatIntFunc(func(v int64, base int) string { return strconv.FormatInt(v*10, base) }),
+		WithFormatFloatFunc(func(v float64, fmtByte byte, prec, bitSize int) string {
+			return strconv.FormatFloat(v*2, fmtByte, prec, bitSize)
+		}),
+	)
+	if err != nil {
+		t.Fatalf("ToJSONStr with scalar providers: %v", err)
+	}
+	if out != `{"f":2.5,"n":70}` && out != `{"n":70,"f":2.5}` {
+		t.Fatalf("formatted json = %s", out)
+	}
+
+	out, err = ToJSONStr(map[customKey]string{{name: "k"}: "v"}, WithSprintFunc(func(any) string { return "custom-key" }))
+	if err != nil {
+		t.Fatalf("ToJSONStr with sprint provider: %v", err)
+	}
+	if out != `{"custom-key":"v"}` {
+		t.Fatalf("sprint json = %s", out)
+	}
+}
+
+type customKey struct{ name string }
+
+func TestToBeanWithOptionsUsesDecoderFactory(t *testing.T) {
+	type tagged struct {
+		Name string `json:"name"`
+	}
+	called := false
+	var out tagged
+	if err := ToBeanWithOptions([]byte(`{"ignored":true}`), &out, WithBeanConfig(&Config{DecoderFactory: func(io.Reader) *stdjson.Decoder {
+		called = true
+		dec := stdjson.NewDecoder(strings.NewReader(`{"name":"provided"}`))
+		dec.UseNumber()
+		return dec
+	}})); err != nil {
+		t.Fatalf("ToBeanWithOptions decoder factory: %v", err)
+	}
+	if !called || out.Name != "provided" {
+		t.Fatalf("decoder factory called=%v out=%#v", called, out)
+	}
+	if err := ToBeanWithOptions([]byte(`{"ignored":true}`), &out, WithBeanConfig(&Config{DecoderFactory: func(io.Reader) *stdjson.Decoder { return nil }})); err == nil {
+		t.Fatal("nil decoder factory should fail")
 	}
 }
 

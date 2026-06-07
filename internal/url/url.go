@@ -299,10 +299,20 @@ func Complete(baseURL, relativePath string) (string, error) {
 }
 
 // Encode escapes a string for URL query components.
-func Encode(s string) string { return neturl.QueryEscape(s) }
+func Encode(s string) string { return EncodeWithOptions(s) }
+
+// EncodeWithOptions escapes a string for URL query components with custom providers.
+func EncodeWithOptions(s string, opts ...EncodeOption) string {
+	return applyEncodeOptions(opts).queryEscape(s)
+}
 
 // URLEncode escapes a string for URL query components.
 func URLEncode(s string) string { return Encode(s) }
+
+// URLEncodeWithOptions escapes a string for URL query components with custom providers.
+func URLEncodeWithOptions(s string, opts ...EncodeOption) string {
+	return EncodeWithOptions(s, opts...)
+}
 
 // Decode unescapes a URL query component and converts plus signs to spaces.
 func Decode(s string) (string, error) { return DecodePlus(s, true) }

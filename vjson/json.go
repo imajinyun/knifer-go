@@ -95,6 +95,34 @@ func WithDecoderFactory(factory func(io.Reader) *stdjson.Decoder) EncodeOption {
 	return jsonx.WithDecoderFactory(factory)
 }
 
+// WithSprintFunc sets the fallback scalar formatter stored in the JSON config.
+func WithSprintFunc(sprint func(any) string) EncodeOption { return jsonx.WithSprintFunc(sprint) }
+
+// WithParseIntFunc sets the integer parser stored in the JSON config.
+func WithParseIntFunc(parse func(string, int, int) (int64, error)) EncodeOption {
+	return jsonx.WithParseIntFunc(parse)
+}
+
+// WithParseFloatFunc sets the float parser stored in the JSON config.
+func WithParseFloatFunc(parse func(string, int) (float64, error)) EncodeOption {
+	return jsonx.WithParseFloatFunc(parse)
+}
+
+// WithParseBoolFunc sets the bool parser stored in the JSON config.
+func WithParseBoolFunc(parse func(string) (bool, error)) EncodeOption {
+	return jsonx.WithParseBoolFunc(parse)
+}
+
+// WithFormatIntFunc sets the integer formatter stored in the JSON config.
+func WithFormatIntFunc(format func(int64, int) string) EncodeOption {
+	return jsonx.WithFormatIntFunc(format)
+}
+
+// WithFormatFloatFunc sets the float formatter stored in the JSON config.
+func WithFormatFloatFunc(format func(float64, byte, int, int) string) EncodeOption {
+	return jsonx.WithFormatFloatFunc(format)
+}
+
 // WithFormatIndent sets the indentation string used by FormatWithOptions.
 func WithFormatIndent(indent string) FormatOption { return jsonx.WithFormatIndent(indent) }
 

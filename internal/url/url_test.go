@@ -196,6 +196,18 @@ func TestEncodeAndURLBuilder(t *testing.T) {
 	if got := EncodeQuery("a b+c"); got != "a+b%2Bc" {
 		t.Fatalf("EncodeQuery = %q", got)
 	}
+	if got := EncodeQueryWithOptions("a b", WithQueryEscapeFunc(func(s string) string { return "query:" + s })); got != "query:a b" {
+		t.Fatalf("EncodeQueryWithOptions = %q", got)
+	}
+	if got := FormURLEncodeWithOptions("a b", WithQueryEscapeFunc(func(s string) string { return "form:" + s })); got != "form:a b" {
+		t.Fatalf("FormURLEncodeWithOptions = %q", got)
+	}
+	if got := EncodePathSegmentWithOptions("a/b", WithPathEscapeFunc(func(s string) string { return "path:" + s })); got != "path:a/b" {
+		t.Fatalf("EncodePathSegmentWithOptions = %q", got)
+	}
+	if got := EncodeWithOptions("a b", WithQueryEscapeFunc(func(s string) string { return "encode:" + s })); got != "encode:a b" {
+		t.Fatalf("EncodeWithOptions = %q", got)
+	}
 	if got, _ := DecodePlus("a+b%2Bc", false); got != "a+b+c" {
 		t.Fatalf("DecodePlus = %q", got)
 	}

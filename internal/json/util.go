@@ -136,6 +136,66 @@ func WithDecoderFactory(factory func(io.Reader) *json.Decoder) EncodeOption {
 	}
 }
 
+// WithSprintFunc sets the fallback scalar formatter stored in the JSON config.
+func WithSprintFunc(sprint func(any) string) EncodeOption {
+	return func(c *encodeConfig) {
+		if sprint != nil {
+			c.cfg = c.cfg.Clone()
+			c.cfg.SprintFunc = sprint
+		}
+	}
+}
+
+// WithParseIntFunc sets the integer parser stored in the JSON config.
+func WithParseIntFunc(parse func(string, int, int) (int64, error)) EncodeOption {
+	return func(c *encodeConfig) {
+		if parse != nil {
+			c.cfg = c.cfg.Clone()
+			c.cfg.ParseIntFunc = parse
+		}
+	}
+}
+
+// WithParseFloatFunc sets the float parser stored in the JSON config.
+func WithParseFloatFunc(parse func(string, int) (float64, error)) EncodeOption {
+	return func(c *encodeConfig) {
+		if parse != nil {
+			c.cfg = c.cfg.Clone()
+			c.cfg.ParseFloatFunc = parse
+		}
+	}
+}
+
+// WithParseBoolFunc sets the bool parser stored in the JSON config.
+func WithParseBoolFunc(parse func(string) (bool, error)) EncodeOption {
+	return func(c *encodeConfig) {
+		if parse != nil {
+			c.cfg = c.cfg.Clone()
+			c.cfg.ParseBoolFunc = parse
+		}
+	}
+}
+
+// WithFormatIntFunc sets the integer formatter stored in the JSON config.
+func WithFormatIntFunc(format func(int64, int) string) EncodeOption {
+	return func(c *encodeConfig) {
+		if format != nil {
+			c.cfg = c.cfg.Clone()
+			c.cfg.FormatIntFunc = format
+		}
+	}
+}
+
+// WithFormatFloatFunc sets the float formatter stored in the JSON config.
+func WithFormatFloatFunc(format func(float64, byte, int, int) string) EncodeOption {
+	return func(c *encodeConfig) {
+		if format != nil {
+			c.cfg = c.cfg.Clone()
+			c.cfg.FormatFloatFunc = format
+		}
+	}
+}
+
 // WithBeanConfig sets the JSON config used by bean conversion helpers.
 func WithBeanConfig(cfg *Config) BeanOption {
 	return func(c *beanConfig) {
@@ -288,21 +348,21 @@ func ParseArrayWithConfig(src any, cfg *Config) (*JSONArray, error) {
 func ToJSONStr(v any, opts ...EncodeOption) (string, error) {
 	cfg := applyEncodeOptions(0, opts)
 	w := wrap(v, cfg.cfg)
-	return writeValue(w, cfg.indent)
+	return writeValueWithConfig(w, cfg.indent, cfg.cfg)
 }
 
 // ToJSONPrettyStr 4 空格缩进序列化。
 func ToJSONPrettyStr(v any, opts ...EncodeOption) (string, error) {
 	cfg := applyEncodeOptions(4, opts)
 	w := wrap(v, cfg.cfg)
-	return writeValue(w, cfg.indent)
+	return writeValueWithConfig(w, cfg.indent, cfg.cfg)
 }
 
 // ToJSONStrIndent 自定义缩进序列化。
 func ToJSONStrIndent(v any, indent int, opts ...EncodeOption) (string, error) {
 	cfg := applyEncodeOptions(indent, opts)
 	w := wrap(v, cfg.cfg)
-	return writeValue(w, cfg.indent)
+	return writeValueWithConfig(w, cfg.indent, cfg.cfg)
 }
 
 // ToJSONStrWithConfig serializes v using cfg.

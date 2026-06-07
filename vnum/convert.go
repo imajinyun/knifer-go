@@ -35,3 +35,7 @@ func PartValueWithMode(total, partCount int, plusOneWhenHasRem bool) int {
 }
 
 func ToDouble(value any) float64 { return numimpl.ToDouble(value) }
+
+func ToDoubleWithOptions(value any, opts ...DoubleOption) float64 {
+	return numimpl.ToDoubleWithOptions(value, opts...)
+}

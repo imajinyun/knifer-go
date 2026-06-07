@@ -139,6 +139,11 @@ func WithConnFactory(factory func(*net.TCPAddr) (net.Conn, error)) ConfigOption 
 	return socketx.WithConnFactory(factory)
 }
 
+// WithSocketIPParser sets the parser used by helpers that build TCP addresses from host strings.
+func WithSocketIPParser(parse func(string) net.IP) ConfigOption {
+	return socketx.WithSocketIPParser(parse)
+}
+
 // NewSocketConfigWithOptions creates a socket config customized by options.
 func NewSocketConfigWithOptions(opts ...ConfigOption) *SocketConfig {
 	return socketx.NewSocketConfigWithOptions(opts...)

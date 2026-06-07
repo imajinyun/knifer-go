@@ -158,7 +158,7 @@ func (o *JSONObject) GetStringOr(key, def string) string {
 	if !ok {
 		return def
 	}
-	return toString(v, def)
+	return toString(v, def, o.cfg)
 }
 
 // GetInt 取 int。
@@ -178,7 +178,7 @@ func (o *JSONObject) GetInt64Or(key string, def int64) int64 {
 	if !ok {
 		return def
 	}
-	return toInt64(v, def)
+	return toInt64(v, def, o.cfg)
 }
 
 // GetFloat64 取 float64。
@@ -190,7 +190,7 @@ func (o *JSONObject) GetFloat64Or(key string, def float64) float64 {
 	if !ok {
 		return def
 	}
-	return toFloat64(v, def)
+	return toFloat64(v, def, o.cfg)
 }
 
 // GetBool 取 bool。
@@ -202,7 +202,7 @@ func (o *JSONObject) GetBoolOr(key string, def bool) bool {
 	if !ok {
 		return def
 	}
-	return toBool(v, def)
+	return toBool(v, def, o.cfg)
 }
 
 // GetJSONObject 取嵌套对象，不存在或非对象返回 nil。

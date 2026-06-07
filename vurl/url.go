@@ -52,6 +52,9 @@ type NormalizeOption = urlimpl.NormalizeOption
 // DecodeOption customizes DecodeWithOptions.
 type DecodeOption = urlimpl.DecodeOption
 
+// EncodeOption customizes URL encoding helpers.
+type EncodeOption = urlimpl.EncodeOption
+
 // NewURLBuilder creates an empty URL builder.
 func NewURLBuilder() *URLBuilder { return urlimpl.NewURLBuilder() }
 
@@ -98,6 +101,16 @@ func WithReplaceSlash(replace bool) NormalizeOption { return urlimpl.WithReplace
 // WithPlusAsSpace controls whether plus signs are decoded as spaces.
 func WithPlusAsSpace(plusToSpace bool) DecodeOption { return urlimpl.WithPlusAsSpace(plusToSpace) }
 
+// WithQueryEscapeFunc sets the query/form escaping provider.
+func WithQueryEscapeFunc(escape func(string) string) EncodeOption {
+	return urlimpl.WithQueryEscapeFunc(escape)
+}
+
+// WithPathEscapeFunc sets the path segment escaping provider.
+func WithPathEscapeFunc(escape func(string) string) EncodeOption {
+	return urlimpl.WithPathEscapeFunc(escape)
+}
+
 // NewHTTPURLBuilder creates an HTTP URL builder.
 func NewHTTPURLBuilder(host string) *URLBuilder { return urlimpl.NewHTTPURLBuilder(host) }
 
@@ -133,8 +146,18 @@ func Complete(baseURL, relativePath string) (string, error) {
 // Encode escapes a string for URL query components.
 func Encode(s string) string { return urlimpl.Encode(s) }
 
+// EncodeWithOptions escapes a string for URL query components with custom providers.
+func EncodeWithOptions(s string, opts ...EncodeOption) string {
+	return urlimpl.EncodeWithOptions(s, opts...)
+}
+
 // URLEncode escapes a string for URL query components.
 func URLEncode(s string) string { return urlimpl.URLEncode(s) }
+
+// URLEncodeWithOptions escapes a string for URL query components with custom providers.
+func URLEncodeWithOptions(s string, opts ...EncodeOption) string {
+	return urlimpl.URLEncodeWithOptions(s, opts...)
+}
 
 // Decode unescapes a URL query component and converts plus signs to spaces.
 func Decode(s string) (string, error) { return urlimpl.Decode(s) }
@@ -161,8 +184,18 @@ func EncodeAll(s string) string { return urlimpl.EncodeAll(s) }
 // EncodeQuery escapes text for query/form usage. Spaces are encoded as '+'.
 func EncodeQuery(s string) string { return urlimpl.EncodeQuery(s) }
 
+// EncodeQueryWithOptions escapes text for query/form usage with custom providers.
+func EncodeQueryWithOptions(s string, opts ...EncodeOption) string {
+	return urlimpl.EncodeQueryWithOptions(s, opts...)
+}
+
 // EncodePathSegment escapes one path segment, including slash characters.
 func EncodePathSegment(s string) string { return urlimpl.EncodePathSegment(s) }
+
+// EncodePathSegmentWithOptions escapes one path segment with custom providers.
+func EncodePathSegmentWithOptions(s string, opts ...EncodeOption) string {
+	return urlimpl.EncodePathSegmentWithOptions(s, opts...)
+}
 
 // EncodePath escapes each path segment and keeps slash separators.
 func EncodePath(s string) string { return urlimpl.EncodePath(s) }
@@ -172,6 +205,11 @@ func EncodeFragment(s string) string { return urlimpl.EncodeFragment(s) }
 
 // FormURLEncode escapes text for application/x-www-form-urlencoded usage.
 func FormURLEncode(s string) string { return urlimpl.FormURLEncode(s) }
+
+// FormURLEncodeWithOptions escapes text for application/x-www-form-urlencoded usage with custom providers.
+func FormURLEncodeWithOptions(s string, opts ...EncodeOption) string {
+	return urlimpl.FormURLEncodeWithOptions(s, opts...)
+}
 
 // Path returns the decoded path part of raw.
 func Path(raw string) (string, error) { return urlimpl.Path(raw) }

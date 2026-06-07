@@ -3,9 +3,7 @@ package json
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"reflect"
-	"strconv"
 	"time"
 )
 
@@ -77,7 +75,7 @@ func wrap(v any, cfg *Config) any {
 		// 仅支持字符串 key
 		iter := rv.MapRange()
 		for iter.Next() {
-			k := fmt.Sprint(iter.Key().Interface())
+			k := cfg.sprint(iter.Key().Interface())
 			obj.Set(k, wrap(iter.Value().Interface(), cfg))
 		}
 		return obj
@@ -95,30 +93,31 @@ func wrap(v any, cfg *Config) any {
 		}
 		b, err := marshal(v)
 		if err != nil {
-			return fmt.Sprint(v)
+			return cfg.sprint(v)
 		}
 		if cfg != nil && cfg.UnmarshalFunc != nil {
 			var raw any
 			if err := cfg.UnmarshalFunc(b, &raw); err != nil {
-				return fmt.Sprint(v)
+				return cfg.sprint(v)
 			}
 			return wrap(raw, cfg)
 		}
 		dec := newDecoderWithConfig(bytes.NewReader(b), cfg)
 		if dec == nil {
-			return fmt.Sprint(v)
+			return cfg.sprint(v)
 		}
 		var raw any
 		if err := dec.Decode(&raw); err != nil {
-			return fmt.Sprint(v)
+			return cfg.sprint(v)
 		}
 		return wrap(raw, cfg)
 	}
-	return fmt.Sprint(v)
+	return cfg.sprint(v)
 }
 
 // toString 把任意 JSON 值转换为字符串。
-func toString(v any, def string) string {
+func toString(v any, def string, cfg *Config) string {
+	cfg = configOrDefault(cfg)
 	if IsNull(v) {
 		return def
 	}
@@ -131,19 +130,20 @@ func toString(v any, def string) string {
 		}
 		return "false"
 	case int64:
-		return strconv.FormatInt(x, 10)
+		return cfg.formatInt(x, 10)
 	case float64:
-		return strconv.FormatFloat(x, 'f', -1, 64)
+		return cfg.formatFloat(x, 'f', -1, 64)
 	case *JSONObject:
 		return x.String()
 	case *JSONArray:
 		return x.String()
 	}
-	return fmt.Sprint(v)
+	return cfg.sprint(v)
 }
 
 // toInt64 转 int64，失败时返回 def。
-func toInt64(v any, def int64) int64 {
+func toInt64(v any, def int64, cfg *Config) int64 {
+	cfg = configOrDefault(cfg)
 	if IsNull(v) {
 		return def
 	}
@@ -158,11 +158,11 @@ func toInt64(v any, def int64) int64 {
 		}
 		return 0
 	case string:
-		n, err := strconv.ParseInt(x, 10, 64)
+		n, err := cfg.parseInt(x, 10, 64)
 		if err == nil {
 			return n
 		}
-		f, err := strconv.ParseFloat(x, 64)
+		f, err := cfg.parseFloat(x, 64)
 		if err == nil {
 			return int64(f)
 		}
@@ -171,7 +171,8 @@ func toInt64(v any, def int64) int64 {
 }
 
 // toFloat64 转 float64，失败时返回 def。
-func toFloat64(v any, def float64) float64 {
+func toFloat64(v any, def float64, cfg *Config) float64 {
+	cfg = configOrDefault(cfg)
 	if IsNull(v) {
 		return def
 	}
@@ -186,7 +187,7 @@ func toFloat64(v any, def float64) float64 {
 		}
 		return 0
 	case string:
-		f, err := strconv.ParseFloat(x, 64)
+		f, err := cfg.parseFloat(x, 64)
 		if err == nil {
 			return f
 		}
@@ -195,7 +196,8 @@ func toFloat64(v any, def float64) float64 {
 }
 
 // toBool 转 bool。
-func toBool(v any, def bool) bool {
+func toBool(v any, def bool, cfg *Config) bool {
+	cfg = configOrDefault(cfg)
 	if IsNull(v) {
 		return def
 	}
@@ -207,11 +209,8 @@ func toBool(v any, def bool) bool {
 	case float64:
 		return x != 0
 	case string:
-		switch x {
-		case "true", "True", "TRUE", "1", "yes", "YES":
-			return true
-		case "false", "False", "FALSE", "0", "no", "NO", "":
-			return false
+		if b, err := cfg.parseBool(x); err == nil {
+			return b
 		}
 	}
 	return def

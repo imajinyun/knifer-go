@@ -257,6 +257,27 @@ func TestMapBeanAndNamespaceConversions(t *testing.T) {
 	if err == nil || limited != nil {
 		t.Fatalf("XMLToMapIntoWithOptions should fail with max bytes: %#v, %v", limited, err)
 	}
+	customMap, err := XMLToMapWithOptions(`<root><n>custom-int</n><f>custom-float</f></root>`,
+		WithScalarIntParser(func(s string, base, bitSize int) (int64, error) {
+			if s == "custom-int" {
+				return 99, nil
+			}
+			return 0, errors.New("not int")
+		}),
+		WithScalarFloatParser(func(s string, bitSize int) (float64, error) {
+			if s == "custom-float" {
+				return 6.25, nil
+			}
+			return 0, errors.New("not float")
+		}),
+	)
+	if err != nil {
+		t.Fatalf("XMLToMapWithOptions scalar providers: %v", err)
+	}
+	customRoot := customMap["root"].(map[string]any)
+	if customRoot["n"] != int64(99) || customRoot["f"] != 6.25 {
+		t.Fatalf("custom scalar parsers = %#v", customRoot)
+	}
 	if got := XMLNodeToMapInto(nil, nil); len(got) != 0 {
 		t.Fatalf("XMLNodeToMapInto nil = %#v", got)
 	}
@@ -508,10 +529,11 @@ func TestInternalHelpers(t *testing.T) {
 	if !isStruct(sampleBean{}) || !isStruct(&sampleBean{}) || isStruct(nil) || isStruct(map[string]any{}) {
 		t.Fatal("isStruct mismatch")
 	}
-	if got := parseScalar("false"); got != false {
+	cfg := applyParse(nil)
+	if got := parseScalar("false", cfg); got != false {
 		t.Fatalf("parseScalar false = %#v", got)
 	}
-	if got := parseScalar("plain"); got != "plain" {
+	if got := parseScalar("plain", cfg); got != "plain" {
 		t.Fatalf("parseScalar string = %#v", got)
 	}
 	if got := fmt.Sprint(structToMap(struct {

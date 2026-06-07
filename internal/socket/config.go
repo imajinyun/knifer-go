@@ -34,6 +34,8 @@ type SocketConfig struct {
 	ListenerFactory func(*net.TCPAddr) (net.Listener, error)
 	// ConnFactory creates client connections. nil means net.DialTCP("tcp", nil, addr).
 	ConnFactory func(*net.TCPAddr) (net.Conn, error)
+	// IPParser parses host strings for helpers that build TCP addresses. nil means net.ParseIP.
+	IPParser func(string) net.IP
 }
 
 // ConfigOption customizes SocketConfig creation.
@@ -109,6 +111,15 @@ func WithConnFactory(factory func(*net.TCPAddr) (net.Conn, error)) ConfigOption 
 	}
 }
 
+// WithSocketIPParser sets the parser used by helpers that build TCP addresses from host strings.
+func WithSocketIPParser(parse func(string) net.IP) ConfigOption {
+	return func(c *SocketConfig) {
+		if parse != nil {
+			c.IPParser = parse
+		}
+	}
+}
+
 // NewSocketConfig creates the default configuration.
 func NewSocketConfig() *SocketConfig {
 	return NewSocketConfigWithOptions()
@@ -132,6 +143,13 @@ func NewSocketConfigWithOptions(opts ...ConfigOption) *SocketConfig {
 func defaultThreadPoolSize() int { return runtime.NumCPU() }
 
 func defaultRunner(fn func()) { go fn() }
+
+func parseIPWithConfig(cfg *SocketConfig, host string) net.IP {
+	if cfg != nil && cfg.IPParser != nil {
+		return cfg.IPParser(host)
+	}
+	return net.ParseIP(host)
+}
 
 func runWithConfig(cfg *SocketConfig, fn func()) {
 	if cfg != nil && cfg.Runner != nil {
@@ -224,6 +242,14 @@ func (c *SocketConfig) SetListenerFactory(factory func(*net.TCPAddr) (net.Listen
 func (c *SocketConfig) SetConnFactory(factory func(*net.TCPAddr) (net.Conn, error)) *SocketConfig {
 	if factory != nil {
 		c.ConnFactory = factory
+	}
+	return c
+}
+
+// SetSocketIPParser sets the parser used by helpers that build TCP addresses from host strings.
+func (c *SocketConfig) SetSocketIPParser(parse func(string) net.IP) *SocketConfig {
+	if parse != nil {
+		c.IPParser = parse
 	}
 	return c
 }

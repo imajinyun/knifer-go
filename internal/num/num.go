@@ -37,6 +37,11 @@ type formatConfig struct {
 	formatInt   func(int64, int) string
 }
 
+type doubleConfig struct {
+	parseFloat  func(string, int) (float64, error)
+	formatFloat func(float64, byte, int, int) string
+}
+
 // RandomNumberOption customizes random-number generation per call.
 type RandomNumberOption func(*randomNumberConfig)
 
@@ -45,6 +50,9 @@ type ParseOption func(*parseConfig)
 
 // FormatOption customizes numeric formatting helpers per call.
 type FormatOption func(*formatConfig)
+
+// DoubleOption customizes ToDoubleWithOptions per call.
+type DoubleOption func(*doubleConfig)
 
 // WithRandomReader sets the random source used by Gen*WithOptions helpers.
 func WithRandomReader(reader io.Reader) RandomNumberOption {
@@ -91,6 +99,24 @@ func WithFormatIntFunc(formatter func(int64, int) string) FormatOption {
 	}
 }
 
+// WithDoubleParseFloatFunc sets the parser used by ToDoubleWithOptions.
+func WithDoubleParseFloatFunc(parser func(string, int) (float64, error)) DoubleOption {
+	return func(c *doubleConfig) {
+		if parser != nil {
+			c.parseFloat = parser
+		}
+	}
+}
+
+// WithDoubleFormatFloatFunc sets the formatter used by ToDoubleWithOptions.
+func WithDoubleFormatFloatFunc(formatter func(float64, byte, int, int) string) DoubleOption {
+	return func(c *doubleConfig) {
+		if formatter != nil {
+			c.formatFloat = formatter
+		}
+	}
+}
+
 func applyRandomNumberOptions(opts []RandomNumberOption) randomNumberConfig {
 	cfg := randomNumberConfig{randomReader: cryptorand.Reader}
 	for _, opt := range opts {
@@ -132,6 +158,22 @@ func applyFormatOptions(opts []FormatOption) formatConfig {
 	}
 	if cfg.formatInt == nil {
 		cfg.formatInt = strconv.FormatInt
+	}
+	return cfg
+}
+
+func applyDoubleOptions(opts []DoubleOption) doubleConfig {
+	cfg := doubleConfig{parseFloat: strconv.ParseFloat, formatFloat: strconv.FormatFloat}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.parseFloat == nil {
+		cfg.parseFloat = strconv.ParseFloat
+	}
+	if cfg.formatFloat == nil {
+		cfg.formatFloat = strconv.FormatFloat
 	}
 	return cfg
 }
@@ -1202,13 +1244,24 @@ func IsValidFloat32(number float32) bool {
 }
 
 // Calculate evaluates a simple arithmetic expression supporting +, -, *, /, %, and parentheses.
-func Calculate(expression string) (float64, error) { return evalExpression(expression) }
+func Calculate(expression string) (float64, error) { return CalculateWithOptions(expression) }
+
+// CalculateWithOptions evaluates a simple arithmetic expression using per-call parser options.
+func CalculateWithOptions(expression string, opts ...ParseOption) (float64, error) {
+	return evalExpression(expression, applyParseOptions(opts))
+}
 
 // ToDouble converts numeric values to float64 while preserving float32 textual precision.
 func ToDouble(value any) float64 {
+	return ToDoubleWithOptions(value)
+}
+
+// ToDoubleWithOptions converts numeric values to float64 while preserving float32 textual precision using custom providers.
+func ToDoubleWithOptions(value any, opts ...DoubleOption) float64 {
+	cfg := applyDoubleOptions(opts)
 	switch v := value.(type) {
 	case float32:
-		f, _ := strconv.ParseFloat(strconv.FormatFloat(float64(v), 'f', -1, 32), 64)
+		f, _ := cfg.parseFloat(cfg.formatFloat(float64(v), 'f', -1, 32), 64)
 		return f
 	case float64:
 		return v
@@ -1323,8 +1376,8 @@ func mathNode(selectNum int) int {
 	return selectNum * mathNode(selectNum-1)
 }
 
-func evalExpression(expr string) (float64, error) {
-	p := expressionParser{s: expr}
+func evalExpression(expr string, cfg parseConfig) (float64, error) {
+	p := expressionParser{s: expr, cfg: cfg}
 	v, err := p.parseExpression()
 	if err != nil {
 		return 0, err
@@ -1339,6 +1392,7 @@ func evalExpression(expr string) (float64, error) {
 type expressionParser struct {
 	s   string
 	pos int
+	cfg parseConfig
 }
 
 func (p *expressionParser) parseExpression() (float64, error) {
@@ -1443,7 +1497,10 @@ func (p *expressionParser) parseFactor() (float64, error) {
 	if start == p.pos {
 		return 0, fmt.Errorf("expected number at %d", p.pos)
 	}
-	return strconv.ParseFloat(p.s[start:p.pos], 64)
+	if p.cfg.parseFloat == nil {
+		p.cfg.parseFloat = strconv.ParseFloat
+	}
+	return p.cfg.parseFloat(p.s[start:p.pos], 64)
 }
 
 func (p *expressionParser) skipSpaces() {

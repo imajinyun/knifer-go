@@ -1,21 +1,24 @@
 package json
 
 import (
-	"strconv"
 	"strings"
 	"unicode/utf8"
 )
 
 // writeValue 将值写为 JSON 字符串；indent>0 时进行 pretty 格式化。
 func writeValue(v any, indent int) (string, error) {
+	return writeValueWithConfig(v, indent, nil)
+}
+
+func writeValueWithConfig(v any, indent int, cfg *Config) (string, error) {
 	var sb strings.Builder
-	if err := writeAny(&sb, v, indent, 0); err != nil {
+	if err := writeAny(&sb, v, indent, 0, configOrDefault(cfg)); err != nil {
 		return "", err
 	}
 	return sb.String(), nil
 }
 
-func writeAny(sb *strings.Builder, v any, indent, depth int) error {
+func writeAny(sb *strings.Builder, v any, indent, depth int, cfg *Config) error {
 	if IsNull(v) {
 		sb.WriteString("null")
 		return nil
@@ -34,14 +37,14 @@ func writeAny(sb *strings.Builder, v any, indent, depth int) error {
 			sb.WriteString("false")
 		}
 	case int64:
-		sb.WriteString(strconv.FormatInt(x, 10))
+		sb.WriteString(cfg.formatInt(x, 10))
 	case float64:
 		// 与 the utility toolkit 一致：尽量使用最短形式。
-		s := strconv.FormatFloat(x, 'f', -1, 64)
+		s := cfg.formatFloat(x, 'f', -1, 64)
 		sb.WriteString(s)
 	default:
 		// 通用回退：通过 wrap 转为标准类型再写入。
-		w := wrap(v, NewConfig())
+		w := wrap(v, cfg)
 		if _, ok := w.(string); ok {
 			writeQuoted(sb, w.(string))
 			return nil
@@ -49,7 +52,7 @@ func writeAny(sb *strings.Builder, v any, indent, depth int) error {
 		// 防止递归
 		switch w.(type) {
 		case *JSONObject, *JSONArray, bool, int64, float64, string, jsonNull:
-			return writeAny(sb, w, indent, depth)
+			return writeAny(sb, w, indent, depth, cfg)
 		}
 		return NewJSONError("unsupported JSON value type %T", v)
 	}
@@ -78,7 +81,7 @@ func writeObject(sb *strings.Builder, o *JSONObject, indent, depth int) error {
 		if indent > 0 {
 			sb.WriteByte(' ')
 		}
-		if err := writeAny(sb, v, indent, depth+1); err != nil {
+		if err := writeAny(sb, v, indent, depth+1, o.cfg); err != nil {
 			return err
 		}
 	}
@@ -104,7 +107,7 @@ func writeArray(sb *strings.Builder, a *JSONArray, indent, depth int) error {
 			sb.WriteByte('\n')
 			writeIndent(sb, indent, depth+1)
 		}
-		if err := writeAny(sb, v, indent, depth+1); err != nil {
+		if err := writeAny(sb, v, indent, depth+1, a.cfg); err != nil {
 			return err
 		}
 	}

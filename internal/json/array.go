@@ -129,7 +129,7 @@ func (a *JSONArray) Join(sep string) string {
 		if i > 0 {
 			b.WriteString(sep)
 		}
-		b.WriteString(toString(v, ""))
+		b.WriteString(toString(v, "", a.cfg))
 	}
 	return b.String()
 }
@@ -145,7 +145,7 @@ func (a *JSONArray) GetStringOr(i int, def string) string {
 	if !ok {
 		return def
 	}
-	return toString(v, def)
+	return toString(v, def, a.cfg)
 }
 
 // GetInt 索引取 int。
@@ -160,7 +160,7 @@ func (a *JSONArray) GetInt64Or(i int, def int64) int64 {
 	if !ok {
 		return def
 	}
-	return toInt64(v, def)
+	return toInt64(v, def, a.cfg)
 }
 
 // GetFloat64 索引取 float64。
@@ -172,7 +172,7 @@ func (a *JSONArray) GetFloat64Or(i int, def float64) float64 {
 	if !ok {
 		return def
 	}
-	return toFloat64(v, def)
+	return toFloat64(v, def, a.cfg)
 }
 
 // GetBool 索引取 bool。
@@ -184,7 +184,7 @@ func (a *JSONArray) GetBoolOr(i int, def bool) bool {
 	if !ok {
 		return def
 	}
-	return toBool(v, def)
+	return toBool(v, def, a.cfg)
 }
 
 // GetJSONObject 索引取 JSONObject。

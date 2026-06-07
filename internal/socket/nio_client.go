@@ -24,7 +24,8 @@ func NewNioClient(host string, port int) (*NioClient, error) {
 
 // NewNioClientWithOptions creates a client and connects to the specified host and port with custom config options.
 func NewNioClientWithOptions(host string, port int, opts ...ConfigOption) (*NioClient, error) {
-	return NewNioClientAddrWithOptions(&net.TCPAddr{IP: net.ParseIP(host), Port: port}, opts...)
+	cfg := NewSocketConfigWithOptions(opts...)
+	return newNioClientAddrWithConfig(&net.TCPAddr{IP: parseIPWithConfig(cfg, host), Port: port}, cfg)
 }
 
 // NewNioClientAddr creates a client and connects to the specified address.
@@ -34,10 +35,14 @@ func NewNioClientAddr(addr *net.TCPAddr) (*NioClient, error) {
 
 // NewNioClientAddrWithOptions creates a client and connects to the specified address with custom config options.
 func NewNioClientAddrWithOptions(addr *net.TCPAddr, opts ...ConfigOption) (*NioClient, error) {
+	return newNioClientAddrWithConfig(addr, NewSocketConfigWithOptions(opts...))
+}
+
+func newNioClientAddrWithConfig(addr *net.TCPAddr, cfg *SocketConfig) (*NioClient, error) {
 	if addr == nil {
 		return nil, NewSocketErrorMsg("address must not be nil")
 	}
-	c := &NioClient{config: NewSocketConfigWithOptions(opts...)}
+	c := &NioClient{config: cfg}
 	if err := c.init(addr); err != nil {
 		return nil, err
 	}

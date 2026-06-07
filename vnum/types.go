@@ -9,6 +9,7 @@ type (
 	RandomNumberOption = numimpl.RandomNumberOption
 	ParseOption        = numimpl.ParseOption
 	FormatOption       = numimpl.FormatOption
+	DoubleOption       = numimpl.DoubleOption
 )
 
 const (

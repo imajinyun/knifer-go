@@ -2,7 +2,6 @@ package json
 
 import (
 	"bytes"
-	"encoding/json"
 )
 
 // ToBean 将 JSON 值转换到给定 dst（应为指针）。
@@ -26,7 +25,7 @@ func ToBeanWithOptions(src any, dst any, opts ...BeanOption) error {
 		data = []byte(x)
 	default:
 		w := wrap(src, cfg.cfg)
-		s, err := writeValue(w, 0)
+		s, err := writeValueWithConfig(w, 0, cfg.cfg)
 		if err != nil {
 			return err
 		}
@@ -44,8 +43,10 @@ func ToBeanWithOptions(src any, dst any, opts ...BeanOption) error {
 		}
 		return nil
 	}
-	dec := json.NewDecoder(bytes.NewReader(data))
-	dec.UseNumber()
+	dec := newDecoderWithConfig(bytes.NewReader(data), cfg.cfg)
+	if dec == nil {
+		return NewJSONError("to bean failed: decoder factory returned nil")
+	}
 	if err := dec.Decode(dst); err != nil {
 		return WrapJSONError(err, "to bean failed")
 	}
