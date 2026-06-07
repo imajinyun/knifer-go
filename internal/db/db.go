@@ -370,6 +370,9 @@ func buildUpsertSQL(dialect Dialect, wrapper Wrapper, entity Entity, conflictFie
 		if strings.TrimSpace(field) == "" {
 			continue
 		}
+		if err := validateIdentifier(field, "upsert update field"); err != nil {
+			return "", nil, err
+		}
 		switch dialect {
 		case DialectMySQL:
 			sets = append(sets, wrapper.Wrap(field)+" = VALUES("+wrapper.Wrap(field)+")")
@@ -386,6 +389,9 @@ func buildUpsertSQL(dialect Dialect, wrapper Wrapper, entity Entity, conflictFie
 	case DialectPostgres, DialectSQLite:
 		if len(conflictFields) == 0 {
 			return "", nil, invalidInputf("db: upsert conflict fields are required for %s", dialect)
+		}
+		if err := validateIdentifierList(conflictFields, "upsert conflict fields", false); err != nil {
+			return "", nil, err
 		}
 		return insertSQL + " ON CONFLICT (" + wrapList(conflictFields, wrapper) + ") DO UPDATE SET " + strings.Join(sets, ", "), args, nil
 	default:

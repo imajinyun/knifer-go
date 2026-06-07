@@ -405,6 +405,29 @@ func TestLoadProfileAndParseByExt(t *testing.T) {
 		t.Fatalf("ParseByExt yaml app.name = %q", got)
 	}
 
+	profileYAML, err := ParseYAMLFull(`
+app:
+  name: base
+server:
+  port: 8080
+profile:
+  dev:
+    app:
+      name: dev
+    server:
+      port: 9090
+`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	dev := profileYAML.ApplyProfile("dev")
+	if got := dev.GetByGroup("app", "name"); got != "dev" {
+		t.Fatalf("YAML profile app.name = %q", got)
+	}
+	if got := dev.GetByGroup("server", "port"); got != "9090" {
+		t.Fatalf("YAML profile server.port = %q", got)
+	}
+
 	custom, err := ParseByExtWithOptions("app.custom", []byte("ignored"), WithParserForExt("custom", func([]byte) (*Conf, error) {
 		c := New()
 		c.Set("name", "custom-parser")

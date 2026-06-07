@@ -89,6 +89,33 @@ func TestUtilityTypes(t *testing.T) {
 	if got := BuildLikeValue("go", "contains"); got != "%go%" {
 		t.Fatalf("like = %q", got)
 	}
+	if !IsSafeIdentifier("users.name") || !IsSafeIdentifier("users.*") || !IsSafeIdentifier("`users`.`name`") {
+		t.Fatal("expected safe identifiers to be accepted")
+	}
+	if IsSafeIdentifier("users; drop table users") || IsSafeIdentifier("COUNT(*)") || IsSafeIdentifier("users name") {
+		t.Fatal("expected unsafe identifiers to be rejected")
+	}
+}
+
+func TestSQLBuilderRejectsUnsafeIdentifiers(t *testing.T) {
+	tests := []struct {
+		name string
+		err  error
+	}{
+		{name: "select field", err: sqlErr(Select("id; drop table users").From("users").SQL())},
+		{name: "from table", err: sqlErr(Select("id").From("users; drop table users").SQL())},
+		{name: "where field", err: sqlErr(Select("id").From("users").Where(Eq("id OR 1=1", 1)).SQL())},
+		{name: "order field", err: sqlErr(Select("id").From("users").OrderBy(Asc("id desc; drop table users")).SQL())},
+		{name: "insert table", err: sqlErr(Insert(NewEntity("users; drop table users").Set("name", "alice")).SQL())},
+		{name: "insert field", err: sqlErr(Insert(NewEntity("users").Set("name; drop", "alice")).SQL())},
+		{name: "update field", err: sqlErr(Update(NewEntity("users").Set("name = hacked", "alice")).Where(Eq("id", 1)).SQL())},
+		{name: "delete table", err: sqlErr(Delete("users; drop table users").Where(Eq("id", 1)).SQL())},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assertDBCode(t, tt.err, knifer.ErrCodeInvalidInput)
+		})
+	}
 }
 
 func TestUpsertSQL(t *testing.T) {

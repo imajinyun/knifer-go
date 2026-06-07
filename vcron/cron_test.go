@@ -25,6 +25,18 @@ func TestFacadePatternParseInvalid(t *testing.T) {
 	}
 }
 
+func TestFacadePartConstants(t *testing.T) {
+	if err := vcron.PartMinute.CheckValue(59); err != nil {
+		t.Fatalf("PartMinute.CheckValue(59) = %v", err)
+	}
+	if err := vcron.PartMinute.CheckValue(60); err == nil {
+		t.Fatal("PartMinute.CheckValue(60) should fail")
+	}
+	if !vcron.AlwaysTrueMatcher.Match(123) || vcron.AlwaysTrueMatcher.NextAfter(7) != 7 {
+		t.Fatal("AlwaysTrueMatcher facade mismatch")
+	}
+}
+
 func TestFacadeMustPattern(t *testing.T) {
 	defer func() {
 		if r := recover(); r == nil {

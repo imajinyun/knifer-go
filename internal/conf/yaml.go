@@ -69,6 +69,10 @@ func flattenYAML(c *Conf, group, prefix string, value any) {
 	switch v := value.(type) {
 	case map[string]any:
 		for k, child := range v {
+			if group == defaultGroup && prefix == "" && k == "profile" {
+				flattenYAMLProfiles(c, child)
+				continue
+			}
 			if prefix == "" {
 				if _, ok := child.(map[string]any); ok {
 					flattenYAML(c, k, "", child)
@@ -80,6 +84,47 @@ func flattenYAML(c *Conf, group, prefix string, value any) {
 				next = prefix + "." + k
 			}
 			flattenYAML(c, group, next, child)
+		}
+	case []any:
+		parts := make([]string, 0, len(v))
+		for _, item := range v {
+			parts = append(parts, scalarString(item))
+		}
+		c.SetByGroup(group, prefix, strings.Join(parts, ","))
+	default:
+		if prefix != "" {
+			c.SetByGroup(group, prefix, scalarString(v))
+		}
+	}
+}
+
+func flattenYAMLProfiles(c *Conf, value any) {
+	profiles, ok := value.(map[string]any)
+	if !ok {
+		flattenYAML(c, "profile", "", value)
+		return
+	}
+	for profile, child := range profiles {
+		group := "profile." + profile
+		flattenYAMLProfileGroup(c, group, "", child)
+	}
+}
+
+func flattenYAMLProfileGroup(c *Conf, group, prefix string, value any) {
+	switch v := value.(type) {
+	case map[string]any:
+		for k, child := range v {
+			next := k
+			if prefix != "" {
+				next = prefix + "." + k
+			}
+			if prefix == "" {
+				if _, ok := child.(map[string]any); ok {
+					flattenYAMLProfileGroup(c, group+"."+k, "", child)
+					continue
+				}
+			}
+			flattenYAMLProfileGroup(c, group, next, child)
 		}
 	case []any:
 		parts := make([]string, 0, len(v))

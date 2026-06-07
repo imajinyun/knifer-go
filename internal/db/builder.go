@@ -169,6 +169,23 @@ func (b *SQLBuilder) selectSQL() (string, []any, error) {
 	if len(fields) == 0 {
 		fields = []string{"*"}
 	}
+	if err := validateIdentifierList(fields, "SELECT fields", true); err != nil {
+		return "", nil, err
+	}
+	if err := validateIdentifierList(b.tables, "FROM tables", false); err != nil {
+		return "", nil, err
+	}
+	if err := validateIdentifierList(b.groups, "GROUP BY fields", false); err != nil {
+		return "", nil, err
+	}
+	for _, order := range b.orders {
+		if strings.TrimSpace(order.Field) == "" {
+			continue
+		}
+		if err := validateIdentifier(order.Field, "ORDER BY field"); err != nil {
+			return "", nil, err
+		}
+	}
 	parts := []string{"SELECT", wrapList(fields, b.wrapper), "FROM", wrapList(b.tables, b.wrapper)}
 	parts = append(parts, b.joins...)
 	params := append([]any(nil), b.params...)
@@ -201,6 +218,12 @@ func (b *SQLBuilder) insertSQL() (string, []any, error) {
 	if len(b.tables) == 0 || b.tables[0] == "" || len(b.fields) == 0 {
 		return "", nil, invalidInputf("db: INSERT requires table and values")
 	}
+	if err := validateIdentifier(b.tables[0], "INSERT table"); err != nil {
+		return "", nil, err
+	}
+	if err := validateIdentifierList(b.fields, "INSERT fields", false); err != nil {
+		return "", nil, err
+	}
 	ph := make([]string, len(b.fields))
 	for i := range ph {
 		ph[i] = b.dialect.placeholder(i + 1)
@@ -212,6 +235,12 @@ func (b *SQLBuilder) insertSQL() (string, []any, error) {
 func (b *SQLBuilder) updateSQL() (string, []any, error) {
 	if len(b.tables) == 0 || b.tables[0] == "" || len(b.sets) == 0 {
 		return "", nil, invalidInputf("db: UPDATE requires table and values")
+	}
+	if err := validateIdentifier(b.tables[0], "UPDATE table"); err != nil {
+		return "", nil, err
+	}
+	if err := validateIdentifierList(b.sets, "UPDATE fields", false); err != nil {
+		return "", nil, err
 	}
 	sets := make([]string, len(b.sets))
 	for i, field := range b.sets {
@@ -235,6 +264,9 @@ func (b *SQLBuilder) updateSQL() (string, []any, error) {
 func (b *SQLBuilder) deleteSQL() (string, []any, error) {
 	if len(b.tables) == 0 || b.tables[0] == "" {
 		return "", nil, invalidInputf("db: DELETE requires table")
+	}
+	if err := validateIdentifier(b.tables[0], "DELETE table"); err != nil {
+		return "", nil, err
 	}
 	parts := []string{"DELETE FROM", b.wrapper.Wrap(b.tables[0])}
 	params := append([]any(nil), b.params...)

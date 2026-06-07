@@ -39,13 +39,13 @@ func (m *listenerManager) snapshot() []TaskListener {
 
 func (m *listenerManager) notifyStart(e *TaskExecutor) {
 	for _, l := range m.snapshot() {
-		l.OnStart(e)
+		safeNotify(func() { l.OnStart(e) })
 	}
 }
 
 func (m *listenerManager) notifySucceeded(e *TaskExecutor) {
 	for _, l := range m.snapshot() {
-		l.OnSucceeded(e)
+		safeNotify(func() { l.OnSucceeded(e) })
 	}
 }
 
@@ -57,6 +57,11 @@ func (m *listenerManager) notifyFailed(e *TaskExecutor, err any) {
 		return
 	}
 	for _, l := range listeners {
-		l.OnFailed(e, err)
+		safeNotify(func() { l.OnFailed(e, err) })
 	}
+}
+
+func safeNotify(fn func()) {
+	defer func() { _ = recover() }()
+	fn()
 }

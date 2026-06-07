@@ -121,6 +121,9 @@ func buildCondition(cond Condition, d Dialect, w Wrapper, start int) (string, []
 	if strings.TrimSpace(cond.Field) == "" {
 		return "", nil, start, nil
 	}
+	if err := validateIdentifier(cond.Field, "condition field"); err != nil {
+		return "", nil, start, err
+	}
 	op := strings.ToUpper(strings.TrimSpace(cond.Op))
 	if op == "" {
 		op = "="

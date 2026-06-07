@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"unicode"
 )
 
 // Dialect controls placeholder and pagination syntax.
@@ -105,6 +106,87 @@ func (w Wrapper) Wrap(name string) string {
 		parts[i] = w.Prefix + part + w.Suffix
 	}
 	return strings.Join(parts, ".")
+}
+
+// IsSafeIdentifier reports whether name is a plain SQL identifier path.
+// It accepts identifiers like "users", "schema.users", "users.*", and already
+// wrapped single parts. It deliberately rejects whitespace, comments,
+// delimiters, and expressions; callers that need expressions should use raw SQL
+// APIs with trusted constants.
+func IsSafeIdentifier(name string) bool {
+	name = strings.TrimSpace(name)
+	if name == "" || strings.Contains(name, "..") {
+		return false
+	}
+	if name == "*" {
+		return true
+	}
+	for _, part := range strings.Split(name, ".") {
+		part = strings.TrimSpace(part)
+		if part == "" {
+			return false
+		}
+		if part == "*" {
+			continue
+		}
+		if isWrappedIdentifierPart(part) {
+			part = part[1 : len(part)-1]
+		}
+		if !isBareIdentifierPart(part) {
+			return false
+		}
+	}
+	return true
+}
+
+func isWrappedIdentifierPart(part string) bool {
+	if len(part) < 2 {
+		return false
+	}
+	return part[0] == '`' && part[len(part)-1] == '`' ||
+		part[0] == '"' && part[len(part)-1] == '"' ||
+		part[0] == '[' && part[len(part)-1] == ']'
+}
+
+func isBareIdentifierPart(part string) bool {
+	if part == "" {
+		return false
+	}
+	for i, r := range part {
+		if i == 0 {
+			if r != '_' && !unicode.IsLetter(r) {
+				return false
+			}
+			continue
+		}
+		if r != '_' && !unicode.IsLetter(r) && !unicode.IsDigit(r) {
+			return false
+		}
+	}
+	return true
+}
+
+func validateIdentifier(name, context string) error {
+	if !IsSafeIdentifier(name) {
+		return invalidInputf("db: unsafe SQL identifier for %s: %q", context, name)
+	}
+	return nil
+}
+
+func validateIdentifierList(values []string, context string, allowStar bool) error {
+	for _, value := range values {
+		value = strings.TrimSpace(value)
+		if value == "" {
+			continue
+		}
+		if !allowStar && value == "*" {
+			return invalidInputf("db: wildcard SQL identifier is not allowed for %s", context)
+		}
+		if err := validateIdentifier(value, context); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Unwrap removes wrapper characters from an identifier.

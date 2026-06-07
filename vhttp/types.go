@@ -61,14 +61,61 @@ const (
 	MethodGet Method = httpx.MethodGet
 	// MethodPost is POST.
 	MethodPost Method = httpx.MethodPost
+	// MethodHead is HEAD.
+	MethodHead Method = httpx.MethodHead
+	// MethodOptions is OPTIONS.
+	MethodOptions Method = httpx.MethodOptions
 	// MethodPut is PUT.
 	MethodPut Method = httpx.MethodPut
 	// MethodDelete is DELETE.
 	MethodDelete Method = httpx.MethodDelete
 	// MethodPatch is PATCH.
 	MethodPatch Method = httpx.MethodPatch
-	// MethodHead is HEAD.
-	MethodHead Method = httpx.MethodHead
-	// MethodOptions is OPTIONS.
-	MethodOptions Method = httpx.MethodOptions
+	// MethodTrace is TRACE.
+	MethodTrace Method = httpx.MethodTrace
+	// MethodConnect is CONNECT.
+	MethodConnect Method = httpx.MethodConnect
+)
+
+const (
+	HeaderAuthorization      Header = httpx.HeaderAuthorization
+	HeaderProxyAuthorization Header = httpx.HeaderProxyAuthorization
+	HeaderDate               Header = httpx.HeaderDate
+	HeaderConnection         Header = httpx.HeaderConnection
+	HeaderMimeVersion        Header = httpx.HeaderMimeVersion
+	HeaderTrailer            Header = httpx.HeaderTrailer
+	HeaderTransferEncoding   Header = httpx.HeaderTransferEncoding
+	HeaderUpgrade            Header = httpx.HeaderUpgrade
+	HeaderVia                Header = httpx.HeaderVia
+	HeaderCacheControl       Header = httpx.HeaderCacheControl
+	HeaderPragma             Header = httpx.HeaderPragma
+	HeaderContentType        Header = httpx.HeaderContentType
+	HeaderHost               Header = httpx.HeaderHost
+	HeaderReferer            Header = httpx.HeaderReferer
+	HeaderOrigin             Header = httpx.HeaderOrigin
+	HeaderUserAgent          Header = httpx.HeaderUserAgent
+	HeaderAccept             Header = httpx.HeaderAccept
+	HeaderAcceptLanguage     Header = httpx.HeaderAcceptLanguage
+	HeaderAcceptEncoding     Header = httpx.HeaderAcceptEncoding
+	HeaderAcceptCharset      Header = httpx.HeaderAcceptCharset
+	HeaderCookie             Header = httpx.HeaderCookie
+	HeaderContentLength      Header = httpx.HeaderContentLength
+	HeaderWWWAuthenticate    Header = httpx.HeaderWWWAuthenticate
+	HeaderSetCookie          Header = httpx.HeaderSetCookie
+	HeaderContentEncoding    Header = httpx.HeaderContentEncoding
+	HeaderContentDisposition Header = httpx.HeaderContentDisposition
+	HeaderETag               Header = httpx.HeaderETag
+	HeaderLocation           Header = httpx.HeaderLocation
+)
+
+const (
+	ContentTypeFormURLEncoded ContentType = httpx.ContentTypeFormURLEncoded
+	ContentTypeMultipart      ContentType = httpx.ContentTypeMultipart
+	ContentTypeJSON           ContentType = httpx.ContentTypeJSON
+	ContentTypeXML            ContentType = httpx.ContentTypeXML
+	ContentTypeTextPlain      ContentType = httpx.ContentTypeTextPlain
+	ContentTypeTextXML        ContentType = httpx.ContentTypeTextXML
+	ContentTypeTextHTML       ContentType = httpx.ContentTypeTextHTML
+	ContentTypeOctetStream    ContentType = httpx.ContentTypeOctetStream
+	ContentTypeEventStream    ContentType = httpx.ContentTypeEventStream
 )

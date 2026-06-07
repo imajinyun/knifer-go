@@ -65,6 +65,18 @@ type TaskExecutor = cron.TaskExecutor
 // TaskTable stores scheduled tasks.
 type TaskTable = cron.TaskTable
 
+const (
+	PartSecond     Part = cron.PartSecond
+	PartMinute     Part = cron.PartMinute
+	PartHour       Part = cron.PartHour
+	PartDayOfMonth Part = cron.PartDayOfMonth
+	PartMonth      Part = cron.PartMonth
+	PartDayOfWeek  Part = cron.PartDayOfWeek
+	PartYear       Part = cron.PartYear
+)
+
+var AlwaysTrueMatcher PartMatcher = cron.AlwaysTrueMatcher
+
 // NewCronConfig creates default cron config.
 func NewCronConfig() *CronConfig { return NewCronConfigWithOptions() }
 

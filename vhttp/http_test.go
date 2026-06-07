@@ -47,6 +47,23 @@ func TestFacadeUsesNamesWithoutHTTPPrefix(t *testing.T) {
 	}
 }
 
+func TestFacadeSharedConstants(t *testing.T) {
+	var _ vhttp.Method = vhttp.MethodTrace
+	var _ vhttp.Method = vhttp.MethodConnect
+	var _ vhttp.Header = vhttp.HeaderContentType
+	var _ vhttp.Header = vhttp.HeaderUserAgent
+	var _ vhttp.Header = vhttp.HeaderLocation
+	var _ vhttp.ContentType = vhttp.ContentTypeJSON
+	var _ vhttp.ContentType = vhttp.ContentTypeEventStream
+
+	if vhttp.MethodTrace.String() != http.MethodTrace {
+		t.Fatalf("MethodTrace = %q", vhttp.MethodTrace.String())
+	}
+	if got := vhttp.ContentTypeJSON.WithCharset("UTF-8"); got != "application/json;charset=UTF-8" {
+		t.Fatalf("ContentTypeJSON.WithCharset = %q", got)
+	}
+}
+
 func TestFacadeRequestOptions(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(r.Header.Get("X-Opt") + ":" + r.Header.Get("User-Agent")))
