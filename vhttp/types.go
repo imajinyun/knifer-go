@@ -32,6 +32,9 @@ type MultipartWriter = httpx.MultipartWriter
 // ServerOption customizes SimpleServer construction.
 type ServerOption = httpx.ServerOption
 
+// StaticOption customizes SimpleServer static file registration.
+type StaticOption = httpx.StaticOption
+
 // ListenAndServeFunc starts serving with the provided HTTP server.
 type ListenAndServeFunc = httpx.ListenAndServeFunc
 

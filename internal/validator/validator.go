@@ -19,6 +19,7 @@ var (
 type config struct {
 	email   func(string) bool
 	mobile  func(string) bool
+	idCard  func(string) bool
 	chinese func(string) bool
 	number  func(string) bool
 }
@@ -32,6 +33,11 @@ func WithEmailMatcher(matcher func(string) bool) Option { return func(c *config)
 // WithMobileMatcher sets the matcher used by IsMobileWithOptions.
 func WithMobileMatcher(matcher func(string) bool) Option {
 	return func(c *config) { c.mobile = matcher }
+}
+
+// WithIDCardMatcher sets the matcher used by IsIDCardWithOptions.
+func WithIDCardMatcher(matcher func(string) bool) Option {
+	return func(c *config) { c.idCard = matcher }
 }
 
 // WithChineseMatcher sets the matcher used by IsChineseWithOptions.
@@ -48,6 +54,7 @@ func applyOptions(opts []Option) config {
 	cfg := config{
 		email:   rxEmail.MatchString,
 		mobile:  rxMobile.MatchString,
+		idCard:  identityimpl.IsValidIDCard,
 		chinese: rxChinese.MatchString,
 		number:  rxNumber.MatchString,
 	}
@@ -61,6 +68,9 @@ func applyOptions(opts []Option) config {
 	}
 	if cfg.mobile == nil {
 		cfg.mobile = rxMobile.MatchString
+	}
+	if cfg.idCard == nil {
+		cfg.idCard = identityimpl.IsValidIDCard
 	}
 	if cfg.chinese == nil {
 		cfg.chinese = rxChinese.MatchString
@@ -93,7 +103,10 @@ func IsIPv4(s string) bool { return netimpl.IsIPv4(s) }
 func IsIPv6(s string) bool { return netimpl.IsIPv6(s) }
 
 // IsIDCard reports whether s is a valid identity card number.
-func IsIDCard(s string) bool { return identityimpl.IsValidIDCard(s) }
+func IsIDCard(s string) bool { return IsIDCardWithOptions(s) }
+
+// IsIDCardWithOptions reports whether s is a valid identity card number with options.
+func IsIDCardWithOptions(s string, opts ...Option) bool { return applyOptions(opts).idCard(s) }
 
 // IsChinese reports whether s consists only of Chinese Han characters.
 func IsChinese(s string) bool { return IsChineseWithOptions(s) }

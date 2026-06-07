@@ -43,6 +43,40 @@ var (
 	commentRe = regexp.MustCompile(CommentRegex)
 )
 
+type cleanConfig struct {
+	invalidRe *regexp.Regexp
+	commentRe *regexp.Regexp
+}
+
+// CleanOption customizes XML cleaning helpers per call.
+type CleanOption func(*cleanConfig)
+
+// WithInvalidRegexp sets the regexp used by CleanInvalidWithOptions.
+func WithInvalidRegexp(re *regexp.Regexp) CleanOption {
+	return func(c *cleanConfig) { c.invalidRe = re }
+}
+
+// WithCommentRegexp sets the regexp used by CleanCommentWithOptions.
+func WithCommentRegexp(re *regexp.Regexp) CleanOption {
+	return func(c *cleanConfig) { c.commentRe = re }
+}
+
+func applyCleanOptions(opts []CleanOption) cleanConfig {
+	cfg := cleanConfig{invalidRe: invalidRe, commentRe: commentRe}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.invalidRe == nil {
+		cfg.invalidRe = invalidRe
+	}
+	if cfg.commentRe == nil {
+		cfg.commentRe = commentRe
+	}
+	return cfg
+}
+
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -629,10 +663,20 @@ func GetOwnerDocument(node *Element) *Document {
 }
 
 // CleanInvalid removes XML 1.0 invalid control characters.
-func CleanInvalid(xmlContent string) string { return invalidRe.ReplaceAllString(xmlContent, "") }
+func CleanInvalid(xmlContent string) string { return CleanInvalidWithOptions(xmlContent) }
+
+// CleanInvalidWithOptions removes XML 1.0 invalid control characters with options.
+func CleanInvalidWithOptions(xmlContent string, opts ...CleanOption) string {
+	return applyCleanOptions(opts).invalidRe.ReplaceAllString(xmlContent, "")
+}
 
 // CleanComment removes XML comments.
-func CleanComment(xmlContent string) string { return commentRe.ReplaceAllString(xmlContent, "") }
+func CleanComment(xmlContent string) string { return CleanCommentWithOptions(xmlContent) }
+
+// CleanCommentWithOptions removes XML comments with options.
+func CleanCommentWithOptions(xmlContent string, opts ...CleanOption) string {
+	return applyCleanOptions(opts).commentRe.ReplaceAllString(xmlContent, "")
+}
 
 // GetElements returns child elements with tag name. Empty tagName returns all direct children.
 func GetElements(element *Element, tagName string) []*Element {

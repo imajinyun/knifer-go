@@ -27,39 +27,107 @@ type AgeOption = identityimpl.AgeOption
 // BirthOption customizes birthday parsing helpers.
 type BirthOption = identityimpl.BirthOption
 
+// IDCardOption customizes identity-card validation helpers per call.
+type IDCardOption = identityimpl.IDCardOption
+
 // RegionCardInfo contains parsed validation information for Hong Kong, Macau or Taiwan cards.
 type RegionCardInfo = identityimpl.RegionCardInfo
 
 // Convert15To18 converts a 15-digit mainland China identity card number to 18 digits.
 func Convert15To18(idCard string) (string, bool) { return identityimpl.Convert15To18(idCard) }
 
+// Convert15To18WithOptions converts a 15-digit mainland China identity card number to 18 digits with options.
+func Convert15To18WithOptions(idCard string, opts ...IDCardOption) (string, bool) {
+	return identityimpl.Convert15To18WithOptions(idCard, opts...)
+}
+
 // Convert18To15 converts a valid 18-digit mainland China identity card number to 15 digits.
 func Convert18To15(idCard string) (string, bool) { return identityimpl.Convert18To15(idCard) }
+
+// Convert18To15WithOptions converts a valid 18-digit mainland China identity card number to 15 digits with options.
+func Convert18To15WithOptions(idCard string, opts ...IDCardOption) (string, bool) {
+	return identityimpl.Convert18To15WithOptions(idCard, opts...)
+}
 
 // IsValidIDCard reports whether idCard is a valid 18-digit, 15-digit, or Hong Kong/Macau/Taiwan card number.
 func IsValidIDCard(idCard string) bool { return identityimpl.IsValidIDCard(idCard) }
 
+// IsValidIDCardWithOptions reports whether idCard is valid with options.
+func IsValidIDCardWithOptions(idCard string, opts ...IDCardOption) bool {
+	return identityimpl.IsValidIDCardWithOptions(idCard, opts...)
+}
+
 // IsValidIDCard18 reports whether idCard is a valid 18-digit mainland China identity card number.
 func IsValidIDCard18(idCard string) bool { return identityimpl.IsValidIDCard18(idCard) }
+
+// IsValidIDCard18WithOptions reports whether idCard is a valid 18-digit mainland China identity card number with options.
+func IsValidIDCard18WithOptions(idCard string, opts ...IDCardOption) bool {
+	return identityimpl.IsValidIDCard18WithOptions(idCard, opts...)
+}
 
 // IsValidIDCard18WithIgnoreCase validates an 18-digit identity card number and controls X/x comparison.
 func IsValidIDCard18WithIgnoreCase(idCard string, ignoreCase bool) bool {
 	return identityimpl.IsValidIDCard18WithIgnoreCase(idCard, ignoreCase)
 }
 
+// IsValidIDCard18WithIgnoreCaseAndOptions validates an 18-digit identity card number with options.
+func IsValidIDCard18WithIgnoreCaseAndOptions(idCard string, ignoreCase bool, opts ...IDCardOption) bool {
+	return identityimpl.IsValidIDCard18WithIgnoreCaseAndOptions(idCard, ignoreCase, opts...)
+}
+
 // IsValidIDCard15 reports whether idCard is a valid 15-digit mainland China identity card number.
 func IsValidIDCard15(idCard string) bool { return identityimpl.IsValidIDCard15(idCard) }
+
+// IsValidIDCard15WithOptions reports whether idCard is a valid 15-digit mainland China identity card number with options.
+func IsValidIDCard15WithOptions(idCard string, opts ...IDCardOption) bool {
+	return identityimpl.IsValidIDCard15WithOptions(idCard, opts...)
+}
 
 // ParseRegionCard validates a Hong Kong, Macau or Taiwan identity card number.
 func ParseRegionCard(idCard string) (RegionCardInfo, bool) {
 	return identityimpl.ParseRegionCard(idCard)
 }
 
+// ParseRegionCardWithOptions validates a Hong Kong, Macau or Taiwan identity card number with options.
+func ParseRegionCardWithOptions(idCard string, opts ...IDCardOption) (RegionCardInfo, bool) {
+	return identityimpl.ParseRegionCardWithOptions(idCard, opts...)
+}
+
 // IsValidTWIDCard reports whether idCard is a valid Taiwan identity card number.
 func IsValidTWIDCard(idCard string) bool { return identityimpl.IsValidTWIDCard(idCard) }
 
+// IsValidTWIDCardWithOptions reports whether idCard is a valid Taiwan identity card number with options.
+func IsValidTWIDCardWithOptions(idCard string, opts ...IDCardOption) bool {
+	return identityimpl.IsValidTWIDCardWithOptions(idCard, opts...)
+}
+
 // IsValidHKIDCard reports whether idCard is a valid Hong Kong identity card number.
 func IsValidHKIDCard(idCard string) bool { return identityimpl.IsValidHKIDCard(idCard) }
+
+// IsValidHKIDCardWithOptions reports whether idCard is a valid Hong Kong identity card number with options.
+func IsValidHKIDCardWithOptions(idCard string, opts ...IDCardOption) bool {
+	return identityimpl.IsValidHKIDCardWithOptions(idCard, opts...)
+}
+
+// WithDigitsMatcher sets the decimal-digits matcher used by mainland ID card helpers.
+func WithDigitsMatcher(matcher func(string) bool) IDCardOption {
+	return identityimpl.WithDigitsMatcher(matcher)
+}
+
+// WithTWCardMatcher sets the format matcher used by Taiwan ID card helpers.
+func WithTWCardMatcher(matcher func(string) bool) IDCardOption {
+	return identityimpl.WithTWCardMatcher(matcher)
+}
+
+// WithMacauCardMatcher sets the format matcher used by Macau ID card helpers.
+func WithMacauCardMatcher(matcher func(string) bool) IDCardOption {
+	return identityimpl.WithMacauCardMatcher(matcher)
+}
+
+// WithHKCardMatcher sets the format matcher used by Hong Kong ID card helpers.
+func WithHKCardMatcher(matcher func(string) bool) IDCardOption {
+	return identityimpl.WithHKCardMatcher(matcher)
+}
 
 // BirthString returns the birthday encoded in idCard as yyyyMMdd.
 func BirthString(idCard string) (string, bool) { return identityimpl.BirthString(idCard) }

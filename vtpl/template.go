@@ -24,6 +24,11 @@ func WithTemplateFactory(factory func(string) *template.Template) RenderOption {
 	return templateimpl.WithTemplateFactory(factory)
 }
 
+// WithTemplateParser sets the parser used after template construction.
+func WithTemplateParser(parser func(*template.Template, string) (*template.Template, error)) RenderOption {
+	return templateimpl.WithTemplateParser(parser)
+}
+
 // WithTemplateExecutor sets the executor used after parsing.
 func WithTemplateExecutor(executor func(*template.Template, io.Writer, any) error) RenderOption {
 	return templateimpl.WithTemplateExecutor(executor)

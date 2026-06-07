@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"fmt"
+	"io/fs"
 	"log"
 	"net"
 	"net/http"
@@ -22,8 +23,57 @@ type SimpleServer struct {
 	asyncRunner    func(func())
 }
 
+type staticConfig struct {
+	fileSystem http.FileSystem
+	fileServer func(http.FileSystem) http.Handler
+	handler    http.Handler
+}
+
 // ServerOption customizes SimpleServer construction.
 type ServerOption func(*http.Server)
+
+// StaticOption customizes SimpleServer static file registration.
+type StaticOption func(*staticConfig)
+
+// WithStaticFileSystem sets the file system used by SetRootWithOptions.
+func WithStaticFileSystem(fileSystem http.FileSystem) StaticOption {
+	return func(c *staticConfig) { c.fileSystem = fileSystem }
+}
+
+// WithStaticFS sets an fs.FS used by SetRootWithOptions.
+func WithStaticFS(fileSystem fs.FS) StaticOption {
+	return func(c *staticConfig) {
+		if fileSystem != nil {
+			c.fileSystem = http.FS(fileSystem)
+		}
+	}
+}
+
+// WithFileServerFactory sets the handler factory used by SetRootWithOptions.
+func WithFileServerFactory(factory func(http.FileSystem) http.Handler) StaticOption {
+	return func(c *staticConfig) { c.fileServer = factory }
+}
+
+// WithStaticHandler sets the static handler directly and takes precedence over file-system options.
+func WithStaticHandler(handler http.Handler) StaticOption {
+	return func(c *staticConfig) { c.handler = handler }
+}
+
+func applyStaticOptions(dir string, opts []StaticOption) staticConfig {
+	cfg := staticConfig{fileSystem: http.Dir(dir), fileServer: http.FileServer}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.fileSystem == nil {
+		cfg.fileSystem = http.Dir(dir)
+	}
+	if cfg.fileServer == nil {
+		cfg.fileServer = http.FileServer
+	}
+	return cfg
+}
 
 // ListenAndServeFunc starts serving with the provided HTTP server.
 type ListenAndServeFunc func(*http.Server) error
@@ -217,7 +267,17 @@ func (s *SimpleServer) AddHandler(path string, handler http.Handler) *SimpleServ
 
 // SetRoot sets the static file root directory.
 func (s *SimpleServer) SetRoot(dir string) *SimpleServer {
-	s.mux.Handle("/", http.FileServer(http.Dir(dir)))
+	return s.SetRootWithOptions(dir)
+}
+
+// SetRootWithOptions sets the static file root directory with options.
+func (s *SimpleServer) SetRootWithOptions(dir string, opts ...StaticOption) *SimpleServer {
+	cfg := applyStaticOptions(dir, opts)
+	handler := cfg.handler
+	if handler == nil {
+		handler = cfg.fileServer(cfg.fileSystem)
+	}
+	s.mux.Handle("/", handler)
 	return s
 }
 

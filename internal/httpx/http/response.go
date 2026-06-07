@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"sync"
 
@@ -392,16 +391,7 @@ func normalizeEncoding(encoding string) string {
 	return strings.ToLower(strings.TrimSpace(encoding))
 }
 
-var charsetRegex = regexp.MustCompile(`(?i)charset\s*=\s*([a-z0-9-]+)`)
-
 // charsetFromContentType extracts the charset from Content-Type.
 func charsetFromContentType(ct string) string {
-	if ct == "" {
-		return ""
-	}
-	m := charsetRegex.FindStringSubmatch(ct)
-	if len(m) < 2 {
-		return ""
-	}
-	return m[1]
+	return shared.GetCharsetFromContentType(ct)
 }

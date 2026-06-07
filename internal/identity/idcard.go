@@ -19,11 +19,41 @@ type birthConfig struct {
 	location *time.Location
 }
 
+type idCardConfig struct {
+	digits func(string) bool
+	tw     func(string) bool
+	macau  func(string) bool
+	hk     func(string) bool
+}
+
 // AgeOption customizes AgeWithOptions.
 type AgeOption func(*ageConfig)
 
 // BirthOption customizes birthday parsing helpers.
 type BirthOption func(*birthConfig)
+
+// IDCardOption customizes identity-card validation helpers per call.
+type IDCardOption func(*idCardConfig)
+
+// WithDigitsMatcher sets the decimal-digits matcher used by mainland ID card helpers.
+func WithDigitsMatcher(matcher func(string) bool) IDCardOption {
+	return func(c *idCardConfig) { c.digits = matcher }
+}
+
+// WithTWCardMatcher sets the format matcher used by Taiwan ID card helpers.
+func WithTWCardMatcher(matcher func(string) bool) IDCardOption {
+	return func(c *idCardConfig) { c.tw = matcher }
+}
+
+// WithMacauCardMatcher sets the format matcher used by Macau ID card helpers.
+func WithMacauCardMatcher(matcher func(string) bool) IDCardOption {
+	return func(c *idCardConfig) { c.macau = matcher }
+}
+
+// WithHKCardMatcher sets the format matcher used by Hong Kong ID card helpers.
+func WithHKCardMatcher(matcher func(string) bool) IDCardOption {
+	return func(c *idCardConfig) { c.hk = matcher }
+}
 
 // WithAgeTime sets the time used by AgeWithOptions.
 func WithAgeTime(at time.Time) AgeOption {
@@ -70,6 +100,33 @@ func applyBirthOptions(opts []BirthOption) birthConfig {
 	}
 	if cfg.location == nil {
 		cfg.location = time.Local
+	}
+	return cfg
+}
+
+func applyIDCardOptions(opts []IDCardOption) idCardConfig {
+	cfg := idCardConfig{
+		digits: rxDigits.MatchString,
+		tw:     rxTWCard.MatchString,
+		macau:  rxMacauID.MatchString,
+		hk:     rxHKIDCard.MatchString,
+	}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.digits == nil {
+		cfg.digits = rxDigits.MatchString
+	}
+	if cfg.tw == nil {
+		cfg.tw = rxTWCard.MatchString
+	}
+	if cfg.macau == nil {
+		cfg.macau = rxMacauID.MatchString
+	}
+	if cfg.hk == nil {
+		cfg.hk = rxHKIDCard.MatchString
 	}
 	return cfg
 }
@@ -180,7 +237,13 @@ type RegionCardInfo struct {
 
 // Convert15To18 converts a 15-digit mainland China identity card number to 18 digits.
 func Convert15To18(idCard string) (string, bool) {
-	if len(idCard) != chinaIDMinLength || !rxDigits.MatchString(idCard) {
+	return Convert15To18WithOptions(idCard)
+}
+
+// Convert15To18WithOptions converts a 15-digit mainland China identity card number to 18 digits with options.
+func Convert15To18WithOptions(idCard string, opts ...IDCardOption) (string, bool) {
+	cfg := applyIDCardOptions(opts)
+	if len(idCard) != chinaIDMinLength || !cfg.digits(idCard) {
 		return "", false
 	}
 	id18 := idCard[:6] + "19" + idCard[6:]
@@ -189,7 +252,12 @@ func Convert15To18(idCard string) (string, bool) {
 
 // Convert18To15 converts a valid 18-digit mainland China identity card number to 15 digits.
 func Convert18To15(idCard string) (string, bool) {
-	if !IsValidIDCard18(idCard) {
+	return Convert18To15WithOptions(idCard)
+}
+
+// Convert18To15WithOptions converts a valid 18-digit mainland China identity card number to 15 digits with options.
+func Convert18To15WithOptions(idCard string, opts ...IDCardOption) (string, bool) {
+	if !IsValidIDCard18WithOptions(idCard, opts...) {
 		return "", false
 	}
 	return idCard[:6] + idCard[8:17], true
@@ -197,16 +265,21 @@ func Convert18To15(idCard string) (string, bool) {
 
 // IsValidIDCard reports whether idCard is a valid 18-digit, 15-digit, or Hong Kong/Macau/Taiwan card number.
 func IsValidIDCard(idCard string) bool {
+	return IsValidIDCardWithOptions(idCard)
+}
+
+// IsValidIDCardWithOptions reports whether idCard is valid with options.
+func IsValidIDCardWithOptions(idCard string, opts ...IDCardOption) bool {
 	if strings.TrimSpace(idCard) == "" {
 		return false
 	}
 	switch len(idCard) {
 	case chinaIDMaxLength:
-		return IsValidIDCard18(idCard)
+		return IsValidIDCard18WithOptions(idCard, opts...)
 	case chinaIDMinLength:
-		return IsValidIDCard15(idCard)
+		return IsValidIDCard15WithOptions(idCard, opts...)
 	case 10:
-		info, ok := ParseRegionCard(idCard)
+		info, ok := ParseRegionCardWithOptions(idCard, opts...)
 		return ok && info.Valid
 	default:
 		return false
@@ -214,10 +287,24 @@ func IsValidIDCard(idCard string) bool {
 }
 
 // IsValidIDCard18 reports whether idCard is a valid 18-digit mainland China identity card number.
-func IsValidIDCard18(idCard string) bool { return IsValidIDCard18WithIgnoreCase(idCard, true) }
+func IsValidIDCard18(idCard string) bool { return IsValidIDCard18WithOptions(idCard) }
+
+// IsValidIDCard18WithOptions reports whether idCard is a valid 18-digit mainland China identity card number with options.
+func IsValidIDCard18WithOptions(idCard string, opts ...IDCardOption) bool {
+	return isValidIDCard18(idCard, true, applyIDCardOptions(opts))
+}
 
 // IsValidIDCard18WithIgnoreCase validates an 18-digit identity card number and controls X/x comparison.
 func IsValidIDCard18WithIgnoreCase(idCard string, ignoreCase bool) bool {
+	return IsValidIDCard18WithIgnoreCaseAndOptions(idCard, ignoreCase)
+}
+
+// IsValidIDCard18WithIgnoreCaseAndOptions validates an 18-digit identity card number with options.
+func IsValidIDCard18WithIgnoreCaseAndOptions(idCard string, ignoreCase bool, opts ...IDCardOption) bool {
+	return isValidIDCard18(idCard, ignoreCase, applyIDCardOptions(opts))
+}
+
+func isValidIDCard18(idCard string, ignoreCase bool, cfg idCardConfig) bool {
 	if len(idCard) != chinaIDMaxLength {
 		return false
 	}
@@ -232,7 +319,7 @@ func IsValidIDCard18WithIgnoreCase(idCard string, ignoreCase bool) bool {
 		return false
 	}
 	code17 := idCard[:17]
-	if !rxDigits.MatchString(code17) {
+	if !cfg.digits(code17) {
 		return false
 	}
 	check := CheckCode18(code17)
@@ -245,7 +332,13 @@ func IsValidIDCard18WithIgnoreCase(idCard string, ignoreCase bool) bool {
 
 // IsValidIDCard15 reports whether idCard is a valid 15-digit mainland China identity card number.
 func IsValidIDCard15(idCard string) bool {
-	if len(idCard) != chinaIDMinLength || !rxDigits.MatchString(idCard) {
+	return IsValidIDCard15WithOptions(idCard)
+}
+
+// IsValidIDCard15WithOptions reports whether idCard is a valid 15-digit mainland China identity card number with options.
+func IsValidIDCard15WithOptions(idCard string, opts ...IDCardOption) bool {
+	cfg := applyIDCardOptions(opts)
+	if len(idCard) != chinaIDMinLength || !cfg.digits(idCard) {
 		return false
 	}
 	if _, ok := cityCodes[idCard[:2]]; !ok {
@@ -256,16 +349,22 @@ func IsValidIDCard15(idCard string) bool {
 
 // ParseRegionCard validates a Hong Kong, Macau or Taiwan identity card number.
 func ParseRegionCard(idCard string) (RegionCardInfo, bool) {
+	return ParseRegionCardWithOptions(idCard)
+}
+
+// ParseRegionCardWithOptions validates a Hong Kong, Macau or Taiwan identity card number with options.
+func ParseRegionCardWithOptions(idCard string, opts ...IDCardOption) (RegionCardInfo, bool) {
 	if strings.TrimSpace(idCard) == "" {
 		return RegionCardInfo{}, false
 	}
+	cfg := applyIDCardOptions(opts)
 	idCard = strings.ReplaceAll(idCard, "（", "(")
 	idCard = strings.ReplaceAll(idCard, "）", ")")
 	card := strings.NewReplacer("(", "", ")", "").Replace(idCard)
 	if len(card) != 8 && len(card) != 9 && len(idCard) != 10 {
 		return RegionCardInfo{}, false
 	}
-	if rxTWCard.MatchString(idCard) {
+	if cfg.tw(idCard) {
 		info := RegionCardInfo{Region: "台湾", Gender: "N"}
 		switch idCard[1] {
 		case '1':
@@ -276,20 +375,29 @@ func ParseRegionCard(idCard string) (RegionCardInfo, bool) {
 			info.Valid = false
 			return info, true
 		}
-		info.Valid = IsValidTWIDCard(idCard)
+		info.Valid = IsValidTWIDCardWithOptions(idCard, opts...)
 		return info, true
 	}
-	if rxMacauID.MatchString(idCard) {
+	if cfg.macau(idCard) {
 		return RegionCardInfo{Region: "澳门", Gender: "N", Valid: true}, true
 	}
-	if rxHKIDCard.MatchString(idCard) {
-		return RegionCardInfo{Region: "香港", Gender: "N", Valid: IsValidHKIDCard(idCard)}, true
+	if cfg.hk(idCard) {
+		return RegionCardInfo{Region: "香港", Gender: "N", Valid: IsValidHKIDCardWithOptions(idCard, opts...)}, true
 	}
 	return RegionCardInfo{}, false
 }
 
 // IsValidTWIDCard reports whether idCard is a valid Taiwan identity card number.
 func IsValidTWIDCard(idCard string) bool {
+	return IsValidTWIDCardWithOptions(idCard)
+}
+
+// IsValidTWIDCardWithOptions reports whether idCard is a valid Taiwan identity card number with options.
+func IsValidTWIDCardWithOptions(idCard string, opts ...IDCardOption) bool {
+	cfg := applyIDCardOptions(opts)
+	if !cfg.tw(idCard) {
+		return false
+	}
 	if len(idCard) != 10 {
 		return false
 	}
@@ -318,7 +426,13 @@ func IsValidTWIDCard(idCard string) bool {
 
 // IsValidHKIDCard reports whether idCard is a valid Hong Kong identity card number.
 func IsValidHKIDCard(idCard string) bool {
-	if !rxHKIDCard.MatchString(idCard) {
+	return IsValidHKIDCardWithOptions(idCard)
+}
+
+// IsValidHKIDCardWithOptions reports whether idCard is a valid Hong Kong identity card number with options.
+func IsValidHKIDCardWithOptions(idCard string, opts ...IDCardOption) bool {
+	cfg := applyIDCardOptions(opts)
+	if !cfg.hk(idCard) {
 		return false
 	}
 	card := strings.NewReplacer("(", "", ")", "").Replace(idCard)

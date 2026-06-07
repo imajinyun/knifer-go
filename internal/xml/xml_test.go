@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"os"
 	"reflect"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -70,6 +71,12 @@ func TestReadVariantsSAXXPathAndFile(t *testing.T) {
 	}
 	if CleanComment("<a><!-- hidden --><b/></a>") != "<a><b/></a>" {
 		t.Fatal("CleanComment failed")
+	}
+	if got := CleanInvalidWithOptions("aXb", WithInvalidRegexp(regexp.MustCompile(`X`))); got != "ab" {
+		t.Fatalf("CleanInvalidWithOptions = %q", got)
+	}
+	if got := CleanCommentWithOptions("<a>[hidden]<b/></a>", WithCommentRegexp(regexp.MustCompile(`\[[^]]+\]`))); got != "<a><b/></a>" {
+		t.Fatalf("CleanCommentWithOptions = %q", got)
 	}
 	if Escape(`<a&"'>`) != "&lt;a&amp;&#34;&#39;&gt;" || Unescape("&lt;a&amp;&gt;") != "<a&>" {
 		t.Fatal("escape/unescape failed")

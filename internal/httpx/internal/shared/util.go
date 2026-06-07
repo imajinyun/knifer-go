@@ -14,6 +14,40 @@ var (
 	MetaCharsetPattern = regexp.MustCompile(`(?i)<meta[^>]*?charset\s*=\s*['"]?([a-z0-9-]+)`)
 )
 
+type charsetConfig struct {
+	charsetRe *regexp.Regexp
+	metaRe    *regexp.Regexp
+}
+
+// CharsetOption customizes charset extraction helpers per call.
+type CharsetOption func(*charsetConfig)
+
+// WithCharsetRegexp sets the regexp used by GetCharsetFromContentTypeWithOptions.
+func WithCharsetRegexp(re *regexp.Regexp) CharsetOption {
+	return func(c *charsetConfig) { c.charsetRe = re }
+}
+
+// WithMetaCharsetRegexp sets the regexp used by GetCharsetFromHTMLWithOptions.
+func WithMetaCharsetRegexp(re *regexp.Regexp) CharsetOption {
+	return func(c *charsetConfig) { c.metaRe = re }
+}
+
+func applyCharsetOptions(opts []CharsetOption) charsetConfig {
+	cfg := charsetConfig{charsetRe: CharsetPattern, metaRe: MetaCharsetPattern}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.charsetRe == nil {
+		cfg.charsetRe = CharsetPattern
+	}
+	if cfg.metaRe == nil {
+		cfg.metaRe = MetaCharsetPattern
+	}
+	return cfg
+}
+
 // BuildBasicAuth builds a Basic Auth string.
 func BuildBasicAuth(user, pass string) string {
 	token := base64.StdEncoding.EncodeToString([]byte(user + ":" + pass))
@@ -22,7 +56,12 @@ func BuildBasicAuth(user, pass string) string {
 
 // GetCharsetFromContentType extracts charset from Content-Type.
 func GetCharsetFromContentType(ct string) string {
-	m := CharsetPattern.FindStringSubmatch(ct)
+	return GetCharsetFromContentTypeWithOptions(ct)
+}
+
+// GetCharsetFromContentTypeWithOptions extracts charset from Content-Type with options.
+func GetCharsetFromContentTypeWithOptions(ct string, opts ...CharsetOption) string {
+	m := applyCharsetOptions(opts).charsetRe.FindStringSubmatch(ct)
 	if len(m) < 2 {
 		return ""
 	}
@@ -31,7 +70,12 @@ func GetCharsetFromContentType(ct string) string {
 
 // GetCharsetFromHTML extracts charset from HTML meta tags.
 func GetCharsetFromHTML(html string) string {
-	m := MetaCharsetPattern.FindStringSubmatch(html)
+	return GetCharsetFromHTMLWithOptions(html)
+}
+
+// GetCharsetFromHTMLWithOptions extracts charset from HTML meta tags with options.
+func GetCharsetFromHTMLWithOptions(html string, opts ...CharsetOption) string {
+	m := applyCharsetOptions(opts).metaRe.FindStringSubmatch(html)
 	if len(m) < 2 {
 		return ""
 	}

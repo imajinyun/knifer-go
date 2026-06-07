@@ -15,6 +15,11 @@ func WithMobileMatcher(matcher func(string) bool) Option {
 	return validatorimpl.WithMobileMatcher(matcher)
 }
 
+// WithIDCardMatcher sets the matcher used by IsIDCardWithOptions.
+func WithIDCardMatcher(matcher func(string) bool) Option {
+	return validatorimpl.WithIDCardMatcher(matcher)
+}
+
 // WithChineseMatcher sets the matcher used by IsChineseWithOptions.
 func WithChineseMatcher(matcher func(string) bool) Option {
 	return validatorimpl.WithChineseMatcher(matcher)
@@ -52,6 +57,11 @@ func IsIPv6(s string) bool { return validatorimpl.IsIPv6(s) }
 
 // IsIDCard reports whether s is a valid identity card number.
 func IsIDCard(s string) bool { return validatorimpl.IsIDCard(s) }
+
+// IsIDCardWithOptions reports whether s is a valid identity card number with options.
+func IsIDCardWithOptions(s string, opts ...Option) bool {
+	return validatorimpl.IsIDCardWithOptions(s, opts...)
+}
 
 // IsChinese reports whether s consists only of Chinese Han characters.
 func IsChinese(s string) bool { return validatorimpl.IsChinese(s) }

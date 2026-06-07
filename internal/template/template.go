@@ -11,6 +11,7 @@ type renderConfig struct {
 	funcMap  template.FuncMap
 	delims   [2]string
 	factory  func(string) *template.Template
+	parser   func(*template.Template, string) (*template.Template, error)
 	executor func(*template.Template, io.Writer, any) error
 }
 
@@ -35,6 +36,11 @@ func WithTemplateFactory(factory func(string) *template.Template) RenderOption {
 	return func(c *renderConfig) { c.factory = factory }
 }
 
+// WithTemplateParser sets the parser used after template construction.
+func WithTemplateParser(parser func(*template.Template, string) (*template.Template, error)) RenderOption {
+	return func(c *renderConfig) { c.parser = parser }
+}
+
 // WithTemplateExecutor sets the executor used after parsing.
 func WithTemplateExecutor(executor func(*template.Template, io.Writer, any) error) RenderOption {
 	return func(c *renderConfig) { c.executor = executor }
@@ -52,6 +58,9 @@ func applyRenderOptions(opts []RenderOption) renderConfig {
 	}
 	if cfg.factory == nil {
 		cfg.factory = template.New
+	}
+	if cfg.parser == nil {
+		cfg.parser = func(t *template.Template, tpl string) (*template.Template, error) { return t.Parse(tpl) }
 	}
 	if cfg.executor == nil {
 		cfg.executor = func(t *template.Template, w io.Writer, data any) error { return t.Execute(w, data) }
@@ -74,7 +83,7 @@ func RenderWithOptions(tpl string, data any, opts ...RenderOption) (string, erro
 	if cfg.delims[0] != "" || cfg.delims[1] != "" {
 		t = t.Delims(cfg.delims[0], cfg.delims[1])
 	}
-	t, err := t.Parse(tpl)
+	t, err := cfg.parser(t, tpl)
 	if err != nil {
 		return "", err
 	}

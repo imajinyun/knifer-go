@@ -1,11 +1,23 @@
 package vset
 
 import (
-	"encoding/json"
 	"fmt"
 
 	setimpl "github.com/imajinyun/go-knifer/internal/sets"
 )
+
+// JSONOption customizes explicit Set JSON helpers per call.
+type JSONOption = setimpl.JSONOption
+
+// WithSetMarshalFunc sets the marshal provider used by MarshalJSONWithOptions.
+func WithSetMarshalFunc(marshal func(any) ([]byte, error)) JSONOption {
+	return setimpl.WithSetMarshalFunc(marshal)
+}
+
+// WithSetUnmarshalFunc sets the unmarshal provider used by UnmarshalJSONWithOptions.
+func WithSetUnmarshalFunc(unmarshal func([]byte, any) error) JSONOption {
+	return setimpl.WithSetUnmarshalFunc(unmarshal)
+}
 
 // Set is a generic set for comparable values.
 type Set[T comparable] setimpl.Set[T]
@@ -89,15 +101,25 @@ func (s Set[T]) Equal(other Set[T]) bool { return setimpl.Set[T](s).Equal(setimp
 func (s Set[T]) String() string { return fmt.Sprintf("set%v", s.Members()) }
 
 // MarshalJSON encodes the set as a JSON array.
-func (s Set[T]) MarshalJSON() ([]byte, error) { return json.Marshal(s.Members()) }
+func (s Set[T]) MarshalJSON() ([]byte, error) { return s.MarshalJSONWithOptions() }
+
+// MarshalJSONWithOptions encodes the set as a JSON array with options.
+func (s Set[T]) MarshalJSONWithOptions(opts ...JSONOption) ([]byte, error) {
+	return setimpl.Set[T](s).MarshalJSONWithOptions(opts...)
+}
 
 // UnmarshalJSON decodes a JSON array into the set.
 func (s *Set[T]) UnmarshalJSON(data []byte) error {
-	var list []T
-	if err := json.Unmarshal(data, &list); err != nil {
+	return s.UnmarshalJSONWithOptions(data)
+}
+
+// UnmarshalJSONWithOptions decodes a JSON array into the set with options.
+func (s *Set[T]) UnmarshalJSONWithOptions(data []byte, opts ...JSONOption) error {
+	inner := setimpl.Set[T](*s)
+	if err := (&inner).UnmarshalJSONWithOptions(data, opts...); err != nil {
 		return err
 	}
-	*s = New(list...)
+	*s = Set[T](inner)
 	return nil
 }
 

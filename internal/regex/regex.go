@@ -118,10 +118,20 @@ func ReReplaceWithOptions(pattern, s, replacement string, opts ...Option) string
 }
 
 // GetGroup0 returns the full text of the first match.
-func GetGroup0(pattern, content string) string { return Get(pattern, content, 0) }
+func GetGroup0(pattern, content string) string { return GetGroup0WithOptions(pattern, content) }
+
+// GetGroup0WithOptions returns the full text of the first match with options.
+func GetGroup0WithOptions(pattern, content string, opts ...Option) string {
+	return GetWithOptions(pattern, content, 0, opts...)
+}
 
 // GetGroup1 returns the first capture group of the first match.
-func GetGroup1(pattern, content string) string { return Get(pattern, content, 1) }
+func GetGroup1(pattern, content string) string { return GetGroup1WithOptions(pattern, content) }
+
+// GetGroup1WithOptions returns the first capture group of the first match with options.
+func GetGroup1WithOptions(pattern, content string, opts ...Option) string {
+	return GetWithOptions(pattern, content, 1, opts...)
+}
 
 // Get returns a capture group from the first match. Missing matches or invalid patterns return an empty string.
 func Get(pattern, content string, groupIndex int) string {
@@ -139,7 +149,12 @@ func GetWithOptions(pattern, content string, groupIndex int, opts ...Option) str
 
 // GetOK returns a capture group from the first match and reports whether it exists.
 func GetOK(pattern, content string, groupIndex int) (string, bool) {
-	re, err := compile(pattern)
+	return GetOKWithOptions(pattern, content, groupIndex)
+}
+
+// GetOKWithOptions returns a capture group from the first match with options and reports whether it exists.
+func GetOKWithOptions(pattern, content string, groupIndex int, opts ...Option) (string, bool) {
+	re, err := compile(pattern, opts...)
 	if err != nil {
 		return "", false
 	}
@@ -148,7 +163,12 @@ func GetOK(pattern, content string, groupIndex int) (string, bool) {
 
 // GetByName returns a named capture group from the first match.
 func GetByName(pattern, content, groupName string) string {
-	re, err := compile(pattern)
+	return GetByNameWithOptions(pattern, content, groupName)
+}
+
+// GetByNameWithOptions returns a named capture group from the first match with options.
+func GetByNameWithOptions(pattern, content, groupName string, opts ...Option) string {
+	re, err := compile(pattern, opts...)
 	if err != nil {
 		return ""
 	}
@@ -202,7 +222,12 @@ func First(re *regexp.Regexp, content string, consumer func(MatchResult)) {
 
 // GetAllGroups returns capture groups from matches. Group 0 is included when withGroup0 is true.
 func GetAllGroups(pattern, content string, withGroup0 bool, findAll bool) []string {
-	re, err := compile(pattern)
+	return GetAllGroupsWithOptions(pattern, content, withGroup0, findAll)
+}
+
+// GetAllGroupsWithOptions returns capture groups from matches with options.
+func GetAllGroupsWithOptions(pattern, content string, withGroup0 bool, findAll bool, opts ...Option) []string {
+	re, err := compile(pattern, opts...)
 	if err != nil {
 		return nil
 	}
@@ -230,7 +255,12 @@ func GetAllGroupsRe(re *regexp.Regexp, content string, withGroup0 bool, findAll 
 
 // GetAllGroupNames returns named capture groups from the first match.
 func GetAllGroupNames(pattern, content string) map[string]string {
-	re, err := compile(pattern)
+	return GetAllGroupNamesWithOptions(pattern, content)
+}
+
+// GetAllGroupNamesWithOptions returns named capture groups from the first match with options.
+func GetAllGroupNamesWithOptions(pattern, content string, opts ...Option) map[string]string {
+	re, err := compile(pattern, opts...)
 	if err != nil {
 		return nil
 	}
@@ -257,7 +287,12 @@ func GetAllGroupNamesRe(re *regexp.Regexp, content string) map[string]string {
 
 // ExtractMulti builds a string from the first match using $1, $2, ... placeholders.
 func ExtractMulti(pattern, content, template string) string {
-	re, err := compile(pattern)
+	return ExtractMultiWithOptions(pattern, content, template)
+}
+
+// ExtractMultiWithOptions builds a string from the first match using $1, $2, ... placeholders with options.
+func ExtractMultiWithOptions(pattern, content, template string, opts ...Option) string {
+	re, err := compile(pattern, opts...)
 	if err != nil {
 		return ""
 	}
@@ -278,7 +313,17 @@ func ExtractMultiRe(re *regexp.Regexp, content, template string) string {
 
 // ExtractMultiAndDelPre extracts with a template and removes the consumed prefix from contentHolder.
 func ExtractMultiAndDelPre(pattern string, contentHolder *string, template string) string {
-	re, err := compile(pattern)
+	return ExtractMultiAndDelPreWithOptions(pattern, contentHolder, template)
+}
+
+// ExtractMultiAndDelPreWithOptions extracts with a template and removes the consumed prefix with options.
+func ExtractMultiAndDelPreWithOptions(
+	pattern string,
+	contentHolder *string,
+	template string,
+	opts ...Option,
+) string {
+	re, err := compile(pattern, opts...)
 	if err != nil {
 		return ""
 	}
@@ -301,7 +346,12 @@ func ExtractMultiAndDelPreRe(re *regexp.Regexp, contentHolder *string, template 
 
 // DelFirst deletes the first match.
 func DelFirst(pattern, content string) string {
-	re, err := compile(pattern)
+	return DelFirstWithOptions(pattern, content)
+}
+
+// DelFirstWithOptions deletes the first match with options.
+func DelFirstWithOptions(pattern, content string, opts ...Option) string {
+	re, err := compile(pattern, opts...)
 	if err != nil {
 		return content
 	}
@@ -313,7 +363,12 @@ func DelFirstRe(re *regexp.Regexp, content string) string { return ReplaceFirstR
 
 // ReplaceFirst replaces the first match.
 func ReplaceFirst(pattern, content, replacement string) string {
-	re, err := compile(pattern)
+	return ReplaceFirstWithOptions(pattern, content, replacement)
+}
+
+// ReplaceFirstWithOptions replaces the first match with options.
+func ReplaceFirstWithOptions(pattern, content, replacement string, opts ...Option) string {
+	re, err := compile(pattern, opts...)
 	if err != nil {
 		return content
 	}
@@ -335,7 +390,12 @@ func ReplaceFirstRe(re *regexp.Regexp, content, replacement string) string {
 
 // DelLast deletes the last match.
 func DelLast(pattern, content string) string {
-	re, err := compile(pattern)
+	return DelLastWithOptions(pattern, content)
+}
+
+// DelLastWithOptions deletes the last match with options.
+func DelLastWithOptions(pattern, content string, opts ...Option) string {
+	re, err := compile(pattern, opts...)
 	if err != nil {
 		return content
 	}
@@ -352,7 +412,12 @@ func DelLastRe(re *regexp.Regexp, content string) string {
 }
 
 // DelAll deletes every match.
-func DelAll(pattern, content string) string { return ReReplace(pattern, content, "") }
+func DelAll(pattern, content string) string { return DelAllWithOptions(pattern, content) }
+
+// DelAllWithOptions deletes every match with options.
+func DelAllWithOptions(pattern, content string, opts ...Option) string {
+	return ReReplaceWithOptions(pattern, content, "", opts...)
+}
 
 // DelAllRe deletes every match of a compiled expression.
 func DelAllRe(re *regexp.Regexp, content string) string {
@@ -364,7 +429,12 @@ func DelAllRe(re *regexp.Regexp, content string) string {
 
 // DelPre deletes everything through the first match. If no match exists, content is returned unchanged.
 func DelPre(pattern, content string) string {
-	re, err := compile(pattern)
+	return DelPreWithOptions(pattern, content)
+}
+
+// DelPreWithOptions deletes everything through the first match with options.
+func DelPreWithOptions(pattern, content string, opts ...Option) string {
+	re, err := compile(pattern, opts...)
 	if err != nil {
 		return content
 	}
@@ -381,14 +451,33 @@ func DelPreRe(re *regexp.Regexp, content string) string {
 }
 
 // FindAllGroup0 returns all full-match strings.
-func FindAllGroup0(pattern, content string) []string { return FindAll(pattern, content, 0) }
+func FindAllGroup0(pattern, content string) []string {
+	return FindAllGroup0WithOptions(pattern, content)
+}
+
+// FindAllGroup0WithOptions returns all full-match strings with options.
+func FindAllGroup0WithOptions(pattern, content string, opts ...Option) []string {
+	return FindAllWithOptions(pattern, content, 0, opts...)
+}
 
 // FindAllGroup1 returns all first capture groups.
-func FindAllGroup1(pattern, content string) []string { return FindAll(pattern, content, 1) }
+func FindAllGroup1(pattern, content string) []string {
+	return FindAllGroup1WithOptions(pattern, content)
+}
+
+// FindAllGroup1WithOptions returns all first capture groups with options.
+func FindAllGroup1WithOptions(pattern, content string, opts ...Option) []string {
+	return FindAllWithOptions(pattern, content, 1, opts...)
+}
 
 // FindAll returns all values for a capture group.
 func FindAll(pattern, content string, group int) []string {
-	re, err := compile(pattern)
+	return FindAllWithOptions(pattern, content, group)
+}
+
+// FindAllWithOptions returns all values for a capture group with options.
+func FindAllWithOptions(pattern, content string, group int, opts ...Option) []string {
+	re, err := compile(pattern, opts...)
 	if err != nil {
 		return nil
 	}
@@ -422,7 +511,12 @@ func Each(re *regexp.Regexp, content string, consumer func(MatchResult)) {
 
 // Count returns the number of matches.
 func Count(pattern, content string) int {
-	re, err := compile(pattern)
+	return CountWithOptions(pattern, content)
+}
+
+// CountWithOptions returns the number of matches with options.
+func CountWithOptions(pattern, content string, opts ...Option) int {
+	re, err := compile(pattern, opts...)
 	if err != nil {
 		return 0
 	}
@@ -450,7 +544,12 @@ func ContainsRe(re *regexp.Regexp, content string) bool { return re != nil && re
 
 // IndexOf returns the first match result.
 func IndexOf(pattern, content string) *MatchResult {
-	re, err := compile(pattern)
+	return IndexOfWithOptions(pattern, content)
+}
+
+// IndexOfWithOptions returns the first match result with options.
+func IndexOfWithOptions(pattern, content string, opts ...Option) *MatchResult {
+	re, err := compile(pattern, opts...)
 	if err != nil {
 		return nil
 	}
@@ -472,7 +571,12 @@ func IndexOfRe(re *regexp.Regexp, content string) *MatchResult {
 
 // LastIndexOf returns the last match result.
 func LastIndexOf(pattern, content string) *MatchResult {
-	re, err := compile(pattern)
+	return LastIndexOfWithOptions(pattern, content)
+}
+
+// LastIndexOfWithOptions returns the last match result with options.
+func LastIndexOfWithOptions(pattern, content string, opts ...Option) *MatchResult {
+	re, err := compile(pattern, opts...)
 	if err != nil {
 		return nil
 	}

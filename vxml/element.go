@@ -2,9 +2,16 @@ package vxml
 
 import (
 	stdxml "encoding/xml"
+	"regexp"
 
 	xmlimpl "github.com/imajinyun/go-knifer/internal/xml"
 )
+
+// WithInvalidRegexp sets the regexp used by CleanInvalidWithOptions.
+func WithInvalidRegexp(re *regexp.Regexp) CleanOption { return xmlimpl.WithInvalidRegexp(re) }
+
+// WithCommentRegexp sets the regexp used by CleanCommentWithOptions.
+func WithCommentRegexp(re *regexp.Regexp) CleanOption { return xmlimpl.WithCommentRegexp(re) }
 
 // CreateXML creates an empty XML document.
 func CreateXML() *Document { return xmlimpl.CreateXML() }
@@ -28,8 +35,18 @@ func GetOwnerDocument(node *Element) *Document { return xmlimpl.GetOwnerDocument
 // CleanInvalid removes XML 1.0 invalid control characters.
 func CleanInvalid(xmlContent string) string { return xmlimpl.CleanInvalid(xmlContent) }
 
+// CleanInvalidWithOptions removes XML 1.0 invalid control characters with options.
+func CleanInvalidWithOptions(xmlContent string, opts ...CleanOption) string {
+	return xmlimpl.CleanInvalidWithOptions(xmlContent, opts...)
+}
+
 // CleanComment removes XML comments.
 func CleanComment(xmlContent string) string { return xmlimpl.CleanComment(xmlContent) }
+
+// CleanCommentWithOptions removes XML comments with options.
+func CleanCommentWithOptions(xmlContent string, opts ...CleanOption) string {
+	return xmlimpl.CleanCommentWithOptions(xmlContent, opts...)
+}
 
 // GetElements returns child elements with tag name. Empty tagName returns all direct children.
 func GetElements(element *Element, tagName string) []*Element {

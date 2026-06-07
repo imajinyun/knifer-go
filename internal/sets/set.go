@@ -5,6 +5,40 @@ import (
 	"fmt"
 )
 
+type jsonConfig struct {
+	marshal   func(any) ([]byte, error)
+	unmarshal func([]byte, any) error
+}
+
+// JSONOption customizes explicit Set JSON helpers per call.
+type JSONOption func(*jsonConfig)
+
+// WithSetMarshalFunc sets the marshal provider used by MarshalJSONWithOptions.
+func WithSetMarshalFunc(marshal func(any) ([]byte, error)) JSONOption {
+	return func(c *jsonConfig) { c.marshal = marshal }
+}
+
+// WithSetUnmarshalFunc sets the unmarshal provider used by UnmarshalJSONWithOptions.
+func WithSetUnmarshalFunc(unmarshal func([]byte, any) error) JSONOption {
+	return func(c *jsonConfig) { c.unmarshal = unmarshal }
+}
+
+func applyJSONOptions(opts []JSONOption) jsonConfig {
+	cfg := jsonConfig{marshal: json.Marshal, unmarshal: json.Unmarshal}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.marshal == nil {
+		cfg.marshal = json.Marshal
+	}
+	if cfg.unmarshal == nil {
+		cfg.unmarshal = json.Unmarshal
+	}
+	return cfg
+}
+
 // Set is a generic hash set for comparable values.
 type Set[T comparable] map[T]struct{}
 
@@ -98,12 +132,22 @@ func (s Set[T]) Equal(other Set[T]) bool {
 func (s Set[T]) String() string { return fmt.Sprintf("set%v", s.Members()) }
 
 // MarshalJSON encodes the set as a JSON array.
-func (s Set[T]) MarshalJSON() ([]byte, error) { return json.Marshal(s.Members()) }
+func (s Set[T]) MarshalJSON() ([]byte, error) { return s.MarshalJSONWithOptions() }
+
+// MarshalJSONWithOptions encodes the set as a JSON array with options.
+func (s Set[T]) MarshalJSONWithOptions(opts ...JSONOption) ([]byte, error) {
+	return applyJSONOptions(opts).marshal(s.Members())
+}
 
 // UnmarshalJSON decodes a JSON array into the set.
 func (s *Set[T]) UnmarshalJSON(data []byte) error {
+	return s.UnmarshalJSONWithOptions(data)
+}
+
+// UnmarshalJSONWithOptions decodes a JSON array into the set with options.
+func (s *Set[T]) UnmarshalJSONWithOptions(data []byte, opts ...JSONOption) error {
 	var list []T
-	if err := json.Unmarshal(data, &list); err != nil {
+	if err := applyJSONOptions(opts).unmarshal(data, &list); err != nil {
 		return err
 	}
 	*s = New(list...)

@@ -26,6 +26,9 @@ type FormatOption = jsonx.FormatOption
 // ParseOption customizes JSON parsing helpers.
 type ParseOption = jsonx.ParseOption
 
+// ValidOption customizes JSON validity helpers.
+type ValidOption = jsonx.ValidOption
+
 // Error is the JSON module error type.
 type Error = jsonx.JSONError
 
@@ -89,6 +92,9 @@ func WithParseConfig(cfg *Config) ParseOption { return jsonx.WithParseConfig(cfg
 func WithParseUnmarshalFunc(unmarshal func([]byte, any) error) ParseOption {
 	return jsonx.WithParseUnmarshalFunc(unmarshal)
 }
+
+// WithJSONValidFunc sets the validator used by IsJSONWithOptions.
+func WithJSONValidFunc(valid func([]byte) bool) ValidOption { return jsonx.WithJSONValidFunc(valid) }
 
 // WithBeanConfig sets the JSON config used by bean conversion helpers.
 func WithBeanConfig(cfg *Config) BeanOption { return jsonx.WithBeanConfig(cfg) }
@@ -157,11 +163,26 @@ func FormatWithOptions(raw string, opts ...FormatOption) string {
 // IsJSON reports whether s is valid JSON.
 func IsJSON(s string) bool { return jsonx.IsJSON(s) }
 
+// IsJSONWithOptions reports whether s is valid JSON with options.
+func IsJSONWithOptions(s string, opts ...ValidOption) bool {
+	return jsonx.IsJSONWithOptions(s, opts...)
+}
+
 // IsObj reports whether s is a JSON object.
 func IsObj(s string) bool { return jsonx.IsJSONObj(s) }
 
+// IsObjWithOptions reports whether s is a JSON object with options.
+func IsObjWithOptions(s string, opts ...ValidOption) bool {
+	return jsonx.IsJSONObjWithOptions(s, opts...)
+}
+
 // IsArray reports whether s is a JSON array.
 func IsArray(s string) bool { return jsonx.IsJSONArray(s) }
+
+// IsArrayWithOptions reports whether s is a JSON array with options.
+func IsArrayWithOptions(s string, opts ...ValidOption) bool {
+	return jsonx.IsJSONArrayWithOptions(s, opts...)
+}
 
 // GetByPath gets a value by path expression.
 func GetByPath(root any, path string) any { return jsonx.GetByPath(root, path) }

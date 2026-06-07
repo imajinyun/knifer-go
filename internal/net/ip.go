@@ -11,6 +11,31 @@ import (
 	"strings"
 )
 
+type wildcardConfig struct {
+	compile func(string) (*regexp.Regexp, error)
+}
+
+// WildcardOption customizes wildcard IP matching per call.
+type WildcardOption func(*wildcardConfig)
+
+// WithWildcardCompileFunc sets the compiler used by MatchesWildcardWithOptions.
+func WithWildcardCompileFunc(compile func(string) (*regexp.Regexp, error)) WildcardOption {
+	return func(c *wildcardConfig) { c.compile = compile }
+}
+
+func applyWildcardOptions(opts []WildcardOption) wildcardConfig {
+	cfg := wildcardConfig{compile: regexp.Compile}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.compile == nil {
+		cfg.compile = regexp.Compile
+	}
+	return cfg
+}
+
 const (
 	// LocalIP is the IPv4 loopback address.
 	LocalIP = "127.0.0.1"
@@ -278,9 +303,15 @@ func ListIPRange(fromIP, toIP string) ([]string, error) {
 
 // MatchesWildcard reports whether ipAddress matches a wildcard such as 192.168.*.*.
 func MatchesWildcard(wildcard, ipAddress string) bool {
+	return MatchesWildcardWithOptions(wildcard, ipAddress)
+}
+
+// MatchesWildcardWithOptions reports whether ipAddress matches a wildcard with options.
+func MatchesWildcardWithOptions(wildcard, ipAddress string, opts ...WildcardOption) bool {
 	if !IsIPv4(ipAddress) {
 		return false
 	}
+	cfg := applyWildcardOptions(opts)
 	parts := strings.Split(wildcard, ".")
 	if len(parts) != 4 {
 		return false
@@ -295,7 +326,10 @@ func MatchesWildcard(wildcard, ipAddress string) bool {
 		}
 		parts[i] = regexp.QuoteMeta(p)
 	}
-	re := regexp.MustCompile(`^` + strings.Join(parts, `\.`) + `$`)
+	re, err := cfg.compile(`^` + strings.Join(parts, `\.`) + `$`)
+	if err != nil {
+		return false
+	}
 	return re.MatchString(ipAddress)
 }
 

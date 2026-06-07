@@ -15,6 +15,10 @@ type parseConfig struct {
 	unmarshalFunc func([]byte, any) error
 }
 
+type validConfig struct {
+	valid func([]byte) bool
+}
+
 // BeanOption customizes ToBeanWithOptions and ToListWithOptions.
 type BeanOption func(*beanConfig)
 
@@ -28,6 +32,18 @@ type EncodeOption func(*encodeConfig)
 
 // ParseOption customizes JSON parsing helpers.
 type ParseOption func(*parseConfig)
+
+// ValidOption customizes JSON validity helpers.
+type ValidOption func(*validConfig)
+
+// WithJSONValidFunc sets the validator used by IsJSONWithOptions.
+func WithJSONValidFunc(valid func([]byte) bool) ValidOption {
+	return func(c *validConfig) {
+		if valid != nil {
+			c.valid = valid
+		}
+	}
+}
 
 func defaultEncodeConfig(indent int) encodeConfig {
 	return encodeConfig{cfg: NewConfig(), indent: indent}
@@ -147,6 +163,19 @@ func applyBeanOptions(opts []BeanOption) beanConfig {
 	return cfg
 }
 
+func applyValidOptions(opts []ValidOption) validConfig {
+	cfg := validConfig{valid: json.Valid}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	if cfg.valid == nil {
+		cfg.valid = json.Valid
+	}
+	return cfg
+}
+
 // Parse 自动判断 JSON 类型：对象/数组/基础值。
 func Parse(src any) (any, error) { return ParseWithConfig(src, nil) }
 
@@ -262,29 +291,44 @@ func ToJSONPrettyStrWithConfig(v any, cfg *Config) (string, error) {
 
 // IsJSON 检查字符串是否合法 JSON。
 func IsJSON(s string) bool {
+	return IsJSONWithOptions(s)
+}
+
+// IsJSONWithOptions checks whether a string is valid JSON with options.
+func IsJSONWithOptions(s string, opts ...ValidOption) bool {
 	s = strings.TrimSpace(s)
 	if s == "" {
 		return false
 	}
-	return json.Valid([]byte(s))
+	return applyValidOptions(opts).valid([]byte(s))
 }
 
 // IsJSONObj 检查字符串是否是 JSON 对象。
 func IsJSONObj(s string) bool {
+	return IsJSONObjWithOptions(s)
+}
+
+// IsJSONObjWithOptions checks whether a string is a JSON object with options.
+func IsJSONObjWithOptions(s string, opts ...ValidOption) bool {
 	s = strings.TrimSpace(s)
 	if !strings.HasPrefix(s, "{") || !strings.HasSuffix(s, "}") {
 		return false
 	}
-	return IsJSON(s)
+	return IsJSONWithOptions(s, opts...)
 }
 
 // IsJSONArray 检查字符串是否是 JSON 数组。
 func IsJSONArray(s string) bool {
+	return IsJSONArrayWithOptions(s)
+}
+
+// IsJSONArrayWithOptions checks whether a string is a JSON array with options.
+func IsJSONArrayWithOptions(s string, opts ...ValidOption) bool {
 	s = strings.TrimSpace(s)
 	if !strings.HasPrefix(s, "[") || !strings.HasSuffix(s, "]") {
 		return false
 	}
-	return IsJSON(s)
+	return IsJSONWithOptions(s, opts...)
 }
 
 // GetByPath 顶层路径查询。

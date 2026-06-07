@@ -21,6 +21,11 @@ func ReplaceFirst(pattern, content, replacement string) string {
 	return regeximpl.ReplaceFirst(pattern, content, replacement)
 }
 
+// ReplaceFirstWithOptions replaces the first match with options.
+func ReplaceFirstWithOptions(pattern, content, replacement string, opts ...Option) string {
+	return regeximpl.ReplaceFirstWithOptions(pattern, content, replacement, opts...)
+}
+
 // ReplaceFirstRe replaces the first match of a compiled expression.
 func ReplaceFirstRe(re *regexp.Regexp, content, replacement string) string {
 	return regeximpl.ReplaceFirstRe(re, content, replacement)

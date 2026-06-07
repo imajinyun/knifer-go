@@ -2,6 +2,7 @@ package vhttp
 
 import (
 	"context"
+	"io/fs"
 	"log"
 	"net"
 	"net/http"
@@ -57,6 +58,22 @@ func WithConnContext(connContext func(context.Context, net.Conn) context.Context
 
 // WithHTTPServer copies supported settings from server into the created SimpleServer.
 func WithHTTPServer(server *http.Server) ServerOption { return httpx.WithHTTPServer(server) }
+
+// WithStaticFileSystem sets the file system used by SetRootWithOptions.
+func WithStaticFileSystem(fileSystem http.FileSystem) StaticOption {
+	return httpx.WithStaticFileSystem(fileSystem)
+}
+
+// WithStaticFS sets an fs.FS used by SetRootWithOptions.
+func WithStaticFS(fileSystem fs.FS) StaticOption { return httpx.WithStaticFS(fileSystem) }
+
+// WithFileServerFactory sets the handler factory used by SetRootWithOptions.
+func WithFileServerFactory(factory func(http.FileSystem) http.Handler) StaticOption {
+	return httpx.WithFileServerFactory(factory)
+}
+
+// WithStaticHandler sets the static handler directly and takes precedence over file-system options.
+func WithStaticHandler(handler http.Handler) StaticOption { return httpx.WithStaticHandler(handler) }
 
 // WithListenAndServeFunc sets the function used to start serving.
 func WithListenAndServeFunc(listenAndServe ListenAndServeFunc) ServerOption {

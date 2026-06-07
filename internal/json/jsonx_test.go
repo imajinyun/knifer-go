@@ -74,6 +74,23 @@ func TestFormatJSONStr(t *testing.T) {
 	}
 }
 
+func TestIsJSONWithOptions(t *testing.T) {
+	called := false
+	valid := func(data []byte) bool {
+		called = true
+		return string(data) == "custom"
+	}
+	if !IsJSONWithOptions("custom", WithJSONValidFunc(valid)) || !called {
+		t.Fatalf("IsJSONWithOptions called=%v", called)
+	}
+	if !IsJSONObjWithOptions("{custom}", WithJSONValidFunc(func([]byte) bool { return true })) {
+		t.Fatal("IsJSONObjWithOptions should use custom validator")
+	}
+	if !IsJSONArrayWithOptions("[custom]", WithJSONValidFunc(func([]byte) bool { return true })) {
+		t.Fatal("IsJSONArrayWithOptions should use custom validator")
+	}
+}
+
 func TestNullHandling(t *testing.T) {
 	obj := NewJSONObject().Set("a", nil)
 	if !obj.IsNull("a") {

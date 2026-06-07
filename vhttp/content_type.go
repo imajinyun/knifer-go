@@ -1,6 +1,18 @@
 package vhttp
 
-import httpx "github.com/imajinyun/go-knifer/internal/httpx/http"
+import (
+	"regexp"
+
+	httpx "github.com/imajinyun/go-knifer/internal/httpx/http"
+)
+
+type CharsetOption = httpx.CharsetOption
+
+// WithCharsetRegexp sets the regexp used by GetCharsetFromContentTypeWithOptions.
+func WithCharsetRegexp(re *regexp.Regexp) CharsetOption { return httpx.WithCharsetRegexp(re) }
+
+// WithMetaCharsetRegexp sets the regexp used by GetCharsetFromHTMLWithOptions.
+func WithMetaCharsetRegexp(re *regexp.Regexp) CharsetOption { return httpx.WithMetaCharsetRegexp(re) }
 
 // BuildContentType delegates to the internal httpx implementation.
 func BuildContentType(contentType, charset string) string {
@@ -27,9 +39,19 @@ func GetCharsetFromContentType(ct string) string {
 	return httpx.GetCharsetFromContentType(ct)
 }
 
+// GetCharsetFromContentTypeWithOptions delegates to the internal httpx implementation.
+func GetCharsetFromContentTypeWithOptions(ct string, opts ...CharsetOption) string {
+	return httpx.GetCharsetFromContentTypeWithOptions(ct, opts...)
+}
+
 // GetCharsetFromHTML delegates to the internal httpx implementation.
 func GetCharsetFromHTML(html string) string {
 	return httpx.GetCharsetFromHTML(html)
+}
+
+// GetCharsetFromHTMLWithOptions delegates to the internal httpx implementation.
+func GetCharsetFromHTMLWithOptions(html string, opts ...CharsetOption) string {
+	return httpx.GetCharsetFromHTMLWithOptions(html, opts...)
 }
 
 // GetMimeType delegates to the internal httpx implementation.

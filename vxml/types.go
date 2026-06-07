@@ -24,6 +24,7 @@ type (
 	NamespaceCache  = xmlimpl.NamespaceCache
 	ParseOption     = xmlimpl.ParseOption
 	WriteOption     = xmlimpl.WriteOption
+	CleanOption     = xmlimpl.CleanOption
 	BeanOption      = xmlimpl.BeanOption
 	TransformOption = xmlimpl.TransformOption
 	FormatOption    = xmlimpl.FormatOption

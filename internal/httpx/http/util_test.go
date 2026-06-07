@@ -1,6 +1,7 @@
 package http
 
 import (
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -100,6 +101,12 @@ func TestGetCharset(t *testing.T) {
 	}
 	if got := GetCharsetFromHTML(`<meta charset = "utf-8"`); got != "utf-8" {
 		t.Fatalf("html charset4: %q", got)
+	}
+	if got := GetCharsetFromContentTypeWithOptions("encoding=UTF-16", WithCharsetRegexp(regexp.MustCompile(`encoding=([^;]+)`))); got != "UTF-16" {
+		t.Fatalf("charset with options: %q", got)
+	}
+	if got := GetCharsetFromHTMLWithOptions(`<html data-charset="gbk">`, WithMetaCharsetRegexp(regexp.MustCompile(`data-charset="([^"]+)"`))); got != "gbk" {
+		t.Fatalf("html charset with options: %q", got)
 	}
 }
 

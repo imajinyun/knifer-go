@@ -2,9 +2,16 @@ package vnet
 
 import (
 	"math/big"
+	"regexp"
 
 	netimpl "github.com/imajinyun/go-knifer/internal/net"
 )
+
+type WildcardOption = netimpl.WildcardOption
+
+func WithWildcardCompileFunc(compile func(string) (*regexp.Regexp, error)) WildcardOption {
+	return netimpl.WithWildcardCompileFunc(compile)
+}
 
 func LongToIPv4(longIP uint32) string { return netimpl.LongToIPv4(longIP) }
 
@@ -64,6 +71,10 @@ func ListIPRange(fromIP, toIP string) ([]string, error) { return netimpl.ListIPR
 
 func MatchesWildcard(wildcard, ipAddress string) bool {
 	return netimpl.MatchesWildcard(wildcard, ipAddress)
+}
+
+func MatchesWildcardWithOptions(wildcard, ipAddress string, opts ...WildcardOption) bool {
+	return netimpl.MatchesWildcardWithOptions(wildcard, ipAddress, opts...)
 }
 
 func IsInRange(ip, cidr string) bool { return netimpl.IsInRange(ip, cidr) }
