@@ -97,20 +97,20 @@ The project follows an “internal implementation + public facade” layout: `in
 | `vregex` | `github.com/imajinyun/go-knifer/vregex` | Regular-expression helpers: matching, group extraction, named groups, deletion, counting, index lookup, template/function replacement, escaping, and per-call compiler / DOTALL options. |
 | `vbool` | `github.com/imajinyun/go-knifer/vbool` | Boolean helpers: negate, bool-to-int, all/any checks. |
 | `vblf` | `github.com/imajinyun/go-knifer/vblf` | Bloom filters: bitmap/bitset/filter abstractions, multiple string hash algorithms, option-based constructors, and provider-backed file initialization. |
-| `vcache` | `github.com/imajinyun/go-knifer/vcache` | Generic caches: FIFO, LFU, LRU, Timed, Weak, and NoCache; supports TTL, clocks, removal listeners, lazy loading, ticker/runner providers, and weak-cache finalizer providers. |
+| `vcache` | `github.com/imajinyun/go-knifer/vcache` | Generic caches: FIFO, LFU, LRU, Timed, Weak, and NoCache; supports TTL, clocks, removal listeners, lazy loading, ticker/runner providers, and weak-cache finalizer providers. Removal listeners run outside cache locks, so callbacks can safely re-enter the same cache. |
 | `vcaptcha` | `github.com/imajinyun/go-knifer/vcaptcha` | Image captcha generation: line, circle, shear, and GIF captchas, with random and math-expression generators. |
-| `vcron` | `github.com/imajinyun/go-knifer/vcron` | Cron expression parsing and task scheduling, including default/custom schedulers, configurable cron options, ID random-reader/clock/sleeper/runner providers, and isolated per-call default scheduler overrides. |
+| `vcron` | `github.com/imajinyun/go-knifer/vcron` | Cron expression parsing and task scheduling, including default/custom schedulers, configurable cron options, ID random-reader/clock/sleeper/runner providers, isolated per-call default scheduler overrides, running-task metrics, `Wait`, and graceful `Shutdown(ctx)`. |
 | `vcrypto` | `github.com/imajinyun/go-knifer/vcrypto` | Cryptography and digests: MD5/SHA, provider-backed digest helpers, HMAC, PBKDF2, parameter signing, random bytes, AES CBC/ECB/CTR/CFB/OFB/GCM with block-factory options, DES/3DES, RC4, Vigenere, XXTEA, RSA OAEP/PKCS#1/PSS plus configurable data-signing options, PEM, and X.509 certificate helpers. |
 | `vdb` | `github.com/imajinyun/go-knifer/vdb` | Database helpers built on database/sql: SQL execution, named parameters, entities, conditions, query builders, transactions, pagination, lightweight metadata lookup, and injectable `sql.Open` providers. |
 | `vdfa` | `github.com/imajinyun/go-knifer/vdfa` | DFA word-tree matching: stop-rune filtering, first/all matches, dense and greedy match modes, found-word metadata, package-level matcher helpers, isolated matcher options, JSON marshal/unmarshal providers for `Any` helpers, text replacement, and resettable async runner providers for package-level initialization. |
-| `vhttp` | `github.com/imajinyun/go-knifer/vhttp` | Chainable HTTP client, isolated/global-config request construction, create/get/post `WithOptions` helpers, provider-backed transports/request factories/multipart writers/download saves, BasicAuth, User-Agent parsing, provider-backed HTML cleaning/filtering, resettable transport/server starters, async server runner options, and simple server helpers. |
+| `vhttp` | `github.com/imajinyun/go-knifer/vhttp` | Chainable HTTP client, isolated/global-config request construction, create/get/post `WithOptions` helpers, explicit-error `E` shortcuts, code-classified HTTP errors, provider-backed transports/request factories/multipart writers/download saves, BasicAuth, User-Agent parsing, provider-backed HTML cleaning/filtering, resettable transport/server starters, async server runner options, and simple server helpers. |
 | `vresty` | `github.com/imajinyun/go-knifer/vresty` | Resty v3 based HTTP facade: chainable requests, JSON/form/multipart bodies, isolated/global-config request construction, create/get/post `WithOptions` helpers, per-request client factories, resettable default Resty client providers, downloads, and lightweight response helpers. |
 | `vjson` | `github.com/imajinyun/go-knifer/vjson` | Ordered JSON objects/arrays, JSON parsing and formatting, path-based get/put, provider-backed marshal/unmarshal, injectable scalar parse/format functions, configurable object/array/bean/list conversion, and XML/JSON conversion with parser/writer options. |
 | `vxml` | `github.com/imajinyun/go-knifer/vxml` | XML helpers: parse/read/write/format, tree navigation, simple XPath-style lookup, escaping, map/bean conversion with parser/codec/scalar parser options, transform options, and namespace utilities. |
 | `vjwt` | `github.com/imajinyun/go-knifer/vjwt` | JWT creation, parsing, signing, verification, and time-claim validation; supports HMAC, RSA, ECDSA, none signers, and provider-backed JSON marshal/unmarshal options. |
 | `vlog` | `github.com/imajinyun/go-knifer/vlog` | Logging facade: console/color console loggers, injectable color factories, log levels, global logger, static logging functions, per-call logger options, and isolated logger creation. |
 | `verr` | `github.com/imajinyun/go-knifer/verr` | Error helpers: panic recovery, error aggregation, multierror matching, collector construction options, stack capture/formatting, resettable log/stack caches, injectable logging/stack/exit/timer/runner providers, isolated logrus creation, and optional logrus/Sentry integration. |
-| `vconf` | `github.com/imajinyun/go-knifer/vconf` | Grouped configuration reader for setting/properties-style text and a simple YAML subset, with typed getters, profile/remote/file loading options, environment expansion providers, and watch ticker/runner providers. |
+| `vconf` | `github.com/imajinyun/go-knifer/vconf` | Grouped configuration reader for setting/properties-style text and a simple YAML subset, with typed getters, profile/remote/file loading options, environment expansion providers, watch ticker/runner providers, read-only snapshot guidance, and deep-copy `Clone` support. |
 | `vset` | `github.com/imajinyun/go-knifer/vset` | Generic and typed set utilities with add/remove/contains, set operations, and JSON/YAML encoding helpers. |
 | `vjob` | `github.com/imajinyun/go-knifer/vjob` | Sliceable job execution: separate job data from scheduling options, typed slice/map adapters, context cancellation, and serialized merge callbacks; no generic type-alias experiment is required. |
 | `vsem` | `github.com/imajinyun/go-knifer/vsem` | Weighted, context-aware counting semaphore with FIFO fairness, try-acquire, close notifications, and in-use metrics. |
@@ -159,14 +159,18 @@ Configurable APIs and provider injection:
   be read as an immutable snapshot via `vhttp.SnapshotGlobalConfig`, and
   `vhttp.NewIsolatedRequest` can build a request without reading package-level
   defaults. Per-call options should not mutate hidden global state.
+- Configuration objects are mutable while being built or loaded, then should be
+  treated as read-only snapshots after publication. Use `Conf.Clone()` to create
+  an independent copy before applying runtime changes, and publish the new
+  pointer atomically instead of mutating a shared instance in place.
 
 Provider coverage highlights:
 
 | Area | Examples |
 | --- | --- |
-| HTTP / Resty | `vhttp.NewIsolatedRequest`, `vhttp.NewRequestWithConfig`, `vhttp.CreateGetWithOptions`, `vhttp.CreatePostWithOptions`, `vhttp.WithTransportProvider`, `vhttp.WithRequestFactory`, `vhttp.WithMultipartWriterFactory`, `vhttp.ResetDefaultTransport`, `vhttp.WithListenAndServeFunc`, `vhttp.WithAsyncRunner`, `vhttp.CreateServerWithOptions`, `vhttp.ResetServerStarters`, `vhttp.GetWithTimeoutWithOptions`, `vhttp.GetWithParamsWithOptions`, `vhttp.PostStringWithOptions`, `vhttp.CleanHTMLWithOptions`, `vhttp.FilterHTMLTagWithOptions`, `vhttp.WithHTMLFilterCompileFunc`, `vresty.NewIsolatedRequest`, `vresty.WithGlobalConfig`, `vresty.WithRestyClientFactory`, `vresty.ConfigureDefaultRestyClientProvider`, `vresty.ResetDefaultRestyClientProvider`, `vresty.CreateRequestWithOptions`, `vresty.CreateGetWithOptions`, `vresty.CreatePostWithOptions`, `vresty.GetWithTimeoutWithOptions`, `vresty.GetWithParamsWithOptions`, `vresty.PostStringWithOptions`, `vresty.DownloadFileWithOptions` |
-| File / config / archive / POI | `vfile` provider options, `vconf.LoadWithOptions`, `vconf.WatchWithOptions`, `vconf.WatchOptions.Runner`, `vzip` provider options, `vpoi.WithOpenFileFunc`, `vpoi.WithNewFileFunc`, `vpoi.WithSaveAsFunc` |
-| Cron / DFA / ID / identity / random | `vcron.WithDefaultSchedulerOptions`, `vcron.NewConfigWithOptions`, `vcron.WithIDRandomReader`, `vcron.WithRunner`, `vcron.CronScheduleWithOptions`, `vdfa.WithMatcherWords`, `vdfa.WithJSONMarshal`, `vdfa.WithJSONUnmarshal`, `vdfa.ContainsWithOptions`, `vdfa.ConfigureAsyncRunner`, `vdfa.ResetAsyncRunner`, `vid.NewIsolatedSnowflake`, `vid.CreateSnowflakeWithOptions`, `vid.WithSnowflakeCache`, `vid.WithFallbackRandomSource`, `vid.ConfigureDefaultFallbackRandomSourceProvider`, `vid.ResetDefaultFallbackRandomSource`, `vid.SetFallbackRandomSeed`, `vrand.ConfigureDefaultRandomSourceProvider`, `vrand.ResetDefaultRandomSource`, `vrand.SetSeed`, `vident.BirthDateWithOptions` |
+| HTTP / Resty | `vhttp.NewIsolatedRequest`, `vhttp.NewRequestWithConfig`, `vhttp.CreateGetWithOptions`, `vhttp.CreatePostWithOptions`, `vhttp.GetStringE`, `vhttp.GetWithTimeoutE`, `vhttp.PostJSONE`, `vhttp.DownloadBytesE`, `vhttp.NewErrorWithCode`, `vhttp.WithTransportProvider`, `vhttp.WithRequestFactory`, `vhttp.WithMultipartWriterFactory`, `vhttp.ResetDefaultTransport`, `vhttp.WithListenAndServeFunc`, `vhttp.WithAsyncRunner`, `vhttp.CreateServerWithOptions`, `vhttp.ResetServerStarters`, `vhttp.GetWithTimeoutWithOptions`, `vhttp.GetWithParamsWithOptions`, `vhttp.PostStringWithOptions`, `vhttp.CleanHTMLWithOptions`, `vhttp.FilterHTMLTagWithOptions`, `vhttp.WithHTMLFilterCompileFunc`, `vresty.NewIsolatedRequest`, `vresty.WithGlobalConfig`, `vresty.WithRestyClientFactory`, `vresty.ConfigureDefaultRestyClientProvider`, `vresty.ResetDefaultRestyClientProvider`, `vresty.CreateRequestWithOptions`, `vresty.CreateGetWithOptions`, `vresty.CreatePostWithOptions`, `vresty.GetWithTimeoutWithOptions`, `vresty.GetWithParamsWithOptions`, `vresty.PostStringWithOptions`, `vresty.DownloadFileWithOptions` |
+| File / config / archive / POI | `vfile` provider options, `vconf.LoadWithOptions`, `vconf.WatchWithOptions`, `vconf.WatchOptions.Runner`, `(*vconf.Conf).Clone`, `vzip` provider options, `vpoi.WithOpenFileFunc`, `vpoi.WithNewFileFunc`, `vpoi.WithSaveAsFunc` |
+| Cron / DFA / ID / identity / random | `vcron.WithDefaultSchedulerOptions`, `vcron.NewConfigWithOptions`, `vcron.WithIDRandomReader`, `vcron.WithRunner`, `vcron.CronScheduleWithOptions`, `(*vcron.Scheduler).RunningCount`, `(*vcron.Scheduler).Wait`, `vcron.CronShutdown`, `vdfa.WithMatcherWords`, `vdfa.WithJSONMarshal`, `vdfa.WithJSONUnmarshal`, `vdfa.ContainsWithOptions`, `vdfa.ConfigureAsyncRunner`, `vdfa.ResetAsyncRunner`, `vid.NewIsolatedSnowflake`, `vid.CreateSnowflakeWithOptions`, `vid.WithSnowflakeCache`, `vid.WithFallbackRandomSource`, `vid.ConfigureDefaultFallbackRandomSourceProvider`, `vid.ResetDefaultFallbackRandomSource`, `vid.SetFallbackRandomSeed`, `vrand.ConfigureDefaultRandomSourceProvider`, `vrand.ResetDefaultRandomSource`, `vrand.SetSeed`, `vident.BirthDateWithOptions` |
 | Encoding / JSON / XML / JWT / hash | `vcodec.Base64EncodeWithEncoding`, `vcodec.Base64DecodeWithEncoding`, `vcodec.Base64RawURLEncode`, `vcodec.Base64RawURLDecode`, `vhash.Hash32`, `vjson.WithMarshalFunc`, `vjson.WithUnmarshalFunc`, `vjson.WithParseUnmarshalFunc`, `vjson.WithBeanUnmarshalFunc`, `vjson.WithSprintFunc`, `vjson.WithParseIntFunc`, `vjson.WithParseFloatFunc`, `vjson.WithParseBoolFunc`, `vjson.WithFormatIntFunc`, `vjson.WithFormatFloatFunc`, `vjson.ParseObjWithOptions`, `vjson.ParseArrayWithOptions`, `vjson.ToBeanWithOptions`, `vjson.ToListWithOptions`, `vjson.XMLToJSONWithOptions`, `vjson.ToXMLWithOptions`, `vxml.WithScalarIntParser`, `vxml.WithScalarFloatParser`, `vxml.XMLToMapWithOptions`, `vxml.XMLNodeToMapWithOptions`, `vxml.XMLToMapIntoWithOptions`, `vxml.XMLNodeToMapIntoWithOptions`, `vxml.XMLToBeanWithOptions`, `vxml.XMLNodeToBeanWithOptions`, `vxml.TransformWithOptions`, `vxml.FormatWithOptions`, `vjwt.WithJSONMarshalFunc`, `vjwt.WithJSONUnmarshalFunc`, `vjwt.ParseTokenWithOptions`, `vjwt.WithTokenJSONOptions` |
 | Crypto / template / regex / validation / strings | `vcrypto.Digest`, `vcrypto.DigestHex`, `vcrypto.WithAESBlockFactory`, `vcrypto.WithGCMBlockFactory`, `vcrypto.AESEncryptCBCWithOptions`, `vcrypto.AESEncryptGCMWithOptions`, `vcrypto.SignWithRSAOptions`, `vcrypto.VerifyWithRSAOptions`, `vtpl.RenderWithOptions`, `vtpl.WithFuncMap`, `vtpl.WithTemplateFactory`, `vregex.WithCompileFunc`, `vregex.WithDotAll`, `vregex.MatchWithOptions`, `vregex.ReplaceAllFuncWithOptions`, `vvalid.IsEmailWithOptions`, `vvalid.WithMobileMatcher`, `vstr.ContainsEmojiWithOptions`, `vstr.RemoveEmojiWithOptions` |
 | DB / network / number / URL / system / reflection / socket | `vdb.WithSQLOpenFunc`, `vnet.WithConnectDialer`, `vnet.WithPingDialer`, `vnet.WithAddressNetwork`, `vnet.WithTCPAddrResolver`, `vnet.WithUploadOpenSource`, `vnet.WithIPParser`, `vnet.WithCIDRParser`, `vnet.WithIPIntParser`, `vnet.WithWildcardIPParser`, `vnet.WithWildcardIntParser`, `vnet.IPv4ToLongWithOptions`, `vnet.IsInRangeWithOptions`, `vnum.WithParseFloatFunc`, `vnum.WithDoubleParseFloatFunc`, `vnum.WithDoubleFormatFloatFunc`, `vnum.CalculateWithOptions`, `vnum.ToDoubleWithOptions`, `vurl.WithQueryEscapeFunc`, `vurl.WithPathEscapeFunc`, `vurl.EncodeQueryWithOptions`, `vurl.EncodePathSegmentWithOptions`, `vurl.FormURLEncodeWithOptions`, `vsys.WithGoEnvOutputFunc`, `vsys.WithGoRootEnvLookupFunc`, `vsys.WithOSEnvLookupFunc`, `vsys.WithEnvLookupFunc`, `vsys.ResetInfoCache`, `vref.WithUnsafeAccess`, `vskt.WithThreadPoolSizeFunc`, `vskt.WithRunner`, `vskt.WithSocketIPParser` |
@@ -231,11 +235,13 @@ The `vjwt`, `vjson`, `vcron`, `vjob`, `vpoi`, `vcodec`, `vdate`, `vbean`,
 `vsem`, `verr`, and `vhttp`/`vresty` errors also participate: their errors
 match `knifer.ErrCodeInvalidInput` (vjwt, vjson, vcron, vjob, vpoi empty sheet
 name, vcodec decode failures, vdate parse failures, vbean mapping/conversion
-failures, vsem invalid weights), `knifer.ErrCodeNotFound` (vpoi no sheet,
-vblf missing initialization file), `knifer.ErrCodeUnsupported` (vsem closed
-semaphore), or `knifer.ErrCodeInternal` (vhttp/vresty, vskt, vblf read errors,
-and recovered panics from verr) while preserving their own error types,
-sentinels, and cause chains.
+failures, vsem invalid weights, and invalid HTTP request input),
+`knifer.ErrCodeTimeout` (HTTP timeouts/deadlines), `knifer.ErrCodeNotFound`
+(vpoi no sheet, vblf missing initialization file), `knifer.ErrCodeUnsupported`
+(vsem closed semaphore, HTTP redirect/body limit cases), or
+`knifer.ErrCodeInternal` (remaining vhttp/vresty transport/read errors, vskt,
+vblf read errors, and recovered panics from verr) while preserving their own
+error types, sentinels, and cause chains.
 
 ## 🚀 Install
 
@@ -389,6 +395,12 @@ import (
 
 func main() {
   c := vcache.NewLRUWithTimeout[string, int](3, 5*time.Minute)
+  c.SetListener(vcache.CacheListenerFunc[string, int](func(key string, value int) {
+    // Listener callbacks run after internal locks are released, so re-entering
+    // the same cache from a callback is safe.
+    fmt.Println("removed", key, value, "remaining", c.Size())
+  }))
+
   c.Put("answer", 42)
 
   value, ok := c.Get("answer")
@@ -401,15 +413,58 @@ func main() {
 }
 ```
 
-### Chainable HTTP request
+Removal listeners are called after cache mutations release their internal lock.
+This avoids self-deadlocks and lets listener code safely call back into the same
+cache for cleanup, metrics, reload, or follow-up writes.
+
+### Configuration snapshots
+
+`vconf` objects are intentionally simple mutable maps while being built or
+loaded. After a config is shared with application code, treat it as an immutable
+snapshot. For runtime updates, clone or reload, mutate the new copy, then publish
+the new pointer.
 
 ```go
 package main
 
 import (
   "fmt"
+  "sync/atomic"
+
+  "github.com/imajinyun/go-knifer/vconf"
+)
+
+func main() {
+  cfg, _ := vconf.Parse("app.name=go-knifer\n")
+
+  var current atomic.Pointer[vconf.Conf]
+  current.Store(cfg)
+
+  next := current.Load().Clone()
+  next.Set("app.name", "go-knifer-next")
+  current.Store(next)
+
+  fmt.Println(current.Load().Get("app.name"))
+}
+```
+
+### Chainable HTTP request
+
+Use the chainable API when you need full request/response control. For one-line
+helpers, prefer the `E` suffix variants in new code when errors matter:
+`GetStringE`, `GetWithTimeoutE`, `GetWithParamsE`, `PostFormE`, `PostJSONE`,
+`PostStringE`, `DownloadStringE`, and `DownloadBytesE` return `(value, error)`
+instead of silently converting failures to empty values.
+
+```go
+package main
+
+import (
+  "errors"
+  "fmt"
   "time"
 
+  knifer "github.com/imajinyun/go-knifer"
   "github.com/imajinyun/go-knifer/vhttp"
 )
 
@@ -429,6 +484,18 @@ func main() {
   fmt.Println(resp.Status())
   fmt.Println(resp.ContentType())
   fmt.Println(resp.Body())
+
+  body, err := vhttp.GetStringEWithOptions("https://example.com/ping",
+    vhttp.WithTimeout(500*time.Millisecond),
+  )
+  if errors.Is(err, knifer.ErrCodeTimeout) {
+    fmt.Println("request timed out")
+    return
+  }
+  if err != nil {
+    panic(err)
+  }
+  fmt.Println(body)
 }
 ```
 
@@ -438,6 +505,14 @@ cross-request state coupling. Available options include `WithTimeout`,
 `WithHeader`, `WithHeaders`, `WithFollowRedirects`, `WithMaxRedirects`,
 `WithSkipTLSVerify`, `WithTransport`, `WithClient`, `WithCookieJar`, and
 `WithUserAgent`.
+
+HTTP errors are code-classified for routing and retry logic: malformed URLs and
+request construction problems match `knifer.ErrCodeInvalidInput`, timeouts match
+`knifer.ErrCodeTimeout`, redirect/body limit cases match
+`knifer.ErrCodeUnsupported`, and remaining transport/read failures match
+`knifer.ErrCodeInternal`. Use `vhttp.NewErrorWithCode` or
+`vhttp.ErrorfWithCode` when wrapping custom HTTP-layer failures with an explicit
+code.
 
 ### Resty v3 HTTP facade
 
@@ -493,6 +568,46 @@ jsonBody := vresty.PostJSON("https://api.example.com/events", `{"event":"created
 n, err := vresty.DownloadFile("https://example.com/report.csv", "./downloads")
 _, _, _ = body, jsonBody, n
 _ = err
+```
+
+### Cron scheduling and shutdown
+
+`vcron` supports both package-level helpers and explicit scheduler instances.
+For long-running services, prefer an explicit scheduler so lifecycle is clear:
+`RunningCount` reports in-flight executions, `Wait` blocks until they finish, and
+`Shutdown(ctx)` stops the timer loop and waits up to the provided context.
+
+```go
+package main
+
+import (
+  "context"
+  "fmt"
+  "time"
+
+  "github.com/imajinyun/go-knifer/vcron"
+)
+
+func main() {
+  s := vcron.NewSchedulerWithOptions(vcron.WithMatchSecond(true))
+  _, _ = s.ScheduleFunc("* * * * * *", func() {
+    time.Sleep(100 * time.Millisecond)
+    fmt.Println("tick")
+  })
+
+  if err := s.Start(); err != nil {
+    panic(err)
+  }
+
+  time.Sleep(1500 * time.Millisecond)
+  fmt.Println("running:", s.RunningCount())
+
+  ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+  defer cancel()
+  if err := s.Shutdown(ctx, true); err != nil {
+    panic(err)
+  }
+}
 ```
 
 ### URL and URI helpers
