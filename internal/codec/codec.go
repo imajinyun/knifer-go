@@ -10,12 +10,28 @@ import (
 // Base64Encode encodes bytes with standard Base64 encoding.
 func Base64Encode(data []byte) string { return base64.StdEncoding.EncodeToString(data) }
 
+// Base64EncodeWithEncoding encodes bytes with enc. nil falls back to standard Base64 encoding.
+func Base64EncodeWithEncoding(data []byte, enc *base64.Encoding) string {
+	if enc == nil {
+		enc = base64.StdEncoding
+	}
+	return enc.EncodeToString(data)
+}
+
 // Base64EncodeStr encodes a string with standard Base64 encoding.
 func Base64EncodeStr(s string) string { return Base64Encode([]byte(s)) }
 
 // Base64Decode decodes a standard Base64 string.
 func Base64Decode(s string) ([]byte, error) {
-	b, err := base64.StdEncoding.DecodeString(s)
+	return Base64DecodeWithEncoding(s, base64.StdEncoding)
+}
+
+// Base64DecodeWithEncoding decodes a Base64 string with enc. nil falls back to standard Base64 encoding.
+func Base64DecodeWithEncoding(s string, enc *base64.Encoding) ([]byte, error) {
+	if enc == nil {
+		enc = base64.StdEncoding
+	}
+	b, err := enc.DecodeString(s)
 	if err != nil {
 		return nil, invalidCodecInput("decode base64", err)
 	}
@@ -34,11 +50,23 @@ func Base64DecodeStr(s string) (string, error) {
 // Base64URLEncode encodes bytes with URL-safe Base64 encoding.
 func Base64URLEncode(data []byte) string { return base64.URLEncoding.EncodeToString(data) }
 
+// Base64RawURLEncode encodes bytes with raw URL-safe Base64 encoding without padding.
+func Base64RawURLEncode(data []byte) string { return base64.RawURLEncoding.EncodeToString(data) }
+
 // Base64URLDecode decodes a URL-safe Base64 string.
 func Base64URLDecode(s string) ([]byte, error) {
 	b, err := base64.URLEncoding.DecodeString(s)
 	if err != nil {
 		return nil, invalidCodecInput("decode url-safe base64", err)
+	}
+	return b, nil
+}
+
+// Base64RawURLDecode decodes a raw URL-safe Base64 string without padding.
+func Base64RawURLDecode(s string) ([]byte, error) {
+	b, err := base64.RawURLEncoding.DecodeString(s)
+	if err != nil {
+		return nil, invalidCodecInput("decode raw url-safe base64", err)
 	}
 	return b, nil
 }

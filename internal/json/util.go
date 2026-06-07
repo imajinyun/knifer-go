@@ -11,7 +11,16 @@ type encodeConfig struct {
 }
 
 type parseConfig struct {
-	cfg *Config
+	cfg           *Config
+	unmarshalFunc func([]byte, any) error
+}
+
+// BeanOption customizes ToBeanWithOptions and ToListWithOptions.
+type BeanOption func(*beanConfig)
+
+type beanConfig struct {
+	cfg           *Config
+	unmarshalFunc func([]byte, any) error
 }
 
 // EncodeOption customizes JSON serialization helpers.
@@ -52,11 +61,58 @@ func WithDateFormat(layout string) EncodeOption {
 	}
 }
 
+// WithMarshalFunc sets the marshal provider used when wrapping structs for serialization.
+func WithMarshalFunc(marshal func(any) ([]byte, error)) EncodeOption {
+	return func(c *encodeConfig) {
+		if marshal != nil {
+			c.cfg = c.cfg.Clone()
+			c.cfg.MarshalFunc = marshal
+		}
+	}
+}
+
+// WithUnmarshalFunc sets the unmarshal provider stored in the JSON config.
+func WithUnmarshalFunc(unmarshal func([]byte, any) error) EncodeOption {
+	return func(c *encodeConfig) {
+		if unmarshal != nil {
+			c.cfg = c.cfg.Clone()
+			c.cfg.UnmarshalFunc = unmarshal
+		}
+	}
+}
+
 // WithParseConfig sets the JSON config used by parsing helpers.
 func WithParseConfig(cfg *Config) ParseOption {
 	return func(c *parseConfig) {
 		if cfg != nil {
 			c.cfg = cfg
+		}
+	}
+}
+
+// WithParseUnmarshalFunc sets a per-call unmarshal provider for parsing helpers.
+func WithParseUnmarshalFunc(unmarshal func([]byte, any) error) ParseOption {
+	return func(c *parseConfig) {
+		if unmarshal != nil {
+			c.unmarshalFunc = unmarshal
+		}
+	}
+}
+
+// WithBeanConfig sets the JSON config used by bean conversion helpers.
+func WithBeanConfig(cfg *Config) BeanOption {
+	return func(c *beanConfig) {
+		if cfg != nil {
+			c.cfg = cfg
+		}
+	}
+}
+
+// WithBeanUnmarshalFunc sets a per-call unmarshal provider for bean conversion helpers.
+func WithBeanUnmarshalFunc(unmarshal func([]byte, any) error) BeanOption {
+	return func(c *beanConfig) {
+		if unmarshal != nil {
+			c.unmarshalFunc = unmarshal
 		}
 	}
 }
@@ -81,12 +137,26 @@ func applyParseOptions(opts []ParseOption) parseConfig {
 	return cfg
 }
 
+func applyBeanOptions(opts []BeanOption) beanConfig {
+	cfg := beanConfig{cfg: NewConfig()}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(&cfg)
+		}
+	}
+	return cfg
+}
+
 // Parse 自动判断 JSON 类型：对象/数组/基础值。
 func Parse(src any) (any, error) { return ParseWithConfig(src, nil) }
 
 // ParseWithOptions automatically detects and parses JSON with options.
 func ParseWithOptions(src any, opts ...ParseOption) (any, error) {
 	cfg := applyParseOptions(opts)
+	if cfg.unmarshalFunc != nil {
+		cfg.cfg = cfg.cfg.Clone()
+		cfg.cfg.UnmarshalFunc = cfg.unmarshalFunc
+	}
 	return ParseWithConfig(src, cfg.cfg)
 }
 

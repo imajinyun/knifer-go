@@ -63,10 +63,18 @@ func WithListenAndServeFunc(listenAndServe ListenAndServeFunc) ServerOption {
 	return httpx.WithListenAndServeFunc(listenAndServe)
 }
 
+// WithAsyncRunner sets the function used by StartAsync to launch the serving task.
+func WithAsyncRunner(runner func(func())) ServerOption { return httpx.WithAsyncRunner(runner) }
+
 // ResetServerStarters clears pending starter functions registered while applying server options.
 func ResetServerStarters() { httpx.ResetServerStarters() }
 
 // CreateServer delegates to the internal httpx implementation.
 func CreateServer(port int) *SimpleServer {
-	return httpx.CreateServer(port)
+	return CreateServerWithOptions(port)
+}
+
+// CreateServerWithOptions creates a simple HTTP server with options.
+func CreateServerWithOptions(port int, opts ...ServerOption) *SimpleServer {
+	return httpx.CreateServerWithOptions(port, opts...)
 }

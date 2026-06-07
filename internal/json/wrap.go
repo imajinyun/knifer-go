@@ -89,9 +89,20 @@ func wrap(v any, cfg *Config) any {
 		return arr
 	case reflect.Struct:
 		// 通过 encoding/json 反序列化为通用结构后再 wrap，确保 tag 生效。
-		b, err := json.Marshal(v)
+		marshal := json.Marshal
+		if cfg != nil && cfg.MarshalFunc != nil {
+			marshal = cfg.MarshalFunc
+		}
+		b, err := marshal(v)
 		if err != nil {
 			return fmt.Sprint(v)
+		}
+		if cfg != nil && cfg.UnmarshalFunc != nil {
+			var raw any
+			if err := cfg.UnmarshalFunc(b, &raw); err != nil {
+				return fmt.Sprint(v)
+			}
+			return wrap(raw, cfg)
 		}
 		dec := json.NewDecoder(bytes.NewReader(b))
 		dec.UseNumber()

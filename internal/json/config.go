@@ -12,6 +12,10 @@ type Config struct {
 	DateFormat string
 	// IndentFactor pretty 输出时缩进字符数。
 	IndentFactor int
+	// MarshalFunc serializes arbitrary Go values when struct tags must be honored. nil means encoding/json.Marshal.
+	MarshalFunc func(any) ([]byte, error)
+	// UnmarshalFunc deserializes JSON bytes for bean conversion and struct wrapping. nil means encoding/json with UseNumber.
+	UnmarshalFunc func([]byte, any) error
 }
 
 // NewConfig 创建一个默认配置。

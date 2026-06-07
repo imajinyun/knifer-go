@@ -107,7 +107,7 @@ func (s *AioServer) Start(sync bool) {
 		s.acceptLoop()
 		return
 	}
-	go s.acceptLoop()
+	runWithConfig(s.config, s.acceptLoop)
 }
 
 // acceptLoop keeps accepting new connections.
@@ -138,7 +138,7 @@ func (s *AioServer) handleAccept(conn net.Conn) {
 		return
 	}
 	s.wg.Add(1)
-	go func() {
+	runWithConfig(s.config, func() {
 		defer s.wg.Done()
 		defer releaseConcurrencySlot(s.limiter)
 
@@ -154,7 +154,7 @@ func (s *AioServer) handleAccept(conn net.Conn) {
 				return
 			}
 		}
-	}()
+	})
 }
 
 // Close closes the server.

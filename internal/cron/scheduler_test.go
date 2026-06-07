@@ -133,6 +133,7 @@ func TestSchedulerStartTwice(t *testing.T) {
 func TestSchedulerOptions(t *testing.T) {
 	loc := time.FixedZone("test", 8*3600)
 	var submitted atomic.Int32
+	var runnerCalls atomic.Int32
 	var sleepCalls atomic.Int32
 	now := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
 	s := NewSchedulerWithOptions(
@@ -153,6 +154,10 @@ func TestSchedulerOptions(t *testing.T) {
 		WithExecutor(func(fn func()) {
 			submitted.Add(1)
 			fn()
+		}),
+		WithRunner(func(fn func()) {
+			runnerCalls.Add(1)
+			go fn()
 		}),
 	)
 	if s.Config().Location != loc || !s.IsMatchSecond() {
@@ -175,6 +180,13 @@ func TestSchedulerOptions(t *testing.T) {
 	if !s.sleep(time.Millisecond, make(chan struct{})) || sleepCalls.Load() != 1 {
 		t.Fatalf("custom sleeper not used")
 	}
+	if err := s.Start(); err != nil {
+		t.Fatalf("start with custom runner: %v", err)
+	}
+	if runnerCalls.Load() != 1 {
+		t.Fatalf("custom runner calls = %d, want 1", runnerCalls.Load())
+	}
+	s.Stop()
 }
 
 func TestDefaultSchedulerOperationOptions(t *testing.T) {

@@ -8,6 +8,7 @@ type cacheConfig[K comparable, V any] struct {
 	listener      CacheListener[K, V]
 	clock         func() time.Time
 	tickerFactory TickerFactory
+	runner        func(func())
 	finalizer     any
 	finalizerOff  bool
 }
@@ -48,6 +49,11 @@ func WithTickerFactory[K comparable, V any](factory TickerFactory) Option[K, V] 
 	return func(c *cacheConfig[K, V]) { c.tickerFactory = factory }
 }
 
+// WithRunner sets the runner used by scheduled pruning tasks.
+func WithRunner[K comparable, V any](runner func(func())) Option[K, V] {
+	return func(c *cacheConfig[K, V]) { c.runner = runner }
+}
+
 // WithWeakFinalizerFunc sets the finalizer provider used by WeakCache.
 func WithWeakFinalizerFunc[K comparable, V any](finalizer func(*V, func(*V))) Option[K, *V] {
 	return func(c *cacheConfig[K, *V]) {
@@ -86,7 +92,13 @@ func applyTickerFactory[K comparable, V any](c *abstractCache[K, V], factory Tic
 	c.setTickerFactory(factory)
 }
 
+func applyRunner[K comparable, V any](c *abstractCache[K, V], runner func(func())) {
+	c.setRunner(runner)
+}
+
 func newTicker(delay time.Duration) (<-chan time.Time, Ticker) {
 	ticker := time.NewTicker(delay)
 	return ticker.C, ticker
 }
+
+func defaultRunner(fn func()) { go fn() }

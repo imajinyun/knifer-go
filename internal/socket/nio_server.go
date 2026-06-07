@@ -128,10 +128,10 @@ func (s *NioServer) Listen() {
 // ListenAsync starts listening asynchronously and closes the returned channel when done.
 func (s *NioServer) ListenAsync() <-chan struct{} {
 	done := make(chan struct{})
-	go func() {
+	runWithConfig(s.config, func() {
 		defer close(done)
 		s.Listen()
-	}()
+	})
 	return done
 }
 
@@ -146,7 +146,7 @@ func (s *NioServer) handleAccept(conn net.Conn) {
 		return
 	}
 	s.wg.Add(1)
-	go func() {
+	runWithConfig(s.config, func() {
 		defer s.wg.Done()
 		defer releaseConcurrencySlot(s.limiter)
 		defer func() { _ = conn.Close() }()
@@ -160,7 +160,7 @@ func (s *NioServer) handleAccept(conn net.Conn) {
 				return
 			}
 		}
-	}()
+	})
 }
 
 // Close closes the server.

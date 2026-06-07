@@ -1,6 +1,9 @@
 package vjson
 
-import jsonx "github.com/imajinyun/go-knifer/internal/json"
+import (
+	jsonx "github.com/imajinyun/go-knifer/internal/json"
+	xmlimpl "github.com/imajinyun/go-knifer/internal/xml"
+)
 
 // Object is an ordered JSON object.
 type Object = jsonx.JSONObject
@@ -13,6 +16,9 @@ type Config = jsonx.Config
 
 // EncodeOption customizes JSON serialization helpers.
 type EncodeOption = jsonx.EncodeOption
+
+// BeanOption customizes bean conversion helpers.
+type BeanOption = jsonx.BeanOption
 
 // FormatOption customizes raw JSON string formatting.
 type FormatOption = jsonx.FormatOption
@@ -57,6 +63,16 @@ func WithIgnoreNullValue(ignore bool) EncodeOption { return jsonx.WithIgnoreNull
 // WithDateFormat sets the time layout used for time.Time values.
 func WithDateFormat(layout string) EncodeOption { return jsonx.WithDateFormat(layout) }
 
+// WithMarshalFunc sets the marshal provider used when wrapping structs for serialization.
+func WithMarshalFunc(marshal func(any) ([]byte, error)) EncodeOption {
+	return jsonx.WithMarshalFunc(marshal)
+}
+
+// WithUnmarshalFunc sets the unmarshal provider stored in the JSON config.
+func WithUnmarshalFunc(unmarshal func([]byte, any) error) EncodeOption {
+	return jsonx.WithUnmarshalFunc(unmarshal)
+}
+
 // WithFormatIndent sets the indentation string used by FormatWithOptions.
 func WithFormatIndent(indent string) FormatOption { return jsonx.WithFormatIndent(indent) }
 
@@ -68,6 +84,19 @@ func WithFormatSpaceAfterKey(space bool) FormatOption { return jsonx.WithFormatS
 
 // WithParseConfig sets the JSON config used by parsing helpers.
 func WithParseConfig(cfg *Config) ParseOption { return jsonx.WithParseConfig(cfg) }
+
+// WithParseUnmarshalFunc sets a per-call unmarshal provider for parsing helpers.
+func WithParseUnmarshalFunc(unmarshal func([]byte, any) error) ParseOption {
+	return jsonx.WithParseUnmarshalFunc(unmarshal)
+}
+
+// WithBeanConfig sets the JSON config used by bean conversion helpers.
+func WithBeanConfig(cfg *Config) BeanOption { return jsonx.WithBeanConfig(cfg) }
+
+// WithBeanUnmarshalFunc sets a per-call unmarshal provider for bean conversion helpers.
+func WithBeanUnmarshalFunc(unmarshal func([]byte, any) error) BeanOption {
+	return jsonx.WithBeanUnmarshalFunc(unmarshal)
+}
 
 // IsNull reports whether v is nil or JSON null.
 func IsNull(v any) bool { return jsonx.IsNull(v) }
@@ -153,13 +182,33 @@ func Quote(s string) string { return jsonx.Quote(s) }
 // ToBean deserializes JSON to dst, which must be a pointer.
 func ToBean(src any, dst any) error { return jsonx.ToBean(src, dst) }
 
+// ToBeanWithOptions deserializes JSON to dst using per-call options.
+func ToBeanWithOptions(src any, dst any, opts ...BeanOption) error {
+	return jsonx.ToBeanWithOptions(src, dst, opts...)
+}
+
 // ToList deserializes a JSON array to dst, which must point to a slice.
 func ToList(src any, dst any) error { return jsonx.ToList(src, dst) }
+
+// ToListWithOptions deserializes a JSON array to dst using per-call options.
+func ToListWithOptions(src any, dst any, opts ...BeanOption) error {
+	return jsonx.ToListWithOptions(src, dst, opts...)
+}
 
 // XMLToJSON 将 XML 字符串解析为 JSONObject。
 func XMLToJSON(xmlStr string) (*Object, error) { return jsonx.XMLToJSON(xmlStr) }
 
+// XMLToJSONWithOptions parses XML text into an ordered JSON object with XML parser options.
+func XMLToJSONWithOptions(xmlStr string, opts ...xmlimpl.ParseOption) (*Object, error) {
+	return jsonx.XMLToJSONWithOptions(xmlStr, opts...)
+}
+
 // ToXML serializes a JSON value to XML string. When rootTag is empty, keys are concatenated directly.
 func ToXML(root any, rootTag string) (string, error) {
 	return jsonx.JSONToXML(root, rootTag)
+}
+
+// ToXMLWithOptions serializes a JSON value to XML string with XML writer options.
+func ToXMLWithOptions(root any, rootTag string, opts ...xmlimpl.WriteOption) (string, error) {
+	return jsonx.JSONToXMLWithOptions(root, rootTag, opts...)
 }

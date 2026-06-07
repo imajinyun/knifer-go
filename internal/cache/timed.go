@@ -32,6 +32,7 @@ func newTimedCacheWithConfig[K comparable, V any](cfg cacheConfig[K, V]) *TimedC
 	applyListener(&c.abstractCache, cfg.listener)
 	applyClock(&c.abstractCache, cfg.clock)
 	applyTickerFactory(&c.abstractCache, cfg.tickerFactory)
+	applyRunner(&c.abstractCache, cfg.runner)
 	return c
 }
 
@@ -58,7 +59,7 @@ func timedPrune[K comparable, V any](c *abstractCache[K, V]) int {
 func (c *TimedCache[K, V]) SchedulePrune(delay time.Duration) {
 	c.pruneStop = make(chan struct{})
 	c.pruneWG.Add(1)
-	go func() {
+	c.run(func() {
 		defer c.pruneWG.Done()
 		ticks, ticker := c.newTicker(delay)
 		defer ticker.Stop()
@@ -70,7 +71,7 @@ func (c *TimedCache[K, V]) SchedulePrune(delay time.Duration) {
 				c.Prune()
 			}
 		}
-	}()
+	})
 }
 
 // CancelPruneSchedule stops the background pruning task if it is running.

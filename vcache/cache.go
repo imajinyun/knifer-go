@@ -94,6 +94,11 @@ func WithTickerFactory[K comparable, V any](factory TickerFactory) Option[K, V] 
 	return cache.WithTickerFactory[K, V](factory)
 }
 
+// WithRunner sets the runner used by scheduled pruning tasks.
+func WithRunner[K comparable, V any](runner func(func())) Option[K, V] {
+	return cache.WithRunner[K, V](runner)
+}
+
 // WithWeakFinalizerFunc sets the finalizer provider used by WeakCache.
 func WithWeakFinalizerFunc[K comparable, V any](finalizer func(*V, func(*V))) Option[K, *V] {
 	return cache.WithWeakFinalizerFunc[K, V](finalizer)

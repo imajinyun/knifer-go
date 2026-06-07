@@ -1,12 +1,19 @@
 package vhash
 
-import hashimpl "github.com/imajinyun/go-knifer/internal/hash"
+import (
+	"hash"
+
+	hashimpl "github.com/imajinyun/go-knifer/internal/hash"
+)
 
 // AdditiveHash calculates an additive hash modulo prime.
 func AdditiveHash(s string, prime int) int { return hashimpl.AdditiveHash(s, prime) }
 
 // FnvHash calculates a 32-bit FNV-1 hash using the standard library hash/fnv.
 func FnvHash(s string) uint32 { return hashimpl.FnvHash(s) }
+
+// Hash32 calculates a 32-bit hash using newHash. nil falls back to FNV-1.
+func Hash32(s string, newHash func() hash.Hash32) uint32 { return hashimpl.Hash32(s, newHash) }
 
 // FnvHashString calculates the improved 32-bit FNV-1 hash for strings.
 // This differs from FnvHash, which uses the standard library hash/fnv FNV-1.

@@ -71,11 +71,19 @@ type TimerFactory = errimpl.TimerFactory
 // WaitOption customizes a single Collector wait call.
 type WaitOption = errimpl.WaitOption
 
+// CollectorOption customizes Collector construction.
+type CollectorOption = errimpl.CollectorOption
+
 // Wrapper executes a function with panic recovery and optional logging.
 type Wrapper = errimpl.Wrapper
 
 // NewCollector creates a Collector that logs failures at error level.
-func NewCollector() *Collector { return errimpl.NewCollector() }
+func NewCollector() *Collector { return NewCollectorWithOptions() }
+
+// NewCollectorWithOptions creates a Collector customized by options.
+func NewCollectorWithOptions(opts ...CollectorOption) *Collector {
+	return errimpl.NewCollectorWithOptions(opts...)
+}
 
 // GetStack returns the stack attached to err, or the current goroutine stack.
 func GetStack(err error) string { return GetStackWithOptions(err) }
@@ -224,6 +232,36 @@ func WithTimerFactory(c *Collector, factory TimerFactory) *Collector {
 
 // WithLogFunc sets the logger used by Collector.
 func WithLogFunc(c *Collector, logFunc LogFunc) *Collector { return c.WithLogFunc(logFunc) }
+
+// WithCollectorLogFunc sets the logger during Collector construction.
+func WithCollectorLogFunc(logFunc LogFunc) CollectorOption {
+	return errimpl.WithCollectorLogFunc(logFunc)
+}
+
+// WithCollectorRunner sets the function used to launch Collector asynchronous work.
+func WithCollectorRunner(runner func(func())) CollectorOption {
+	return errimpl.WithCollectorRunner(runner)
+}
+
+// WithCollectorContext sets the context attached to log entries during Collector construction.
+func WithCollectorContext(ctx context.Context) CollectorOption {
+	return errimpl.WithCollectorContext(ctx)
+}
+
+// WithCollectorLevel sets the log level during Collector construction.
+func WithCollectorLevel(level logrus.Level) CollectorOption {
+	return errimpl.WithCollectorLevel(level)
+}
+
+// WithCollectorTimerFactory sets the timer factory during Collector construction.
+func WithCollectorTimerFactory(factory TimerFactory) CollectorOption {
+	return errimpl.WithCollectorTimerFactory(factory)
+}
+
+// WithCollectorStackCaptureOptions sets stack capture options during Collector construction.
+func WithCollectorStackCaptureOptions(opts ...StackOption) CollectorOption {
+	return errimpl.WithCollectorStackCaptureOptions(opts...)
+}
 
 // WithCollectorStackOptions sets stack capture options used by Collector logging.
 func WithCollectorStackOptions(c *Collector, opts ...StackOption) *Collector {

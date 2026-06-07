@@ -20,6 +20,7 @@ type AioSession struct {
 	readTimeout  time.Duration
 	writeTimeout time.Duration
 	clock        func() time.Time
+	runner       func(func())
 
 	closed atomic.Bool
 	mu     sync.Mutex
@@ -47,6 +48,7 @@ func NewAioSession(conn net.Conn, ioAction IoAction[*bytes.Buffer], cfg *SocketC
 		readTimeout:  time.Duration(cfg.ReadTimeout) * time.Millisecond,
 		writeTimeout: time.Duration(cfg.WriteTimeout) * time.Millisecond,
 		clock:        cfg.Clock,
+		runner:       cfg.Runner,
 	}
 }
 
@@ -80,8 +82,16 @@ func (s *AioSession) Read() *AioSession {
 	if !s.IsOpen() {
 		return s
 	}
-	go s.doRead()
+	s.run(func() { s.doRead() })
 	return s
+}
+
+func (s *AioSession) run(fn func()) {
+	if s.runner != nil {
+		s.runner(fn)
+		return
+	}
+	defaultRunner(fn)
 }
 
 // doRead reads once and invokes callbacks; false means read failed or the connection closed.

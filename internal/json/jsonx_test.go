@@ -109,6 +109,23 @@ func TestEncodeOptions(t *testing.T) {
 	}
 }
 
+func TestEncodeOptionsUseMarshalFunc(t *testing.T) {
+	type tagged struct {
+		Name string `json:"name"`
+	}
+	called := false
+	out, err := ToJSONStr(tagged{Name: "ignored"}, WithMarshalFunc(func(any) ([]byte, error) {
+		called = true
+		return []byte(`{"name":"provided"}`), nil
+	}))
+	if err != nil {
+		t.Fatalf("ToJSONStr: %v", err)
+	}
+	if !called || out != `{"name":"provided"}` {
+		t.Fatalf("marshal provider called=%v out=%s", called, out)
+	}
+}
+
 func TestPathGetPut(t *testing.T) {
 	src := `{"a":{"b":[10,20,{"c":"hit"}]}}`
 	v, _ := Parse(src)
@@ -206,6 +223,25 @@ func TestToBean(t *testing.T) {
 	}
 	if u.Name != "alice" || u.Age != 30 {
 		t.Fatalf("got %+v", u)
+	}
+}
+
+func TestToBeanWithOptionsUsesUnmarshalFunc(t *testing.T) {
+	type user struct {
+		Name string `json:"name"`
+	}
+	called := false
+	var u user
+	err := ToBeanWithOptions(`{"name":"ignored"}`, &u, WithBeanUnmarshalFunc(func(_ []byte, dst any) error {
+		called = true
+		dst.(*user).Name = "provided"
+		return nil
+	}))
+	if err != nil {
+		t.Fatalf("ToBeanWithOptions: %v", err)
+	}
+	if !called || u.Name != "provided" {
+		t.Fatalf("unmarshal provider called=%v user=%+v", called, u)
 	}
 }
 

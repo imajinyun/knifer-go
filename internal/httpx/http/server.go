@@ -19,6 +19,7 @@ type SimpleServer struct {
 	mux            *http.ServeMux
 	server         *http.Server
 	listenAndServe ListenAndServeFunc
+	asyncRunner    func(func())
 }
 
 // ServerOption customizes SimpleServer construction.
@@ -27,7 +28,10 @@ type ServerOption func(*http.Server)
 // ListenAndServeFunc starts serving with the provided HTTP server.
 type ListenAndServeFunc func(*http.Server) error
 
-var serverStarters sync.Map
+var (
+	serverStarters     sync.Map
+	serverAsyncRunners sync.Map
+)
 
 func storeServerStarter(server *http.Server, listenAndServe ListenAndServeFunc) {
 	serverStarters.Store(server, listenAndServe)
@@ -41,8 +45,23 @@ func takeServerStarter(server *http.Server) (ListenAndServeFunc, bool) {
 	return starter.(ListenAndServeFunc), true
 }
 
+func storeServerAsyncRunner(server *http.Server, runner func(func())) {
+	serverAsyncRunners.Store(server, runner)
+}
+
+func takeServerAsyncRunner(server *http.Server) (func(func()), bool) {
+	runner, ok := serverAsyncRunners.LoadAndDelete(server)
+	if !ok {
+		return nil, false
+	}
+	return runner.(func(func())), true
+}
+
 // ResetServerStarters clears pending starter functions registered while applying server options.
-func ResetServerStarters() { serverStarters.Clear() }
+func ResetServerStarters() {
+	serverStarters.Clear()
+	serverAsyncRunners.Clear()
+}
 
 // NewSimpleServer creates a simple server on the specified port.
 func NewSimpleServer(port int) *SimpleServer {
@@ -83,21 +102,37 @@ func NewSimpleServerAddrWithOptions(addr string, opts ...ServerOption) *SimpleSe
 	if starter, ok := takeServerStarter(server); ok {
 		listenAndServe = starter
 	}
+	asyncRunner := defaultAsyncRunner
+	if runner, ok := takeServerAsyncRunner(server); ok {
+		asyncRunner = runner
+	}
 	return &SimpleServer{
 		addr:           server.Addr,
 		mux:            mux,
 		server:         server,
 		listenAndServe: listenAndServe,
+		asyncRunner:    asyncRunner,
 	}
 }
 
 func defaultListenAndServe(server *http.Server) error { return server.ListenAndServe() }
+
+func defaultAsyncRunner(fn func()) { go fn() }
 
 // WithListenAndServeFunc sets the function used to start serving.
 func WithListenAndServeFunc(listenAndServe ListenAndServeFunc) ServerOption {
 	return func(s *http.Server) {
 		if listenAndServe != nil {
 			storeServerStarter(s, listenAndServe)
+		}
+	}
+}
+
+// WithAsyncRunner sets the function used by StartAsync to launch the serving task.
+func WithAsyncRunner(runner func(func())) ServerOption {
+	return func(s *http.Server) {
+		if runner != nil {
+			storeServerAsyncRunner(s, runner)
 		}
 	}
 }
@@ -198,7 +233,11 @@ func (s *SimpleServer) Start() error {
 // StartAsync starts the server asynchronously and returns an error channel.
 func (s *SimpleServer) StartAsync() <-chan error {
 	ch := make(chan error, 1)
-	go func() {
+	runner := s.asyncRunner
+	if runner == nil {
+		runner = defaultAsyncRunner
+	}
+	runner(func() {
 		listenAndServe := s.listenAndServe
 		if listenAndServe == nil {
 			listenAndServe = defaultListenAndServe
@@ -208,7 +247,7 @@ func (s *SimpleServer) StartAsync() <-chan error {
 			ch <- err
 		}
 		close(ch)
-	}()
+	})
 	return ch
 }
 
@@ -228,4 +267,9 @@ func (s *SimpleServer) StopWithContext(ctx context.Context) error {
 }
 
 // CreateServer creates a simple HTTP server, aligned with HttpUtil.createServer.
-func CreateServer(port int) *SimpleServer { return NewSimpleServer(port) }
+func CreateServer(port int) *SimpleServer { return CreateServerWithOptions(port) }
+
+// CreateServerWithOptions creates a simple HTTP server with options.
+func CreateServerWithOptions(port int, opts ...ServerOption) *SimpleServer {
+	return NewSimpleServerWithOptions(port, opts...)
+}

@@ -32,6 +32,25 @@ func TestBase64URL(t *testing.T) {
 	}
 }
 
+func TestBase64CustomEncoding(t *testing.T) {
+	data := []byte("custom?")
+	enc := Base64EncodeWithEncoding(data, base64.RawURLEncoding)
+	if enc != base64.RawURLEncoding.EncodeToString(data) {
+		t.Fatalf("Base64EncodeWithEncoding = %q", enc)
+	}
+	dec, err := Base64DecodeWithEncoding(enc, base64.RawURLEncoding)
+	if err != nil || string(dec) != string(data) {
+		t.Fatalf("Base64DecodeWithEncoding = %q, %v", dec, err)
+	}
+	if raw := Base64RawURLEncode(data); raw != enc {
+		t.Fatalf("Base64RawURLEncode = %q, want %q", raw, enc)
+	}
+	dec, err = Base64RawURLDecode(enc)
+	if err != nil || string(dec) != string(data) {
+		t.Fatalf("Base64RawURLDecode = %q, %v", dec, err)
+	}
+}
+
 func TestHex(t *testing.T) {
 	if HexEncodeStr("AB") != "4142" {
 		t.Fatalf("HexEncode: %s", HexEncodeStr("AB"))

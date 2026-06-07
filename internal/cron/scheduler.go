@@ -20,6 +20,7 @@ type Scheduler struct {
 
 	// executor controls goroutine usage for task execution and may be replaced with a concurrency-limited executor.
 	executor func(func())
+	runner   func(func())
 	idFunc   func() string
 	nowFunc  func() time.Time
 	sleeper  func(time.Duration, <-chan struct{}) bool
@@ -41,6 +42,11 @@ func WithMatchSecond(matchSecond bool) SchedulerOption {
 // WithExecutor sets the function used to execute scheduled tasks.
 func WithExecutor(exec func(func())) SchedulerOption {
 	return func(s *Scheduler) { s.SetExecutor(exec) }
+}
+
+// WithRunner sets the function used to launch the scheduler timer loop.
+func WithRunner(runner func(func())) SchedulerOption {
+	return func(s *Scheduler) { s.SetRunner(runner) }
 }
 
 // WithIDGenerator sets the task id generator used by Schedule and ScheduleFunc.
@@ -94,6 +100,7 @@ func NewSchedulerWithOptions(opts ...SchedulerOption) *Scheduler {
 	s.executorMgr = newTaskExecutorManager(s)
 	s.listenerMgr = newListenerManager()
 	s.executor = func(fn func()) { go fn() }
+	s.runner = func(fn func()) { go fn() }
 	s.idFunc = generateID
 	s.nowFunc = time.Now
 	s.sleeper = defaultTimerSleep
@@ -144,6 +151,14 @@ func (s *Scheduler) SetTimeZone(loc *time.Location) *Scheduler {
 func (s *Scheduler) SetExecutor(exec func(func())) *Scheduler {
 	if exec != nil {
 		s.executor = exec
+	}
+	return s
+}
+
+// SetRunner sets the function used to launch the scheduler timer loop.
+func (s *Scheduler) SetRunner(runner func(func())) *Scheduler {
+	if runner != nil {
+		s.runner = runner
 	}
 	return s
 }
@@ -238,7 +253,7 @@ func (s *Scheduler) Start() error {
 		return NewCronError("scheduler already started")
 	}
 	s.timer = newCronTimer(s)
-	go s.timer.run()
+	s.run(s.timer.run)
 	return nil
 }
 
@@ -261,4 +276,12 @@ func (s *Scheduler) Stop(clearTasks ...bool) {
 // submit executes fn asynchronously through the current executor.
 func (s *Scheduler) submit(fn func()) {
 	s.executor(fn)
+}
+
+func (s *Scheduler) run(fn func()) {
+	if s.runner != nil {
+		s.runner(fn)
+		return
+	}
+	go fn()
 }

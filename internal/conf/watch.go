@@ -31,6 +31,7 @@ type WatchOptions struct {
 	OnEvent        func(WatchEvent)
 	TickerFactory  WatchTickerFactory
 	After          func(time.Duration) <-chan time.Time
+	Runner         func(func())
 	Stat           func(string) (os.FileInfo, error)
 	ReadFile       func(path string, maxBytes int64) ([]byte, error)
 }
@@ -52,7 +53,7 @@ func WatchWithOptions(path string, opts WatchOptions, onChange func(*Conf, error
 	}
 	stop := make(chan struct{})
 	done := make(chan struct{})
-	go func() {
+	opts.Runner(func() {
 		defer close(done)
 		ticks, ticker := opts.TickerFactory(opts.Interval)
 		defer ticker.Stop()
@@ -83,7 +84,7 @@ func WatchWithOptions(path string, opts WatchOptions, onChange func(*Conf, error
 				return
 			}
 		}
-	}()
+	})
 	return func() { close(stop); <-done }, nil
 }
 
@@ -110,6 +111,9 @@ func normalizeWatchOptions(opts WatchOptions) WatchOptions {
 	if opts.After == nil {
 		opts.After = time.After
 	}
+	if opts.Runner == nil {
+		opts.Runner = defaultWatchRunner
+	}
 	if opts.Stat == nil {
 		opts.Stat = os.Stat
 	}
@@ -122,6 +126,8 @@ func normalizeWatchOptions(opts WatchOptions) WatchOptions {
 	}
 	return opts
 }
+
+func defaultWatchRunner(fn func()) { go fn() }
 
 func newWatchTicker(interval time.Duration) (<-chan time.Time, WatchTicker) {
 	ticker := time.NewTicker(interval)

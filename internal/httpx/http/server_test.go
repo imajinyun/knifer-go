@@ -64,6 +64,47 @@ func TestCreateServerHelper(t *testing.T) {
 	}
 }
 
+func TestSimpleServerStartAsyncUsesRunner(t *testing.T) {
+	started := make(chan struct{})
+	runnerCalled := false
+	srv := NewSimpleServerAddrWithOptions("127.0.0.1:0",
+		WithAsyncRunner(func(fn func()) {
+			runnerCalled = true
+			go fn()
+		}),
+		WithListenAndServeFunc(func(server *http.Server) error {
+			close(started)
+			return http.ErrServerClosed
+		}),
+	)
+	errCh := srv.StartAsync()
+	select {
+	case <-started:
+	case <-time.After(time.Second):
+		t.Fatal("custom starter was not launched")
+	}
+	if !runnerCalled {
+		t.Fatal("custom async runner was not used")
+	}
+	if err, ok := <-errCh; ok || err != nil {
+		t.Fatalf("StartAsync err channel = (%v, %v), want closed", err, ok)
+	}
+}
+
+func TestCreateServerWithOptions(t *testing.T) {
+	called := false
+	srv := CreateServerWithOptions(0, WithListenAndServeFunc(func(*http.Server) error {
+		called = true
+		return http.ErrServerClosed
+	}))
+	if err := srv.Start(); err != http.ErrServerClosed {
+		t.Fatalf("Start() = %v, want ErrServerClosed", err)
+	}
+	if !called {
+		t.Fatal("CreateServerWithOptions did not apply options")
+	}
+}
+
 func TestSimpleServerOptionsAndStopWithContext(t *testing.T) {
 	ctxValue := "server-base"
 	srv := NewSimpleServerAddrWithOptions("127.0.0.1:0",

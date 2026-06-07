@@ -4,7 +4,20 @@ import xmlimpl "github.com/imajinyun/go-knifer/internal/xml"
 
 // XMLToJSON parses XML text into an ordered JSON object.
 func XMLToJSON(xmlStr string) (*JSONObject, error) {
+	return XMLToJSONWithOptions(xmlStr)
+}
+
+// XMLToJSONWithOptions parses XML text into an ordered JSON object with XML parser options.
+func XMLToJSONWithOptions(xmlStr string, opts ...xmlimpl.ParseOption) (*JSONObject, error) {
 	m, err := xmlimpl.XMLToMap(xmlStr)
+	if len(opts) > 0 {
+		doc, parseErr := xmlimpl.ParseXML(xmlStr, opts...)
+		if parseErr != nil {
+			return nil, parseErr
+		}
+		m = xmlimpl.XMLNodeToMap(doc.Root)
+		err = nil
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -13,10 +26,15 @@ func XMLToJSON(xmlStr string) (*JSONObject, error) {
 
 // JSONToXML serializes JSON-compatible data to XML text.
 func JSONToXML(root any, rootTag string) (string, error) {
+	return JSONToXMLWithOptions(root, rootTag)
+}
+
+// JSONToXMLWithOptions serializes JSON-compatible data to XML text with XML writer options.
+func JSONToXMLWithOptions(root any, rootTag string, opts ...xmlimpl.WriteOption) (string, error) {
+	writeOpts := append([]xmlimpl.WriteOption{xmlimpl.WithRootName(rootTag), xmlimpl.WithOmitDeclaration(true)}, opts...)
 	return xmlimpl.MarshalMap(
 		jsonValueToMap(root),
-		xmlimpl.WithRootName(rootTag),
-		xmlimpl.WithOmitDeclaration(true),
+		writeOpts...,
 	)
 }
 

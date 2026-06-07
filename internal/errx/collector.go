@@ -18,6 +18,7 @@ type Collector struct {
 	ctx          context.Context
 	timerFactory TimerFactory
 	logFunc      LogFunc
+	runner       func(func())
 	stackOptions []StackOption
 
 	swg sync.WaitGroup
@@ -32,7 +33,54 @@ func NewCollector() *Collector {
 		ctx:          context.Background(),
 		timerFactory: newCollectorTimer,
 		logFunc:      getDefaultLogFunc(),
+		runner:       defaultCollectorRunner,
 	}
+}
+
+// CollectorOption customizes Collector construction.
+type CollectorOption func(*Collector)
+
+// NewCollectorWithOptions creates a Collector customized by options.
+func NewCollectorWithOptions(opts ...CollectorOption) *Collector {
+	c := NewCollector()
+	for _, opt := range opts {
+		if opt != nil {
+			opt(c)
+		}
+	}
+	return c
+}
+
+func defaultCollectorRunner(fn func()) { go fn() }
+
+// WithCollectorContext sets the context attached to log entries during Collector construction.
+func WithCollectorContext(ctx context.Context) CollectorOption {
+	return func(c *Collector) { c.WithContext(ctx) }
+}
+
+// WithCollectorLevel sets the log level used for recovered or returned errors during Collector construction.
+func WithCollectorLevel(level logrus.Level) CollectorOption {
+	return func(c *Collector) { c.WithLevel(level) }
+}
+
+// WithCollectorTimerFactory sets the default timer factory during Collector construction.
+func WithCollectorTimerFactory(factory TimerFactory) CollectorOption {
+	return func(c *Collector) { c.WithTimerFactory(factory) }
+}
+
+// WithCollectorLogFunc sets the logger during Collector construction.
+func WithCollectorLogFunc(logFunc LogFunc) CollectorOption {
+	return func(c *Collector) { c.WithLogFunc(logFunc) }
+}
+
+// WithCollectorRunner sets the function used to launch Collector asynchronous work.
+func WithCollectorRunner(runner func(func())) CollectorOption {
+	return func(c *Collector) { c.WithRunner(runner) }
+}
+
+// WithCollectorStackCaptureOptions sets stack capture options during Collector construction.
+func WithCollectorStackCaptureOptions(opts ...StackOption) CollectorOption {
+	return func(c *Collector) { c.WithStackOptions(opts...) }
 }
 
 // Timer stops a wait timer created by TimerFactory.
@@ -96,6 +144,16 @@ func (c *Collector) WithLogFunc(logFunc LogFunc) *Collector {
 	defer c.mux.Unlock()
 	if logFunc != nil {
 		c.logFunc = logFunc
+	}
+	return c
+}
+
+// WithRunner sets the runner used by GoRun.
+func (c *Collector) WithRunner(runner func(func())) *Collector {
+	c.mux.Lock()
+	defer c.mux.Unlock()
+	if runner != nil {
+		c.runner = runner
 	}
 	return c
 }
@@ -179,6 +237,16 @@ func newCollectorTimer(duration time.Duration) (<-chan time.Time, Timer) {
 	return timer.C, timer
 }
 
+func (c *Collector) currentRunner() func(func()) {
+	c.mux.Lock()
+	runner := c.runner
+	c.mux.Unlock()
+	if runner != nil {
+		return runner
+	}
+	return defaultCollectorRunner
+}
+
 // Recover executes f in the current goroutine, recovers panics, logs failures,
 // and stores non-nil errors in the collector.
 func (c *Collector) Recover(f func() error, format string, args ...any) error {
@@ -193,10 +261,10 @@ func (c *Collector) Recover(f func() error, format string, args ...any) error {
 // GoRun executes f in a new goroutine and stores any panic or returned error.
 func (c *Collector) GoRun(f func() error, format string, args ...any) {
 	c.swg.Add(1)
-	go func() {
+	c.currentRunner()(func() {
 		defer c.swg.Done()
 		c.Collect(c.run(f, format, args...))
-	}()
+	})
 }
 
 // CollectError is kept as a compatibility alias for Recover.

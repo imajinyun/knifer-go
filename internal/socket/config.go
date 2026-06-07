@@ -27,6 +27,8 @@ type SocketConfig struct {
 
 	// Clock returns the current time used to derive read/write deadlines. nil means time.Now.
 	Clock func() time.Time
+	// Runner launches asynchronous socket work. nil means launching with a goroutine.
+	Runner func(func())
 
 	// ListenerFactory creates server listeners. nil means net.ListenTCP("tcp", addr).
 	ListenerFactory func(*net.TCPAddr) (net.Listener, error)
@@ -80,6 +82,15 @@ func WithClock(clock func() time.Time) ConfigOption {
 	}
 }
 
+// WithRunner sets the runner used to launch asynchronous socket work.
+func WithRunner(runner func(func())) ConfigOption {
+	return func(c *SocketConfig) {
+		if runner != nil {
+			c.Runner = runner
+		}
+	}
+}
+
 // WithListenerFactory sets the factory used to create server listeners.
 func WithListenerFactory(factory func(*net.TCPAddr) (net.Listener, error)) ConfigOption {
 	return func(c *SocketConfig) {
@@ -119,6 +130,16 @@ func NewSocketConfigWithOptions(opts ...ConfigOption) *SocketConfig {
 }
 
 func defaultThreadPoolSize() int { return runtime.NumCPU() }
+
+func defaultRunner(fn func()) { go fn() }
+
+func runWithConfig(cfg *SocketConfig, fn func()) {
+	if cfg != nil && cfg.Runner != nil {
+		cfg.Runner(fn)
+		return
+	}
+	defaultRunner(fn)
+}
 
 func newConcurrencyLimiter(cfg *SocketConfig) chan struct{} {
 	if cfg == nil || cfg.ThreadPoolSize <= 0 {
@@ -179,6 +200,14 @@ func (c *SocketConfig) SetWriteBufferSize(n int) *SocketConfig {
 func (c *SocketConfig) SetClock(clock func() time.Time) *SocketConfig {
 	if clock != nil {
 		c.Clock = clock
+	}
+	return c
+}
+
+// SetRunner sets the runner used to launch asynchronous socket work.
+func (c *SocketConfig) SetRunner(runner func(func())) *SocketConfig {
+	if runner != nil {
+		c.Runner = runner
 	}
 	return c
 }

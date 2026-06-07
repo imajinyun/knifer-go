@@ -310,7 +310,9 @@ var defaultAsyncRunner = struct {
 type MatcherOption func(*matcherConfig)
 
 type matcherConfig struct {
-	tree *WordTree
+	tree      *WordTree
+	marshal   func(any) ([]byte, error)
+	unmarshal func([]byte, any) error
 }
 
 // WithMatcher sets the word tree used by one package-level matcher operation.
@@ -327,6 +329,24 @@ func WithMatcherWords(words []string, opts ...WordTreeOption) MatcherOption {
 	return WithMatcher(NewWordTreeWithOptions(opts...).AddWords(words...))
 }
 
+// WithJSONMarshal sets the marshal function used by Any helpers.
+func WithJSONMarshal(marshal func(any) ([]byte, error)) MatcherOption {
+	return func(cfg *matcherConfig) {
+		if marshal != nil {
+			cfg.marshal = marshal
+		}
+	}
+}
+
+// WithJSONUnmarshal sets the unmarshal function used by FilterAnyWithOptions.
+func WithJSONUnmarshal(unmarshal func([]byte, any) error) MatcherOption {
+	return func(cfg *matcherConfig) {
+		if unmarshal != nil {
+			cfg.unmarshal = unmarshal
+		}
+	}
+}
+
 func currentMatcher() *WordTree {
 	defaultMatcher.RLock()
 	defer defaultMatcher.RUnlock()
@@ -334,6 +354,10 @@ func currentMatcher() *WordTree {
 }
 
 func applyMatcherOptions(opts []MatcherOption) *WordTree {
+	return applyMatcherConfig(opts).tree
+}
+
+func applyMatcherConfig(opts []MatcherOption) matcherConfig {
 	cfg := matcherConfig{tree: currentMatcher()}
 	for _, opt := range opts {
 		if opt != nil {
@@ -341,9 +365,15 @@ func applyMatcherOptions(opts []MatcherOption) *WordTree {
 		}
 	}
 	if cfg.tree == nil {
-		return NewWordTree()
+		cfg.tree = NewWordTree()
 	}
-	return cfg.tree
+	if cfg.marshal == nil {
+		cfg.marshal = json.Marshal
+	}
+	if cfg.unmarshal == nil {
+		cfg.unmarshal = json.Unmarshal
+	}
+	return cfg
 }
 
 // ConfigureAsyncRunner sets the runner used by asynchronous package-level matcher initialization.
@@ -455,7 +485,8 @@ func ContainsAny(value any) bool { return ContainsAnyWithOptions(value) }
 
 // ContainsAnyWithOptions marshals value as JSON and checks it with the selected matcher.
 func ContainsAnyWithOptions(value any, opts ...MatcherOption) bool {
-	return ContainsWithOptions(jsonText(value), opts...)
+	cfg := applyMatcherConfig(opts)
+	return cfg.tree.IsMatch(jsonTextWithMarshal(value, cfg.marshal))
 }
 
 // GetFoundFirst returns the first found word from the package-level matcher.
@@ -478,7 +509,8 @@ func GetFoundFirstAny(value any) (FoundWord, bool) { return GetFoundFirstAnyWith
 
 // GetFoundFirstAnyWithOptions marshals value as JSON and returns the first found word from the selected matcher.
 func GetFoundFirstAnyWithOptions(value any, opts ...MatcherOption) (FoundWord, bool) {
-	return GetFoundFirstWithOptions(jsonText(value), opts...)
+	cfg := applyMatcherConfig(opts)
+	return cfg.tree.MatchWord(jsonTextWithMarshal(value, cfg.marshal))
 }
 
 // GetFoundAll returns all found words from the package-level matcher.
@@ -511,7 +543,8 @@ func GetFoundAllAny(value any) []FoundWord { return GetFoundAllAnyWithOptions(va
 
 // GetFoundAllAnyWithOptions marshals value as JSON and returns all found words from the selected matcher.
 func GetFoundAllAnyWithOptions(value any, opts ...MatcherOption) []FoundWord {
-	return GetFoundAllWithOptions(jsonText(value), opts...)
+	cfg := applyMatcherConfig(opts)
+	return cfg.tree.MatchAllWords(jsonTextWithMarshal(value, cfg.marshal), -1, false, false)
 }
 
 // Filter replaces words found by the package-level matcher.
@@ -548,22 +581,26 @@ func FilterAnyWithOptions[T any](value T, greedMatch bool, processor Processor, 
 		return any(FilterModeWithOptions(s, greedMatch, processor, opts...)).(T), nil
 	}
 	var result T
-	data, err := json.Marshal(value)
+	cfg := applyMatcherConfig(opts)
+	data, err := cfg.marshal(value)
 	if err != nil {
 		return result, err
 	}
-	filtered := FilterModeWithOptions(string(data), greedMatch, processor, opts...)
-	if err := json.Unmarshal([]byte(filtered), &result); err != nil {
+	filtered := cfg.tree.Filter(string(data), greedMatch, processor)
+	if err := cfg.unmarshal([]byte(filtered), &result); err != nil {
 		return result, err
 	}
 	return result, nil
 }
 
-func jsonText(value any) string {
+func jsonTextWithMarshal(value any, marshal func(any) ([]byte, error)) string {
 	if s, ok := value.(string); ok {
 		return s
 	}
-	data, err := json.Marshal(value)
+	if marshal == nil {
+		marshal = json.Marshal
+	}
+	data, err := marshal(value)
 	if err != nil {
 		return ""
 	}

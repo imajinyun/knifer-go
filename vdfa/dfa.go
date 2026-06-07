@@ -37,6 +37,16 @@ func WithMatcherWords(words []string, opts ...WordTreeOption) MatcherOption {
 	return dfaimpl.WithMatcherWords(words, opts...)
 }
 
+// WithJSONMarshal sets the marshal function used by Any helpers.
+func WithJSONMarshal(marshal func(any) ([]byte, error)) MatcherOption {
+	return dfaimpl.WithJSONMarshal(marshal)
+}
+
+// WithJSONUnmarshal sets the unmarshal function used by FilterAnyWithOptions.
+func WithJSONUnmarshal(unmarshal func([]byte, any) error) MatcherOption {
+	return dfaimpl.WithJSONUnmarshal(unmarshal)
+}
+
 // NewWordTreeWithOptions creates an empty word tree customized by options.
 func NewWordTreeWithOptions(opts ...WordTreeOption) *WordTree {
 	return dfaimpl.NewWordTreeWithOptions(opts...)

@@ -126,6 +126,9 @@ func WithWriteBufferSize(n int) ConfigOption { return socketx.WithWriteBufferSiz
 // WithClock sets the clock used to derive socket read/write deadlines.
 func WithClock(clock func() time.Time) ConfigOption { return socketx.WithClock(clock) }
 
+// WithRunner sets the runner used to launch asynchronous socket work.
+func WithRunner(runner func(func())) ConfigOption { return socketx.WithRunner(runner) }
+
 // WithListenerFactory sets the factory used to create server listeners.
 func WithListenerFactory(factory func(*net.TCPAddr) (net.Listener, error)) ConfigOption {
 	return socketx.WithListenerFactory(factory)

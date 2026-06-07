@@ -85,12 +85,14 @@ func TestSocketConfigOptions(t *testing.T) {
 	listener := &fakeListener{addr: fakeAddr("listener")}
 	client, server := net.Pipe()
 	defer closeAndReport(t, server.Close)
+	runnerCalled := false
 	cfg := NewSocketConfigWithOptions(
 		WithThreadPoolSize(2),
 		WithReadTimeout(100),
 		WithWriteTimeout(200),
 		WithReadBufferSize(64),
 		WithWriteBufferSize(128),
+		WithRunner(func(fn func()) { runnerCalled = true; fn() }),
 		WithListenerFactory(func(*net.TCPAddr) (net.Listener, error) { return listener, nil }),
 		WithConnFactory(func(*net.TCPAddr) (net.Conn, error) { return client, nil }),
 	)
@@ -98,8 +100,12 @@ func TestSocketConfigOptions(t *testing.T) {
 		cfg.ReadBufferSize != 64 || cfg.WriteBufferSize != 128 {
 		t.Fatalf("NewSocketConfigWithOptions not applied: %+v", cfg)
 	}
-	if cfg.ListenerFactory == nil || cfg.ConnFactory == nil {
-		t.Fatal("expected listener and connection factories")
+	if cfg.ListenerFactory == nil || cfg.ConnFactory == nil || cfg.Runner == nil {
+		t.Fatal("expected listener, connection, and runner providers")
+	}
+	cfg.Runner(func() {})
+	if !runnerCalled {
+		t.Fatal("custom runner was not called")
 	}
 }
 

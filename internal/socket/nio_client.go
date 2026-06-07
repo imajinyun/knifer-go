@@ -72,7 +72,7 @@ func (c *NioClient) Channel() net.Conn {
 // Listen asynchronously listens for data pushed by the server.
 func (c *NioClient) Listen() {
 	c.wg.Add(1)
-	go func() {
+	runWithConfig(c.config, func() {
 		defer c.wg.Done()
 		for {
 			if c.closed.Load() {
@@ -86,7 +86,7 @@ func (c *NioClient) Listen() {
 				return
 			}
 		}
-	}()
+	})
 }
 
 // Write writes multiple data fragments.

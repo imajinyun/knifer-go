@@ -77,6 +77,11 @@ func NewCronConfigWithOptions(opts ...ConfigOption) *CronConfig {
 	return cron.NewConfigWithOptions(opts...)
 }
 
+// NewConfigWithOptions creates cron config customized by options.
+func NewConfigWithOptions(opts ...ConfigOption) *Config {
+	return cron.NewConfigWithOptions(opts...)
+}
+
 // NewCronPattern parses a cron expression.
 func NewCronPattern(expr string) (*CronPattern, error) { return cron.NewPattern(expr) }
 
@@ -94,6 +99,9 @@ func WithMatchSecond(matchSecond bool) SchedulerOption { return cron.WithMatchSe
 
 // WithExecutor sets the function used to execute scheduled tasks.
 func WithExecutor(exec func(func())) SchedulerOption { return cron.WithExecutor(exec) }
+
+// WithRunner sets the function used to launch the scheduler timer loop.
+func WithRunner(runner func(func())) SchedulerOption { return cron.WithRunner(runner) }
 
 // WithIDGenerator sets the task id generator used by Schedule and ScheduleFunc.
 func WithIDGenerator(idFunc func() string) SchedulerOption { return cron.WithIDGenerator(idFunc) }

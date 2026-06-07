@@ -58,6 +58,23 @@ func TestCollectorGoRunAggregatesConcurrentErrors(t *testing.T) {
 	}
 }
 
+func TestCollectorGoRunUsesRunner(t *testing.T) {
+	silenceLogrus(t)
+
+	runnerCalls := 0
+	c := NewCollectorWithOptions(WithCollectorRunner(func(fn func()) {
+		runnerCalls++
+		fn()
+	}))
+	c.GoRun(func() error { return nil }, "sync")
+	if runnerCalls != 1 {
+		t.Fatalf("runner calls = %d, want 1", runnerCalls)
+	}
+	if err := c.Error(); err != nil {
+		t.Fatalf("Collector.Error() = %v, want nil", err)
+	}
+}
+
 func TestCollectorWaitUntil(t *testing.T) {
 	silenceLogrus(t)
 

@@ -16,6 +16,13 @@ func parseBytesWithConfig(b []byte, cfg *Config) (any, error) {
 	if cfg == nil {
 		cfg = NewConfig()
 	}
+	if cfg.UnmarshalFunc != nil {
+		var raw any
+		if err := cfg.UnmarshalFunc(b, &raw); err != nil {
+			return nil, WrapJSONError(err, "json: parse failed")
+		}
+		return wrap(raw, cfg), nil
+	}
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.UseNumber()
 	tok, err := dec.Token()
