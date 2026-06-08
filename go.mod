@@ -12,7 +12,7 @@ require (
 	github.com/xuri/excelize/v2 v2.10.1
 	golang.org/x/net v0.55.0
 	gopkg.in/yaml.v3 v3.0.1
-	resty.dev/v3 v3.0.0-beta.6
+	resty.dev/v3 v3.0.0-rc.1
 )
 
 require (
