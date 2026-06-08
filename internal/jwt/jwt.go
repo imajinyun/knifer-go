@@ -195,6 +195,9 @@ func (j *JWT) setKeyWithAlgorithm(key []byte, algorithm string, allowNone bool) 
 		return NewJWTError("jwt alg=none requires explicit none signer opt-in")
 	}
 	signer, err := CreateSigner(algorithm, key)
+	if allowNone {
+		signer, err = CreateSignerAllowNoneForTrustedToken(algorithm, key)
+	}
 	if err != nil {
 		return err
 	}

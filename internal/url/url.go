@@ -690,7 +690,7 @@ func isPrivateHost(ctx context.Context, lookupIP func(context.Context, string) (
 }
 
 func isPrivateIP(ip net.IP) bool {
-	return ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || ip.IsUnspecified()
+	return ip == nil || !ip.IsGlobalUnicast() || ip.IsPrivate()
 }
 
 func clientWithSafeTransport(client *http.Client, cfg resourceConfig) *http.Client {

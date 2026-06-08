@@ -54,6 +54,7 @@ func defaultResponseDecodeConfig() responseDecodeConfig {
 
 func responseDecodeConfigFromGlobal(cfg GlobalConfig) responseDecodeConfig {
 	decodeConfig := defaultResponseDecodeConfig()
+	decodeConfig.maxBytes = cfg.MaxResponseBytes
 	decodeConfig.ignoreEOFError = cfg.IgnoreEOFError
 	return decodeConfig
 }
@@ -105,11 +106,11 @@ func readAllWithLimit(r io.Reader, maxBytes int64, readAll func(io.Reader) ([]by
 	}
 	limited := &io.LimitedReader{R: r, N: maxBytes + 1}
 	data, err := readAll(limited)
-	if err != nil {
-		return nil, err
-	}
 	if int64(len(data)) > maxBytes {
 		return nil, HTTPErrorfWithCode(knifer.ErrCodeUnsupported, "response body exceeds max bytes: %d", maxBytes)
+	}
+	if err != nil {
+		return data, err
 	}
 	return data, nil
 }

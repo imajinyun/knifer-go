@@ -49,9 +49,15 @@ func MustHMACSigner(algorithm string, key []byte) JWTSigner {
 	return jwtimpl.MustHMACSigner(algorithm, key)
 }
 
-// CreateSigner creates an HMAC or none signer from algorithm ID.
+// CreateSigner creates an HMAC signer from algorithm ID. The none algorithm is rejected by default.
 func CreateSigner(algorithmID string, key []byte) (JWTSigner, error) {
 	return jwtimpl.CreateSigner(algorithmID, key)
+}
+
+// CreateSignerAllowNoneForTrustedToken creates a signer and explicitly opts in to alg=none.
+// Only use this for already trusted none tokens; untrusted tokens should use CreateSigner.
+func CreateSignerAllowNoneForTrustedToken(algorithmID string, key []byte) (JWTSigner, error) {
+	return jwtimpl.CreateSignerAllowNoneForTrustedToken(algorithmID, key)
 }
 
 // AlgorithmName returns the standard cryptographic algorithm name for a JWT algorithm ID.

@@ -48,6 +48,13 @@ func GetGlobalMaxRedirects() int {
 	return httpx.GetGlobalMaxRedirects()
 }
 
+// SetGlobalMaxResponseBytes sets the global maximum response bytes read by response Bytes/Body helpers.
+// Non-positive values disable the limit.
+func SetGlobalMaxResponseBytes(n int64) { httpx.SetGlobalMaxResponseBytes(n) }
+
+// GetGlobalMaxResponseBytes returns the global maximum response bytes read by response Bytes/Body helpers.
+func GetGlobalMaxResponseBytes() int64 { return httpx.GetGlobalMaxResponseBytes() }
+
 // SetGlobalFollowRedirects delegates to the internal httpx implementation.
 func SetGlobalFollowRedirects(b bool) {
 	httpx.SetGlobalFollowRedirects(b)

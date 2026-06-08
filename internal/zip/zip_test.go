@@ -146,6 +146,53 @@ func TestGzipWithOptions(t *testing.T) {
 	}
 }
 
+func TestDecompressHelpersEnforceConfiguredLimit(t *testing.T) {
+	data := bytes.Repeat([]byte("x"), 16)
+	gz, err := Gzip(data)
+	if err != nil {
+		t.Fatalf("Gzip: %v", err)
+	}
+	zl, err := Zlib(data)
+	if err != nil {
+		t.Fatalf("Zlib: %v", err)
+	}
+
+	if got := applyDecompressOptions(nil).maxBytes; got != DefaultUnzipMaxBytes {
+		t.Fatalf("default decompression max bytes = %d, want %d", got, DefaultUnzipMaxBytes)
+	}
+	if _, err := UnGzipWithOptions(gz, WithMaxBytes(8)); err == nil {
+		t.Fatal("UnGzip should enforce configured decompression limit")
+	}
+	if _, err := UnZlibWithOptions(zl, WithMaxBytes(8)); err == nil {
+		t.Fatal("UnZlib should enforce configured decompression limit")
+	}
+	if out, err := UnGzipWithOptions(gz, WithMaxBytes(0)); err != nil || !bytes.Equal(out, data) {
+		t.Fatalf("UnGzip explicit unlimited = %q, %v", out, err)
+	}
+	if out, err := UnZlibWithOptions(zl, WithMaxBytes(0)); err != nil || !bytes.Equal(out, data) {
+		t.Fatalf("UnZlib explicit unlimited = %q, %v", out, err)
+	}
+}
+
+func TestGetBytesEnforcesConfiguredLimit(t *testing.T) {
+	tmp := t.TempDir()
+	archive := filepath.Join(tmp, "limit.zip")
+	data := bytes.Repeat([]byte("x"), 16)
+	if err := ZipEntries(archive, EntryData{Name: "a.txt", Data: data}); err != nil {
+		t.Fatalf("ZipEntries: %v", err)
+	}
+
+	if got := applyDecompressOptions(nil).maxBytes; got != DefaultUnzipMaxBytes {
+		t.Fatalf("default entry read max bytes = %d, want %d", got, DefaultUnzipMaxBytes)
+	}
+	if _, err := GetBytesWithOptions(archive, "a.txt", WithMaxBytes(8)); err == nil {
+		t.Fatal("GetBytes should enforce configured entry read limit")
+	}
+	if out, err := GetBytesWithOptions(archive, "a.txt", WithMaxBytes(0)); err != nil || !bytes.Equal(out, data) {
+		t.Fatalf("GetBytes explicit unlimited = %q, %v", out, err)
+	}
+}
+
 func TestArchiveOptions(t *testing.T) {
 	tmp := t.TempDir()
 	archive := filepath.Join(tmp, "entries.zip")

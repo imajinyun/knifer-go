@@ -151,6 +151,33 @@ func TestRequestJSONDecodeReadOptions(t *testing.T) {
 	}
 }
 
+func TestResponseReadLimitOptions(t *testing.T) {
+	previous := SnapshotGlobalConfig()
+	defer ConfigureGlobalConfig(previous)
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte("abcdef"))
+	}))
+	defer srv.Close()
+
+	limited := Get(srv.URL, WithMaxResponseBytes(3)).Execute()
+	if got := limited.Bytes(); len(got) != 0 || limited.Err() == nil {
+		t.Fatalf("limited Bytes() = %q err=%v, want max bytes error", string(got), limited.Err())
+	}
+
+	SetGlobalMaxResponseBytes(3)
+	globalLimited := Get(srv.URL).Execute()
+	SetGlobalMaxResponseBytes(0)
+	if got := globalLimited.Bytes(); len(got) != 0 || globalLimited.Err() == nil {
+		t.Fatalf("global limited Bytes() = %q err=%v, want max bytes error", string(got), globalLimited.Err())
+	}
+
+	unlimited := Get(srv.URL, WithMaxResponseBytes(0)).Execute()
+	if got := unlimited.Body(); got != "abcdef" || unlimited.Err() != nil {
+		t.Fatalf("unlimited override Body() = %q err=%v", got, unlimited.Err())
+	}
+}
+
 func TestResponseHeadersCookiesAndLength(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if got := r.Header.Get("Cookie"); !strings.Contains(got, "k=v") {
@@ -344,16 +371,19 @@ func TestCreateWithOptionsAppliesRequestOptions(t *testing.T) {
 func TestSnapshotGlobalConfigAndExplicitRequestConfig(t *testing.T) {
 	oldTimeout := GetGlobalTimeout()
 	oldMaxRedirects := GetGlobalMaxRedirects()
+	oldMaxResponse := GetGlobalMaxResponseBytes()
 	oldFollow := GetGlobalFollowRedirects()
 	oldUA := GetGlobalUserAgent()
 	defer SetGlobalTimeout(oldTimeout)
 	defer SetGlobalMaxRedirects(oldMaxRedirects)
+	defer SetGlobalMaxResponseBytes(oldMaxResponse)
 	defer SetGlobalFollowRedirects(oldFollow)
 	defer SetGlobalUserAgent(oldUA)
 	defer RemoveGlobalHeader("X-Snapshot")
 
 	SetGlobalTimeout(123 * time.Millisecond)
 	SetGlobalMaxRedirects(3)
+	SetGlobalMaxResponseBytes(321)
 	SetGlobalFollowRedirects(false)
 	SetGlobalUserAgent("snapshot-agent")
 	SetGlobalHeader("X-Snapshot", "one")
@@ -363,8 +393,8 @@ func TestSnapshotGlobalConfigAndExplicitRequestConfig(t *testing.T) {
 	cfg.Headers["X-Snapshot"][0] = "cfg"
 
 	req := NewRequestWithConfig(MethodGet, "http://example.com", cfg)
-	if req.timeout != 123*time.Millisecond || req.maxRedirects != 3 || req.followRedir == nil || *req.followRedir || req.userAgent != "snapshot-agent" {
-		t.Fatalf("request config not applied: timeout=%v max=%d follow=%v ua=%q", req.timeout, req.maxRedirects, req.followRedir, req.userAgent)
+	if req.timeout != 123*time.Millisecond || req.maxRedirects != 3 || req.maxResponse != 321 || req.followRedir == nil || *req.followRedir || req.userAgent != "snapshot-agent" {
+		t.Fatalf("request config not applied: timeout=%v max=%d maxResponse=%d follow=%v ua=%q", req.timeout, req.maxRedirects, req.maxResponse, req.followRedir, req.userAgent)
 	}
 	if got := req.headers["X-Snapshot"]; len(got) != 1 || got[0] != "cfg" {
 		t.Fatalf("explicit config headers = %v, want [cfg]", got)
@@ -392,8 +422,8 @@ func TestNewIsolatedRequestDoesNotReadGlobals(t *testing.T) {
 	SetGlobalHeader("X-Isolated", "global")
 
 	req := NewIsolatedRequest(MethodGet, "http://example.com")
-	if req.timeout != 0 || req.maxRedirects != 10 || req.followRedir == nil || !*req.followRedir || req.userAgent != "" {
-		t.Fatalf("isolated request leaked globals: timeout=%v max=%d follow=%v ua=%q", req.timeout, req.maxRedirects, req.followRedir, req.userAgent)
+	if req.timeout != 0 || req.maxRedirects != 10 || req.maxResponse != defaultGlobalMaxResponseBytes || req.followRedir == nil || !*req.followRedir || req.userAgent != "" {
+		t.Fatalf("isolated request leaked globals: timeout=%v max=%d maxResponse=%d follow=%v ua=%q", req.timeout, req.maxRedirects, req.maxResponse, req.followRedir, req.userAgent)
 	}
 	if got := req.headers["X-Isolated"]; len(got) != 0 {
 		t.Fatalf("isolated request should not include global header: %v", got)
@@ -404,13 +434,14 @@ func TestWithGlobalConfigOptionOverridesConstructionDefaults(t *testing.T) {
 	cfg := GlobalConfig{
 		Timeout:          250 * time.Millisecond,
 		MaxRedirects:     2,
+		MaxResponseBytes: 456,
 		FollowRedirects:  false,
 		DefaultUserAgent: "option-agent",
 		Headers:          HeaderValues{"X-Config": []string{"yes"}},
 	}
 	req := NewIsolatedRequest(MethodGet, "http://example.com", WithGlobalConfig(cfg), WithHeader("X-Req", "ok"))
-	if req.timeout != 250*time.Millisecond || req.maxRedirects != 2 || req.followRedir == nil || *req.followRedir || req.userAgent != "option-agent" {
-		t.Fatalf("WithGlobalConfig not applied: timeout=%v max=%d follow=%v ua=%q", req.timeout, req.maxRedirects, req.followRedir, req.userAgent)
+	if req.timeout != 250*time.Millisecond || req.maxRedirects != 2 || req.maxResponse != 456 || req.followRedir == nil || *req.followRedir || req.userAgent != "option-agent" {
+		t.Fatalf("WithGlobalConfig not applied: timeout=%v max=%d maxResponse=%d follow=%v ua=%q", req.timeout, req.maxRedirects, req.maxResponse, req.followRedir, req.userAgent)
 	}
 	if got := req.headers["X-Config"]; len(got) != 1 || got[0] != "yes" {
 		t.Fatalf("config header = %v, want [yes]", got)
@@ -426,6 +457,7 @@ func TestResetGlobalConfigRestoresDefaults(t *testing.T) {
 
 	SetGlobalTimeout(time.Second)
 	SetGlobalMaxRedirects(2)
+	SetGlobalMaxResponseBytes(3)
 	SetGlobalFollowRedirects(false)
 	SetGlobalUserAgent("mutated-agent")
 	SetGlobalHeader("X-Reset", "mutated")
@@ -433,7 +465,7 @@ func TestResetGlobalConfigRestoresDefaults(t *testing.T) {
 
 	ResetGlobalConfig()
 	cfg := SnapshotGlobalConfig()
-	if cfg.Timeout != 0 || cfg.MaxRedirects != 10 || !cfg.FollowRedirects || cfg.DefaultUserAgent != "" || cfg.CookieDisabled {
+	if cfg.Timeout != 0 || cfg.MaxRedirects != 10 || cfg.MaxResponseBytes != defaultGlobalMaxResponseBytes || !cfg.FollowRedirects || cfg.DefaultUserAgent != "" || cfg.CookieDisabled {
 		t.Fatalf("reset scalar config = %#v", cfg)
 	}
 	if got := cfg.Headers["X-Reset"]; len(got) != 0 {
@@ -451,6 +483,7 @@ func TestWithScopedGlobalConfigRestoresPreviousDefaults(t *testing.T) {
 	ConfigureGlobalConfig(GlobalConfig{
 		Timeout:          time.Second,
 		MaxRedirects:     4,
+		MaxResponseBytes: 64,
 		FollowRedirects:  true,
 		DefaultUserAgent: "outer-agent",
 		Headers:          HeaderValues{"X-Scope": []string{"outer"}},
@@ -459,19 +492,20 @@ func TestWithScopedGlobalConfigRestoresPreviousDefaults(t *testing.T) {
 	WithScopedGlobalConfig(GlobalConfig{
 		Timeout:          2 * time.Second,
 		MaxRedirects:     1,
+		MaxResponseBytes: 32,
 		FollowRedirects:  false,
 		DefaultUserAgent: "inner-agent",
 		Headers:          HeaderValues{"X-Scope": []string{"inner"}},
 		CookieDisabled:   true,
 	}, func() {
 		cfg := SnapshotGlobalConfig()
-		if cfg.Timeout != 2*time.Second || cfg.MaxRedirects != 1 || cfg.FollowRedirects || cfg.DefaultUserAgent != "inner-agent" || cfg.Headers["X-Scope"][0] != "inner" || !cfg.CookieDisabled {
+		if cfg.Timeout != 2*time.Second || cfg.MaxRedirects != 1 || cfg.MaxResponseBytes != 32 || cfg.FollowRedirects || cfg.DefaultUserAgent != "inner-agent" || cfg.Headers["X-Scope"][0] != "inner" || !cfg.CookieDisabled {
 			t.Fatalf("scoped inner config = %#v", cfg)
 		}
 	})
 
 	cfg := SnapshotGlobalConfig()
-	if cfg.Timeout != time.Second || cfg.MaxRedirects != 4 || !cfg.FollowRedirects || cfg.DefaultUserAgent != "outer-agent" || cfg.Headers["X-Scope"][0] != "outer" || cfg.CookieDisabled {
+	if cfg.Timeout != time.Second || cfg.MaxRedirects != 4 || cfg.MaxResponseBytes != 64 || !cfg.FollowRedirects || cfg.DefaultUserAgent != "outer-agent" || cfg.Headers["X-Scope"][0] != "outer" || cfg.CookieDisabled {
 		t.Fatalf("scoped restored config = %#v", cfg)
 	}
 }
@@ -506,6 +540,12 @@ func TestSafeRequestRejectsPrivateAndUnsafeRedirects(t *testing.T) {
 	}
 	if err := GetSafe("http://127.0.0.1/config.yaml").Execute().Err(); err == nil {
 		t.Fatal("GetSafe should reject loopback hosts by default")
+	}
+	if err := GetSafe("http://224.0.0.1/config.yaml").Execute().Err(); err == nil {
+		t.Fatal("GetSafe should reject multicast hosts by default")
+	}
+	if err := GetSafe("http://0.0.0.0/config.yaml").Execute().Err(); err == nil {
+		t.Fatal("GetSafe should reject unspecified hosts by default")
 	}
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

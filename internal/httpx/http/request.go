@@ -159,7 +159,7 @@ func NewClient(opts ...ClientOption) *Client {
 
 // NewIsolatedClient creates a request factory without reading package-level global defaults.
 func NewIsolatedClient(opts ...ClientOption) *Client {
-	c := &Client{cfg: GlobalConfig{FollowRedirects: true, MaxRedirects: 10}}
+	c := &Client{cfg: GlobalConfig{FollowRedirects: true, MaxRedirects: 10, MaxResponseBytes: defaultGlobalMaxResponseBytes}}
 	for _, opt := range opts {
 		if opt != nil {
 			opt(c)
@@ -187,11 +187,12 @@ func (c *Client) NewSafeRequest(method Method, rawURL string, opts ...RequestOpt
 	if c == nil {
 		return NewSafeRequest(method, rawURL, opts...)
 	}
-	safe := make([]RequestOption, 0, 3+len(c.opts)+len(opts))
+	safe := make([]RequestOption, 0, 4+len(c.opts)+len(opts))
 	safe = append(safe,
 		WithURLPolicy(URLPolicy{AllowedSchemes: []string{"http", "https"}, RejectPrivate: true}),
 		WithTimeout(10*time.Second),
 		WithMaxRedirects(10),
+		WithMaxResponseBytes(defaultGlobalMaxResponseBytes),
 	)
 	safe = append(safe, c.opts...)
 	safe = append(safe, opts...)
@@ -242,6 +243,7 @@ func WithGlobalConfig(cfg GlobalConfig) RequestOption {
 		r.followRedir = &follow
 		r.maxRedirects = cfg.MaxRedirects
 		r.userAgent = cfg.DefaultUserAgent
+		r.decodeConfig = responseDecodeConfigFromGlobal(cfg)
 	}
 }
 
@@ -256,7 +258,7 @@ func NewRequest(method Method, rawURL string, opts ...RequestOption) *HTTPReques
 
 // NewIsolatedRequest creates a request without reading package-level global defaults.
 func NewIsolatedRequest(method Method, rawURL string, opts ...RequestOption) *HTTPRequest {
-	return NewRequestWithConfig(method, rawURL, GlobalConfig{FollowRedirects: true, MaxRedirects: 10}, opts...)
+	return NewRequestWithConfig(method, rawURL, GlobalConfig{FollowRedirects: true, MaxRedirects: 10, MaxResponseBytes: defaultGlobalMaxResponseBytes}, opts...)
 }
 
 // NewRequestWithConfig creates a request from an explicit global configuration snapshot.
@@ -315,11 +317,12 @@ func PostSafe(rawURL string, opts ...RequestOption) *HTTPRequest {
 
 // NewSafeRequest creates a request with SSRF-oriented safety checks enabled.
 func NewSafeRequest(method Method, rawURL string, opts ...RequestOption) *HTTPRequest {
-	safe := make([]RequestOption, 0, 3+len(opts))
+	safe := make([]RequestOption, 0, 4+len(opts))
 	safe = append(safe,
 		WithURLPolicy(URLPolicy{AllowedSchemes: []string{"http", "https"}, RejectPrivate: true}),
 		WithTimeout(10*time.Second),
 		WithMaxRedirects(10),
+		WithMaxResponseBytes(defaultGlobalMaxResponseBytes),
 	)
 	safe = append(safe, opts...)
 	return NewRequest(method, rawURL, safe...)
@@ -1144,7 +1147,7 @@ func publicHostIPs(ctx context.Context, policy *URLPolicy, host string) ([]net.I
 }
 
 func isPrivateIP(ip net.IP) bool {
-	return ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || ip.IsUnspecified()
+	return ip == nil || !ip.IsGlobalUnicast() || ip.IsPrivate()
 }
 
 func toString(v any) string {

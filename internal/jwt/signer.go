@@ -101,11 +101,21 @@ func (s *hmacSigner) Verify(headerB64, payloadB64, signB64 string) bool {
 	return subtle.ConstantTimeCompare([]byte(expected), []byte(signB64)) == 1
 }
 
-// CreateSigner 根据算法 ID 与 HMAC key 自动选择签名器（仅支持 HS* 与 none）。
+// CreateSigner 根据算法 ID 与 HMAC key 自动选择签名器（仅支持 HS*）。
+// The none algorithm is rejected by default; use NoneSigner explicitly for trusted none tokens.
 //
 // 非对称算法请使用 NewRSAPSSSigner / NewECDSASigner，
 // 或 JWTSignerUtil 提供的 PS256/ES256 等便捷工厂。
 func CreateSigner(algorithmID string, key []byte) (JWTSigner, error) {
+	if IsNoneAlg(algorithmID) {
+		return nil, NewJWTError("jwt alg=none requires explicit none signer opt-in")
+	}
+	return NewHMACSigner(algorithmID, key)
+}
+
+// CreateSignerAllowNoneForTrustedToken creates a signer and explicitly opts in to alg=none.
+// Only use this for already trusted none tokens; untrusted tokens should use CreateSigner.
+func CreateSignerAllowNoneForTrustedToken(algorithmID string, key []byte) (JWTSigner, error) {
 	if IsNoneAlg(algorithmID) {
 		return NoneSigner(), nil
 	}

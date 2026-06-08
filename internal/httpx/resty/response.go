@@ -36,11 +36,11 @@ func readAllWithLimit(r io.Reader, maxBytes int64, readAll func(io.Reader) ([]by
 	}
 	limited := &io.LimitedReader{R: r, N: maxBytes + 1}
 	data, err := readAll(limited)
-	if err != nil {
-		return nil, err
-	}
 	if int64(len(data)) > maxBytes {
 		return nil, HTTPErrorf("response body exceeds max bytes: %d", maxBytes)
+	}
+	if err != nil {
+		return data, err
 	}
 	return data, nil
 }
@@ -192,6 +192,9 @@ func (r *HTTPResponse) ContentLength() int64 {
 
 // Bytes reads and returns the response body bytes.
 func (r *HTTPResponse) Bytes() []byte {
+	if r.err != nil {
+		return nil
+	}
 	if r.resp == nil {
 		return nil
 	}

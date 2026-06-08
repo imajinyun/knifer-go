@@ -355,6 +355,10 @@ func applyUnzipOptions(opts []ArchiveOption) archiveConfig {
 	return cfg
 }
 
+func applyDecompressOptions(opts []ArchiveOption) archiveConfig {
+	return applyUnzipOptions(opts)
+}
+
 // Open opens a ZIP file for reading.
 func Open(path string) (*archivezip.ReadCloser, error) { return OpenWithOptions(path) }
 
@@ -724,7 +728,7 @@ func GetBytesWithOptions(zipFile, name string, opts ...ArchiveOption) ([]byte, e
 		return nil, err
 	}
 	defer func() { _ = rc.Close() }()
-	return readAllLimit(rc, applyArchiveOptions(opts).maxBytes)
+	return readAllLimit(rc, applyDecompressOptions(opts).maxBytes)
 }
 
 // Read walks every archive entry and calls consumer.
@@ -863,7 +867,7 @@ func UnGzipReaderWithOptions(r io.Reader, estimatedLength int, opts ...ArchiveOp
 	if estimatedLength <= 0 {
 		estimatedLength = defaultBufferSize
 	}
-	cfg := applyArchiveOptions(opts)
+	cfg := applyDecompressOptions(opts)
 	zr, err := gzip.NewReader(r)
 	if err != nil {
 		return nil, err
@@ -954,7 +958,7 @@ func UnZlibReaderWithOptions(r io.Reader, estimatedLength int, opts ...ArchiveOp
 	if estimatedLength <= 0 {
 		estimatedLength = defaultBufferSize
 	}
-	cfg := applyArchiveOptions(opts)
+	cfg := applyDecompressOptions(opts)
 	zr, err := zlib.NewReader(r)
 	if err != nil {
 		return nil, err

@@ -66,8 +66,11 @@ func TestNoneSigner(t *testing.T) {
 }
 
 func TestCreateSigner(t *testing.T) {
-	if _, ok := must(CreateSigner("none", nil))(t).(noneSigner); !ok {
-		t.Fatalf("expected noneSigner")
+	if _, err := CreateSigner("none", nil); err == nil {
+		t.Fatalf("CreateSigner should reject none by default")
+	}
+	if _, ok := must(CreateSignerAllowNoneForTrustedToken("none", nil))(t).(noneSigner); !ok {
+		t.Fatalf("expected explicit opt-in noneSigner")
 	}
 	if IsNoneAlg("") {
 		t.Fatalf("empty alg must not be treated as none")

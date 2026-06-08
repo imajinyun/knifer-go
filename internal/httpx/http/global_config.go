@@ -11,6 +11,7 @@ var (
 	globalMu               sync.RWMutex
 	globalTimeout          = defaultGlobalTimeout // 0 means using the HTTP client's default timeout.
 	globalMaxRedirects     = defaultGlobalMaxRedirects
+	globalMaxResponseBytes = int64(defaultGlobalMaxResponseBytes)
 	globalIgnoreEOFError   = true
 	globalDecodeURL        = false
 	globalFollowRedirects  = true
@@ -19,15 +20,17 @@ var (
 )
 
 const (
-	defaultGlobalTimeout      = 0 * time.Second
-	defaultGlobalMaxRedirects = 10
-	defaultGlobalBoundary     = "--------------------gokitFormBoundary"
+	defaultGlobalTimeout          = 0 * time.Second
+	defaultGlobalMaxRedirects     = 10
+	defaultGlobalMaxResponseBytes = 64 << 20
+	defaultGlobalBoundary         = "--------------------gokitFormBoundary"
 )
 
 // GlobalConfig is an immutable snapshot of package-level HTTP defaults.
 type GlobalConfig struct {
 	Timeout          time.Duration
 	MaxRedirects     int
+	MaxResponseBytes int64
 	IgnoreEOFError   bool
 	DecodeURL        bool
 	FollowRedirects  bool
@@ -43,6 +46,7 @@ func SnapshotGlobalConfig() GlobalConfig {
 	cfg := GlobalConfig{
 		Timeout:          globalTimeout,
 		MaxRedirects:     globalMaxRedirects,
+		MaxResponseBytes: globalMaxResponseBytes,
 		IgnoreEOFError:   globalIgnoreEOFError,
 		DecodeURL:        globalDecodeURL,
 		FollowRedirects:  globalFollowRedirects,
@@ -76,6 +80,7 @@ func defaultGlobalConfig() GlobalConfig {
 	return GlobalConfig{
 		Timeout:          defaultGlobalTimeout,
 		MaxRedirects:     defaultGlobalMaxRedirects,
+		MaxResponseBytes: defaultGlobalMaxResponseBytes,
 		IgnoreEOFError:   true,
 		DecodeURL:        false,
 		FollowRedirects:  true,
@@ -90,6 +95,7 @@ func applyGlobalConfig(cfg GlobalConfig) {
 	globalMu.Lock()
 	globalTimeout = cfg.Timeout
 	globalMaxRedirects = cfg.MaxRedirects
+	globalMaxResponseBytes = cfg.MaxResponseBytes
 	globalIgnoreEOFError = cfg.IgnoreEOFError
 	globalDecodeURL = cfg.DecodeURL
 	globalFollowRedirects = cfg.FollowRedirects
@@ -130,6 +136,21 @@ func GetGlobalMaxRedirects() int {
 	globalMu.RLock()
 	defer globalMu.RUnlock()
 	return globalMaxRedirects
+}
+
+// SetGlobalMaxResponseBytes sets the global maximum response bytes read by response Bytes/Body helpers.
+// Non-positive values disable the limit.
+func SetGlobalMaxResponseBytes(n int64) {
+	globalMu.Lock()
+	defer globalMu.Unlock()
+	globalMaxResponseBytes = n
+}
+
+// GetGlobalMaxResponseBytes returns the global maximum response bytes read by response Bytes/Body helpers.
+func GetGlobalMaxResponseBytes() int64 {
+	globalMu.RLock()
+	defer globalMu.RUnlock()
+	return globalMaxResponseBytes
 }
 
 // SetGlobalFollowRedirects sets whether redirects are followed.

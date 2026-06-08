@@ -729,6 +729,12 @@ func TestLoadRemoteSafeRejectsPrivateHostsAndUnsafeRedirects(t *testing.T) {
 	if _, err := LoadRemoteSafe(server.URL + "/app.yaml"); err == nil {
 		t.Fatal("LoadRemoteSafe should reject private hosts by default")
 	}
+	if _, err := LoadRemoteSafe("http://224.0.0.1/app.yaml"); err == nil {
+		t.Fatal("LoadRemoteSafe should reject multicast hosts by default")
+	}
+	if _, err := LoadRemoteSafe("http://0.0.0.0/app.yaml"); err == nil {
+		t.Fatal("LoadRemoteSafe should reject unspecified hosts by default")
+	}
 	remoteURL, err := url.Parse(server.URL)
 	if err != nil {
 		t.Fatal(err)

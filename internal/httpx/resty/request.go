@@ -42,6 +42,7 @@ type HTTPRequest struct {
 	jsonUnmarshal func([]byte, any) error
 	jsonReadAll   func(io.Reader) ([]byte, error)
 	maxDecode     int64
+	maxResponse   int64
 	urlPolicy     *URLPolicy
 	result        any
 	errorResult   any
@@ -131,11 +132,12 @@ func (c *Client) NewSafeRequest(method Method, rawURL string, opts ...RequestOpt
 	if c == nil {
 		return NewSafeRequest(method, rawURL, opts...)
 	}
-	safe := make([]RequestOption, 0, 3+len(c.opts)+len(opts))
+	safe := make([]RequestOption, 0, 4+len(c.opts)+len(opts))
 	safe = append(safe,
 		WithURLPolicy(URLPolicy{AllowedSchemes: []string{"http", "https"}, RejectPrivate: true}),
 		WithTimeout(10*time.Second),
 		WithMaxRedirects(10),
+		WithMaxResponseBytes(defaultGlobalMaxResponseBytes),
 	)
 	safe = append(safe, c.opts...)
 	safe = append(safe, opts...)
@@ -192,6 +194,7 @@ func NewRequestWithConfig(method Method, rawURL string, cfg GlobalConfig, opts .
 		timeout:      cfg.Timeout,
 		followRedir:  &follow,
 		maxRedirects: cfg.MaxRedirects,
+		maxResponse:  cfg.MaxResponseBytes,
 		userAgent:    cfg.DefaultUserAgent,
 		cookieOff:    cfg.CookieDisabled,
 	}
@@ -211,6 +214,7 @@ func WithGlobalConfig(cfg GlobalConfig) RequestOption {
 		r.timeout = cfg.Timeout
 		r.followRedir = &follow
 		r.maxRedirects = cfg.MaxRedirects
+		r.maxResponse = cfg.MaxResponseBytes
 		r.userAgent = cfg.DefaultUserAgent
 		r.cookieOff = cfg.CookieDisabled
 	}
@@ -242,11 +246,12 @@ func PostSafe(rawURL string, opts ...RequestOption) *HTTPRequest {
 
 // NewSafeRequest creates a request with SSRF-oriented safety checks enabled.
 func NewSafeRequest(method Method, rawURL string, opts ...RequestOption) *HTTPRequest {
-	safe := make([]RequestOption, 0, 3+len(opts))
+	safe := make([]RequestOption, 0, 4+len(opts))
 	safe = append(safe,
 		WithURLPolicy(URLPolicy{AllowedSchemes: []string{"http", "https"}, RejectPrivate: true}),
 		WithTimeout(10*time.Second),
 		WithMaxRedirects(10),
+		WithMaxResponseBytes(defaultGlobalMaxResponseBytes),
 	)
 	safe = append(safe, opts...)
 	return NewRequest(method, rawURL, safe...)
@@ -377,6 +382,11 @@ func WithJSONDecodeReadAllFunc(readAll func(io.Reader) ([]byte, error)) RequestO
 // WithMaxDecodeBytes limits bytes read before custom JSON unmarshalling. Non-positive means unlimited.
 func WithMaxDecodeBytes(maxBytes int64) RequestOption {
 	return func(r *HTTPRequest) { r.maxDecode = maxBytes }
+}
+
+// WithMaxResponseBytes limits response bytes read into memory. Non-positive means unlimited.
+func WithMaxResponseBytes(maxBytes int64) RequestOption {
+	return func(r *HTTPRequest) { r.maxResponse = maxBytes }
 }
 
 // WithURLPolicy sets SSRF-oriented validation for the request URL and redirect targets.
@@ -601,6 +611,9 @@ func (r *HTTPRequest) buildClient() *grestry.Client {
 	if r.timeout > 0 {
 		c.SetTimeout(r.timeout)
 	}
+	if r.maxResponse != 0 {
+		c.SetResponseBodyLimit(r.maxResponse)
+	}
 	if r.tlsConfig != nil {
 		c.SetTLSClientConfig(r.tlsConfig.Clone())
 	}
@@ -671,6 +684,9 @@ func (r *HTTPRequest) doExecute() (*HTTPResponse, error) {
 		return nil, err
 	}
 	req := r.buildClient().R()
+	if r.maxResponse != 0 {
+		req.SetResponseBodyLimit(r.maxResponse)
+	}
 	for k, vs := range r.headers {
 		for _, v := range vs {
 			req.SetHeader(k, v)
@@ -925,5 +941,5 @@ func publicHostIPs(ctx context.Context, policy *URLPolicy, host string) ([]net.I
 }
 
 func isPrivateIP(ip net.IP) bool {
-	return ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || ip.IsUnspecified()
+	return ip == nil || !ip.IsGlobalUnicast() || ip.IsPrivate()
 }

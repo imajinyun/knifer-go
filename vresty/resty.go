@@ -338,6 +338,11 @@ func WithMaxDecodeBytes(maxBytes int64) RequestOption {
 	return restyimpl.WithMaxDecodeBytes(maxBytes)
 }
 
+// WithMaxResponseBytes limits response bytes read into memory. Non-positive means unlimited.
+func WithMaxResponseBytes(maxBytes int64) RequestOption {
+	return restyimpl.WithMaxResponseBytes(maxBytes)
+}
+
 // WithURLPolicy sets SSRF-oriented validation for the request URL and redirect targets.
 func WithURLPolicy(policy URLPolicy) RequestOption { return restyimpl.WithURLPolicy(policy) }
 
@@ -619,6 +624,13 @@ func SetGlobalMaxRedirects(n int) { restyimpl.SetGlobalMaxRedirects(n) }
 
 // GetGlobalMaxRedirects returns the global maximum redirect count.
 func GetGlobalMaxRedirects() int { return restyimpl.GetGlobalMaxRedirects() }
+
+// SetGlobalMaxResponseBytes sets the global maximum response bytes read into memory.
+// Non-positive values disable the limit.
+func SetGlobalMaxResponseBytes(n int64) { restyimpl.SetGlobalMaxResponseBytes(n) }
+
+// GetGlobalMaxResponseBytes returns the global maximum response bytes read into memory.
+func GetGlobalMaxResponseBytes() int64 { return restyimpl.GetGlobalMaxResponseBytes() }
 
 // SetGlobalFollowRedirects sets whether redirects are followed globally.
 func SetGlobalFollowRedirects(b bool) { restyimpl.SetGlobalFollowRedirects(b) }

@@ -12,6 +12,7 @@ type HeaderValues map[string][]string
 type GlobalConfig struct {
 	Timeout          time.Duration
 	MaxRedirects     int
+	MaxResponseBytes int64
 	FollowRedirects  bool
 	DefaultUserAgent string
 	Headers          HeaderValues
@@ -22,6 +23,7 @@ var (
 	globalMu               sync.RWMutex
 	globalTimeout          = defaultGlobalTimeout
 	globalMaxRedirects     = defaultGlobalMaxRedirects
+	globalMaxResponseBytes = int64(defaultGlobalMaxResponseBytes)
 	globalFollowRedirects  = defaultGlobalFollowRedirects
 	globalDefaultUserAgent = ""
 
@@ -33,9 +35,10 @@ var (
 )
 
 const (
-	defaultGlobalTimeout         = 0 * time.Second
-	defaultGlobalMaxRedirects    = 10
-	defaultGlobalFollowRedirects = true
+	defaultGlobalTimeout          = 0 * time.Second
+	defaultGlobalMaxRedirects     = 10
+	defaultGlobalMaxResponseBytes = 64 << 20
+	defaultGlobalFollowRedirects  = true
 )
 
 func defaultGlobalHeaders() HeaderValues {
@@ -55,6 +58,7 @@ func SnapshotGlobalConfig() GlobalConfig {
 	cfg := GlobalConfig{
 		Timeout:          globalTimeout,
 		MaxRedirects:     globalMaxRedirects,
+		MaxResponseBytes: globalMaxResponseBytes,
 		FollowRedirects:  globalFollowRedirects,
 		DefaultUserAgent: globalDefaultUserAgent,
 	}
@@ -85,6 +89,7 @@ func defaultGlobalConfig() GlobalConfig {
 	return GlobalConfig{
 		Timeout:          defaultGlobalTimeout,
 		MaxRedirects:     defaultGlobalMaxRedirects,
+		MaxResponseBytes: defaultGlobalMaxResponseBytes,
 		FollowRedirects:  defaultGlobalFollowRedirects,
 		DefaultUserAgent: "",
 		Headers:          defaultGlobalHeaders(),
@@ -96,6 +101,7 @@ func applyGlobalConfig(cfg GlobalConfig) {
 	globalMu.Lock()
 	globalTimeout = cfg.Timeout
 	globalMaxRedirects = cfg.MaxRedirects
+	globalMaxResponseBytes = cfg.MaxResponseBytes
 	globalFollowRedirects = cfg.FollowRedirects
 	globalDefaultUserAgent = cfg.DefaultUserAgent
 	globalMu.Unlock()
@@ -110,7 +116,7 @@ func applyGlobalConfig(cfg GlobalConfig) {
 }
 
 func isolatedGlobalConfig() GlobalConfig {
-	return GlobalConfig{FollowRedirects: defaultGlobalFollowRedirects, MaxRedirects: defaultGlobalMaxRedirects}
+	return GlobalConfig{FollowRedirects: defaultGlobalFollowRedirects, MaxRedirects: defaultGlobalMaxRedirects, MaxResponseBytes: defaultGlobalMaxResponseBytes}
 }
 
 func cloneHeaders(headers HeaderValues) HeaderValues {
@@ -139,6 +145,21 @@ func GetGlobalMaxRedirects() int {
 	globalMu.RLock()
 	defer globalMu.RUnlock()
 	return globalMaxRedirects
+}
+
+// SetGlobalMaxResponseBytes sets the global maximum response bytes read into memory.
+// Non-positive values disable the limit.
+func SetGlobalMaxResponseBytes(n int64) {
+	globalMu.Lock()
+	defer globalMu.Unlock()
+	globalMaxResponseBytes = n
+}
+
+// GetGlobalMaxResponseBytes returns the global maximum response bytes read into memory.
+func GetGlobalMaxResponseBytes() int64 {
+	globalMu.RLock()
+	defer globalMu.RUnlock()
+	return globalMaxResponseBytes
 }
 
 // SetGlobalFollowRedirects sets whether redirects are followed.

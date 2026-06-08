@@ -281,6 +281,7 @@ func TestFacadeScopedGlobalConfig(t *testing.T) {
 	vhttp.WithScopedGlobalConfig(vhttp.GlobalConfig{
 		Timeout:          3 * time.Second,
 		MaxRedirects:     1,
+		MaxResponseBytes: 32,
 		IgnoreEOFError:   true,
 		FollowRedirects:  false,
 		DefaultUserAgent: "facade-scope-agent",
@@ -289,13 +290,13 @@ func TestFacadeScopedGlobalConfig(t *testing.T) {
 		CookieJar:        nil,
 	}, func() {
 		cfg := vhttp.SnapshotGlobalConfig()
-		if cfg.Timeout != 3*time.Second || cfg.MaxRedirects != 1 || cfg.FollowRedirects || cfg.DefaultUserAgent != "facade-scope-agent" || cfg.Headers.Get("X-Facade-Scope") != "inner" || cfg.CookieJar != nil {
+		if cfg.Timeout != 3*time.Second || cfg.MaxRedirects != 1 || cfg.MaxResponseBytes != 32 || cfg.FollowRedirects || cfg.DefaultUserAgent != "facade-scope-agent" || cfg.Headers.Get("X-Facade-Scope") != "inner" || cfg.CookieJar != nil {
 			t.Fatalf("facade scoped config = %#v", cfg)
 		}
 	})
 
 	cfg := vhttp.SnapshotGlobalConfig()
-	if cfg.Timeout != 0 || cfg.MaxRedirects != 10 || !cfg.FollowRedirects || cfg.Headers.Get("X-Facade-Scope") != "" || cfg.CookieJar == nil {
+	if cfg.Timeout != 0 || cfg.MaxRedirects != 10 || cfg.MaxResponseBytes != 64<<20 || !cfg.FollowRedirects || cfg.Headers.Get("X-Facade-Scope") != "" || cfg.CookieJar == nil {
 		t.Fatalf("facade config not restored after scoped helper: %#v", cfg)
 	}
 }
