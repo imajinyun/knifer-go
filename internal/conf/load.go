@@ -3,6 +3,7 @@ package conf
 import (
 	"context"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -33,6 +34,12 @@ type LoadOptions struct {
 	Headers http.Header
 	// RequestFactory optionally builds remote config requests. When set, Headers are applied after factory creation.
 	RequestFactory func(ctx context.Context, rawURL string) (*http.Request, error)
+	// RemoteAllowedHosts restricts remote config HTTP(S) hosts when non-empty.
+	RemoteAllowedHosts []string
+	// RejectPrivateRemoteHosts rejects localhost, loopback, private, and link-local HTTP(S) hosts unless allowed explicitly.
+	RejectPrivateRemoteHosts bool
+	// CheckRemoteRedirect validates redirect targets with the same remote URL policy.
+	CheckRemoteRedirect bool
 	// Timeout bounds remote loading when RemoteClient has no timeout.
 	Timeout time.Duration
 	// MaxBytes limits local and remote config bytes. Zero uses DefaultMaxBytes; negative disables the limit explicitly.
@@ -70,6 +77,19 @@ func LoadRemote(rawURL string) (*Conf, error) { return LoadRemoteWithOptions(raw
 
 // LoadRemoteWithOptions loads configuration from an HTTP(S) URL with options.
 func LoadRemoteWithOptions(rawURL string, opts LoadOptions) (*Conf, error) {
+	opts = normalizeLoadOptions(opts)
+	return loadRemote(rawURL, opts)
+}
+
+// LoadRemoteSafe loads configuration from an HTTP(S) URL with SSRF-oriented safety checks enabled.
+func LoadRemoteSafe(rawURL string) (*Conf, error) {
+	return LoadRemoteSafeWithOptions(rawURL, LoadOptions{})
+}
+
+// LoadRemoteSafeWithOptions loads configuration from an HTTP(S) URL with SSRF-oriented safety checks enabled.
+func LoadRemoteSafeWithOptions(rawURL string, opts LoadOptions) (*Conf, error) {
+	opts.RejectPrivateRemoteHosts = true
+	opts.CheckRemoteRedirect = true
 	opts = normalizeLoadOptions(opts)
 	return loadRemote(rawURL, opts)
 }
@@ -155,6 +175,9 @@ func loadFile(path string, opts LoadOptions, seen map[string]bool) (*Conf, error
 }
 
 func loadRemote(rawURL string, opts LoadOptions) (*Conf, error) {
+	if err := validateRemoteConfigURL(rawURL, opts); err != nil {
+		return nil, err
+	}
 	client := opts.RemoteClient
 	if client == nil {
 		client = http.DefaultClient
@@ -185,10 +208,26 @@ func loadRemote(rawURL string, opts LoadOptions) (*Conf, error) {
 	if req.Context() != ctx {
 		req = req.WithContext(ctx)
 	}
+	if req.URL == nil {
+		return nil, invalidInputf("invalid remote config url %s: request url is nil", rawURL)
+	}
+	if err := validateRemoteConfigURL(req.URL.String(), opts); err != nil {
+		return nil, err
+	}
 	for key, values := range opts.Headers {
 		for _, value := range values {
 			req.Header.Add(key, value)
 		}
+	}
+	if opts.CheckRemoteRedirect {
+		clone := *client
+		clone.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+			if req.URL == nil {
+				return invalidInputf("invalid remote config redirect: request url is nil")
+			}
+			return validateRemoteConfigURL(req.URL.String(), opts)
+		}
+		client = &clone
 	}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -211,6 +250,67 @@ func loadRemote(rawURL string, opts LoadOptions) (*Conf, error) {
 		return nil, err
 	}
 	return c.DecryptValues(opts.Decrypt)
+}
+
+func validateRemoteConfigURL(rawURL string, opts LoadOptions) error {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return invalidInputf("invalid remote config url %s: %s", rawURL, err.Error())
+	}
+	scheme := strings.ToLower(strings.TrimSpace(u.Scheme))
+	if scheme != "http" && scheme != "https" {
+		return invalidInputf("remote config url scheme %q is not allowed", scheme)
+	}
+	host := strings.ToLower(u.Hostname())
+	if host == "" {
+		return invalidInputf("remote config url host is blank")
+	}
+	if len(opts.RemoteAllowedHosts) > 0 && !containsFold(opts.RemoteAllowedHosts, host) {
+		return invalidInputf("remote config host %q is not allowed", host)
+	}
+	if opts.RejectPrivateRemoteHosts && !containsFold(opts.RemoteAllowedHosts, host) {
+		private, err := isPrivateHost(host)
+		if err != nil {
+			return invalidInputf("resolve remote config host %q: %s", host, err.Error())
+		}
+		if private {
+			return invalidInputf("remote config host %q resolves to a private address", host)
+		}
+	}
+	return nil
+}
+
+func containsFold(values []string, target string) bool {
+	target = strings.TrimSpace(target)
+	for _, value := range values {
+		if strings.EqualFold(strings.TrimSpace(value), target) {
+			return true
+		}
+	}
+	return false
+}
+
+func isPrivateHost(host string) (bool, error) {
+	if strings.EqualFold(host, "localhost") {
+		return true, nil
+	}
+	if ip := net.ParseIP(host); ip != nil {
+		return isPrivateIP(ip), nil
+	}
+	ips, err := net.LookupIP(host)
+	if err != nil {
+		return false, err
+	}
+	for _, ip := range ips {
+		if isPrivateIP(ip) {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+func isPrivateIP(ip net.IP) bool {
+	return ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || ip.IsUnspecified()
 }
 
 func readFileLimit(path string, maxBytes int64) ([]byte, error) {

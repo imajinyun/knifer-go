@@ -1,6 +1,7 @@
 package bloomfilter
 
 import (
+	"fmt"
 	"os"
 
 	knifer "github.com/imajinyun/go-knifer"
@@ -67,4 +68,8 @@ func wrapBloomFilterIO(msg string, cause error) error {
 		code = knifer.ErrCodeNotFound
 	}
 	return wrapBloomFilterError(code, msg, cause)
+}
+
+func invalidInputf(format string, args ...any) error {
+	return &BloomFilterError{Code: knifer.ErrCodeInvalidInput, Msg: fmt.Sprintf(format, args...)}
 }

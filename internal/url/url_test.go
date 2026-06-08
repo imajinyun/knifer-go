@@ -133,6 +133,54 @@ func TestResourceRequestFactoryOption(t *testing.T) {
 	}
 }
 
+func TestOpenSafeRejectsLocalAndPrivateResources(t *testing.T) {
+	if _, err := OpenSafe("file:///tmp/secret.txt"); err == nil {
+		t.Fatal("OpenSafe should reject file URLs")
+	}
+	if _, err := OpenSafe("/tmp/secret.txt"); err == nil {
+		t.Fatal("OpenSafe should reject plain file paths")
+	}
+	if _, err := OpenSafe("http://127.0.0.1/config.yaml"); err == nil {
+		t.Fatal("OpenSafe should reject loopback hosts by default")
+	}
+	if _, err := OpenSafe("ftp://example.com/config.yaml"); err == nil {
+		t.Fatal("OpenSafe should reject non-HTTP schemes")
+	}
+}
+
+func TestOpenSafeAllowsExplicitHostAndValidatesRedirects(t *testing.T) {
+	target := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("safe"))
+	}))
+	defer target.Close()
+	targetURL, err := url.Parse(target.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	r, err := OpenSafeWithOptions(target.URL, WithAllowedHosts(targetURL.Hostname()))
+	if err != nil {
+		t.Fatalf("OpenSafeWithOptions allow host: %v", err)
+	}
+	data, err := io.ReadAll(r)
+	_ = r.Close()
+	if err != nil || string(data) != "safe" {
+		t.Fatalf("safe body = %q, %v", data, err)
+	}
+
+	redirect := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "http://127.0.0.1/private", http.StatusFound)
+	}))
+	defer redirect.Close()
+	redirectURL, err := url.Parse(redirect.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := OpenSafeWithOptions(redirect.URL, WithAllowedHosts(redirectURL.Hostname())); err == nil {
+		t.Fatal("OpenSafeWithOptions should reject unsafe redirect target")
+	}
+}
+
 func TestQueryHelpers(t *testing.T) {
 	queryPart := URLEncode("a b&c=d")
 	if queryPart != "a+b%26c%3Dd" {

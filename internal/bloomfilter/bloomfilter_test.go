@@ -70,22 +70,29 @@ func TestBitSetBloomFilterFileOptions(t *testing.T) {
 	}
 }
 
-func TestBitSetBloomFilter_PanicOnInvalidParams(t *testing.T) {
-	cases := []func(){
-		func() { NewBitSetBloomFilter(0, 1, 1) },
-		func() { NewBitSetBloomFilter(1, 0, 1) },
-		func() { NewBitSetBloomFilter(1, 1, 0) },
-		func() { NewBitSetBloomFilter(1, 1, 9) },
+func TestBitSetBloomFilter_InvalidParamsReturnError(t *testing.T) {
+	cases := []struct {
+		name string
+		c    int
+		n    int
+		k    int
+	}{
+		{name: "zero capacity", c: 0, n: 1, k: 1},
+		{name: "zero expected", c: 1, n: 0, k: 1},
+		{name: "zero hash functions", c: 1, n: 1, k: 0},
+		{name: "too many hash functions", c: 1, n: 1, k: 9},
 	}
-	for i, fn := range cases {
-		func() {
-			defer func() {
-				if recover() == nil {
-					t.Fatalf("case %d should panic", i)
-				}
-			}()
-			fn()
-		}()
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			bf, err := NewBitSetBloomFilterE(tt.c, tt.n, tt.k)
+			if err == nil || bf != nil {
+				t.Fatalf("NewBitSetBloomFilterE() = %#v, %v; want nil invalid-input error", bf, err)
+			}
+			assertBloomFilterCode(t, err, knifer.ErrCodeInvalidInput)
+			if got := NewBitSetBloomFilter(tt.c, tt.n, tt.k); got != nil {
+				t.Fatalf("panic-compatible constructor should return nil on invalid input, got %#v", got)
+			}
+		})
 	}
 }
 
@@ -172,14 +179,28 @@ func TestFuncFilterWithOptionsUsesDefaultHash(t *testing.T) {
 	}
 }
 
-func TestFuncFilter_PanicOnUnknownMachineNum(t *testing.T) {
-	defer func() {
-		if recover() == nil {
-			t.Fatal("should panic for unknown machine number")
-		}
-	}()
-	NewFuncFilterWithMachineNum(1024, 16,
-		func(s string) int64 { return 0 })
+func TestFuncFilter_InvalidOptionsReturnError(t *testing.T) {
+	cases := []struct {
+		name       string
+		maxValue   int64
+		machineNum int
+	}{
+		{name: "zero max", maxValue: 0, machineNum: Machine32},
+		{name: "too large max", maxValue: 0x80000000, machineNum: Machine32},
+		{name: "unknown machine", maxValue: 1024, machineNum: 16},
+	}
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			f, err := NewFuncFilterWithMachineNumE(tt.maxValue, tt.machineNum, func(s string) int64 { return 0 })
+			if err == nil || f != nil {
+				t.Fatalf("NewFuncFilterWithMachineNumE() = %#v, %v; want nil invalid-input error", f, err)
+			}
+			assertBloomFilterCode(t, err, knifer.ErrCodeInvalidInput)
+			if got := NewFuncFilterWithMachineNum(tt.maxValue, tt.machineNum, func(s string) int64 { return 0 }); got != nil {
+				t.Fatalf("panic-compatible constructor should return nil on invalid input, got %#v", got)
+			}
+		})
+	}
 }
 
 func TestIntMapAndLongMap(t *testing.T) {

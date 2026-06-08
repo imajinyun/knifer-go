@@ -13,8 +13,9 @@ import (
 )
 
 const (
-	defaultBufferSize = 32
-	maxInt64          = int64(1<<63 - 1)
+	defaultBufferSize    = 32
+	DefaultUnzipMaxBytes = 1 << 30
+	maxInt64             = int64(1<<63 - 1)
 )
 
 // FileFilter decides whether a source path should be added to an archive.
@@ -74,6 +75,7 @@ type archiveConfig struct {
 	compressionMethod uint16
 	compressionLevel  int
 	maxBytes          int64
+	setMaxBytes       bool
 	open              OpenFunc
 	readFile          ReadFileFunc
 	openFile          OpenFileFunc
@@ -178,7 +180,12 @@ func WithCompressionLevel(level int) ArchiveOption {
 }
 
 // WithMaxBytes limits bytes read from archive entries or decompressed streams. Non-positive means unlimited.
-func WithMaxBytes(n int64) ArchiveOption { return func(c *archiveConfig) { c.maxBytes = n } }
+func WithMaxBytes(n int64) ArchiveOption {
+	return func(c *archiveConfig) {
+		c.maxBytes = n
+		c.setMaxBytes = true
+	}
+}
 
 // WithOpen sets the function used to open source files for reading.
 func WithOpen(open OpenFunc) ArchiveOption {
@@ -336,6 +343,14 @@ func applyArchiveOptions(opts []ArchiveOption) archiveConfig {
 	}
 	if cfg.createTemp == nil {
 		cfg.createTemp = defaultCreateTemp
+	}
+	return cfg
+}
+
+func applyUnzipOptions(opts []ArchiveOption) archiveConfig {
+	cfg := applyArchiveOptions(opts)
+	if !cfg.setMaxBytes {
+		cfg.maxBytes = DefaultUnzipMaxBytes
 	}
 	return cfg
 }
@@ -604,8 +619,10 @@ func Unzip(zipFile string) (string, error) {
 	return dest, UnzipTo(zipFile, dest)
 }
 
-// UnzipTo extracts zipFile into destDir.
-func UnzipTo(zipFile, destDir string) error { return UnzipToLimit(zipFile, destDir, -1) }
+// UnzipTo extracts zipFile into destDir with the default uncompressed-size limit.
+func UnzipTo(zipFile, destDir string) error {
+	return UnzipToWithOptions(zipFile, destDir)
+}
 
 // UnzipToLimit extracts zipFile into destDir and optionally limits total uncompressed size.
 func UnzipToLimit(zipFile, destDir string, limit int64) error {
@@ -614,7 +631,7 @@ func UnzipToLimit(zipFile, destDir string, limit int64) error {
 
 // UnzipToWithOptions extracts zipFile into destDir with per-call options.
 func UnzipToWithOptions(zipFile, destDir string, opts ...ArchiveOption) error {
-	cfg := applyArchiveOptions(opts)
+	cfg := applyUnzipOptions(opts)
 	r, err := cfg.openZipReader(zipFile)
 	if err != nil {
 		return err
@@ -625,7 +642,7 @@ func UnzipToWithOptions(zipFile, destDir string, opts ...ArchiveOption) error {
 
 // UnzipReaderTo extracts archive reader contents into destDir.
 func UnzipReaderTo(r *archivezip.Reader, destDir string) error {
-	return UnzipReaderToLimit(r, destDir, -1)
+	return UnzipReaderToWithOptions(r, destDir)
 }
 
 // UnzipReaderToLimit extracts archive reader contents into destDir and optionally limits total size.
@@ -635,7 +652,7 @@ func UnzipReaderToLimit(r *archivezip.Reader, destDir string, limit int64) error
 
 // UnzipReaderToWithOptions extracts archive reader contents into destDir with per-call options.
 func UnzipReaderToWithOptions(r *archivezip.Reader, destDir string, opts ...ArchiveOption) error {
-	cfg := applyArchiveOptions(opts)
+	cfg := applyUnzipOptions(opts)
 	if r == nil {
 		return invalidInputf("zip reader is nil")
 	}

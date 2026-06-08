@@ -12,6 +12,7 @@ import (
 type Scheduler struct {
 	mu          sync.Mutex
 	configMu    sync.RWMutex
+	runMu       sync.RWMutex
 	config      *Config
 	started     atomic.Bool
 	timer       *cronTimer
@@ -192,7 +193,9 @@ func (s *Scheduler) SetTimeZone(loc *time.Location) *Scheduler {
 // SetExecutor sets a custom execution function.
 func (s *Scheduler) SetExecutor(exec func(func())) *Scheduler {
 	if exec != nil {
+		s.runMu.Lock()
 		s.executor = exec
+		s.runMu.Unlock()
 	}
 	return s
 }
@@ -200,7 +203,9 @@ func (s *Scheduler) SetExecutor(exec func(func())) *Scheduler {
 // SetRunner sets the function used to launch the scheduler timer loop.
 func (s *Scheduler) SetRunner(runner func(func())) *Scheduler {
 	if runner != nil {
+		s.runMu.Lock()
 		s.runner = runner
+		s.runMu.Unlock()
 	}
 	return s
 }
@@ -364,12 +369,18 @@ func (s *Scheduler) Shutdown(ctx context.Context, clearTasks ...bool) error {
 
 // submit executes fn asynchronously through the current executor.
 func (s *Scheduler) submit(fn func()) {
-	s.executor(fn)
+	s.runMu.RLock()
+	exec := s.executor
+	s.runMu.RUnlock()
+	exec(fn)
 }
 
 func (s *Scheduler) run(fn func()) {
-	if s.runner != nil {
-		s.runner(fn)
+	s.runMu.RLock()
+	runner := s.runner
+	s.runMu.RUnlock()
+	if runner != nil {
+		runner(fn)
 		return
 	}
 	go fn()

@@ -31,6 +31,12 @@ func WithBloomFilters(filters ...BloomFilter) BitMapBloomFilterOption {
 // NewBitMapBloomFilterWithOptions creates a BitMapBloomFilter from functional options.
 // WithBitMapSize is required. If WithBloomFilters is omitted, the default filter set is used.
 func NewBitMapBloomFilterWithOptions(opts ...BitMapBloomFilterOption) *BitMapBloomFilter {
+	bf, _ := NewBitMapBloomFilterWithOptionsE(opts...)
+	return bf
+}
+
+// NewBitMapBloomFilterWithOptionsE creates a BitMapBloomFilter from functional options and returns validation errors.
+func NewBitMapBloomFilterWithOptionsE(opts ...BitMapBloomFilterOption) (*BitMapBloomFilter, error) {
 	cfg := bitMapBloomFilterConfig{}
 	for _, opt := range opts {
 		if opt != nil {
@@ -44,15 +50,24 @@ func NewBitMapBloomFilterWithOptions(opts ...BitMapBloomFilterOption) *BitMapBlo
 //
 // m is the M value in MB and controls the underlying BitMap size. Final bits = m/5 * 1024 * 1024 * 8.
 func NewBitMapBloomFilter(m int) *BitMapBloomFilter {
-	return NewBitMapBloomFilterWithOptions(WithBitMapSize(m))
+	bf, _ := NewBitMapBloomFilterE(m)
+	return bf
 }
 
-func newBitMapBloomFilterWithConfig(cfg bitMapBloomFilterConfig) *BitMapBloomFilter {
+// NewBitMapBloomFilterE uses five default filters and returns validation errors.
+func NewBitMapBloomFilterE(m int) (*BitMapBloomFilter, error) {
+	return NewBitMapBloomFilterWithOptionsE(WithBitMapSize(m))
+}
+
+func newBitMapBloomFilterWithConfig(cfg bitMapBloomFilterConfig) (*BitMapBloomFilter, error) {
+	if cfg.m < 5 && len(cfg.filters) == 0 {
+		return nil, invalidInputf("bitmap size m must be at least 5 when using default filters")
+	}
 	filters := cfg.filters
 	if len(filters) == 0 {
 		filters = defaultBitMapBloomFilters(cfg.m)
 	}
-	return &BitMapBloomFilter{filters: filters}
+	return &BitMapBloomFilter{filters: filters}, nil
 }
 
 func defaultBitMapBloomFilters(m int) []BloomFilter {
@@ -70,7 +85,13 @@ func defaultBitMapBloomFilters(m int) []BloomFilter {
 // NewBitMapBloomFilterWithFilters creates a BitMapBloomFilter with custom filters.
 // It keeps the utility toolkit-compatible m validation while replacing the default filter set.
 func NewBitMapBloomFilterWithFilters(m int, filters ...BloomFilter) *BitMapBloomFilter {
-	return NewBitMapBloomFilterWithOptions(WithBitMapSize(m), WithBloomFilters(filters...))
+	bf, _ := NewBitMapBloomFilterWithFiltersE(m, filters...)
+	return bf
+}
+
+// NewBitMapBloomFilterWithFiltersE creates a BitMapBloomFilter with custom filters and returns validation errors.
+func NewBitMapBloomFilterWithFiltersE(m int, filters ...BloomFilter) (*BitMapBloomFilter, error) {
+	return NewBitMapBloomFilterWithOptionsE(WithBitMapSize(m), WithBloomFilters(filters...))
 }
 
 // Add implements BloomFilter.Add. The value is considered added if any filter changes.

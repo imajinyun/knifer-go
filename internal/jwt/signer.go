@@ -53,7 +53,7 @@ func (noneSigner) Sign(headerB64, payloadB64 string) string          { return ""
 func (noneSigner) Verify(headerB64, payloadB64, signB64 string) bool { return signB64 == "" }
 
 // IsNoneAlg 判断算法 ID 是否为 none。
-func IsNoneAlg(alg string) bool { return strings.EqualFold(alg, AlgNone) || alg == "" }
+func IsNoneAlg(alg string) bool { return strings.EqualFold(strings.TrimSpace(alg), AlgNone) }
 
 // hmacSigner HMAC 系列签名器。
 type hmacSigner struct {

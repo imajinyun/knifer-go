@@ -1,7 +1,5 @@
 package bloomfilter
 
-import "fmt"
-
 // BloomFilter is the Bloom filter interface.
 type BloomFilter interface {
 	// Contains reports whether the string may exist in the filter.
@@ -61,6 +59,12 @@ func defaultFuncFilterConfig() funcFilterConfig {
 // NewFuncFilterWithOptions creates a FuncFilter from functional options.
 // WithMaxValue is required. If WithHashFunc is omitted, JavaDefaultHash is used.
 func NewFuncFilterWithOptions(opts ...FuncFilterOption) *FuncFilter {
+	f, _ := NewFuncFilterWithOptionsE(opts...)
+	return f
+}
+
+// NewFuncFilterWithOptionsE creates a FuncFilter from functional options and returns validation errors.
+func NewFuncFilterWithOptionsE(opts ...FuncFilterOption) (*FuncFilter, error) {
 	cfg := defaultFuncFilterConfig()
 	for _, opt := range opts {
 		if opt != nil {
@@ -72,17 +76,29 @@ func NewFuncFilterWithOptions(opts ...FuncFilterOption) *FuncFilter {
 
 // NewFuncFilter creates a FuncFilter with the default machine word size.
 func NewFuncFilter(maxValue int64, hashFunc HashFunc) *FuncFilter {
-	return NewFuncFilterWithOptions(WithMaxValue(maxValue), WithHashFunc(hashFunc))
+	f, _ := NewFuncFilterE(maxValue, hashFunc)
+	return f
+}
+
+// NewFuncFilterE creates a FuncFilter with the default machine word size and returns validation errors.
+func NewFuncFilterE(maxValue int64, hashFunc HashFunc) (*FuncFilter, error) {
+	return NewFuncFilterWithOptionsE(WithMaxValue(maxValue), WithHashFunc(hashFunc))
 }
 
 // NewFuncFilterWithMachineNum creates a FuncFilter with the specified machine word size.
 func NewFuncFilterWithMachineNum(maxValue int64, machineNum int, hashFunc HashFunc) *FuncFilter {
-	return NewFuncFilterWithOptions(WithMaxValue(maxValue), WithMachineNum(machineNum), WithHashFunc(hashFunc))
+	f, _ := NewFuncFilterWithMachineNumE(maxValue, machineNum, hashFunc)
+	return f
 }
 
-func newFuncFilterWithConfig(cfg funcFilterConfig) *FuncFilter {
+// NewFuncFilterWithMachineNumE creates a FuncFilter with the specified machine word size and returns validation errors.
+func NewFuncFilterWithMachineNumE(maxValue int64, machineNum int, hashFunc HashFunc) (*FuncFilter, error) {
+	return NewFuncFilterWithOptionsE(WithMaxValue(maxValue), WithMachineNum(machineNum), WithHashFunc(hashFunc))
+}
+
+func newFuncFilterWithConfig(cfg funcFilterConfig) (*FuncFilter, error) {
 	if cfg.maxValue < 1 || cfg.maxValue > 0x7FFFFFFF {
-		panic(fmt.Sprintf("maxValue must be between 1 and %d", int64(0x7FFFFFFF)))
+		return nil, invalidInputf("max value must be between 1 and %d", int64(0x7FFFFFFF))
 	}
 	capacity := int((cfg.maxValue + int64(cfg.machineNum) - 1) / int64(cfg.machineNum))
 	var bm BitMap
@@ -92,9 +108,9 @@ func newFuncFilterWithConfig(cfg funcFilterConfig) *FuncFilter {
 	case Machine64:
 		bm = NewLongMap(capacity)
 	default:
-		panic("Error Machine number!")
+		return nil, invalidInputf("machine number must be %d or %d", Machine32, Machine64)
 	}
-	return &FuncFilter{bm: bm, size: cfg.maxValue, hashFunc: cfg.hashFunc}
+	return &FuncFilter{bm: bm, size: cfg.maxValue, hashFunc: cfg.hashFunc}, nil
 }
 
 // hash calls the underlying hash function, applies modulo size, and returns an absolute value.

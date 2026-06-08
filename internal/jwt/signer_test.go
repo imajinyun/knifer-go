@@ -69,6 +69,12 @@ func TestCreateSigner(t *testing.T) {
 	if _, ok := must(CreateSigner("none", nil))(t).(noneSigner); !ok {
 		t.Fatalf("expected noneSigner")
 	}
+	if IsNoneAlg("") {
+		t.Fatalf("empty alg must not be treated as none")
+	}
+	if _, err := CreateSigner("", []byte("k")); err == nil {
+		t.Fatalf("expected error for empty alg")
+	}
 	s := must(CreateSigner(AlgHS256, []byte("k")))(t)
 	if s.Algorithm() != AlgHS256 {
 		t.Fatalf("alg: %s", s.Algorithm())

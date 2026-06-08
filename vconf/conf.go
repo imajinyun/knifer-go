@@ -77,6 +77,14 @@ func LoadRemoteWithOptions(rawURL string, opts LoadOptions) (*Conf, error) {
 	return confimpl.LoadRemoteWithOptions(rawURL, opts)
 }
 
+// LoadRemoteSafe loads configuration from an HTTP(S) URL with SSRF-oriented safety checks enabled.
+func LoadRemoteSafe(rawURL string) (*Conf, error) { return confimpl.LoadRemoteSafe(rawURL) }
+
+// LoadRemoteSafeWithOptions loads configuration from an HTTP(S) URL with SSRF-oriented safety checks enabled.
+func LoadRemoteSafeWithOptions(rawURL string, opts LoadOptions) (*Conf, error) {
+	return confimpl.LoadRemoteSafeWithOptions(rawURL, opts)
+}
+
 // Merge merges configurations in order. Later configurations override earlier ones.
 func Merge(configs ...*Conf) *Conf { return confimpl.Merge(configs...) }
 

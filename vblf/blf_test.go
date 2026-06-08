@@ -134,6 +134,20 @@ func TestFacadeBloomFilterErrorContract(t *testing.T) {
 	}
 }
 
+func TestFacadeBloomFilterConstructorsReturnValidationErrors(t *testing.T) {
+	bf, err := vblf.NewBitSetBloomFilterE(0, 1, 1)
+	if err == nil || bf != nil {
+		t.Fatalf("NewBitSetBloomFilterE = %#v, %v; want nil invalid-input error", bf, err)
+	}
+	assertFacadeBloomFilterCode(t, err, knifer.ErrCodeInvalidInput)
+
+	ff, err := vblf.NewFuncFilterWithMachineNumE(1024, 16, func(string) int64 { return 0 })
+	if err == nil || ff != nil {
+		t.Fatalf("NewFuncFilterWithMachineNumE = %#v, %v; want nil invalid-input error", ff, err)
+	}
+	assertFacadeBloomFilterCode(t, err, knifer.ErrCodeInvalidInput)
+}
+
 func assertFacadeBloomFilterCode(t *testing.T, err error, code knifer.ErrCode) {
 	t.Helper()
 	if err == nil {

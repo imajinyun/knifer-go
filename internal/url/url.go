@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	neturl "net/url"
 	"os"
@@ -53,6 +54,11 @@ type resourceConfig struct {
 	openFile       func(string) (io.ReadCloser, error)
 	stat           func(string) (os.FileInfo, error)
 	requestFactory func(context.Context, string, string) (*http.Request, error)
+	allowedSchemes []string
+	allowedHosts   []string
+	rejectPrivate  bool
+	allowLocal     bool
+	checkRedirect  bool
 }
 
 // ResourceOption customizes URL resource helpers such as OpenWithOptions and ContentLengthWithOptions.
@@ -115,8 +121,28 @@ func WithRequestFactory(factory func(context.Context, string, string) (*http.Req
 	return func(c *resourceConfig) { c.requestFactory = factory }
 }
 
+// WithAllowedSchemes restricts resource helpers to the provided URL schemes.
+func WithAllowedSchemes(schemes ...string) ResourceOption {
+	return func(c *resourceConfig) { c.allowedSchemes = append([]string(nil), schemes...) }
+}
+
+// WithAllowedHosts restricts HTTP(S) resource helpers to the provided host names.
+func WithAllowedHosts(hosts ...string) ResourceOption {
+	return func(c *resourceConfig) { c.allowedHosts = append([]string(nil), hosts...) }
+}
+
+// WithRejectPrivateHosts rejects localhost, loopback, private, and link-local HTTP(S) hosts unless explicitly allowed.
+func WithRejectPrivateHosts(reject bool) ResourceOption {
+	return func(c *resourceConfig) { c.rejectPrivate = reject }
+}
+
+// WithAllowLocalFiles controls whether file URLs and plain filesystem paths are allowed.
+func WithAllowLocalFiles(allow bool) ResourceOption {
+	return func(c *resourceConfig) { c.allowLocal = allow }
+}
+
 func applyResourceOptions(opts []ResourceOption) resourceConfig {
-	cfg := resourceConfig{ctx: context.Background(), client: http.DefaultClient, openFile: defaultOpenFile, stat: os.Stat, requestFactory: defaultRequestFactory}
+	cfg := resourceConfig{ctx: context.Background(), client: http.DefaultClient, openFile: defaultOpenFile, stat: os.Stat, requestFactory: defaultRequestFactory, allowLocal: true}
 	for _, opt := range opts {
 		if opt != nil {
 			opt(&cfg)
@@ -138,6 +164,19 @@ func applyResourceOptions(opts []ResourceOption) resourceConfig {
 		cfg.requestFactory = defaultRequestFactory
 	}
 	return cfg
+}
+
+func safeResourceOptions(opts []ResourceOption) []ResourceOption {
+	safe := make([]ResourceOption, 0, 6+len(opts))
+	safe = append(safe,
+		WithAllowedSchemes("http", "https"),
+		WithRejectPrivateHosts(true),
+		WithAllowLocalFiles(false),
+		WithCheckStatus(true),
+		WithTimeout(10*time.Second),
+		func(c *resourceConfig) { c.checkRedirect = true },
+	)
+	return append(safe, opts...)
 }
 
 func defaultOpenFile(path string) (io.ReadCloser, error) {
@@ -414,11 +453,22 @@ func Open(raw string) (io.ReadCloser, error) {
 	return OpenWithOptions(raw)
 }
 
+// OpenSafe opens an HTTP(S) URL with secure defaults for untrusted input.
+func OpenSafe(raw string) (io.ReadCloser, error) { return OpenSafeWithOptions(raw) }
+
+// OpenSafeWithOptions opens an HTTP(S) URL with secure defaults for untrusted input.
+func OpenSafeWithOptions(raw string, opts ...ResourceOption) (io.ReadCloser, error) {
+	return OpenWithOptions(raw, safeResourceOptions(opts)...)
+}
+
 // OpenWithOptions opens a URL resource with per-call options.
 func OpenWithOptions(raw string, opts ...ResourceOption) (io.ReadCloser, error) {
 	cfg := applyResourceOptions(opts)
 	u, err := neturl.Parse(raw)
 	if err != nil {
+		return nil, err
+	}
+	if err := validateResourceURL(u, cfg); err != nil {
 		return nil, err
 	}
 	if u.Scheme == "http" || u.Scheme == "https" {
@@ -441,6 +491,14 @@ func ContentLength(raw string) (int64, error) {
 	return ContentLengthWithOptions(raw)
 }
 
+// ContentLengthSafe returns an HTTP(S) resource content length with secure defaults for untrusted input.
+func ContentLengthSafe(raw string) (int64, error) { return ContentLengthSafeWithOptions(raw) }
+
+// ContentLengthSafeWithOptions returns an HTTP(S) resource content length with secure defaults for untrusted input.
+func ContentLengthSafeWithOptions(raw string, opts ...ResourceOption) (int64, error) {
+	return ContentLengthWithOptions(raw, safeResourceOptions(opts)...)
+}
+
 // ContentLengthWithOptions returns the resource content length with per-call options.
 func ContentLengthWithOptions(raw string, opts ...ResourceOption) (int64, error) {
 	cfg := applyResourceOptions(opts)
@@ -449,6 +507,9 @@ func ContentLengthWithOptions(raw string, opts ...ResourceOption) (int64, error)
 	}
 	u, err := neturl.Parse(raw)
 	if err != nil {
+		return -1, err
+	}
+	if err := validateResourceURL(u, cfg); err != nil {
 		return -1, err
 	}
 	if u.Scheme == "http" || u.Scheme == "https" {
@@ -495,12 +556,23 @@ func doResourceRequest(raw, method string, cfg resourceConfig) (*http.Response, 
 	if req.Context() != ctx {
 		req = req.WithContext(ctx)
 	}
+	if err := validateResourceURL(req.URL, cfg); err != nil {
+		return nil, err
+	}
 	for key, values := range cfg.headers {
 		for _, value := range values {
 			req.Header.Add(key, value)
 		}
 	}
-	resp, err := cfg.client.Do(req)
+	client := cfg.client
+	if cfg.checkRedirect {
+		clone := *client
+		clone.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+			return validateResourceURL(req.URL, cfg)
+		}
+		client = &clone
+	}
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -509,6 +581,72 @@ func doResourceRequest(raw, method string, cfg resourceConfig) (*http.Response, 
 		return nil, fmt.Errorf("unexpected http status %d for %s", resp.StatusCode, raw)
 	}
 	return resp, nil
+}
+
+func validateResourceURL(u *neturl.URL, cfg resourceConfig) error {
+	if u == nil {
+		return fmt.Errorf("url is nil")
+	}
+	scheme := strings.ToLower(strings.TrimSpace(u.Scheme))
+	if len(cfg.allowedSchemes) > 0 && !containsFold(cfg.allowedSchemes, scheme) {
+		return fmt.Errorf("url scheme %q is not allowed", scheme)
+	}
+	if scheme == "http" || scheme == "https" {
+		host := strings.ToLower(u.Hostname())
+		if host == "" {
+			return fmt.Errorf("http url host is blank")
+		}
+		if len(cfg.allowedHosts) > 0 && !containsFold(cfg.allowedHosts, host) {
+			return fmt.Errorf("url host %q is not allowed", host)
+		}
+		if cfg.rejectPrivate && !containsFold(cfg.allowedHosts, host) {
+			private, err := isPrivateHost(host)
+			if err != nil {
+				return err
+			}
+			if private {
+				return fmt.Errorf("url host %q resolves to a private address", host)
+			}
+		}
+		return nil
+	}
+	if !cfg.allowLocal && (scheme == "" || IsFileURL(u)) {
+		return fmt.Errorf("local file resources are not allowed")
+	}
+	return nil
+}
+
+func containsFold(values []string, target string) bool {
+	target = strings.TrimSpace(target)
+	for _, value := range values {
+		if strings.EqualFold(strings.TrimSpace(value), target) {
+			return true
+		}
+	}
+	return false
+}
+
+func isPrivateHost(host string) (bool, error) {
+	if strings.EqualFold(host, "localhost") {
+		return true, nil
+	}
+	if ip := net.ParseIP(host); ip != nil {
+		return isPrivateIP(ip), nil
+	}
+	ips, err := net.LookupIP(host)
+	if err != nil {
+		return false, fmt.Errorf("resolve url host %q: %w", host, err)
+	}
+	for _, ip := range ips {
+		if isPrivateIP(ip) {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+func isPrivateIP(ip net.IP) bool {
+	return ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || ip.IsUnspecified()
 }
 
 // Normalize normalizes a URL string by adding a default scheme and cleaning slashes.

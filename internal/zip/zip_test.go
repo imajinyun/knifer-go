@@ -182,6 +182,27 @@ func TestArchiveOptions(t *testing.T) {
 	}
 }
 
+func TestUnzipDefaultLimitCanBeOverridden(t *testing.T) {
+	tmp := t.TempDir()
+	archive := filepath.Join(tmp, "limit.zip")
+	entries := []EntryData{{Name: "a.txt", Data: []byte("abcd")}}
+	if err := ZipEntries(archive, entries...); err != nil {
+		t.Fatalf("ZipEntries: %v", err)
+	}
+	if err := UnzipToWithOptions(archive, filepath.Join(tmp, "limited"), WithMaxBytes(3)); err == nil {
+		t.Fatal("UnzipToWithOptions should reject archives larger than max bytes")
+	}
+	if err := UnzipToLimit(archive, filepath.Join(tmp, "unlimited"), -1); err != nil {
+		t.Fatalf("UnzipToLimit with explicit unlimited limit: %v", err)
+	}
+	if got := applyUnzipOptions(nil).maxBytes; got != DefaultUnzipMaxBytes {
+		t.Fatalf("default unzip max bytes = %d, want %d", got, DefaultUnzipMaxBytes)
+	}
+	if got := applyUnzipOptions([]ArchiveOption{WithMaxBytes(-1)}).maxBytes; got != -1 {
+		t.Fatalf("explicit unlimited unzip max bytes = %d, want -1", got)
+	}
+}
+
 func TestZipCreationUsingOptions(t *testing.T) {
 	tmp := t.TempDir()
 	src := filepath.Join(tmp, "src")

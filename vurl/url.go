@@ -89,6 +89,22 @@ func WithRequestFactory(factory func(context.Context, string, string) (*http.Req
 	return urlimpl.WithRequestFactory(factory)
 }
 
+// WithAllowedSchemes restricts resource helpers to the provided URL schemes.
+func WithAllowedSchemes(schemes ...string) ResourceOption {
+	return urlimpl.WithAllowedSchemes(schemes...)
+}
+
+// WithAllowedHosts restricts HTTP(S) resource helpers to the provided host names.
+func WithAllowedHosts(hosts ...string) ResourceOption { return urlimpl.WithAllowedHosts(hosts...) }
+
+// WithRejectPrivateHosts rejects localhost, loopback, private, and link-local HTTP(S) hosts unless explicitly allowed.
+func WithRejectPrivateHosts(reject bool) ResourceOption {
+	return urlimpl.WithRejectPrivateHosts(reject)
+}
+
+// WithAllowLocalFiles controls whether file URLs and plain filesystem paths are allowed.
+func WithAllowLocalFiles(allow bool) ResourceOption { return urlimpl.WithAllowLocalFiles(allow) }
+
 // WithDefaultScheme sets the scheme used when NormalizeWithOptions receives a URL without scheme.
 func WithDefaultScheme(scheme string) NormalizeOption { return urlimpl.WithDefaultScheme(scheme) }
 
@@ -237,12 +253,28 @@ func OpenWithOptions(raw string, opts ...ResourceOption) (io.ReadCloser, error) 
 	return urlimpl.OpenWithOptions(raw, opts...)
 }
 
+// OpenSafe opens an HTTP(S) URL with secure defaults for untrusted input.
+func OpenSafe(raw string) (io.ReadCloser, error) { return urlimpl.OpenSafe(raw) }
+
+// OpenSafeWithOptions opens an HTTP(S) URL with secure defaults for untrusted input.
+func OpenSafeWithOptions(raw string, opts ...ResourceOption) (io.ReadCloser, error) {
+	return urlimpl.OpenSafeWithOptions(raw, opts...)
+}
+
 // ContentLength returns the resource content length. Unknown lengths return -1.
 func ContentLength(raw string) (int64, error) { return urlimpl.ContentLength(raw) }
 
 // ContentLengthWithOptions returns the resource content length with per-call options.
 func ContentLengthWithOptions(raw string, opts ...ResourceOption) (int64, error) {
 	return urlimpl.ContentLengthWithOptions(raw, opts...)
+}
+
+// ContentLengthSafe returns an HTTP(S) resource content length with secure defaults for untrusted input.
+func ContentLengthSafe(raw string) (int64, error) { return urlimpl.ContentLengthSafe(raw) }
+
+// ContentLengthSafeWithOptions returns an HTTP(S) resource content length with secure defaults for untrusted input.
+func ContentLengthSafeWithOptions(raw string, opts ...ResourceOption) (int64, error) {
+	return urlimpl.ContentLengthSafeWithOptions(raw, opts...)
 }
 
 // Size returns the resource size.

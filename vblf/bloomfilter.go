@@ -55,9 +55,19 @@ const (
 // NewBitMapBloomFilter creates a bitmap bloom filter.
 func NewBitMapBloomFilter(m int) *BitMapBloomFilter { return bloomfilter.NewBitMapBloomFilter(m) }
 
+// NewBitMapBloomFilterE creates a bitmap bloom filter and returns validation errors.
+func NewBitMapBloomFilterE(m int) (*BitMapBloomFilter, error) {
+	return bloomfilter.NewBitMapBloomFilterE(m)
+}
+
 // NewBitMapBloomFilterWithOptions creates a bitmap bloom filter with options.
 func NewBitMapBloomFilterWithOptions(opts ...BitMapBloomFilterOption) *BitMapBloomFilter {
 	return bloomfilter.NewBitMapBloomFilterWithOptions(opts...)
+}
+
+// NewBitMapBloomFilterWithOptionsE creates a bitmap bloom filter with options and returns validation errors.
+func NewBitMapBloomFilterWithOptionsE(opts ...BitMapBloomFilterOption) (*BitMapBloomFilter, error) {
+	return bloomfilter.NewBitMapBloomFilterWithOptionsE(opts...)
 }
 
 // NewBitMapBloomFilterWithFilters creates a bitmap bloom filter with filters.
@@ -65,9 +75,19 @@ func NewBitMapBloomFilterWithFilters(m int, filters ...BloomFilter) *BitMapBloom
 	return bloomfilter.NewBitMapBloomFilterWithFilters(m, filters...)
 }
 
+// NewBitMapBloomFilterWithFiltersE creates a bitmap bloom filter with filters and returns validation errors.
+func NewBitMapBloomFilterWithFiltersE(m int, filters ...BloomFilter) (*BitMapBloomFilter, error) {
+	return bloomfilter.NewBitMapBloomFilterWithFiltersE(m, filters...)
+}
+
 // NewBitSetBloomFilter creates a bitset bloom filter.
 func NewBitSetBloomFilter(c, n, k int) *BitSetBloomFilter {
 	return bloomfilter.NewBitSetBloomFilter(c, n, k)
+}
+
+// NewBitSetBloomFilterE creates a bitset bloom filter and returns validation errors.
+func NewBitSetBloomFilterE(c, n, k int) (*BitSetBloomFilter, error) {
+	return bloomfilter.NewBitSetBloomFilterE(c, n, k)
 }
 
 // NewBitSetBloomFilterWithOptions creates a bitset bloom filter with options.
@@ -75,14 +95,29 @@ func NewBitSetBloomFilterWithOptions(opts ...BitSetBloomFilterOption) *BitSetBlo
 	return bloomfilter.NewBitSetBloomFilterWithOptions(opts...)
 }
 
+// NewBitSetBloomFilterWithOptionsE creates a bitset bloom filter with options and returns validation errors.
+func NewBitSetBloomFilterWithOptionsE(opts ...BitSetBloomFilterOption) (*BitSetBloomFilter, error) {
+	return bloomfilter.NewBitSetBloomFilterWithOptionsE(opts...)
+}
+
 // NewFuncFilter creates a function-backed bloom filter.
 func NewFuncFilter(maxValue int64, hashFunc HashFunc) *FuncFilter {
 	return bloomfilter.NewFuncFilter(maxValue, hashFunc)
 }
 
+// NewFuncFilterE creates a function-backed bloom filter and returns validation errors.
+func NewFuncFilterE(maxValue int64, hashFunc HashFunc) (*FuncFilter, error) {
+	return bloomfilter.NewFuncFilterE(maxValue, hashFunc)
+}
+
 // NewFuncFilterWithOptions creates a function-backed bloom filter with options.
 func NewFuncFilterWithOptions(opts ...FuncFilterOption) *FuncFilter {
 	return bloomfilter.NewFuncFilterWithOptions(opts...)
+}
+
+// NewFuncFilterWithOptionsE creates a function-backed bloom filter with options and returns validation errors.
+func NewFuncFilterWithOptionsE(opts ...FuncFilterOption) (*FuncFilter, error) {
+	return bloomfilter.NewFuncFilterWithOptionsE(opts...)
 }
 
 // WithMaxValue sets the maximum hash value range for FuncFilter.
