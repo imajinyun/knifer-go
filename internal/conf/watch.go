@@ -66,7 +66,7 @@ func WatchWithOptions(path string, opts WatchOptions, onChange func(*Conf, error
 			case <-ticks:
 				current, statErr := snapshot(path, opts)
 				if statErr != nil {
-					onChange(nil, statErr)
+					safeWatchChange(onChange, nil, statErr)
 					continue
 				}
 				if sameSnapshot(last, current, opts.CompareContent) {
@@ -80,10 +80,9 @@ func WatchWithOptions(path string, opts WatchOptions, onChange func(*Conf, error
 						return
 					}
 				}
-				if opts.OnEvent != nil {
-					opts.OnEvent(current)
-				}
-				onChange(LoadWithOptions(path, watchLoadOptions(opts)))
+				safeWatchEvent(opts.OnEvent, current)
+				conf, loadErr := LoadWithOptions(path, watchLoadOptions(opts))
+				safeWatchChange(onChange, conf, loadErr)
 			case <-stop:
 				return
 			}
@@ -96,6 +95,22 @@ func WatchWithOptions(path string, opts WatchOptions, onChange func(*Conf, error
 			<-done
 		})
 	}, nil
+}
+
+func safeWatchEvent(fn func(WatchEvent), event WatchEvent) {
+	if fn == nil {
+		return
+	}
+	defer func() { _ = recover() }()
+	fn(event)
+}
+
+func safeWatchChange(fn func(*Conf, error), conf *Conf, err error) {
+	if fn == nil {
+		return
+	}
+	defer func() { _ = recover() }()
+	fn(conf, err)
 }
 
 func snapshot(path string, opts WatchOptions) (WatchEvent, error) {

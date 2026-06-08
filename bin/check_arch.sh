@@ -129,6 +129,9 @@ allowed_panic_paths = {
 	"internal/bloomfilter/bitset_bloomfilter.go",
 	"internal/bloomfilter/filter.go",
 	"internal/cron/pattern.go",
+	# DB.Tx intentionally rolls back and rethrows user callback panics to preserve
+	# standard transaction-boundary panic semantics.
+	"internal/db/db.go",
 	"internal/errx/exit.go",
 	"internal/job/map.go",
 	"internal/jwt/jwt.go",

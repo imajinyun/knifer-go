@@ -90,6 +90,16 @@ func TestValidateAlgorithmMismatch(t *testing.T) {
 	}
 }
 
+func TestValidateAlgorithmRejectsMissingSigner(t *testing.T) {
+	tok, err := New().SetSigner(NoneSigner()).SetPayload("sub", "public").Sign()
+	if err != nil {
+		t.Fatalf("sign: %v", err)
+	}
+	if err := ValidateAlgorithm(tok, nil); err == nil {
+		t.Fatal("ValidateAlgorithm should reject nil signer instead of implicitly accepting none")
+	}
+}
+
 // TestValidateExpired 校验整体合法性时过期 token 返回 false（leeway=0）。
 func TestValidateExpired(t *testing.T) {
 	// 与 the utility toolkit 测试 validateTest 中相同

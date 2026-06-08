@@ -36,7 +36,7 @@ func (v *JWTValidator) JWT() *JWT { return v.jwt }
 // Err 返回首个失败原因；nil 表示全部通过。
 func (v *JWTValidator) Err() error { return v.err }
 
-// ValidateAlgorithm 校验头部 alg 与 signer 一致，并验证签名。signer=nil 时使用 JWT 自带 signer。
+// ValidateAlgorithm 校验头部 alg 与 signer 一致，并验证签名。signer=nil 时使用 JWT 自带 signer；仍为空则失败。
 func (v *JWTValidator) ValidateAlgorithm(signer JWTSigner) *JWTValidator {
 	if v.err != nil || v.jwt == nil {
 		return v
@@ -46,10 +46,6 @@ func (v *JWTValidator) ValidateAlgorithm(signer JWTSigner) *JWTValidator {
 	}
 	alg := v.jwt.Algorithm()
 	if alg == "" {
-		// 无算法声明：仅当 signer 为 nil 或 NoneSigner 时通过
-		if signer == nil {
-			return v
-		}
 		if _, ok := signer.(noneSigner); ok {
 			return v
 		}

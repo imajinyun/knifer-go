@@ -20,6 +20,7 @@ type AioServer struct {
 	closed atomic.Bool
 	wg     sync.WaitGroup
 	mu     sync.Mutex
+	conns  map[net.Conn]struct{}
 }
 
 // NewAioServer creates a server on the given port.
@@ -50,7 +51,7 @@ func NewAioServerAddrWithOptions(addr *net.TCPAddr, cfg *SocketConfig, opts ...C
 			opt(cfg)
 		}
 	}
-	s := &AioServer{config: cfg, limiter: newConcurrencyLimiter(cfg), done: make(chan struct{})}
+	s := &AioServer{config: cfg, limiter: newConcurrencyLimiter(cfg), done: make(chan struct{}), conns: make(map[net.Conn]struct{})}
 	if err := s.init(addr); err != nil {
 		return nil, err
 	}
@@ -137,9 +138,15 @@ func (s *AioServer) handleAccept(conn net.Conn) {
 		_ = conn.Close()
 		return
 	}
+	if !s.registerConn(conn) {
+		releaseConcurrencySlot(s.limiter)
+		_ = conn.Close()
+		return
+	}
 	s.wg.Add(1)
 	runWithConfig(s.config, func() {
 		defer s.wg.Done()
+		defer s.unregisterConn(conn)
 		defer releaseConcurrencySlot(s.limiter)
 
 		session := NewAioSession(conn, s.ioAction, s.config)
@@ -159,8 +166,6 @@ func (s *AioServer) handleAccept(conn net.Conn) {
 
 // Close closes the server.
 func (s *AioServer) Close() error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
 	if s.closed.Swap(true) {
 		return nil
 	}
@@ -168,6 +173,38 @@ func (s *AioServer) Close() error {
 	if s.listener != nil {
 		_ = s.listener.Close()
 	}
+	s.closeActiveConns()
 	s.wg.Wait()
 	return nil
+}
+
+func (s *AioServer) registerConn(conn net.Conn) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.closed.Load() {
+		return false
+	}
+	if s.conns == nil {
+		s.conns = make(map[net.Conn]struct{})
+	}
+	s.conns[conn] = struct{}{}
+	return true
+}
+
+func (s *AioServer) unregisterConn(conn net.Conn) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.conns, conn)
+}
+
+func (s *AioServer) closeActiveConns() {
+	s.mu.Lock()
+	conns := make([]net.Conn, 0, len(s.conns))
+	for conn := range s.conns {
+		conns = append(conns, conn)
+	}
+	s.mu.Unlock()
+	for _, conn := range conns {
+		_ = conn.Close()
+	}
 }

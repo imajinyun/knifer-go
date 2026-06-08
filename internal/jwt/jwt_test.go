@@ -101,6 +101,26 @@ func TestCreateNone(t *testing.T) {
 	}
 }
 
+func TestVerifyRejectsNoneWithoutExplicitSigner(t *testing.T) {
+	tok, err := New().SetSigner(NoneSigner()).SetPayload("sub", "public").Sign()
+	if err != nil {
+		t.Fatalf("sign: %v", err)
+	}
+	parsed, err := Of(tok)
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	if parsed.Verify() {
+		t.Fatal("Verify should reject alg=none without explicit NoneSigner")
+	}
+	if parsed.Validate(0) {
+		t.Fatal("Validate should reject alg=none without explicit NoneSigner")
+	}
+	if !parsed.VerifyWith(NoneSigner()) {
+		t.Fatal("VerifyWith(NoneSigner) should still support explicit none tokens")
+	}
+}
+
 func TestNeedSigner(t *testing.T) {
 	j := New().SetPayload("sub", "x")
 	if _, err := j.Sign(); err == nil {

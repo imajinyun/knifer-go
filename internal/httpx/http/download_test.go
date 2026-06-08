@@ -379,3 +379,29 @@ func TestSaveAsViaContentDisposition(t *testing.T) {
 		t.Fatalf("content: %q", string(data))
 	}
 }
+
+func TestSaveAsRejectsUnsafeContentDispositionFilename(t *testing.T) {
+	tests := []string{
+		`attachment; filename="../outside"`,
+		`attachment; filename="..\\outside"`,
+		`attachment; filename="/tmp/outside"`,
+	}
+	for _, cd := range tests {
+		t.Run(cd, func(t *testing.T) {
+			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Disposition", cd)
+				_, _ = w.Write([]byte("unsafe"))
+			}))
+			defer srv.Close()
+
+			dir := t.TempDir()
+			_, err := Get(srv.URL).Execute().SaveAs(dir)
+			if !errors.Is(err, knifer.ErrCodeInvalidInput) {
+				t.Fatalf("SaveAs error = %v, want invalid input", err)
+			}
+			if _, statErr := os.Stat(filepath.Join(dir, "outside")); !errors.Is(statErr, os.ErrNotExist) {
+				t.Fatalf("unsafe file should not be created, stat err = %v", statErr)
+			}
+		})
+	}
+}

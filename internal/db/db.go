@@ -232,6 +232,8 @@ func (db *DB) Tx(ctx context.Context, opts *sql.TxOptions, fn func(*Session) err
 	defer func() {
 		if p := recover(); p != nil {
 			_ = tx.Rollback()
+			// Preserve panic semantics after rollback; bin/check_arch.sh allowlists
+			// this transaction-boundary rethrow explicitly.
 			panic(p)
 		}
 	}()

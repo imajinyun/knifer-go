@@ -319,11 +319,17 @@ func (r *HTTPResponse) SaveAs(dest string, opts ...SaveOption) (n int64, err err
 	cfg := applySaveOptions(opts)
 	target := dest
 	if info, err := cfg.stat(dest); err == nil && info.IsDir() {
-		fileName := r.fileName()
+		fileName, err := safeDownloadedFilename(r.fileName())
+		if err != nil {
+			return 0, err
+		}
 		if fileName == "" {
 			fileName = cfg.defaultFilename
 		}
-		target = filepath.Join(dest, fileName)
+		target, err = safeJoinDownloadPath(dest, fileName)
+		if err != nil {
+			return 0, err
+		}
 	}
 	if cfg.createParents {
 		if err := cfg.mkdirAll(filepath.Dir(target), cfg.dirPerm); err != nil {
@@ -410,6 +416,45 @@ func (r *HTTPResponse) fileName() string {
 		return name
 	}
 	return ""
+}
+
+func safeDownloadedFilename(name string) (string, error) {
+	name = strings.TrimSpace(name)
+	if name == "" {
+		return "", nil
+	}
+	if filepath.IsAbs(name) || strings.Contains(name, "/") || strings.Contains(name, `\`) {
+		return "", HTTPErrorfWithCode(knifer.ErrCodeInvalidInput, "unsafe download filename: %q", name)
+	}
+	clean := filepath.Clean(name)
+	if clean == "." || clean == ".." || strings.HasPrefix(clean, ".."+string(filepath.Separator)) {
+		return "", HTTPErrorfWithCode(knifer.ErrCodeInvalidInput, "unsafe download filename: %q", name)
+	}
+	base := filepath.Base(clean)
+	if base != clean || base == "." || base == ".." {
+		return "", HTTPErrorfWithCode(knifer.ErrCodeInvalidInput, "unsafe download filename: %q", name)
+	}
+	return base, nil
+}
+
+func safeJoinDownloadPath(dir, fileName string) (string, error) {
+	dirAbs, err := filepath.Abs(dir)
+	if err != nil {
+		return "", NewHTTPErrorWithCode(knifer.ErrCodeInvalidInput, "resolve download directory failed", err)
+	}
+	target := filepath.Join(dirAbs, fileName)
+	targetAbs, err := filepath.Abs(target)
+	if err != nil {
+		return "", NewHTTPErrorWithCode(knifer.ErrCodeInvalidInput, "resolve download target failed", err)
+	}
+	rel, err := filepath.Rel(dirAbs, targetAbs)
+	if err != nil {
+		return "", NewHTTPErrorWithCode(knifer.ErrCodeInvalidInput, "validate download target failed", err)
+	}
+	if rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) || filepath.IsAbs(rel) {
+		return "", HTTPErrorfWithCode(knifer.ErrCodeInvalidInput, "download target escapes destination directory: %q", fileName)
+	}
+	return targetAbs, nil
 }
 
 func (r *HTTPResponse) decodedBody() (io.Reader, error) {

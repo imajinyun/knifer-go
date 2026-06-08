@@ -20,6 +20,7 @@ type NioServer struct {
 	closed atomic.Bool
 	wg     sync.WaitGroup
 	mu     sync.Mutex
+	conns  map[net.Conn]struct{}
 }
 
 // NewNioServer creates and initializes a server on the given port.
@@ -60,7 +61,7 @@ func NewNioServerAddrWithOptions(addr *net.TCPAddr, cfg *SocketConfig, opts ...C
 			opt(cfg)
 		}
 	}
-	s := &NioServer{addr: addr, config: cfg, limiter: newConcurrencyLimiter(cfg), done: make(chan struct{})}
+	s := &NioServer{addr: addr, config: cfg, limiter: newConcurrencyLimiter(cfg), done: make(chan struct{}), conns: make(map[net.Conn]struct{})}
 	if err := s.init(addr); err != nil {
 		return nil, err
 	}
@@ -145,9 +146,15 @@ func (s *NioServer) handleAccept(conn net.Conn) {
 		_ = conn.Close()
 		return
 	}
+	if !s.registerConn(conn) {
+		releaseConcurrencySlot(s.limiter)
+		_ = conn.Close()
+		return
+	}
 	s.wg.Add(1)
 	runWithConfig(s.config, func() {
 		defer s.wg.Done()
+		defer s.unregisterConn(conn)
 		defer releaseConcurrencySlot(s.limiter)
 		defer func() { _ = conn.Close() }()
 		for {
@@ -165,8 +172,6 @@ func (s *NioServer) handleAccept(conn net.Conn) {
 
 // Close closes the server.
 func (s *NioServer) Close() error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
 	if s.closed.Swap(true) {
 		return nil
 	}
@@ -174,8 +179,40 @@ func (s *NioServer) Close() error {
 	if s.listener != nil {
 		_ = s.listener.Close()
 	}
+	s.closeActiveConns()
 	s.wg.Wait()
 	return nil
+}
+
+func (s *NioServer) registerConn(conn net.Conn) bool {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if s.closed.Load() {
+		return false
+	}
+	if s.conns == nil {
+		s.conns = make(map[net.Conn]struct{})
+	}
+	s.conns[conn] = struct{}{}
+	return true
+}
+
+func (s *NioServer) unregisterConn(conn net.Conn) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	delete(s.conns, conn)
+}
+
+func (s *NioServer) closeActiveConns() {
+	s.mu.Lock()
+	conns := make([]net.Conn, 0, len(s.conns))
+	for conn := range s.conns {
+		conns = append(conns, conn)
+	}
+	s.mu.Unlock()
+	for _, conn := range conns {
+		_ = conn.Close()
+	}
 }
 
 // IsOpen reports whether the server is still running.

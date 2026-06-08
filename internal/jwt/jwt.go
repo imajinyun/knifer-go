@@ -360,18 +360,18 @@ func (j *JWT) MustSign() string {
 	return s
 }
 
-// Verify 使用当前 signer 校验 token 是否合法。
+// Verify 使用当前 signer 校验 token 是否合法；未显式设置 signer 时返回 false。
 func (j *JWT) Verify() bool { return j.VerifyWith(j.signer) }
 
 // VerifyWith 使用指定 signer 校验。
 //
 // Verification rules:
-//   - nil signer is treated as NoneSigner,
+//   - nil signer returns false,
 //   - alg=none with a non-None signer returns false,
 //   - alg!=none with NoneSigner also returns false.
 func (j *JWT) VerifyWith(signer JWTSigner) bool {
 	if signer == nil {
-		signer = NoneSigner()
+		return false
 	}
 	if len(j.tokens) != 3 {
 		return false
