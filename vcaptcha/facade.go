@@ -15,81 +15,113 @@ func NewMathGeneratorWith(numberLength int, resultHasNegativeNumber bool) *MathG
 }
 
 // CreateLineCaptcha delegates to the internal captcha implementation.
+//
+// Deprecated: use NewLineCaptcha.
 func CreateLineCaptcha(width, height int) *LineCaptcha {
 	return captcha.CreateLineCaptcha(width, height)
 }
 
 // CreateLineCaptchaWithOptions delegates to the internal captcha implementation.
+//
+// Deprecated: use NewLineCaptchaWithOptions.
 func CreateLineCaptchaWithOptions(width, height int, opts ...CaptchaOption) *LineCaptcha {
 	return captcha.CreateLineCaptchaWithOptions(width, height, opts...)
 }
 
 // CreateLineCaptchaWith delegates to the internal captcha implementation.
+//
+// Deprecated: use NewLineCaptchaWith.
 func CreateLineCaptchaWith(width, height, codeCount, lineCount int) *LineCaptcha {
 	return captcha.CreateLineCaptchaWith(width, height, codeCount, lineCount)
 }
 
 // CreateLineCaptchaByGenerator delegates to the internal captcha implementation.
+//
+// Deprecated: use NewLineCaptchaWithOptions with WithGenerator and WithInterfereCount.
 func CreateLineCaptchaByGenerator(width, height int, generator CodeGenerator, lineCount int) *LineCaptcha {
 	return captcha.CreateLineCaptchaByGenerator(width, height, generator, lineCount)
 }
 
 // CreateCircleCaptcha delegates to the internal captcha implementation.
+//
+// Deprecated: use NewCircleCaptcha.
 func CreateCircleCaptcha(width, height int) *CircleCaptcha {
 	return captcha.CreateCircleCaptcha(width, height)
 }
 
 // CreateCircleCaptchaWithOptions delegates to the internal captcha implementation.
+//
+// Deprecated: use NewCircleCaptchaWithOptions.
 func CreateCircleCaptchaWithOptions(width, height int, opts ...CaptchaOption) *CircleCaptcha {
 	return captcha.CreateCircleCaptchaWithOptions(width, height, opts...)
 }
 
 // CreateCircleCaptchaWith delegates to the internal captcha implementation.
+//
+// Deprecated: use NewCircleCaptchaWith.
 func CreateCircleCaptchaWith(width, height, codeCount, circleCount int) *CircleCaptcha {
 	return captcha.CreateCircleCaptchaWith(width, height, codeCount, circleCount)
 }
 
 // CreateCircleCaptchaByGenerator delegates to the internal captcha implementation.
+//
+// Deprecated: use NewCircleCaptchaWithOptions with WithGenerator and WithInterfereCount.
 func CreateCircleCaptchaByGenerator(width, height int, generator CodeGenerator, circleCount int) *CircleCaptcha {
 	return captcha.CreateCircleCaptchaByGenerator(width, height, generator, circleCount)
 }
 
 // CreateShearCaptcha delegates to the internal captcha implementation.
+//
+// Deprecated: use NewShearCaptcha.
 func CreateShearCaptcha(width, height int) *ShearCaptcha {
 	return captcha.CreateShearCaptcha(width, height)
 }
 
 // CreateShearCaptchaWithOptions delegates to the internal captcha implementation.
+//
+// Deprecated: use NewShearCaptchaWithOptions.
 func CreateShearCaptchaWithOptions(width, height int, opts ...CaptchaOption) *ShearCaptcha {
 	return captcha.CreateShearCaptchaWithOptions(width, height, opts...)
 }
 
 // CreateShearCaptchaWith delegates to the internal captcha implementation.
+//
+// Deprecated: use NewShearCaptchaWith.
 func CreateShearCaptchaWith(width, height, codeCount, thickness int) *ShearCaptcha {
 	return captcha.CreateShearCaptchaWith(width, height, codeCount, thickness)
 }
 
 // CreateShearCaptchaByGenerator delegates to the internal captcha implementation.
+//
+// Deprecated: use NewShearCaptchaWithOptions with WithGenerator and WithInterfereCount.
 func CreateShearCaptchaByGenerator(width, height int, generator CodeGenerator, thickness int) *ShearCaptcha {
 	return captcha.CreateShearCaptchaByGenerator(width, height, generator, thickness)
 }
 
 // CreateGifCaptcha delegates to the internal captcha implementation.
+//
+// Deprecated: use NewGifCaptcha.
 func CreateGifCaptcha(width, height int) *GifCaptcha {
 	return captcha.CreateGifCaptcha(width, height)
 }
 
 // CreateGifCaptchaWithOptions delegates to the internal captcha implementation.
+//
+// Deprecated: use NewGifCaptchaWithOptions.
 func CreateGifCaptchaWithOptions(width, height int, opts ...CaptchaOption) *GifCaptcha {
 	return captcha.CreateGifCaptchaWithOptions(width, height, opts...)
 }
 
 // CreateGifCaptchaWith delegates to the internal captcha implementation.
+//
+// Deprecated: use NewGifCaptchaWith.
 func CreateGifCaptchaWith(width, height, codeCount int) *GifCaptcha {
 	return captcha.CreateGifCaptchaWith(width, height, codeCount)
 }
 
 // CreateGifCaptchaByGenerator delegates to the internal captcha implementation.
+//
+// Deprecated: use NewGifCaptchaWithOptions with WithGenerator.
 func CreateGifCaptchaByGenerator(width, height int, generator CodeGenerator) *GifCaptcha {
 	return captcha.CreateGifCaptchaByGenerator(width, height, generator)
 }

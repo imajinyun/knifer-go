@@ -23,12 +23,15 @@ func Long() int64               { return LongWithOptions() }
 func Float() float64            { return FloatWithOptions() }
 func Bool() bool                { return BoolWithOptions() }
 
-// Bytes returns n random bytes.
+// Bytes returns n compatibility random bytes.
 //
 // Compatibility: when the cryptographic reader fails, BytesWithOptions can fall
 // back to pseudo-random bytes unless WithStrictCryptoRandom is provided. Do not
 // use this helper for secrets, tokens, keys, or nonces; use SecureBytes or
 // package vcrypto instead.
+//
+// Deprecated: use SecureBytes for security-sensitive bytes, or BytesWithOptions
+// with an explicit non-security rationale for compatibility code.
 func Bytes(n int) []byte {
 	b, _ := BytesWithOptions(n)
 	return b
@@ -99,6 +102,8 @@ func EleWithOptions[T any](a []T, opts ...RandomOption) T {
 func SetSeed(seed int64) { randimpl.SetSeed(seed) }
 
 // ConfigureDefaultRandomSourceProvider sets the provider used to lazily create the package-level pseudo-random source.
+// It is intended for tests and process bootstrap; tests should call
+// ResetDefaultRandomSource from t.Cleanup to avoid cross-test state coupling.
 func ConfigureDefaultRandomSourceProvider(provider func() *mathrand.Rand) {
 	randimpl.ConfigureDefaultRandomSourceProvider(provider)
 }

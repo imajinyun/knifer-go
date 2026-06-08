@@ -27,3 +27,29 @@ var (
 	// ErrInvalidCipherText indicates invalid encrypted data.
 	ErrInvalidCipherText error = &sentinel{code: knifer.ErrCodeInvalidInput, msg: "invalid cipher text"}
 )
+
+// ValidateAESKey reports whether key is a valid AES key length.
+func ValidateAESKey(key []byte) error {
+	switch len(key) {
+	case 16, 24, 32:
+		return nil
+	default:
+		return knifer.WrapError(knifer.ErrCodeInvalidInput, "aes key must be 16, 24, or 32 bytes", ErrInvalidKey)
+	}
+}
+
+// ValidateAESIV reports whether iv has the required block size for AES CBC/CFB/OFB/CTR helpers.
+func ValidateAESIV(iv []byte) error {
+	if len(iv) == 16 {
+		return nil
+	}
+	return knifer.WrapError(knifer.ErrCodeInvalidInput, "aes iv must be 16 bytes", ErrInvalidIV)
+}
+
+// ValidateAESGCMNonce reports whether nonce has the default nonce size used by AES-GCM helpers.
+func ValidateAESGCMNonce(nonce []byte) error {
+	if len(nonce) == 12 {
+		return nil
+	}
+	return knifer.WrapError(knifer.ErrCodeInvalidInput, "aes-gcm nonce must be 12 bytes", ErrInvalidIV)
+}

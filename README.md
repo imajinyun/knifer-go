@@ -138,8 +138,9 @@ Facade rules:
 Configurable APIs and provider injection:
 
 - Many packages expose functional options through `WithXxx` helpers and
-  `XxxWithOptions` variants. Existing fixed-argument APIs stay stable, while
-  option-based variants add advanced control for callers that need it.
+  `XxxWithOptions` variants; configuration-heavy APIs may use explicit option
+  structs such as `vconf.LoadOptions`. Existing fixed-argument APIs stay stable,
+  while option-based variants add advanced control for callers that need it.
 - The option pattern is available across runtime-sensitive helpers such as
   bloom filters, cache, captcha, config loading/watching, cron, crypto, DB,
   date/time, DFA, errors, files, HTTP/Resty, IDs, identity, JSON/JWT, logging,
@@ -169,9 +170,9 @@ Provider coverage highlights:
 
 | Area | Examples |
 | --- | --- |
-| HTTP / Resty | `vhttp.NewIsolatedRequest`, `vhttp.NewRequestWithConfig`, `vhttp.CreateGetWithOptions`, `vhttp.CreatePostWithOptions`, `vhttp.GetStringE`, `vhttp.GetWithTimeoutE`, `vhttp.PostJSONE`, `vhttp.DownloadBytesE`, `vhttp.NewErrorWithCode`, `vhttp.WithTransportProvider`, `vhttp.WithRequestFactory`, `vhttp.WithMultipartWriterFactory`, `vhttp.ResetDefaultTransport`, `vhttp.WithListenAndServeFunc`, `vhttp.WithAsyncRunner`, `vhttp.CreateServerWithOptions`, `vhttp.ResetServerStarters`, `vhttp.GetWithTimeoutWithOptions`, `vhttp.GetWithParamsWithOptions`, `vhttp.PostStringWithOptions`, `vhttp.CleanHTMLWithOptions`, `vhttp.FilterHTMLTagWithOptions`, `vhttp.WithHTMLFilterCompileFunc`, `vresty.NewIsolatedRequest`, `vresty.WithGlobalConfig`, `vresty.WithRestyClientFactory`, `vresty.ConfigureDefaultRestyClientProvider`, `vresty.ResetDefaultRestyClientProvider`, `vresty.CreateRequestWithOptions`, `vresty.CreateGetWithOptions`, `vresty.CreatePostWithOptions`, `vresty.GetWithTimeoutWithOptions`, `vresty.GetWithParamsWithOptions`, `vresty.PostStringWithOptions`, `vresty.DownloadFileWithOptions` |
+| HTTP / Resty | `vhttp.NewIsolatedRequest`, `vhttp.NewRequestWithConfig`, `vhttp.Get`, `vhttp.Post`, `vhttp.GetSafe`, `vhttp.PostSafe`, `vhttp.GetStringE`, `vhttp.GetStringSafeE`, `vhttp.GetWithTimeoutE`, `vhttp.PostJSONE`, `vhttp.PostJSONSafeE`, `vhttp.DownloadBytesE`, `vhttp.DownloadBytesSafeE`, `vhttp.NewErrorWithCode`, `vhttp.WithTransportProvider`, `vhttp.WithRequestFactory`, `vhttp.WithMultipartWriterFactory`, `vhttp.ResetDefaultTransport`, `vhttp.WithListenAndServeFunc`, `vhttp.WithAsyncRunner`, `vhttp.CreateServerWithOptions`, `vhttp.CleanHTMLWithOptions`, `vhttp.FilterHTMLTagWithOptions`, `vhttp.WithHTMLFilterCompileFunc`, `vresty.NewIsolatedRequest`, `vresty.WithGlobalConfig`, `vresty.WithRestyClientFactory`, `vresty.ConfigureDefaultRestyClientProvider`, `vresty.ResetDefaultRestyClientProvider`, `vresty.Get`, `vresty.Post`, `vresty.GetSafe`, `vresty.PostSafe`, `vresty.GetStringE`, `vresty.GetStringSafeE`, `vresty.GetWithTimeoutE`, `vresty.PostJSONE`, `vresty.PostJSONSafeE`, `vresty.DownloadBytesE`, `vresty.DownloadBytesSafeE` |
 | File / config / archive / POI | `vfile` provider options, `vconf.LoadWithOptions`, `vconf.LoadRemoteSafeWithOptions`, `vconf.WatchWithOptions`, `vconf.WatchOptions.Runner`, `(*vconf.Conf).Clone`, `vzip.WithMaxBytes`, `vzip` provider options, `vpoi.WithOpenFileFunc`, `vpoi.WithNewFileFunc`, `vpoi.WithSaveAsFunc` |
-| Cron / DFA / ID / identity / random | `vcron.WithDefaultSchedulerOptions`, `vcron.NewConfigWithOptions`, `vcron.WithIDRandomReader`, `vcron.WithRunner`, `vcron.CronScheduleWithOptions`, `(*vcron.Scheduler).RunningCount`, `(*vcron.Scheduler).Wait`, `vcron.CronShutdown`, `vdfa.WithMatcherWords`, `vdfa.WithJSONMarshal`, `vdfa.WithJSONUnmarshal`, `vdfa.ContainsWithOptions`, `vdfa.ConfigureAsyncRunner`, `vdfa.ResetAsyncRunner`, `vid.NewIsolatedSnowflake`, `vid.CreateSnowflakeWithOptions`, `vid.WithSnowflakeCache`, `vid.WithFallbackRandomSource`, `vid.ConfigureDefaultFallbackRandomSourceProvider`, `vid.ResetDefaultFallbackRandomSource`, `vid.SetFallbackRandomSeed`, `vrand.ConfigureDefaultRandomSourceProvider`, `vrand.ResetDefaultRandomSource`, `vrand.SetSeed`, `vident.BirthDateWithOptions` |
+| Cron / DFA / ID / identity / random | `vcron.WithDefaultSchedulerOptions`, `vcron.NewConfigWithOptions`, `vcron.WithIDRandomReader`, `vcron.WithRunner`, `vcron.CronScheduleWithOptions`, `(*vcron.Scheduler).RunningCount`, `(*vcron.Scheduler).Wait`, `vcron.CronShutdown`, `vdfa.WithMatcherWords`, `vdfa.WithJSONMarshal`, `vdfa.WithJSONUnmarshal`, `vdfa.ContainsWithOptions`, `vdfa.ConfigureAsyncRunner`, `vdfa.ResetAsyncRunner`, `vid.NewIsolatedSnowflake`, `vid.CreateSnowflakeWithOptions`, `vid.WithSnowflakeCache`, `vid.WithFallbackRandomSource`, `vid.ConfigureDefaultFallbackRandomSourceProvider`, `vid.ResetDefaultFallbackRandomSource`, `vid.SetFallbackRandomSeed`, `vrand.SecureBytes`, `vrand.ConfigureDefaultRandomSourceProvider`, `vrand.ResetDefaultRandomSource`, `vrand.SetSeed`, `vident.BirthDateWithOptions` |
 | Encoding / JSON / XML / JWT / hash | `vcodec.Base64EncodeWithEncoding`, `vcodec.Base64DecodeWithEncoding`, `vcodec.Base64RawURLEncode`, `vcodec.Base64RawURLDecode`, `vhash.Hash32`, `vjson.WithMarshalFunc`, `vjson.WithUnmarshalFunc`, `vjson.WithParseUnmarshalFunc`, `vjson.WithBeanUnmarshalFunc`, `vjson.WithSprintFunc`, `vjson.WithParseIntFunc`, `vjson.WithParseFloatFunc`, `vjson.WithParseBoolFunc`, `vjson.WithFormatIntFunc`, `vjson.WithFormatFloatFunc`, `vjson.ParseObjWithOptions`, `vjson.ParseArrayWithOptions`, `vjson.ToBeanWithOptions`, `vjson.ToListWithOptions`, `vjson.XMLToJSONWithOptions`, `vjson.ToXMLWithOptions`, `vxml.WithScalarIntParser`, `vxml.WithScalarFloatParser`, `vxml.XMLToMapWithOptions`, `vxml.XMLNodeToMapWithOptions`, `vxml.XMLToMapIntoWithOptions`, `vxml.XMLNodeToMapIntoWithOptions`, `vxml.XMLToBeanWithOptions`, `vxml.XMLNodeToBeanWithOptions`, `vxml.TransformWithOptions`, `vxml.FormatWithOptions`, `vjwt.WithJSONMarshalFunc`, `vjwt.WithJSONUnmarshalFunc`, `vjwt.ParseTokenWithOptions`, `vjwt.WithTokenJSONOptions` |
 | Crypto / template / regex / validation / strings | `vcrypto.Digest`, `vcrypto.DigestHex`, `vcrypto.WithAESBlockFactory`, `vcrypto.WithGCMBlockFactory`, `vcrypto.AESEncryptCTRWithOptions`, `vcrypto.AESEncryptGCMWithOptions`, `vcrypto.SignWithRSAOptions`, `vcrypto.VerifyWithRSAOptions`, `vtpl.RenderWithOptions`, `vtpl.WithFuncMap`, `vtpl.WithTemplateFactory`, `vregex.WithCompileFunc`, `vregex.WithDotAll`, `vregex.MatchWithOptions`, `vregex.ReplaceAllFuncWithOptions`, `vvalid.IsEmailWithOptions`, `vvalid.WithMobileMatcher`, `vstr.ContainsEmojiWithOptions`, `vstr.RemoveEmojiWithOptions` |
 | DB / network / number / URL / system / reflection / socket | `vdb.WithSQLOpenFunc`, `vnet.WithConnectDialer`, `vnet.WithPingDialer`, `vnet.WithAddressNetwork`, `vnet.WithTCPAddrResolver`, `vnet.WithUploadOpenSource`, `vnet.WithIPParser`, `vnet.WithCIDRParser`, `vnet.WithIPIntParser`, `vnet.WithWildcardIPParser`, `vnet.WithWildcardIntParser`, `vnet.IPv4ToLongWithOptions`, `vnet.IsInRangeWithOptions`, `vnum.WithParseFloatFunc`, `vnum.WithDoubleParseFloatFunc`, `vnum.WithDoubleFormatFloatFunc`, `vnum.CalculateWithOptions`, `vnum.ToDoubleWithOptions`, `vurl.WithQueryEscapeFunc`, `vurl.WithPathEscapeFunc`, `vurl.EncodeQueryWithOptions`, `vurl.EncodePathSegmentWithOptions`, `vurl.FormURLEncodeWithOptions`, `vurl.OpenSafeWithOptions`, `vurl.WithAllowedSchemes`, `vurl.WithAllowedHosts`, `vurl.WithRejectPrivateHosts`, `vurl.WithAllowLocalFiles`, `vsys.WithGoEnvOutputFunc`, `vsys.WithGoRootEnvLookupFunc`, `vsys.WithOSEnvLookupFunc`, `vsys.WithEnvLookupFunc`, `vsys.ResetInfoCache`, `vref.WithUnsafeAccess`, `vskt.WithThreadPoolSizeFunc`, `vskt.WithRunner`, `vskt.WithSocketIPParser` |
@@ -296,8 +297,9 @@ Network and IO helpers prefer bounded, explicit behavior:
 - `vskt.AioSession` serializes reads that share the session buffer and keeps
   buffers available during close callbacks, so lifecycle hooks can inspect the
   last received data safely.
-- JWT `none` signing is only selected by an explicit `alg: "none"`; an empty or
-  unsupported algorithm is rejected instead of falling back to unsigned tokens.
+- JWT `none` signing is retained only for explicit opt-in compatibility and
+  tests. Verification rejects `alg=none` unless callers deliberately provide the
+  none signer; production code should use HMAC, RSA-PSS, or ECDSA signers.
 
 ## 🚀 Install
 
@@ -306,6 +308,43 @@ Go 1.25 or later is required.
 ```bash
 go get github.com/imajinyun/go-knifer
 ```
+
+## ✅ Recommended API entry points
+
+Use these APIs for new code. Compatibility helpers remain available, but the
+table below points to the safer and clearer path first.
+
+| Scenario | Recommended API |
+| --- | --- |
+| Build a trusted standard-library HTTP request | `vhttp.Get`, `vhttp.Post`, `vhttp.NewRequest` |
+| Read a trusted HTTP response body and handle errors | `vhttp.GetStringE`, `vhttp.PostJSONE`, `vhttp.DownloadBytesE` |
+| Access user-controlled or otherwise untrusted HTTP(S) URLs | `vhttp.GetStringSafeE`, `vhttp.PostJSONSafeE`, `vhttp.DownloadBytesSafeE` |
+| Use the Resty-backed HTTP facade | `vresty.Get`, `vresty.Post`, `vresty.GetStringE`, `vresty.PostJSONE` |
+| Access untrusted URLs through Resty | `vresty.GetStringSafeE`, `vresty.PostJSONSafeE`, `vresty.DownloadBytesSafeE` |
+| Generate bytes for secrets, tokens, keys, nonces, or salts | `vrand.SecureBytes` |
+| Create an LRU cache | `vcache.NewLRU` or `vcache.NewLRUWithTimeout` |
+| Parse a cron expression | `vcron.NewPattern` or `vcron.MustNewPattern` |
+| Load remote configuration from a trust boundary | `vconf.LoadRemoteSafe` or `vconf.LoadRemoteSafeWithOptions` |
+
+## 🔁 Deprecated API migration
+
+Deprecated APIs are kept for source compatibility. New code should prefer these
+replacements:
+
+| Compatibility API | Preferred API |
+| --- | --- |
+| `vhttp.CreateRequest` / `vhttp.CreateRequestWithOptions` | `vhttp.NewRequest` or `vhttp.NewSafeRequest` |
+| `vhttp.CreateGet` / `vhttp.CreateGetWithOptions` | `vhttp.Get(..., vhttp.WithFollowRedirects(...))` |
+| `vhttp.CreatePost` / `vhttp.CreatePostWithOptions` | `vhttp.Post` or `vhttp.PostSafe` |
+| `vhttp.GetString`, `vhttp.PostJSON`, `vhttp.DownloadBytes` | `vhttp.GetStringE`, `vhttp.PostJSONE`, `vhttp.DownloadBytesE` |
+| `vresty.CreateRequest` / `vresty.CreateRequestWithOptions` | `vresty.NewRequest` or `vresty.NewSafeRequest` |
+| `vresty.CreateGet` / `vresty.CreateGetWithOptions` | `vresty.Get(..., vresty.WithFollowRedirects(...))` |
+| `vresty.CreatePost` / `vresty.CreatePostWithOptions` | `vresty.Post` or `vresty.PostSafe` |
+| `vresty.GetString`, `vresty.PostJSON`, `vresty.DownloadBytes` | `vresty.GetStringE`, `vresty.PostJSONE`, `vresty.DownloadBytesE` |
+| `vrand.Bytes` for secrets or tokens | `vrand.SecureBytes` |
+| `vcache.NewLRUCache` | `vcache.NewLRU` |
+| `vcron.NewCronPattern` / `vcron.MustNewCronPattern` | `vcron.NewPattern` / `vcron.MustNewPattern` |
+| `vcaptcha.CreateLineCaptcha` and related `Create*Captcha` helpers | `vcaptcha.NewLineCaptcha` and related `New*Captcha` helpers |
 
 Go will resolve the module according to the subpackages you actually import, for example:
 

@@ -1,9 +1,6 @@
 package vcrypto
 
-import (
-	knifer "github.com/imajinyun/go-knifer"
-	cryptoimpl "github.com/imajinyun/go-knifer/internal/crypto"
-)
+import cryptoimpl "github.com/imajinyun/go-knifer/internal/crypto"
 
 // ErrInvalidKey indicates an invalid cryptographic key.
 var ErrInvalidKey = cryptoimpl.ErrInvalidKey
@@ -20,26 +17,15 @@ var ErrInvalidCipherText = cryptoimpl.ErrInvalidCipherText
 // callers may match either errors.Is(err, knifer.ErrCodeInvalidInput) or
 // errors.Is(err, vcrypto.ErrInvalidKey).
 func ValidateAESKey(key []byte) error {
-	switch len(key) {
-	case 16, 24, 32:
-		return nil
-	default:
-		return knifer.WrapError(knifer.ErrCodeInvalidInput, "aes key must be 16, 24, or 32 bytes", ErrInvalidKey)
-	}
+	return cryptoimpl.ValidateAESKey(key)
 }
 
 // ValidateAESIV reports whether iv has the required block size for AES CBC/CFB/OFB/CTR helpers.
 func ValidateAESIV(iv []byte) error {
-	if len(iv) == 16 {
-		return nil
-	}
-	return knifer.WrapError(knifer.ErrCodeInvalidInput, "aes iv must be 16 bytes", ErrInvalidIV)
+	return cryptoimpl.ValidateAESIV(iv)
 }
 
 // ValidateAESGCMNonce reports whether nonce has the default nonce size used by AES-GCM helpers.
 func ValidateAESGCMNonce(nonce []byte) error {
-	if len(nonce) == 12 {
-		return nil
-	}
-	return knifer.WrapError(knifer.ErrCodeInvalidInput, "aes-gcm nonce must be 12 bytes", ErrInvalidIV)
+	return cryptoimpl.ValidateAESGCMNonce(nonce)
 }

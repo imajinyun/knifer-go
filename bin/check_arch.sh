@@ -206,8 +206,9 @@ allowed_facade_logic_paths = {
 	# Existing compatibility shims that predate the thin-facade policy. Keep new
 	# facade files as aliases/delegates and move implementation details into
 	# internal/* instead of extending this list.
+	# TODO(v2): migrate these remaining compatibility shims into internal/* so the
+	# public v* surface is uniformly aliases, type aliases, and delegates.
 	"vcache/cache.go",
-	"vcrypto/errors.go",
 	"vjob/job.go",
 	"vnum/arith.go",
 	"vrand/rand.go",
