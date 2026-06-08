@@ -5,7 +5,7 @@
 ![go-knifer](./go-knifer.jpeg)
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/imajinyun/go-knifer.svg)](https://pkg.go.dev/github.com/imajinyun/go-knifer)
-[![Go Version](https://img.shields.io/badge/go-%3E%3D1.24-00ADD8?logo=go)](https://go.dev/)
+[![Go Version](https://img.shields.io/badge/go-%3E%3D1.25-00ADD8?logo=go)](https://go.dev/)
 
 ## 📚 Introduction
 
@@ -47,9 +47,10 @@ Not sure which package to import? Start from what you want to do:
 | Precise arithmetic, rounding, or evaluate an expression | `vnum` |
 | SHA/HMAC, AES-GCM/RSA-PSS, sign parameters | `vcrypto` |
 | Non-cryptographic hashes (FNV, BKDR, …) | `vhash` |
-| Encode/parse URLs, build/parse query strings | `vurl` |
+| Encode/parse URLs, build/parse query strings, or open untrusted HTTP(S) resources safely | `vurl` |
 | Base64 / Hex encode-decode | `vcodec` |
 | Build/parse JSON, path get/put, JSON↔XML | `vjson` |
+| Load local or remote configuration, including SSRF-checked remote config | `vconf` |
 | Parse, build, or navigate XML | `vxml` |
 | Generate UUID / Snowflake / NanoId | `vid` |
 | Validate or parse ID-card numbers | `vident` |
@@ -78,13 +79,13 @@ The project follows an “internal implementation + public facade” layout: `in
 | `vdate` | `github.com/imajinyun/go-knifer/vdate` | Date/time helpers: common layouts, parse/format, begin/end of day/month/year, offsets, and comparisons. |
 | `vfile` | `github.com/imajinyun/go-knifer/vfile` | File and IO helpers: read/write/copy, lines, mkdir/touch/delete, filename helpers, quiet close, and provider-backed file-system operations. |
 | `vcodec` | `github.com/imajinyun/go-knifer/vcodec` | Encoding helpers: Base64, URL-safe Base64, raw URL-safe Base64, custom Base64 encoding providers, and Hex. |
-| `vurl` | `github.com/imajinyun/go-knifer/vurl` | URL and URI helpers: parse, normalize, resolve relative URLs, query encode/decode, URL/path/fragment percent encoding with injectable query/path escape providers, URL building, Data URI building, scheme checks, and file URL conversion. |
+| `vurl` | `github.com/imajinyun/go-knifer/vurl` | URL and URI helpers: parse, normalize, resolve relative URLs, query encode/decode, URL/path/fragment percent encoding with injectable query/path escape providers, URL building, Data URI building, scheme checks, file URL conversion, resource open/size helpers, and SSRF-oriented `OpenSafe` / `ContentLengthSafe` variants. |
 | `vnet` | `github.com/imajinyun/go-knifer/vnet` | Network helpers: IPv4/IPv6 conversion, CIDR/range/mask utilities with injectable IP/CIDR/int parsers, local ports, host/interface/MAC lookup, TLS config, address/dial/ping provider options, and multipart form helpers. |
 | `vobj` | `github.com/imajinyun/go-knifer/vobj` | Object helpers: nil/empty checks, equality, defaults, clone/serialization, comparison, type inspection, and container utilities. |
 | `vver` | `github.com/imajinyun/go-knifer/vver` | Version helpers: version comparison, greater/less predicates, expression matching, inclusive ranges, and custom expression delimiters. |
 | `vref` | `github.com/imajinyun/go-knifer/vref` | Reflection helpers: field lookup and mutation, method discovery and invocation, constructor-style function calls, type/value utilities, method classification, and explicit unsafe/unexported field-access options. |
 | `vbean` | `github.com/imajinyun/go-knifer/vbean` | Bean/struct mapping helpers: struct/map conversion, copy properties, tag and alias matching, ignore-empty/zero options, and weak type conversion. |
-| `vzip` | `github.com/imajinyun/go-knifer/vzip` | ZIP, gzip, and zlib helpers: archive creation/extraction, entry lookup, archive traversal, append, in-memory entries, stream compression, and provider-backed archive file operations. |
+| `vzip` | `github.com/imajinyun/go-knifer/vzip` | ZIP, gzip, and zlib helpers: archive creation/extraction, entry lookup, archive traversal, append, in-memory entries, stream compression, provider-backed archive file operations, and bounded extraction/decompression defaults. |
 | `vpoi` | `github.com/imajinyun/go-knifer/vpoi` | Office document helpers: lightweight Excel XLSX sheet listing, row reading/writing, multi-sheet writing, in-memory workbook creation, and injectable workbook/file-system providers. |
 | `vmask` | `github.com/imajinyun/go-knifer/vmask` | Masking helpers: mask names, IDs, phones, addresses, email, passwords, license plates, bank cards, IPs, passports, and credit codes. |
 | `vnum` | `github.com/imajinyun/go-knifer/vnum` | Numeric helpers: precise arithmetic, rounding modes, provider-backed parsing/formatting, number checks, random unique numbers, ranges, factorial/combinations, gcd/lcm, binary conversion, comparison, byte conversion, expression calculation, and odd/even checks. |
@@ -96,7 +97,7 @@ The project follows an “internal implementation + public facade” layout: `in
 | `vtpl` | `github.com/imajinyun/go-knifer/vtpl` | Go html/template rendering helpers with per-call template name, FuncMap, delimiter, factory, and executor options. |
 | `vregex` | `github.com/imajinyun/go-knifer/vregex` | Regular-expression helpers: matching, group extraction, named groups, deletion, counting, index lookup, template/function replacement, escaping, and per-call compiler / DOTALL options. |
 | `vbool` | `github.com/imajinyun/go-knifer/vbool` | Boolean helpers: negate, bool-to-int, all/any checks. |
-| `vblf` | `github.com/imajinyun/go-knifer/vblf` | Bloom filters: bitmap/bitset/filter abstractions, multiple string hash algorithms, option-based constructors, and provider-backed file initialization. |
+| `vblf` | `github.com/imajinyun/go-knifer/vblf` | Bloom filters: bitmap/bitset/filter abstractions, multiple string hash algorithms, option-based constructors, `E` constructors that return validation errors instead of panicking, and provider-backed file initialization. |
 | `vcache` | `github.com/imajinyun/go-knifer/vcache` | Generic caches: FIFO, LFU, LRU, Timed, Weak, and NoCache; supports TTL, clocks, removal listeners, lazy loading, ticker/runner providers, and weak-cache finalizer providers. Removal listeners run outside cache locks, so callbacks can safely re-enter the same cache. |
 | `vcaptcha` | `github.com/imajinyun/go-knifer/vcaptcha` | Image captcha generation: line, circle, shear, and GIF captchas, with random and math-expression generators. |
 | `vcron` | `github.com/imajinyun/go-knifer/vcron` | Cron expression parsing and task scheduling, including default/custom schedulers, configurable cron options, ID random-reader/clock/sleeper/runner providers, isolated per-call default scheduler overrides, running-task metrics, `Wait`, and graceful `Shutdown(ctx)`. |
@@ -110,7 +111,7 @@ The project follows an “internal implementation + public facade” layout: `in
 | `vjwt` | `github.com/imajinyun/go-knifer/vjwt` | JWT creation, parsing, signing, verification, and time-claim validation; supports HMAC, RSA-PSS, ECDSA, none signers, and provider-backed JSON marshal/unmarshal options. |
 | `vlog` | `github.com/imajinyun/go-knifer/vlog` | Logging facade: console/color console loggers, injectable color factories, log levels, global logger, static logging functions, per-call logger options, and isolated logger creation. |
 | `verr` | `github.com/imajinyun/go-knifer/verr` | Error helpers: panic recovery, error aggregation, multierror matching, collector construction options, stack capture/formatting, resettable log/stack caches, injectable logging/stack/exit/timer/runner providers, isolated logrus creation, and optional logrus/Sentry integration. |
-| `vconf` | `github.com/imajinyun/go-knifer/vconf` | Grouped configuration reader for setting/properties-style text, a simple YAML subset, and TOML parsing, with typed getters, schema validation, profile/remote/file loading options, environment expansion providers, watch ticker/runner providers, bounded reads, read-only snapshot guidance, and deep-copy `Clone` support. |
+| `vconf` | `github.com/imajinyun/go-knifer/vconf` | Grouped configuration reader for setting/properties-style text, a simple YAML subset, and TOML parsing, with typed getters, schema validation, profile/remote/file loading options, SSRF-checked `LoadRemoteSafe`, environment expansion providers, watch ticker/runner providers, bounded reads, read-only snapshot guidance, and deep-copy `Clone` support. |
 | `vset` | `github.com/imajinyun/go-knifer/vset` | Generic and typed set utilities with add/remove/contains, set operations, and JSON/YAML encoding helpers. |
 | `vjob` | `github.com/imajinyun/go-knifer/vjob` | Sliceable job execution: separate job data from scheduling options, typed slice/map adapters, context cancellation, and serialized merge callbacks; no generic type-alias experiment is required. |
 | `vsem` | `github.com/imajinyun/go-knifer/vsem` | Weighted, context-aware counting semaphore with FIFO fairness, try-acquire, close notifications, and in-use metrics. |
@@ -169,11 +170,11 @@ Provider coverage highlights:
 | Area | Examples |
 | --- | --- |
 | HTTP / Resty | `vhttp.NewIsolatedRequest`, `vhttp.NewRequestWithConfig`, `vhttp.CreateGetWithOptions`, `vhttp.CreatePostWithOptions`, `vhttp.GetStringE`, `vhttp.GetWithTimeoutE`, `vhttp.PostJSONE`, `vhttp.DownloadBytesE`, `vhttp.NewErrorWithCode`, `vhttp.WithTransportProvider`, `vhttp.WithRequestFactory`, `vhttp.WithMultipartWriterFactory`, `vhttp.ResetDefaultTransport`, `vhttp.WithListenAndServeFunc`, `vhttp.WithAsyncRunner`, `vhttp.CreateServerWithOptions`, `vhttp.ResetServerStarters`, `vhttp.GetWithTimeoutWithOptions`, `vhttp.GetWithParamsWithOptions`, `vhttp.PostStringWithOptions`, `vhttp.CleanHTMLWithOptions`, `vhttp.FilterHTMLTagWithOptions`, `vhttp.WithHTMLFilterCompileFunc`, `vresty.NewIsolatedRequest`, `vresty.WithGlobalConfig`, `vresty.WithRestyClientFactory`, `vresty.ConfigureDefaultRestyClientProvider`, `vresty.ResetDefaultRestyClientProvider`, `vresty.CreateRequestWithOptions`, `vresty.CreateGetWithOptions`, `vresty.CreatePostWithOptions`, `vresty.GetWithTimeoutWithOptions`, `vresty.GetWithParamsWithOptions`, `vresty.PostStringWithOptions`, `vresty.DownloadFileWithOptions` |
-| File / config / archive / POI | `vfile` provider options, `vconf.LoadWithOptions`, `vconf.WatchWithOptions`, `vconf.WatchOptions.Runner`, `(*vconf.Conf).Clone`, `vzip` provider options, `vpoi.WithOpenFileFunc`, `vpoi.WithNewFileFunc`, `vpoi.WithSaveAsFunc` |
+| File / config / archive / POI | `vfile` provider options, `vconf.LoadWithOptions`, `vconf.LoadRemoteSafeWithOptions`, `vconf.WatchWithOptions`, `vconf.WatchOptions.Runner`, `(*vconf.Conf).Clone`, `vzip.WithMaxBytes`, `vzip` provider options, `vpoi.WithOpenFileFunc`, `vpoi.WithNewFileFunc`, `vpoi.WithSaveAsFunc` |
 | Cron / DFA / ID / identity / random | `vcron.WithDefaultSchedulerOptions`, `vcron.NewConfigWithOptions`, `vcron.WithIDRandomReader`, `vcron.WithRunner`, `vcron.CronScheduleWithOptions`, `(*vcron.Scheduler).RunningCount`, `(*vcron.Scheduler).Wait`, `vcron.CronShutdown`, `vdfa.WithMatcherWords`, `vdfa.WithJSONMarshal`, `vdfa.WithJSONUnmarshal`, `vdfa.ContainsWithOptions`, `vdfa.ConfigureAsyncRunner`, `vdfa.ResetAsyncRunner`, `vid.NewIsolatedSnowflake`, `vid.CreateSnowflakeWithOptions`, `vid.WithSnowflakeCache`, `vid.WithFallbackRandomSource`, `vid.ConfigureDefaultFallbackRandomSourceProvider`, `vid.ResetDefaultFallbackRandomSource`, `vid.SetFallbackRandomSeed`, `vrand.ConfigureDefaultRandomSourceProvider`, `vrand.ResetDefaultRandomSource`, `vrand.SetSeed`, `vident.BirthDateWithOptions` |
 | Encoding / JSON / XML / JWT / hash | `vcodec.Base64EncodeWithEncoding`, `vcodec.Base64DecodeWithEncoding`, `vcodec.Base64RawURLEncode`, `vcodec.Base64RawURLDecode`, `vhash.Hash32`, `vjson.WithMarshalFunc`, `vjson.WithUnmarshalFunc`, `vjson.WithParseUnmarshalFunc`, `vjson.WithBeanUnmarshalFunc`, `vjson.WithSprintFunc`, `vjson.WithParseIntFunc`, `vjson.WithParseFloatFunc`, `vjson.WithParseBoolFunc`, `vjson.WithFormatIntFunc`, `vjson.WithFormatFloatFunc`, `vjson.ParseObjWithOptions`, `vjson.ParseArrayWithOptions`, `vjson.ToBeanWithOptions`, `vjson.ToListWithOptions`, `vjson.XMLToJSONWithOptions`, `vjson.ToXMLWithOptions`, `vxml.WithScalarIntParser`, `vxml.WithScalarFloatParser`, `vxml.XMLToMapWithOptions`, `vxml.XMLNodeToMapWithOptions`, `vxml.XMLToMapIntoWithOptions`, `vxml.XMLNodeToMapIntoWithOptions`, `vxml.XMLToBeanWithOptions`, `vxml.XMLNodeToBeanWithOptions`, `vxml.TransformWithOptions`, `vxml.FormatWithOptions`, `vjwt.WithJSONMarshalFunc`, `vjwt.WithJSONUnmarshalFunc`, `vjwt.ParseTokenWithOptions`, `vjwt.WithTokenJSONOptions` |
 | Crypto / template / regex / validation / strings | `vcrypto.Digest`, `vcrypto.DigestHex`, `vcrypto.WithAESBlockFactory`, `vcrypto.WithGCMBlockFactory`, `vcrypto.AESEncryptCTRWithOptions`, `vcrypto.AESEncryptGCMWithOptions`, `vcrypto.SignWithRSAOptions`, `vcrypto.VerifyWithRSAOptions`, `vtpl.RenderWithOptions`, `vtpl.WithFuncMap`, `vtpl.WithTemplateFactory`, `vregex.WithCompileFunc`, `vregex.WithDotAll`, `vregex.MatchWithOptions`, `vregex.ReplaceAllFuncWithOptions`, `vvalid.IsEmailWithOptions`, `vvalid.WithMobileMatcher`, `vstr.ContainsEmojiWithOptions`, `vstr.RemoveEmojiWithOptions` |
-| DB / network / number / URL / system / reflection / socket | `vdb.WithSQLOpenFunc`, `vnet.WithConnectDialer`, `vnet.WithPingDialer`, `vnet.WithAddressNetwork`, `vnet.WithTCPAddrResolver`, `vnet.WithUploadOpenSource`, `vnet.WithIPParser`, `vnet.WithCIDRParser`, `vnet.WithIPIntParser`, `vnet.WithWildcardIPParser`, `vnet.WithWildcardIntParser`, `vnet.IPv4ToLongWithOptions`, `vnet.IsInRangeWithOptions`, `vnum.WithParseFloatFunc`, `vnum.WithDoubleParseFloatFunc`, `vnum.WithDoubleFormatFloatFunc`, `vnum.CalculateWithOptions`, `vnum.ToDoubleWithOptions`, `vurl.WithQueryEscapeFunc`, `vurl.WithPathEscapeFunc`, `vurl.EncodeQueryWithOptions`, `vurl.EncodePathSegmentWithOptions`, `vurl.FormURLEncodeWithOptions`, `vsys.WithGoEnvOutputFunc`, `vsys.WithGoRootEnvLookupFunc`, `vsys.WithOSEnvLookupFunc`, `vsys.WithEnvLookupFunc`, `vsys.ResetInfoCache`, `vref.WithUnsafeAccess`, `vskt.WithThreadPoolSizeFunc`, `vskt.WithRunner`, `vskt.WithSocketIPParser` |
+| DB / network / number / URL / system / reflection / socket | `vdb.WithSQLOpenFunc`, `vnet.WithConnectDialer`, `vnet.WithPingDialer`, `vnet.WithAddressNetwork`, `vnet.WithTCPAddrResolver`, `vnet.WithUploadOpenSource`, `vnet.WithIPParser`, `vnet.WithCIDRParser`, `vnet.WithIPIntParser`, `vnet.WithWildcardIPParser`, `vnet.WithWildcardIntParser`, `vnet.IPv4ToLongWithOptions`, `vnet.IsInRangeWithOptions`, `vnum.WithParseFloatFunc`, `vnum.WithDoubleParseFloatFunc`, `vnum.WithDoubleFormatFloatFunc`, `vnum.CalculateWithOptions`, `vnum.ToDoubleWithOptions`, `vurl.WithQueryEscapeFunc`, `vurl.WithPathEscapeFunc`, `vurl.EncodeQueryWithOptions`, `vurl.EncodePathSegmentWithOptions`, `vurl.FormURLEncodeWithOptions`, `vurl.OpenSafeWithOptions`, `vurl.WithAllowedSchemes`, `vurl.WithAllowedHosts`, `vurl.WithRejectPrivateHosts`, `vurl.WithAllowLocalFiles`, `vsys.WithGoEnvOutputFunc`, `vsys.WithGoRootEnvLookupFunc`, `vsys.WithOSEnvLookupFunc`, `vsys.WithEnvLookupFunc`, `vsys.ResetInfoCache`, `vref.WithUnsafeAccess`, `vskt.WithThreadPoolSizeFunc`, `vskt.WithRunner`, `vskt.WithSocketIPParser` |
 | Errors / cache / logging / runtime | `verr.NewCollectorWithOptions`, `verr.WithCollectorLogFunc`, `verr.WithCollectorRunner`, `verr.WithCollectorContext`, `verr.WithCollectorLevel`, `verr.WithCollectorTimerFactory`, `verr.WithCollectorStackCaptureOptions`, `verr.WithLogFunc`, `verr.WithCollectorStackOptions`, `verr.WithDebugStackFunc`, `verr.WithCallersFunc`, `verr.WithFuncForPCFunc`, `verr.WithStackFrameCache`, `verr.ResetStackFrameCache`, `verr.ResetDefaultLogFunc`, `verr.NewIsolatedLogrusWithOptions`, `verr.MustExitWithOptions`, `vcache.WithClock`, `vcache.WithTickerFactory`, `vcache.WithRunner`, `vcache.WithWeakFinalizerFunc`, `vcache.WithWeakFinalizerEnabled`, `vlog.WithLogColorFactory`, `vlog.NewIsolatedLogger`, `vlog.LoggerWithOptions`, `vlog.InfoWithOptions` |
 
 Domain boundary rules:
@@ -194,8 +195,8 @@ Domain boundary rules:
   NanoId; `vident` owns legal identity numbers and regional card parsing such
   as mainland China ID cards and Hong Kong/Macau/Taiwan card numbers.
 - `vcodec` owns encoding/decoding algorithms such as Base64 and Hex; `vurl`
-  owns URL escaping, URL/URI parsing, normalization, resource, and scheme
-  semantics.
+  owns URL escaping, URL/URI parsing, normalization, resource open/size checks,
+  and scheme semantics.
 - `vjson` owns JSON objects, arrays, paths, and lightweight XML adapters;
   `vxml` owns XML parsing, tree navigation, formatting, namespace handling, and
   XML-specific map/bean conversion.
@@ -267,16 +268,40 @@ Network and IO helpers prefer bounded, explicit behavior:
 - `vconf` local and remote loads use `vconf.DefaultMaxBytes` unless
   `LoadOptions.MaxBytes` is set. A negative value explicitly disables the
   config read limit.
+- Use `vconf.LoadRemoteSafe` or `LoadRemoteSafeWithOptions` for remote
+  configuration from untrusted or user-controlled URLs. The safe variant only
+  accepts HTTP(S), rejects localhost/private/link-local/unspecified targets by
+  default, and validates redirect targets with the same policy. Set
+  `LoadOptions.RemoteAllowedHosts` when a private test server or known internal
+  host is intentionally allowed.
+- Use `vurl.OpenSafe`, `OpenSafeWithOptions`, `ContentLengthSafe`, or
+  `ContentLengthSafeWithOptions` when opening remote resources from untrusted
+  input. Safe resource helpers default to HTTP(S), reject local files and plain
+  filesystem paths, reject private network targets, check HTTP status, apply a
+  timeout, and re-check redirects. Use `WithAllowedHosts` to pin trusted hosts;
+  only relax `WithRejectPrivateHosts` or `WithAllowLocalFiles` when the caller
+  has already established a narrower trust boundary.
+- `vzip` extraction and decompression helpers are bounded by default to reduce
+  zip-bomb risk. Use `vzip.WithMaxBytes(n)` or `UnzipToLimit` /
+  `UnzipReaderToLimit` for a stricter budget; pass a negative max-byte value
+  only when another layer already enforces a trusted size limit.
+- Bloom filter constructors ending in `E`, such as
+  `vblf.NewBitMapBloomFilterE`, `vblf.NewBitSetBloomFilterE`, and
+  `vblf.NewFuncFilterE`, return validation errors for invalid sizes or hash
+  configuration instead of panicking. The non-`E` constructors are retained for
+  compatibility with existing callers.
 - `vdb` condition builders validate operators against an allowlist; prefer
   helpers such as `Eq`, `Like`, `In`, `Between`, `IsNull`, and `IsNotNull`
   instead of interpolating raw SQL fragments.
 - `vskt.AioSession` serializes reads that share the session buffer and keeps
   buffers available during close callbacks, so lifecycle hooks can inspect the
   last received data safely.
+- JWT `none` signing is only selected by an explicit `alg: "none"`; an empty or
+  unsupported algorithm is rejected instead of falling back to unsigned tokens.
 
 ## 🚀 Install
 
-Go 1.24 or later is required.
+Go 1.25 or later is required.
 
 ```bash
 go get github.com/imajinyun/go-knifer
@@ -471,8 +496,9 @@ import (
 func main() {
   cfg, _ := vconf.Parse("app.name=go-knifer\n")
 
-  loaded, _ := vconf.LoadRemoteWithOptions("https://example.com/app.yaml", vconf.LoadOptions{
-    MaxBytes: 1 << 20,
+  loaded, _ := vconf.LoadRemoteSafeWithOptions("https://example.com/app.yaml", vconf.LoadOptions{
+    MaxBytes:            1 << 20,
+    RemoteAllowedHosts: []string{"example.com"},
   })
 
   var current atomic.Pointer[vconf.Conf]
@@ -489,7 +515,8 @@ func main() {
 
 `vconf` also supports schema validation and struct binding for typed
 configuration contracts. Use them after loading and before publishing a config
-snapshot.
+snapshot. Prefer `LoadRemoteSafe` for remote configuration unless the URL is a
+trusted constant and another layer already enforces host and redirect policy.
 
 ```go
 schema := vconf.Schema{Fields: []vconf.FieldRule{
@@ -672,13 +699,16 @@ func main() {
 
 `vurl` centralizes URL parsing, normalization, query string handling, percent
 encoding, URL building, scheme checks, Data URI building, and file URL
-conversion.
+conversion. For user-provided resource locations, use the safe resource helpers
+instead of `Open`: they reject local files, non-HTTP schemes, private network
+targets, and unsafe redirects by default.
 
 ```go
 package main
 
 import (
   "fmt"
+  "io"
 
   "github.com/imajinyun/go-knifer/vurl"
 )
@@ -689,6 +719,14 @@ func main() {
   query := vurl.BuildQuery(map[string]any{"lang": "go", "page": 1})
   dataURI := vurl.DataURIBase64("text/plain", "aGVsbG8=")
   built := vurl.NewHTTPURLBuilder("example.com").AddPathSegment("a b").AddQuery("q", "go").Build()
+  reader, err := vurl.OpenSafeWithOptions("https://example.com/config.yaml",
+    vurl.WithAllowedHosts("example.com"),
+  )
+  if err != nil {
+    panic(err)
+  }
+  defer reader.Close()
+  _, _ = io.Copy(io.Discard, reader)
 
   fmt.Println(normalized)
   fmt.Println(completed)
@@ -698,6 +736,10 @@ func main() {
   fmt.Println(built)
 }
 ```
+
+`OpenWithOptions` and `ContentLengthWithOptions` remain available for trusted
+local files or controlled resources. Use `OpenSafeWithOptions` and
+`ContentLengthSafeWithOptions` when the location crosses a trust boundary.
 
 ### Network and IP helpers
 
@@ -936,6 +978,8 @@ func main() {
 
 `vzip` provides archive creation/extraction, entry lookup, archive traversal,
 append operations, in-memory entries, and byte/string compression helpers.
+Extraction and decompression are bounded by default; pass `WithMaxBytes` or the
+`Limit` helpers to set an explicit budget for the archive you expect.
 
 ```go
 package main
@@ -948,6 +992,7 @@ import (
 
 func main() {
   _ = vzip.ZipEntries("demo.zip", vzip.EntryData{Name: "hello.txt", Data: []byte("hello")})
+  _ = vzip.UnzipToWithOptions("demo.zip", "./out", vzip.WithMaxBytes(64<<20))
   data, _ := vzip.GetBytes("demo.zip", "hello.txt")
   gz, _ := vzip.GzipString(string(data))
   text, _ := vzip.UnGzipString(gz)
@@ -1217,6 +1262,19 @@ Run tests:
 ```bash
 go test ./...
 ```
+
+Run the same local safety checks used by CI before opening a PR:
+
+```bash
+go test -race -shuffle=on ./...
+bash bin/check_arch.sh
+golangci-lint run ./...
+go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+```
+
+GitHub Actions runs the Go test matrix, architecture check, golangci-lint,
+govulncheck, and CodeQL. Dependabot is configured for Go modules and GitHub
+Actions updates.
 
 Format code:
 

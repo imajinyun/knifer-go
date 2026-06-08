@@ -5,7 +5,7 @@
 ![go-knifer](./go-knifer.jpeg)
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/imajinyun/go-knifer.svg)](https://pkg.go.dev/github.com/imajinyun/go-knifer)
-[![Go Version](https://img.shields.io/badge/go-%3E%3D1.24-00ADD8?logo=go)](https://go.dev/)
+[![Go Version](https://img.shields.io/badge/go-%3E%3D1.25-00ADD8?logo=go)](https://go.dev/)
 
 ## 📚 简介
 
@@ -47,9 +47,10 @@ text := vcrypto.SHA256Hex("hello")
 | 精确运算、舍入、表达式计算 | `vnum` |
 | SHA/HMAC、AES-GCM/RSA-PSS、参数签名 | `vcrypto` |
 | 非加密哈希（FNV、BKDR 等） | `vhash` |
-| URL 编解码、query 构建/解析 | `vurl` |
+| URL 编解码、query 构建/解析，或安全打开不可信 HTTP(S) 资源 | `vurl` |
 | Base64 / Hex 编解码 | `vcodec` |
 | 构建/解析 JSON、路径读写、JSON↔XML | `vjson` |
+| 加载本地或远程配置，包括带 SSRF 防护的远程配置 | `vconf` |
 | 解析、构建、遍历 XML | `vxml` |
 | 生成 UUID / Snowflake / NanoId | `vid` |
 | 校验或解析身份证号 | `vident` |
@@ -78,13 +79,13 @@ text := vcrypto.SHA256Hex("hello")
 | `vdate` | `github.com/imajinyun/go-knifer/vdate` | 日期时间工具：常用布局、解析/格式化、日/月/年起止、偏移和比较。 |
 | `vfile` | `github.com/imajinyun/go-knifer/vfile` | 文件与 IO 工具：读写复制、按行读取、mkdir/touch/delete、文件名处理、静默关闭和 provider-backed 文件系统操作。 |
 | `vcodec` | `github.com/imajinyun/go-knifer/vcodec` | 编解码工具：Base64、URL-safe Base64、raw URL-safe Base64、自定义 Base64 encoding provider 和 Hex。 |
-| `vurl` | `github.com/imajinyun/go-knifer/vurl` | URL 与 URI 工具：解析、标准化、相对 URL 补全、query 编解码、支持注入 query/path escape provider 的 URL/路径/fragment 百分号编码、URL 构造、Data URI 构造、协议判断和文件 URL 转换。 |
+| `vurl` | `github.com/imajinyun/go-knifer/vurl` | URL 与 URI 工具：解析、标准化、相对 URL 补全、query 编解码、支持注入 query/path escape provider 的 URL/路径/fragment 百分号编码、URL 构造、Data URI 构造、协议判断、文件 URL 转换、资源打开/大小查询，以及带 SSRF 防护的 `OpenSafe` / `ContentLengthSafe` 变体。 |
 | `vnet` | `github.com/imajinyun/go-knifer/vnet` | 网络工具：支持注入 IP/CIDR/int parser 的 IPv4/IPv6 转换、CIDR/范围/掩码、本地端口、主机/网卡/MAC 查询、TLS 配置、address/dial/ping provider options 和 multipart 表单辅助。 |
 | `vobj` | `github.com/imajinyun/go-knifer/vobj` | 对象工具：nil/空值判断、相等性、默认值、克隆/序列化、比较、类型检查和容器辅助。 |
 | `vver` | `github.com/imajinyun/go-knifer/vver` | 版本工具：版本号比较、大小关系判断、表达式匹配、闭区间范围和自定义多表达式分隔符。 |
 | `vref` | `github.com/imajinyun/go-knifer/vref` | 反射工具：字段查找与赋值、方法发现与调用、构造函数风格调用、类型/值工具、方法分类判断，以及显式 unsafe/unexported 字段访问选项。 |
 | `vbean` | `github.com/imajinyun/go-knifer/vbean` | Bean/结构体映射工具：struct/map 互转、copy properties、tag/alias 匹配、忽略空值/零值选项和弱类型转换。 |
-| `vzip` | `github.com/imajinyun/go-knifer/vzip` | ZIP、gzip、zlib 工具：压缩包创建/解压、条目读取、遍历、追加、内存条目、流式压缩和 provider-backed 归档文件操作。 |
+| `vzip` | `github.com/imajinyun/go-knifer/vzip` | ZIP、gzip、zlib 工具：压缩包创建/解压、条目读取、遍历、追加、内存条目、流式压缩、provider-backed 归档文件操作，以及默认有边界的解压/解压缩行为。 |
 | `vpoi` | `github.com/imajinyun/go-knifer/vpoi` | Office 文档工具：轻量 Excel XLSX 工作表列表、行读写、多工作表写入、内存工作簿创建，以及可注入的 workbook/文件系统 provider。 |
 | `vmask` | `github.com/imajinyun/go-knifer/vmask` | 脱敏工具：姓名、证件号、电话、地址、邮箱、密码、车牌、银行卡、IP、护照号和信用代码遮罩。 |
 | `vnum` | `github.com/imajinyun/go-knifer/vnum` | 数字工具：精确加减乘除、舍入模式、provider-backed 解析/格式化、数字判断、不重复随机数、range、阶乘/组合数、最大公约数/最小公倍数、二进制转换、比较、字节转换、表达式计算和奇偶判断。 |
@@ -96,7 +97,7 @@ text := vcrypto.SHA256Hex("hello")
 | `vtpl` | `github.com/imajinyun/go-knifer/vtpl` | Go html/template 渲染工具，支持单次调用配置模板名、FuncMap、分隔符、template factory 和 executor。 |
 | `vregex` | `github.com/imajinyun/go-knifer/vregex` | 正则工具：匹配、分组提取、命名分组、删除、计数、索引定位、模板/函数替换、元字符转义，以及单次调用 compiler / DOTALL options。 |
 | `vbool` | `github.com/imajinyun/go-knifer/vbool` | 布尔工具：取反、转 int、全真/任一为真判断。 |
-| `vblf` | `github.com/imajinyun/go-knifer/vblf` | 布隆过滤器：bitmap/bitset/filter 抽象、多种字符串哈希算法、option-based 构造器，以及 provider-backed 文件初始化。 |
+| `vblf` | `github.com/imajinyun/go-knifer/vblf` | 布隆过滤器：bitmap/bitset/filter 抽象、多种字符串哈希算法、option-based 构造器、返回校验错误而不是 panic 的 `E` 构造器，以及 provider-backed 文件初始化。 |
 | `vcache` | `github.com/imajinyun/go-knifer/vcache` | 泛型缓存：FIFO、LFU、LRU、Timed、Weak、NoCache，支持 TTL、clock、淘汰监听、懒加载、ticker/runner provider 和 weak-cache finalizer provider。 |
 | `vcaptcha` | `github.com/imajinyun/go-knifer/vcaptcha` | 图片验证码：线条、圆圈、扭曲、GIF 验证码，支持随机/数学表达式生成器。 |
 | `vcron` | `github.com/imajinyun/go-knifer/vcron` | Cron 表达式解析与任务调度，支持默认/自定义调度器、可配置 cron options、ID random-reader/clock/sleeper/runner provider，以及单次调用隔离的默认调度器覆盖。 |
@@ -110,7 +111,7 @@ text := vcrypto.SHA256Hex("hello")
 | `vjwt` | `github.com/imajinyun/go-knifer/vjwt` | JWT 创建、解析、签名、验签与时间字段校验，支持 HMAC、RSA-PSS、ECDSA、none 等 signer，以及 provider-backed JSON marshal/unmarshal options。 |
 | `vlog` | `github.com/imajinyun/go-knifer/vlog` | 日志 facade：console/color console logger、可注入颜色工厂、日志级别、全局 logger、静态日志函数、单次调用 logger options 和 isolated logger 创建。 |
 | `verr` | `github.com/imajinyun/go-knifer/verr` | 错误工具：panic recover、错误聚合、multierror 匹配、collector 构造 options、堆栈捕获/格式化、可重置 log/stack cache、可注入的 logging/stack/exit/timer/runner provider、隔离 logrus 创建，以及可选 logrus/Sentry 集成。 |
-| `vconf` | `github.com/imajinyun/go-knifer/vconf` | 分组配置读取：setting/properties 风格文本、简单 YAML 子集和 TOML 解析，支持类型化读取、schema 校验、profile/remote/file 加载 options、环境变量展开 provider、watch ticker/runner provider、读取大小限制、只读快照使用方式和深拷贝 `Clone`。 |
+| `vconf` | `github.com/imajinyun/go-knifer/vconf` | 分组配置读取：setting/properties 风格文本、简单 YAML 子集和 TOML 解析，支持类型化读取、schema 校验、profile/remote/file 加载 options、带 SSRF 防护的 `LoadRemoteSafe`、环境变量展开 provider、watch ticker/runner provider、读取大小限制、只读快照使用方式和深拷贝 `Clone`。 |
 | `vset` | `github.com/imajinyun/go-knifer/vset` | 泛型与常用类型集合工具：支持添加、删除、包含判断、集合运算，以及 JSON/YAML 编解码辅助。 |
 | `vjob` | `github.com/imajinyun/go-knifer/vjob` | 可切分任务执行：职责分离任务数据与调度配置，支持泛型 Slice/Map 适配、context 取消和串行合并回调；无需开启 generic type alias 实验。 |
 | `vsem` | `github.com/imajinyun/go-knifer/vsem` | 加权计数信号量：支持 context 取消、FIFO 公平等待、非阻塞获取、关闭通知与占用数查询。 |
@@ -152,11 +153,11 @@ Provider 覆盖重点：
 | 领域 | 示例 |
 | --- | --- |
 | HTTP / Resty | `vhttp.NewIsolatedRequest`、`vhttp.NewRequestWithConfig`、`vhttp.CreateGetWithOptions`、`vhttp.CreatePostWithOptions`、`vhttp.WithTransportProvider`、`vhttp.WithRequestFactory`、`vhttp.WithMultipartWriterFactory`、`vhttp.ResetDefaultTransport`、`vhttp.WithListenAndServeFunc`、`vhttp.WithAsyncRunner`、`vhttp.CreateServerWithOptions`、`vhttp.ResetServerStarters`、`vhttp.GetWithTimeoutWithOptions`、`vhttp.GetWithParamsWithOptions`、`vhttp.PostStringWithOptions`、`vhttp.CleanHTMLWithOptions`、`vhttp.FilterHTMLTagWithOptions`、`vhttp.WithHTMLFilterCompileFunc`、`vresty.NewIsolatedRequest`、`vresty.WithGlobalConfig`、`vresty.WithRestyClientFactory`、`vresty.ConfigureDefaultRestyClientProvider`、`vresty.ResetDefaultRestyClientProvider`、`vresty.CreateRequestWithOptions`、`vresty.CreateGetWithOptions`、`vresty.CreatePostWithOptions`、`vresty.GetWithTimeoutWithOptions`、`vresty.GetWithParamsWithOptions`、`vresty.PostStringWithOptions`、`vresty.DownloadFileWithOptions` |
-| 文件 / 配置 / 压缩 / POI | `vfile` provider options、`vconf.LoadWithOptions`、`vconf.WatchWithOptions`、`vconf.WatchOptions.Runner`、`vzip` provider options、`vpoi.WithOpenFileFunc`、`vpoi.WithNewFileFunc`、`vpoi.WithSaveAsFunc` |
+| 文件 / 配置 / 压缩 / POI | `vfile` provider options、`vconf.LoadWithOptions`、`vconf.LoadRemoteSafeWithOptions`、`vconf.WatchWithOptions`、`vconf.WatchOptions.Runner`、`vzip.WithMaxBytes`、`vzip` provider options、`vpoi.WithOpenFileFunc`、`vpoi.WithNewFileFunc`、`vpoi.WithSaveAsFunc` |
 | Cron / DFA / ID / 身份 / 随机数 | `vcron.WithDefaultSchedulerOptions`、`vcron.NewConfigWithOptions`、`vcron.WithIDRandomReader`、`vcron.WithRunner`、`vcron.CronScheduleWithOptions`、`vdfa.WithMatcherWords`、`vdfa.WithJSONMarshal`、`vdfa.WithJSONUnmarshal`、`vdfa.ContainsWithOptions`、`vdfa.ConfigureAsyncRunner`、`vdfa.ResetAsyncRunner`、`vid.NewIsolatedSnowflake`、`vid.CreateSnowflakeWithOptions`、`vid.WithSnowflakeCache`、`vid.WithFallbackRandomSource`、`vid.ConfigureDefaultFallbackRandomSourceProvider`、`vid.ResetDefaultFallbackRandomSource`、`vid.SetFallbackRandomSeed`、`vrand.ConfigureDefaultRandomSourceProvider`、`vrand.ResetDefaultRandomSource`、`vrand.SetSeed`、`vident.BirthDateWithOptions` |
 | 编解码 / JSON / XML / JWT / hash | `vcodec.Base64EncodeWithEncoding`、`vcodec.Base64DecodeWithEncoding`、`vcodec.Base64RawURLEncode`、`vcodec.Base64RawURLDecode`、`vhash.Hash32`、`vjson.WithMarshalFunc`、`vjson.WithUnmarshalFunc`、`vjson.WithParseUnmarshalFunc`、`vjson.WithBeanUnmarshalFunc`、`vjson.WithSprintFunc`、`vjson.WithParseIntFunc`、`vjson.WithParseFloatFunc`、`vjson.WithParseBoolFunc`、`vjson.WithFormatIntFunc`、`vjson.WithFormatFloatFunc`、`vjson.ParseObjWithOptions`、`vjson.ParseArrayWithOptions`、`vjson.ToBeanWithOptions`、`vjson.ToListWithOptions`、`vjson.XMLToJSONWithOptions`、`vjson.ToXMLWithOptions`、`vxml.WithScalarIntParser`、`vxml.WithScalarFloatParser`、`vxml.XMLToMapWithOptions`、`vxml.XMLNodeToMapWithOptions`、`vxml.XMLToMapIntoWithOptions`、`vxml.XMLNodeToMapIntoWithOptions`、`vxml.XMLToBeanWithOptions`、`vxml.XMLNodeToBeanWithOptions`、`vxml.TransformWithOptions`、`vxml.FormatWithOptions`、`vjwt.WithJSONMarshalFunc`、`vjwt.WithJSONUnmarshalFunc`、`vjwt.ParseTokenWithOptions`、`vjwt.WithTokenJSONOptions` |
 | 加密 / 模板 / 正则 / 校验 / 字符串 | `vcrypto.Digest`、`vcrypto.DigestHex`、`vcrypto.WithAESBlockFactory`、`vcrypto.WithGCMBlockFactory`、`vcrypto.AESEncryptCTRWithOptions`、`vcrypto.AESEncryptGCMWithOptions`、`vcrypto.SignWithRSAOptions`、`vcrypto.VerifyWithRSAOptions`、`vtpl.RenderWithOptions`、`vtpl.WithFuncMap`、`vtpl.WithTemplateFactory`、`vregex.WithCompileFunc`、`vregex.WithDotAll`、`vregex.MatchWithOptions`、`vregex.ReplaceAllFuncWithOptions`、`vvalid.IsEmailWithOptions`、`vvalid.WithMobileMatcher`、`vstr.ContainsEmojiWithOptions`、`vstr.RemoveEmojiWithOptions` |
-| DB / 网络 / 数字 / URL / 系统 / 反射 / socket | `vdb.WithSQLOpenFunc`、`vnet.WithConnectDialer`、`vnet.WithPingDialer`、`vnet.WithAddressNetwork`、`vnet.WithTCPAddrResolver`、`vnet.WithUploadOpenSource`、`vnet.WithIPParser`、`vnet.WithCIDRParser`、`vnet.WithIPIntParser`、`vnet.WithWildcardIPParser`、`vnet.WithWildcardIntParser`、`vnet.IPv4ToLongWithOptions`、`vnet.IsInRangeWithOptions`、`vnum.WithParseFloatFunc`、`vnum.WithDoubleParseFloatFunc`、`vnum.WithDoubleFormatFloatFunc`、`vnum.CalculateWithOptions`、`vnum.ToDoubleWithOptions`、`vurl.WithQueryEscapeFunc`、`vurl.WithPathEscapeFunc`、`vurl.EncodeQueryWithOptions`、`vurl.EncodePathSegmentWithOptions`、`vurl.FormURLEncodeWithOptions`、`vsys.WithGoEnvOutputFunc`、`vsys.WithGoRootEnvLookupFunc`、`vsys.WithOSEnvLookupFunc`、`vsys.WithEnvLookupFunc`、`vsys.ResetInfoCache`、`vref.WithUnsafeAccess`、`vskt.WithThreadPoolSizeFunc`、`vskt.WithRunner`、`vskt.WithSocketIPParser` |
+| DB / 网络 / 数字 / URL / 系统 / 反射 / socket | `vdb.WithSQLOpenFunc`、`vnet.WithConnectDialer`、`vnet.WithPingDialer`、`vnet.WithAddressNetwork`、`vnet.WithTCPAddrResolver`、`vnet.WithUploadOpenSource`、`vnet.WithIPParser`、`vnet.WithCIDRParser`、`vnet.WithIPIntParser`、`vnet.WithWildcardIPParser`、`vnet.WithWildcardIntParser`、`vnet.IPv4ToLongWithOptions`、`vnet.IsInRangeWithOptions`、`vnum.WithParseFloatFunc`、`vnum.WithDoubleParseFloatFunc`、`vnum.WithDoubleFormatFloatFunc`、`vnum.CalculateWithOptions`、`vnum.ToDoubleWithOptions`、`vurl.WithQueryEscapeFunc`、`vurl.WithPathEscapeFunc`、`vurl.EncodeQueryWithOptions`、`vurl.EncodePathSegmentWithOptions`、`vurl.FormURLEncodeWithOptions`、`vurl.OpenSafeWithOptions`、`vurl.WithAllowedSchemes`、`vurl.WithAllowedHosts`、`vurl.WithRejectPrivateHosts`、`vurl.WithAllowLocalFiles`、`vsys.WithGoEnvOutputFunc`、`vsys.WithGoRootEnvLookupFunc`、`vsys.WithOSEnvLookupFunc`、`vsys.WithEnvLookupFunc`、`vsys.ResetInfoCache`、`vref.WithUnsafeAccess`、`vskt.WithThreadPoolSizeFunc`、`vskt.WithRunner`、`vskt.WithSocketIPParser` |
 | 错误 / 缓存 / 日志 / 运行时 | `verr.NewCollectorWithOptions`、`verr.WithCollectorLogFunc`、`verr.WithCollectorRunner`、`verr.WithCollectorContext`、`verr.WithCollectorLevel`、`verr.WithCollectorTimerFactory`、`verr.WithCollectorStackCaptureOptions`、`verr.WithLogFunc`、`verr.WithCollectorStackOptions`、`verr.WithDebugStackFunc`、`verr.WithCallersFunc`、`verr.WithFuncForPCFunc`、`verr.WithStackFrameCache`、`verr.ResetStackFrameCache`、`verr.ResetDefaultLogFunc`、`verr.NewIsolatedLogrusWithOptions`、`verr.MustExitWithOptions`、`vcache.WithClock`、`vcache.WithTickerFactory`、`vcache.WithRunner`、`vcache.WithWeakFinalizerFunc`、`vcache.WithWeakFinalizerEnabled`、`vlog.WithLogColorFactory`、`vlog.NewIsolatedLogger`、`vlog.LoggerWithOptions`、`vlog.InfoWithOptions` |
 
 领域边界规则：
@@ -170,7 +171,7 @@ Provider 覆盖重点：
 - `vid` 负责 UUID、Snowflake、ObjectId、NanoId 等生成型标识；`vident` 负责法定身份号码与地区证件解析，
   例如中国大陆身份证和港澳台证件号。
 - `vcodec` 负责 Base64、Hex 等编码/解码算法；`vurl` 负责 URL 转义、URL/URI 解析、规范化、
-  资源和协议语义。
+  资源打开/大小查询和协议语义。
 - `vjson` 负责 JSON 对象、数组、路径和轻量 XML adapter；`vxml` 负责 XML 解析、树访问、格式化、
   namespace 和 XML 专属的 map/bean 转换。
 - `vbean` 负责直接的 struct/map 属性映射、copy properties、tag/alias 匹配和弱类型转换，
@@ -222,13 +223,29 @@ PBKDF2-SHA-256、AES CTR/CFB/OFB/GCM、RSA-OAEP 加密和 RSA-PSS 签名。JWT R
   `vfile.WithMaxBytes(n)`；只有调用方已经在其他层面限制输入时，才使用 `vfile.WithUnlimitedRead()`。
 - `vconf` 本地与远程加载默认使用 `vconf.DefaultMaxBytes`。设置 `LoadOptions.MaxBytes` 可改变限制，
   负数表示显式关闭配置读取限制。
+- 从不可信或用户可控 URL 加载远程配置时，使用 `vconf.LoadRemoteSafe` 或
+  `LoadRemoteSafeWithOptions`。安全变体只接受 HTTP(S)，默认拒绝 localhost、私有网段、link-local
+  和 unspecified 目标，并用同一策略校验重定向目标。需要允许私有测试服务或明确的内网主机时，设置
+  `LoadOptions.RemoteAllowedHosts`。
+- 从不可信输入打开远程资源时，使用 `vurl.OpenSafe`、`OpenSafeWithOptions`、
+  `ContentLengthSafe` 或 `ContentLengthSafeWithOptions`。安全资源 helper 默认只允许 HTTP(S)、
+  拒绝本地文件和普通文件路径、拒绝私有网络目标、检查 HTTP 状态、设置超时，并重新校验重定向。优先用
+  `WithAllowedHosts` 绑定可信 host；只有调用方已建立更窄的信任边界时，才放宽
+  `WithRejectPrivateHosts` 或 `WithAllowLocalFiles`。
+- `vzip` 解压和解压缩 helper 默认有大小边界，以降低 zip bomb 风险。使用 `vzip.WithMaxBytes(n)`
+  或 `UnzipToLimit` / `UnzipReaderToLimit` 设置更严格的预算；只有其他层已对可信输入设置大小限制时，
+  才传入负数关闭 max-byte 限制。
+- 以 `E` 结尾的布隆过滤器构造器，例如 `vblf.NewBitMapBloomFilterE`、
+  `vblf.NewBitSetBloomFilterE` 和 `vblf.NewFuncFilterE`，会在 size 或 hash 配置非法时返回校验错误，
+  而不是 panic。非 `E` 构造器保留用于兼容已有调用方。
 - `vdb` 条件构造器会校验操作符白名单；优先使用 `Eq`、`Like`、`In`、`Between`、
   `IsNull`、`IsNotNull` 等辅助函数，而不是拼接原始 SQL 片段。
 - `vskt.AioSession` 会串行化共享 session buffer 的读取，并在关闭回调期间保留 buffer，便于生命周期钩子安全检查最后收到的数据。
+- JWT `none` 签名只会在显式 `alg: "none"` 时启用；空算法或不支持的算法会被拒绝，不会降级成无签名 token。
 
 ## 🚀 安装
 
-项目要求 Go 1.24 或更高版本。
+项目要求 Go 1.25 或更高版本。
 
 ```bash
 go get github.com/imajinyun/go-knifer
@@ -407,8 +424,9 @@ import (
 func main() {
   cfg, _ := vconf.Parse("app.name=go-knifer\n")
 
-  loaded, _ := vconf.LoadRemoteWithOptions("https://example.com/app.yaml", vconf.LoadOptions{
-    MaxBytes: 1 << 20,
+  loaded, _ := vconf.LoadRemoteSafeWithOptions("https://example.com/app.yaml", vconf.LoadOptions{
+    MaxBytes:            1 << 20,
+    RemoteAllowedHosts: []string{"example.com"},
   })
 
   var current atomic.Pointer[vconf.Conf]
@@ -423,7 +441,8 @@ func main() {
 }
 ```
 
-`vconf` 也支持 schema 校验与结构体绑定，用于在配置发布前建立明确的类型契约。
+`vconf` 也支持 schema 校验与结构体绑定，用于在配置发布前建立明确的类型契约。除非 URL 是可信常量，
+且其他层已经约束 host 与重定向策略，否则远程配置优先使用 `LoadRemoteSafe`。
 
 ```go
 schema := vconf.Schema{Fields: []vconf.FieldRule{
@@ -591,13 +610,15 @@ func main() {
 ### URL 与 URI 工具
 
 `vurl` 集中提供 URL 解析、标准化、query 字符串处理、百分号编码、URL 构造、
-协议判断、Data URI 构造和文件 URL 转换等能力。
+协议判断、Data URI 构造和文件 URL 转换等能力。对于用户传入的资源地址，优先使用安全资源 helper，
+而不是直接使用 `Open`：默认会拒绝本地文件、非 HTTP 协议、私有网络目标和不安全重定向。
 
 ```go
 package main
 
 import (
   "fmt"
+  "io"
 
   "github.com/imajinyun/go-knifer/vurl"
 )
@@ -608,6 +629,14 @@ func main() {
   query := vurl.BuildQuery(map[string]any{"lang": "go", "page": 1})
   dataURI := vurl.DataURIBase64("text/plain", "aGVsbG8=")
   built := vurl.NewHTTPURLBuilder("example.com").AddPathSegment("a b").AddQuery("q", "go").Build()
+  reader, err := vurl.OpenSafeWithOptions("https://example.com/config.yaml",
+    vurl.WithAllowedHosts("example.com"),
+  )
+  if err != nil {
+    panic(err)
+  }
+  defer reader.Close()
+  _, _ = io.Copy(io.Discard, reader)
 
   fmt.Println(normalized)
   fmt.Println(completed)
@@ -617,6 +646,9 @@ func main() {
   fmt.Println(built)
 }
 ```
+
+`OpenWithOptions` 和 `ContentLengthWithOptions` 仍可用于可信本地文件或受控资源。资源地址跨越信任边界时，
+使用 `OpenSafeWithOptions` 和 `ContentLengthSafeWithOptions`。
 
 ### 网络与 IP 工具
 
@@ -846,7 +878,8 @@ func main() {
 ### ZIP、gzip 与 zlib 工具
 
 `vzip` 提供压缩包创建/解压、条目读取、遍历、追加、内存条目写入，
-以及 byte/string 级别的 gzip 和 zlib 压缩解压能力。
+以及 byte/string 级别的 gzip 和 zlib 压缩解压能力。解压和解压缩默认有大小边界；
+使用 `WithMaxBytes` 或 `Limit` 辅助函数为预期归档设置明确预算。
 
 ```go
 package main
@@ -859,6 +892,7 @@ import (
 
 func main() {
   _ = vzip.ZipEntries("demo.zip", vzip.EntryData{Name: "hello.txt", Data: []byte("hello")})
+  _ = vzip.UnzipToWithOptions("demo.zip", "./out", vzip.WithMaxBytes(64<<20))
   data, _ := vzip.GetBytes("demo.zip", "hello.txt")
   gz, _ := vzip.GzipString(string(data))
   text, _ := vzip.UnGzipString(gz)
@@ -1120,6 +1154,18 @@ cd go-knifer
 ```bash
 go test ./...
 ```
+
+提交 PR 前建议本地运行与 CI 对齐的安全检查：
+
+```bash
+go test -race -shuffle=on ./...
+bash bin/check_arch.sh
+golangci-lint run ./...
+go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+```
+
+GitHub Actions 会运行 Go 测试矩阵、架构检查、golangci-lint、govulncheck 和 CodeQL。
+Dependabot 已配置 Go modules 与 GitHub Actions 依赖更新。
 
 格式化代码：
 
