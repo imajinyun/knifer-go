@@ -110,7 +110,7 @@ The project follows an “internal implementation + public facade” layout: `in
 | `vjwt` | `github.com/imajinyun/go-knifer/vjwt` | JWT creation, parsing, signing, verification, and time-claim validation; supports HMAC, RSA-PSS, ECDSA, none signers, and provider-backed JSON marshal/unmarshal options. |
 | `vlog` | `github.com/imajinyun/go-knifer/vlog` | Logging facade: console/color console loggers, injectable color factories, log levels, global logger, static logging functions, per-call logger options, and isolated logger creation. |
 | `verr` | `github.com/imajinyun/go-knifer/verr` | Error helpers: panic recovery, error aggregation, multierror matching, collector construction options, stack capture/formatting, resettable log/stack caches, injectable logging/stack/exit/timer/runner providers, isolated logrus creation, and optional logrus/Sentry integration. |
-| `vconf` | `github.com/imajinyun/go-knifer/vconf` | Grouped configuration reader for setting/properties-style text and a simple YAML subset, with typed getters, profile/remote/file loading options, environment expansion providers, watch ticker/runner providers, read-only snapshot guidance, and deep-copy `Clone` support. |
+| `vconf` | `github.com/imajinyun/go-knifer/vconf` | Grouped configuration reader for setting/properties-style text, a simple YAML subset, and TOML parsing, with typed getters, schema validation, profile/remote/file loading options, environment expansion providers, watch ticker/runner providers, bounded reads, read-only snapshot guidance, and deep-copy `Clone` support. |
 | `vset` | `github.com/imajinyun/go-knifer/vset` | Generic and typed set utilities with add/remove/contains, set operations, and JSON/YAML encoding helpers. |
 | `vjob` | `github.com/imajinyun/go-knifer/vjob` | Sliceable job execution: separate job data from scheduling options, typed slice/map adapters, context cancellation, and serialized merge callbacks; no generic type-alias experiment is required. |
 | `vsem` | `github.com/imajinyun/go-knifer/vsem` | Weighted, context-aware counting semaphore with FIFO fairness, try-acquire, close notifications, and in-use metrics. |
@@ -242,6 +242,37 @@ failures, vsem invalid weights, and invalid HTTP request input),
 `knifer.ErrCodeInternal` (remaining vhttp/vresty transport/read errors, vskt,
 vblf read errors, and recovered panics from verr) while preserving their own
 error types, sentinels, and cause chains.
+
+### Security and safety defaults
+
+Security-sensitive helpers expose only the currently recommended public API
+surface. `vcrypto` keeps SHA-2 digests, HMAC-SHA-256/384/512, PBKDF2-SHA-256,
+AES CTR/CFB/OFB/GCM, RSA-OAEP encryption, and RSA-PSS signatures. JWT RSA
+signing is exposed through RSA-PSS (`JWTAlgPS256`, `JWTAlgPS384`,
+`JWTAlgPS512`, `NewRSAPSSSigner`, and `PS256` / `PS384` / `PS512` helpers),
+alongside HMAC and ECDSA signers.
+
+Network and IO helpers prefer bounded, explicit behavior:
+
+- TLS helpers create configs with TLS 1.2+ as the minimum version via
+  `vnet.CreateTLSConfig()`. HTTP clients accept explicit `*tls.Config` values
+  through `WithTLSConfig`; certificate verification is not bypassed by a
+  convenience API.
+- HTTP and Resty downloads validate automatically discovered filenames before
+  joining them under the destination directory, preventing path traversal when
+  callers pass a directory target.
+- `vfile` read helpers use `vfile.DefaultMaxBytes` by default. Use
+  `vfile.WithMaxBytes(n)` to tighten a read and `vfile.WithUnlimitedRead()` only
+  when the caller has already bounded the source elsewhere.
+- `vconf` local and remote loads use `vconf.DefaultMaxBytes` unless
+  `LoadOptions.MaxBytes` is set. A negative value explicitly disables the
+  config read limit.
+- `vdb` condition builders validate operators against an allowlist; prefer
+  helpers such as `Eq`, `Like`, `In`, `Between`, `IsNull`, and `IsNotNull`
+  instead of interpolating raw SQL fragments.
+- `vskt.AioSession` serializes reads that share the session buffer and keeps
+  buffers available during close callbacks, so lifecycle hooks can inspect the
+  last received data safely.
 
 ## 🚀 Install
 
@@ -422,7 +453,10 @@ cache for cleanup, metrics, reload, or follow-up writes.
 `vconf` objects are intentionally simple mutable maps while being built or
 loaded. After a config is shared with application code, treat it as an immutable
 snapshot. For runtime updates, clone or reload, mutate the new copy, then publish
-the new pointer.
+the new pointer. Local and remote config loading is bounded by
+`vconf.DefaultMaxBytes` by default; pass `LoadOptions{MaxBytes: n}` to use a
+stricter limit, or a negative value only when the source is already bounded by
+another layer.
 
 ```go
 package main
@@ -437,6 +471,10 @@ import (
 func main() {
   cfg, _ := vconf.Parse("app.name=go-knifer\n")
 
+  loaded, _ := vconf.LoadRemoteWithOptions("https://example.com/app.yaml", vconf.LoadOptions{
+    MaxBytes: 1 << 20,
+  })
+
   var current atomic.Pointer[vconf.Conf]
   current.Store(cfg)
 
@@ -444,7 +482,21 @@ func main() {
   next.Set("app.name", "go-knifer-next")
   current.Store(next)
 
+  _ = loaded
   fmt.Println(current.Load().Get("app.name"))
+}
+```
+
+`vconf` also supports schema validation and struct binding for typed
+configuration contracts. Use them after loading and before publishing a config
+snapshot.
+
+```go
+schema := vconf.Schema{Fields: []vconf.FieldRule{
+  {Group: "server", Key: "port", Type: vconf.TypeInt, Required: true},
+}}
+if err := cfg.ValidateSchema(schema); err != nil {
+  panic(err)
 }
 ```
 
@@ -504,7 +556,9 @@ should prefer per-call options to keep request behavior explicit and avoid
 cross-request state coupling. Available options include `WithTimeout`,
 `WithHeader`, `WithHeaders`, `WithFollowRedirects`, `WithMaxRedirects`,
 `WithTransport`, `WithClient`, `WithCookieJar`, and
-`WithUserAgent`.
+`WithUserAgent`. TLS behavior is configured by passing an explicit
+`*tls.Config` with `WithTLSConfig`; the facade does not expose a helper that
+disables certificate verification.
 
 HTTP errors are code-classified for routing and retry logic: malformed URLs and
 request construction problems match `knifer.ErrCodeInvalidInput`, timeouts match
@@ -569,6 +623,10 @@ n, err := vresty.DownloadFile("https://example.com/report.csv", "./downloads")
 _, _, _ = body, jsonBody, n
 _ = err
 ```
+
+When a download destination is a directory, the filename inferred from the
+response is validated before being joined under that directory. Provide an
+explicit file path when you need a fixed output name.
 
 ### Cron scheduling and shutdown
 
@@ -660,12 +718,18 @@ func main() {
   ipLong, _ := vnet.IPv4ToLong("127.0.0.1")
   begin, _ := vnet.BeginIP("192.168.1.9", 24)
   end, _ := vnet.EndIP("192.168.1.9", 24)
+  tlsConfig := vnet.CreateTLSConfig()
 
   fmt.Println(ipLong, vnet.LongToIPv4(ipLong))
   fmt.Println(begin, end, vnet.IsInRange("192.168.1.8", "192.168.1.0/24"))
   fmt.Println(vnet.HideIPPart("192.168.1.8"))
+  fmt.Println(tlsConfig.MinVersion)
 }
 ```
+
+`CreateTLSConfig` creates a client TLS config with TLS 1.2 or newer as the
+minimum version. For custom trust roots, use `NewTLSConfigBuilder` and add root
+CA PEM data from bytes, readers, or files.
 
 ### Object helpers
 
@@ -733,7 +797,10 @@ func main() {
 `vdb` provides SQL helpers on top of `database/sql`: named parameters,
 condition builders, entity-based insert/update/delete, pagination,
 transactions, and lightweight metadata lookup. Drivers and connection pools stay
-under caller control.
+under caller control. Condition helpers validate operators against a fixed
+allowlist, so prefer the typed builders (`Eq`, `Ne`, `Gt`, `Gte`, `Lt`, `Lte`,
+`Like`, `In`, `Between`, `IsNull`, `IsNotNull`, `AndGroup`, `OrGroup`) instead
+of assembling ad-hoc operator strings.
 
 ```go
 package main
@@ -941,6 +1008,11 @@ func main() {
 ```
 
 ### Digest and JWT
+
+`vcrypto` intentionally exposes the safer cryptographic helpers: SHA-2 digests,
+HMAC-SHA-256/384/512, PBKDF2-SHA-256, AES CTR/CFB/OFB/GCM, RSA-OAEP, and
+RSA-PSS. The examples below use AES-GCM for authenticated encryption and HMAC
+JWT signing for symmetric service tokens.
 
 ```go
 package main

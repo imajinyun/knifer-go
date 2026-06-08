@@ -110,7 +110,7 @@ text := vcrypto.SHA256Hex("hello")
 | `vjwt` | `github.com/imajinyun/go-knifer/vjwt` | JWT 创建、解析、签名、验签与时间字段校验，支持 HMAC、RSA-PSS、ECDSA、none 等 signer，以及 provider-backed JSON marshal/unmarshal options。 |
 | `vlog` | `github.com/imajinyun/go-knifer/vlog` | 日志 facade：console/color console logger、可注入颜色工厂、日志级别、全局 logger、静态日志函数、单次调用 logger options 和 isolated logger 创建。 |
 | `verr` | `github.com/imajinyun/go-knifer/verr` | 错误工具：panic recover、错误聚合、multierror 匹配、collector 构造 options、堆栈捕获/格式化、可重置 log/stack cache、可注入的 logging/stack/exit/timer/runner provider、隔离 logrus 创建，以及可选 logrus/Sentry 集成。 |
-| `vconf` | `github.com/imajinyun/go-knifer/vconf` | 分组配置读取：setting/properties 风格文本和简单 YAML 子集，支持类型化读取、profile/remote/file 加载 options、环境变量展开 provider 和 watch ticker/runner provider。 |
+| `vconf` | `github.com/imajinyun/go-knifer/vconf` | 分组配置读取：setting/properties 风格文本、简单 YAML 子集和 TOML 解析，支持类型化读取、schema 校验、profile/remote/file 加载 options、环境变量展开 provider、watch ticker/runner provider、读取大小限制、只读快照使用方式和深拷贝 `Clone`。 |
 | `vset` | `github.com/imajinyun/go-knifer/vset` | 泛型与常用类型集合工具：支持添加、删除、包含判断、集合运算，以及 JSON/YAML 编解码辅助。 |
 | `vjob` | `github.com/imajinyun/go-knifer/vjob` | 可切分任务执行：职责分离任务数据与调度配置，支持泛型 Slice/Map 适配、context 取消和串行合并回调；无需开启 generic type alias 实验。 |
 | `vsem` | `github.com/imajinyun/go-knifer/vsem` | 加权计数信号量：支持 context 取消、FIFO 公平等待、非阻塞获取、关闭通知与占用数查询。 |
@@ -200,10 +200,31 @@ if code, ok := knifer.CodeOf(err); ok { /* ... */ }
 
 `vjwt`、`vjson`、`vcron`、`vjob`、`vpoi`、`vcodec`、`vdate`、`vbean`、`vsem`、`verr`、
 `vhttp`/`vresty` 也已接入：其错误分别匹配 `knifer.ErrCodeInvalidInput`（vjwt、vjson、
-vcron、vjob、vpoi 空 sheet 名、vcodec 解码失败、vdate 解析失败、vbean 映射/转换失败、vsem 非法权重）、
-`knifer.ErrCodeNotFound`（vpoi 无 sheet、vblf 初始化文件不存在）、`knifer.ErrCodeUnsupported`（vsem 已关闭）与
-`knifer.ErrCodeInternal`（vhttp/vresty、vskt、vblf 读取失败、verr recover 到的 panic），
+vcron、vjob、vpoi 空 sheet 名、vcodec 解码失败、vdate 解析失败、vbean 映射/转换失败、vsem 非法权重和无效 HTTP 请求输入）、
+`knifer.ErrCodeTimeout`（HTTP 超时/deadline）、`knifer.ErrCodeNotFound`（vpoi 无 sheet、vblf 初始化文件不存在）、
+`knifer.ErrCodeUnsupported`（vsem 已关闭、HTTP 重定向/响应体限制场景）与
+`knifer.ErrCodeInternal`（其余 vhttp/vresty 传输或读取失败、vskt、vblf 读取失败、verr recover 到的 panic），
 同时保留各自的 error 类型、哨兵与 cause 错误链。
+
+### 安全与防护默认值
+
+安全敏感工具只保留当前推荐的公共 API。`vcrypto` 保留 SHA-2 摘要、HMAC-SHA-256/384/512、
+PBKDF2-SHA-256、AES CTR/CFB/OFB/GCM、RSA-OAEP 加密和 RSA-PSS 签名。JWT RSA
+签名通过 RSA-PSS 暴露（`JWTAlgPS256`、`JWTAlgPS384`、`JWTAlgPS512`、
+`NewRSAPSSSigner` 以及 `PS256` / `PS384` / `PS512` 辅助函数），同时保留 HMAC 与 ECDSA signer。
+
+网络与 IO 工具默认采用有边界、显式的行为：
+
+- TLS 工具通过 `vnet.CreateTLSConfig()` 创建 TLS 1.2+ 的配置。HTTP 客户端通过
+  `WithTLSConfig` 接收显式的 `*tls.Config`；不提供跳过证书校验的便利 API。
+- HTTP 与 Resty 下载在把自动识别的文件名拼接到目标目录前会先校验文件名，避免目录穿越。
+- `vfile` 读取工具默认使用 `vfile.DefaultMaxBytes` 限制读取大小。需要更严格限制时使用
+  `vfile.WithMaxBytes(n)`；只有调用方已经在其他层面限制输入时，才使用 `vfile.WithUnlimitedRead()`。
+- `vconf` 本地与远程加载默认使用 `vconf.DefaultMaxBytes`。设置 `LoadOptions.MaxBytes` 可改变限制，
+  负数表示显式关闭配置读取限制。
+- `vdb` 条件构造器会校验操作符白名单；优先使用 `Eq`、`Like`、`In`、`Between`、
+  `IsNull`、`IsNotNull` 等辅助函数，而不是拼接原始 SQL 片段。
+- `vskt.AioSession` 会串行化共享 session buffer 的读取，并在关闭回调期间保留 buffer，便于生命周期钩子安全检查最后收到的数据。
 
 ## 🚀 安装
 
@@ -365,15 +386,69 @@ func main() {
 }
 ```
 
-### 链式 HTTP 请求
+淘汰监听器会在缓存内部锁释放后执行，因此回调中可以安全地再次访问同一个 cache，用于清理、指标记录、重新加载或后续写入。
+
+### 配置快照
+
+`vconf` 对象在构建或加载过程中是简单的可变 map。配置发布给业务代码后，应把它当作只读快照使用。
+运行时更新时，先 clone 或重新加载得到新对象，在新对象上修改，再原子地发布新指针。本地和远程配置加载默认受
+`vconf.DefaultMaxBytes` 限制；使用 `LoadOptions{MaxBytes: n}` 可以设置更严格限制，只有输入已由其他层面限制时才使用负数关闭限制。
 
 ```go
 package main
 
 import (
   "fmt"
+  "sync/atomic"
+
+  "github.com/imajinyun/go-knifer/vconf"
+)
+
+func main() {
+  cfg, _ := vconf.Parse("app.name=go-knifer\n")
+
+  loaded, _ := vconf.LoadRemoteWithOptions("https://example.com/app.yaml", vconf.LoadOptions{
+    MaxBytes: 1 << 20,
+  })
+
+  var current atomic.Pointer[vconf.Conf]
+  current.Store(cfg)
+
+  next := current.Load().Clone()
+  next.Set("app.name", "go-knifer-next")
+  current.Store(next)
+
+  _ = loaded
+  fmt.Println(current.Load().Get("app.name"))
+}
+```
+
+`vconf` 也支持 schema 校验与结构体绑定，用于在配置发布前建立明确的类型契约。
+
+```go
+schema := vconf.Schema{Fields: []vconf.FieldRule{
+  {Group: "server", Key: "port", Type: vconf.TypeInt, Required: true},
+}}
+if err := cfg.ValidateSchema(schema); err != nil {
+  panic(err)
+}
+```
+
+### 链式 HTTP 请求
+
+当错误需要被调用方处理时，新代码优先使用 `E` 后缀快捷函数：`GetStringE`、`GetWithTimeoutE`、
+`GetWithParamsE`、`PostFormE`、`PostJSONE`、`PostStringE`、`DownloadStringE` 和
+`DownloadBytesE` 会返回 `(value, error)`，而不是把失败静默转为空值。
+
+```go
+package main
+
+import (
+  "errors"
+  "fmt"
   "time"
 
+  knifer "github.com/imajinyun/go-knifer"
   "github.com/imajinyun/go-knifer/vhttp"
 )
 
@@ -393,6 +468,18 @@ func main() {
   fmt.Println(resp.Status())
   fmt.Println(resp.ContentType())
   fmt.Println(resp.Body())
+
+  body, err := vhttp.GetStringEWithOptions("https://example.com/ping",
+    vhttp.WithTimeout(500*time.Millisecond),
+  )
+  if errors.Is(err, knifer.ErrCodeTimeout) {
+    fmt.Println("request timed out")
+    return
+  }
+  if err != nil {
+    panic(err)
+  }
+  fmt.Println(body)
 }
 ```
 
@@ -401,6 +488,11 @@ options，让每个请求的超时、Header、重定向、TLS 配置、Cookie、
 显式声明，避免全局状态影响其他请求。可用 options 包括 `WithTimeout`、`WithHeader`、
 `WithHeaders`、`WithFollowRedirects`、`WithMaxRedirects`、`WithTLSConfig`、`WithTransport`、
 `WithClient`、`WithCookieJar` 和 `WithUserAgent`。
+TLS 行为通过 `WithTLSConfig` 传入显式 `*tls.Config` 配置；facade 不提供跳过证书校验的 helper。
+
+HTTP 错误会带错误码分类，便于路由与重试判断：URL 或请求构造问题匹配 `knifer.ErrCodeInvalidInput`，
+超时匹配 `knifer.ErrCodeTimeout`，重定向/响应体限制匹配 `knifer.ErrCodeUnsupported`，其余传输或读取失败匹配
+`knifer.ErrCodeInternal`。自定义 HTTP 层错误可使用 `vhttp.NewErrorWithCode` 或 `vhttp.ErrorfWithCode` 包装。
 
 ### Resty v3 HTTP facade
 
@@ -456,6 +548,46 @@ _, _, _ = body, jsonBody, n
 _ = err
 ```
 
+下载目标是目录时，响应中推导出的文件名会先经过校验，再拼接到目标目录下。需要固定输出文件名时，请直接传入明确的文件路径。
+
+### Cron 调度与关闭
+
+`vcron` 同时支持包级辅助函数和显式调度器实例。长期运行的服务建议使用显式调度器，让生命周期更清晰：
+`RunningCount` 可查看正在执行的任务数，`Wait` 会等待任务结束，`Shutdown(ctx)` 会停止定时循环，并在给定 context 内等待任务完成。
+
+```go
+package main
+
+import (
+  "context"
+  "fmt"
+  "time"
+
+  "github.com/imajinyun/go-knifer/vcron"
+)
+
+func main() {
+  s := vcron.NewSchedulerWithOptions(vcron.WithMatchSecond(true))
+  _, _ = s.ScheduleFunc("* * * * * *", func() {
+    time.Sleep(100 * time.Millisecond)
+    fmt.Println("tick")
+  })
+
+  if err := s.Start(); err != nil {
+    panic(err)
+  }
+
+  time.Sleep(1500 * time.Millisecond)
+  fmt.Println("running:", s.RunningCount())
+
+  ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+  defer cancel()
+  if err := s.Shutdown(ctx, true); err != nil {
+    panic(err)
+  }
+}
+```
+
 ### URL 与 URI 工具
 
 `vurl` 集中提供 URL 解析、标准化、query 字符串处理、百分号编码、URL 构造、
@@ -505,12 +637,17 @@ func main() {
   ipLong, _ := vnet.IPv4ToLong("127.0.0.1")
   begin, _ := vnet.BeginIP("192.168.1.9", 24)
   end, _ := vnet.EndIP("192.168.1.9", 24)
+  tlsConfig := vnet.CreateTLSConfig()
 
   fmt.Println(ipLong, vnet.LongToIPv4(ipLong))
   fmt.Println(begin, end, vnet.IsInRange("192.168.1.8", "192.168.1.0/24"))
   fmt.Println(vnet.HideIPPart("192.168.1.8"))
+  fmt.Println(tlsConfig.MinVersion)
 }
 ```
+
+`CreateTLSConfig` 创建最低版本为 TLS 1.2 的 client TLS 配置。需要自定义信任根时，使用
+`NewTLSConfigBuilder`，并从 bytes、reader 或文件添加 root CA PEM 数据。
 
 ### 对象工具
 
@@ -575,6 +712,9 @@ func main() {
 
 `vdb` 提供基于 `database/sql` 的 SQL 辅助能力：命名参数、条件构造、
 Entity 写入/更新/删除、分页、事务和轻量元信息查询。驱动选择和连接池仍由调用方控制。
+条件构造器会对操作符做固定白名单校验，优先使用 `Eq`、`Ne`、`Gt`、`Gte`、`Lt`、`Lte`、
+`Like`、`In`、`Between`、`IsNull`、`IsNotNull`、`AndGroup`、`OrGroup` 这类类型化 helper，
+避免拼接临时 operator 字符串。
 
 ```go
 package main
@@ -777,6 +917,9 @@ func main() {
 ```
 
 ### 摘要与 JWT
+
+`vcrypto` 只暴露推荐的加密辅助能力：SHA-2 摘要、HMAC-SHA-256/384/512、PBKDF2-SHA-256、
+AES CTR/CFB/OFB/GCM、RSA-OAEP 和 RSA-PSS。下面示例使用 AES-GCM 做认证加密，并使用 HMAC JWT 签发对称服务 token。
 
 ```go
 package main
