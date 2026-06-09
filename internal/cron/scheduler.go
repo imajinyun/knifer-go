@@ -153,17 +153,23 @@ func (s *Scheduler) Config() *Config {
 }
 
 // SetMatchSecond sets whether expressions match seconds; calls while started are ignored.
+// Use SetMatchSecondE when callers need to distinguish ignored updates.
 func (s *Scheduler) SetMatchSecond(b bool) *Scheduler {
-	if s.started.Load() {
-		return s
-	}
+	_ = s.SetMatchSecondE(b)
+	return s
+}
+
+// SetMatchSecondE sets whether expressions match seconds.
+// It returns ErrSchedulerStarted when called after Start because parser semantics
+// are immutable while the scheduler timer is running.
+func (s *Scheduler) SetMatchSecondE(b bool) error {
 	s.configMu.Lock()
 	defer s.configMu.Unlock()
 	if s.started.Load() {
-		return s
+		return newSchedulerStartedError()
 	}
 	s.config.MatchSecond = b
-	return s
+	return nil
 }
 
 // IsMatchSecond reports whether expressions match seconds.
@@ -174,20 +180,26 @@ func (s *Scheduler) IsMatchSecond() bool {
 }
 
 // SetTimeZone sets the scheduler time zone; calls while started are ignored.
+// Use SetTimeZoneE when callers need to distinguish ignored updates.
 func (s *Scheduler) SetTimeZone(loc *time.Location) *Scheduler {
-	if s.started.Load() {
-		return s
-	}
+	_ = s.SetTimeZoneE(loc)
+	return s
+}
+
+// SetTimeZoneE sets the scheduler time zone.
+// It returns ErrSchedulerStarted when called after Start because time matching
+// configuration is immutable while the scheduler timer is running.
+func (s *Scheduler) SetTimeZoneE(loc *time.Location) error {
 	s.configMu.Lock()
 	defer s.configMu.Unlock()
 	if s.started.Load() {
-		return s
+		return newSchedulerStartedError()
 	}
 	if loc == nil {
 		loc = time.Local
 	}
 	s.config.Location = loc
-	return s
+	return nil
 }
 
 // SetExecutor sets a custom execution function.

@@ -26,19 +26,6 @@ func JWTSignerES256(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) JWTSigner {
 	return jwtimpl.ES256(priv, pub)
 }
 
-// JWTSignerNone creates a none signer.
-func JWTSignerNone() JWTSigner { return jwtimpl.None() }
-
-// NoneSigner returns a signer for the none algorithm.
-func NoneSigner() JWTSigner {
-	return jwtimpl.NoneSigner()
-}
-
-// IsNoneAlg reports whether alg is the none algorithm.
-func IsNoneAlg(alg string) bool {
-	return jwtimpl.IsNoneAlg(alg)
-}
-
 // NewHMACSigner creates an HMAC signer for HS256, HS384, or HS512.
 func NewHMACSigner(algorithm string, key []byte) (JWTSigner, error) {
 	return jwtimpl.NewHMACSigner(algorithm, key)
@@ -49,15 +36,9 @@ func MustHMACSigner(algorithm string, key []byte) JWTSigner {
 	return jwtimpl.MustHMACSigner(algorithm, key)
 }
 
-// CreateSigner creates an HMAC signer from algorithm ID. The none algorithm is rejected by default.
+// CreateSigner creates an HMAC signer from algorithm ID. The none algorithm is always rejected.
 func CreateSigner(algorithmID string, key []byte) (JWTSigner, error) {
 	return jwtimpl.CreateSigner(algorithmID, key)
-}
-
-// CreateSignerAllowNoneForTrustedToken creates a signer and explicitly opts in to alg=none.
-// Only use this for already trusted none tokens; untrusted tokens should use CreateSigner.
-func CreateSignerAllowNoneForTrustedToken(algorithmID string, key []byte) (JWTSigner, error) {
-	return jwtimpl.CreateSignerAllowNoneForTrustedToken(algorithmID, key)
 }
 
 // AlgorithmName returns the standard cryptographic algorithm name for a JWT algorithm ID.
@@ -168,9 +149,4 @@ func ES512(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) JWTSigner {
 // ES512WithOptions creates an ES512 signer with options.
 func ES512WithOptions(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey, opts ...SignerOption) JWTSigner {
 	return jwtimpl.ES512WithOptions(priv, pub, opts...)
-}
-
-// None returns a signer for the none algorithm.
-func None() JWTSigner {
-	return jwtimpl.None()
 }

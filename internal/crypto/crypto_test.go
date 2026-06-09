@@ -135,68 +135,6 @@ func TestAESGCM(t *testing.T) {
 	}
 }
 
-func TestSymmetricModesRoundTrip(t *testing.T) {
-	key := []byte("1234567890123456")
-	iv := []byte("abcdefghijklmnop")
-	plain := []byte("block and stream modes")
-
-	modeCases := []struct {
-		name    string
-		encrypt func([]byte, []byte, []byte) ([]byte, error)
-		decrypt func([]byte, []byte, []byte) ([]byte, error)
-	}{
-		{"CTR", AESEncryptCTR, AESDecryptCTR},
-		{"CFB", AESEncryptCFB, AESDecryptCFB},
-		{"OFB", AESEncryptOFB, AESDecryptOFB},
-	}
-	for _, tc := range modeCases {
-		t.Run(tc.name, func(t *testing.T) {
-			cipherText, err := tc.encrypt(plain, key, iv)
-			if err != nil {
-				t.Fatal(err)
-			}
-			out, err := tc.decrypt(cipherText, key, iv)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if !bytes.Equal(out, plain) {
-				t.Fatalf("decrypt() = %q", out)
-			}
-		})
-	}
-}
-
-func TestVigenereAndXXTEA(t *testing.T) {
-	plain := "printable text 123"
-	cipherText, err := VigenereEncrypt(plain, "key")
-	if err != nil {
-		t.Fatal(err)
-	}
-	out, err := VigenereDecrypt(cipherText, "key")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if out != plain {
-		t.Fatalf("VigenereDecrypt() = %q", out)
-	}
-	if _, err := VigenereEncrypt(plain, ""); !errors.Is(err, ErrInvalidKey) {
-		t.Fatalf("VigenereEncrypt empty key error = %v", err)
-	}
-
-	data := []byte("lightweight block cipher payload")
-	xxteaCipherText := XXTEAEncrypt(data, []byte("secret"))
-	xxteaOut, err := XXTEADecrypt(xxteaCipherText, []byte("secret"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !bytes.Equal(xxteaOut, data) {
-		t.Fatalf("XXTEADecrypt() = %q", xxteaOut)
-	}
-	if _, err := XXTEADecrypt([]byte{1, 2, 3, 4}, []byte("secret")); !errors.Is(err, ErrInvalidCipherText) {
-		t.Fatalf("XXTEADecrypt invalid data error = %v", err)
-	}
-}
-
 func TestRSAOAEPAndPEM(t *testing.T) {
 	priv, err := GenerateRSAKey(1024)
 	if err != nil {

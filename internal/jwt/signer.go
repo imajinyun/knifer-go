@@ -42,18 +42,7 @@ func b64URLDecode(s string) ([]byte, error) {
 	return base64.URLEncoding.DecodeString(s)
 }
 
-// noneSigner 对应 NoneJWTSigner：算法为 none，不签名也不校验内容。
-type noneSigner struct{}
-
-// NoneSigner 返回 None 签名器单例。
-func NoneSigner() JWTSigner { return noneSigner{} }
-
-func (noneSigner) Algorithm() string                                 { return AlgNone }
-func (noneSigner) Sign(headerB64, payloadB64 string) string          { return "" }
-func (noneSigner) Verify(headerB64, payloadB64, signB64 string) bool { return signB64 == "" }
-
-// IsNoneAlg 判断算法 ID 是否为 none。
-func IsNoneAlg(alg string) bool { return strings.EqualFold(strings.TrimSpace(alg), AlgNone) }
+func isNoneAlg(alg string) bool { return strings.EqualFold(strings.TrimSpace(alg), AlgNone) }
 
 // hmacSigner HMAC 系列签名器。
 type hmacSigner struct {
@@ -102,22 +91,13 @@ func (s *hmacSigner) Verify(headerB64, payloadB64, signB64 string) bool {
 }
 
 // CreateSigner 根据算法 ID 与 HMAC key 自动选择签名器（仅支持 HS*）。
-// The none algorithm is rejected by default; use NoneSigner explicitly for trusted none tokens.
+// The none algorithm is always rejected.
 //
 // 非对称算法请使用 NewRSAPSSSigner / NewECDSASigner，
 // 或 JWTSignerUtil 提供的 PS256/ES256 等便捷工厂。
 func CreateSigner(algorithmID string, key []byte) (JWTSigner, error) {
-	if IsNoneAlg(algorithmID) {
-		return nil, NewJWTError("jwt alg=none requires explicit none signer opt-in")
-	}
-	return NewHMACSigner(algorithmID, key)
-}
-
-// CreateSignerAllowNoneForTrustedToken creates a signer and explicitly opts in to alg=none.
-// Only use this for already trusted none tokens; untrusted tokens should use CreateSigner.
-func CreateSignerAllowNoneForTrustedToken(algorithmID string, key []byte) (JWTSigner, error) {
-	if IsNoneAlg(algorithmID) {
-		return NoneSigner(), nil
+	if isNoneAlg(algorithmID) {
+		return nil, NewJWTError("jwt alg=none is not supported")
 	}
 	return NewHMACSigner(algorithmID, key)
 }
@@ -145,8 +125,6 @@ func AlgorithmName(idOrAlgorithm string) string {
 		return "SHA384withECDSA"
 	case AlgES512:
 		return "SHA512withECDSA"
-	case "NONE", "":
-		return "None"
 	}
 	return idOrAlgorithm
 }

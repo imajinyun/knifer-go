@@ -83,28 +83,28 @@ func TestFacadeBloomFilterFileOptions(t *testing.T) {
 }
 
 func TestFacadeCreateOptionsConstructors(t *testing.T) {
-	bitset := vblf.CreateBitSetWithOptions(
+	bitset := vblf.NewBitSetBloomFilterWithOptions(
 		vblf.WithBitSetCapacity(1000),
 		vblf.WithExpectedElements(5),
 		vblf.WithHashFunctionNumber(3),
 	)
 	if !bitset.Add("hello") || !bitset.Contains("hello") {
-		t.Fatal("expected CreateBitSetWithOptions filter to contain value")
+		t.Fatal("expected NewBitSetBloomFilterWithOptions filter to contain value")
 	}
 
-	bitmap := vblf.CreateBitMapWithOptions(
+	bitmap := vblf.NewBitMapBloomFilterWithOptions(
 		vblf.WithBitMapSize(5),
 		vblf.WithBloomFilters(vblf.NewFNVFilter(1<<20), vblf.NewRSFilter(1<<20)),
 	)
 	if !bitmap.Add("world") || !bitmap.Contains("world") {
-		t.Fatal("expected CreateBitMapWithOptions filter to contain value")
+		t.Fatal("expected NewBitMapBloomFilterWithOptions filter to contain value")
 	}
 
-	fn := vblf.NewFuncFilterFromOptions(vblf.WithMaxValue(1000), vblf.WithHashFunc(func(s string) int64 {
+	fn := vblf.NewFuncFilterWithOptions(vblf.WithMaxValue(1000), vblf.WithHashFunc(func(s string) int64 {
 		return int64(vblf.JavaDefaultHash(s))
 	}))
 	if !fn.Add("alias") || !fn.Contains("alias") {
-		t.Fatal("expected NewFuncFilterFromOptions filter to contain value")
+		t.Fatal("expected NewFuncFilterWithOptions filter to contain value")
 	}
 }
 

@@ -27,8 +27,6 @@ type JSONOption = jwtimpl.JSONOption
 type JWTError = jwtimpl.JWTError
 
 const (
-	// JWTAlgNone is the none algorithm identifier.
-	JWTAlgNone = jwtimpl.AlgNone
 	// JWTAlgHS256 is the HS256 algorithm identifier.
 	JWTAlgHS256 = jwtimpl.AlgHS256
 	// JWTAlgHS384 is the HS384 algorithm identifier.

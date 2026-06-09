@@ -155,14 +155,13 @@ func (j *JWT) ParseWithOptions(token string, opts ...JSONOption) error {
 }
 
 // SetKey 使用 HMAC 算法（默认 HS256）设置密钥。
-// 若 header 已声明 HMAC 算法则使用该算法；为避免 alg=none 认证绕过，none 算法不会被隐式接受。
-// 如需处理已信任的 none token，请显式使用 SetSigner(NoneSigner()) 或 SetKeyAllowNoneForTrustedToken。
+// 若 header 已声明 HMAC 算法则使用该算法；为避免 alg=none 认证绕过，none 算法始终拒绝。
 func (j *JWT) SetKey(key []byte) *JWT {
 	alg := j.Algorithm()
 	if alg == "" {
 		alg = AlgHS256
 	}
-	if IsNoneAlg(alg) {
+	if isNoneAlg(alg) {
 		j.signer = nil
 		return j
 	}
@@ -175,29 +174,20 @@ func (j *JWT) SetKey(key []byte) *JWT {
 }
 
 // SetKeyWithAlgorithm sets an HMAC signer with an explicit algorithm and returns any signer creation error.
-// The none algorithm is rejected by default; use SetSigner(NoneSigner()) or SetKeyAllowNoneForTrustedToken for explicit opt-in.
+// The none algorithm is always rejected.
 func (j *JWT) SetKeyWithAlgorithm(key []byte, algorithm string) error {
-	return j.setKeyWithAlgorithm(key, algorithm, false)
+	return j.setKeyWithAlgorithm(key, algorithm)
 }
 
-// SetKeyAllowNoneForTrustedToken sets the signer using the requested/header algorithm and explicitly opts in to alg=none.
-// Only use this for already trusted tokens; untrusted tokens should use SetKeyWithAlgorithm or SetKeyStrict.
-func (j *JWT) SetKeyAllowNoneForTrustedToken(key []byte) error {
-	return j.setKeyWithAlgorithm(key, j.Algorithm(), true)
-}
-
-func (j *JWT) setKeyWithAlgorithm(key []byte, algorithm string, allowNone bool) error {
+func (j *JWT) setKeyWithAlgorithm(key []byte, algorithm string) error {
 	algorithm = normalizeAlgorithm(algorithm)
 	if algorithm == "" {
 		algorithm = AlgHS256
 	}
-	if IsNoneAlg(algorithm) && !allowNone {
-		return NewJWTError("jwt alg=none requires explicit none signer opt-in")
+	if isNoneAlg(algorithm) {
+		return NewJWTError("jwt alg=none is not supported")
 	}
 	signer, err := CreateSigner(algorithm, key)
-	if allowNone {
-		signer, err = CreateSignerAllowNoneForTrustedToken(algorithm, key)
-	}
 	if err != nil {
 		return err
 	}
@@ -207,14 +197,14 @@ func (j *JWT) setKeyWithAlgorithm(key []byte, algorithm string, allowNone bool) 
 }
 
 // SetKeyStrict sets the signer using the header alg without silently falling back.
-// The none algorithm is rejected unless explicitly opted in with SetSigner(NoneSigner()) or SetKeyAllowNoneForTrustedToken.
+// The none algorithm is always rejected.
 func (j *JWT) SetKeyStrict(key []byte) error {
 	return j.SetKeyWithAlgorithm(key, j.Algorithm())
 }
 
 func normalizeAlgorithm(algorithm string) string {
 	algorithm = strings.TrimSpace(algorithm)
-	if IsNoneAlg(algorithm) {
+	if isNoneAlg(algorithm) {
 		return AlgNone
 	}
 	return strings.ToUpper(algorithm)
@@ -398,8 +388,7 @@ func (j *JWT) Verify() bool { return j.VerifyWith(j.signer) }
 //
 // Verification rules:
 //   - nil signer returns false,
-//   - alg=none with a non-None signer returns false,
-//   - alg!=none with NoneSigner also returns false.
+//   - alg=none always returns false.
 func (j *JWT) VerifyWith(signer JWTSigner) bool {
 	if signer == nil {
 		return false
@@ -407,15 +396,8 @@ func (j *JWT) VerifyWith(signer JWTSigner) bool {
 	if len(j.tokens) != 3 {
 		return false
 	}
-	alg := j.Algorithm()
-	if IsNoneAlg(alg) {
-		if _, isNone := signer.(noneSigner); !isNone {
-			return false
-		}
-	} else {
-		if _, isNone := signer.(noneSigner); isNone {
-			return false
-		}
+	if isNoneAlg(j.Algorithm()) {
+		return false
 	}
 	return signer.Verify(j.tokens[0], j.tokens[1], j.tokens[2])
 }

@@ -92,12 +92,12 @@ func TestValidateAlgorithmMismatch(t *testing.T) {
 }
 
 func TestValidateAlgorithmRejectsMissingSigner(t *testing.T) {
-	tok, err := New().SetSigner(NoneSigner()).SetPayload("sub", "public").Sign()
+	tok, err := New().SetKey([]byte("secret")).SetPayload("sub", "public").Sign()
 	if err != nil {
 		t.Fatalf("sign: %v", err)
 	}
 	if err := ValidateAlgorithm(tok, nil); err == nil {
-		t.Fatal("ValidateAlgorithm should reject nil signer instead of implicitly accepting none")
+		t.Fatal("ValidateAlgorithm should reject nil signer")
 	}
 }
 

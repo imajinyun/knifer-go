@@ -77,9 +77,6 @@ func ES512WithOptions(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey, opts ...Sign
 	return mustECDSAWithOptions(AlgES512, priv, pub, opts...)
 }
 
-// None 返回无签名签名器（the utility toolkit JWTSignerUtil.none）。
-func None() JWTSigner { return NoneSigner() }
-
 func mustRSAPSSWithOptions(alg string, priv *rsa.PrivateKey, pub *rsa.PublicKey, opts ...SignerOption) JWTSigner {
 	s, err := NewRSAPSSSignerWithOptions(alg, priv, pub, opts...)
 	if err != nil {

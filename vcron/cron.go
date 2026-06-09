@@ -71,6 +71,9 @@ const (
 
 var AlwaysTrueMatcher PartMatcher = cron.AlwaysTrueMatcher
 
+// ErrSchedulerStarted is returned when immutable scheduler configuration is changed after Start.
+var ErrSchedulerStarted = cron.ErrSchedulerStarted
+
 // WithConfigLocation sets the scheduler time zone on CronConfig.
 func WithConfigLocation(loc *time.Location) ConfigOption { return cron.WithConfigLocation(loc) }
 
@@ -237,4 +240,12 @@ func CronSetMatchSecond(b bool) { cron.SetMatchSecond(b) }
 // CronSetMatchSecondWithOptions sets whether expressions include seconds on the selected default scheduler.
 func CronSetMatchSecondWithOptions(b bool, opts ...DefaultSchedulerOption) {
 	cron.SetMatchSecondWithOptions(b, opts...)
+}
+
+// CronSetMatchSecondE sets whether expressions include seconds.
+func CronSetMatchSecondE(b bool) error { return cron.SetMatchSecondE(b) }
+
+// CronSetMatchSecondEWithOptions sets whether expressions include seconds on the selected default scheduler.
+func CronSetMatchSecondEWithOptions(b bool, opts ...DefaultSchedulerOption) error {
+	return cron.SetMatchSecondEWithOptions(b, opts...)
 }

@@ -229,16 +229,46 @@ func TestSchedulerConfigSettersIgnoredWhileStarted(t *testing.T) {
 	if err := s.Start(); err != nil {
 		t.Fatalf("start: %v", err)
 	}
+	if err := s.SetMatchSecondE(false); !errors.Is(err, ErrSchedulerStarted) {
+		t.Fatalf("SetMatchSecondE while started = %v, want ErrSchedulerStarted", err)
+	} else if !errors.Is(err, knifer.ErrCodeUnsupported) {
+		t.Fatalf("SetMatchSecondE while started = %v, want ErrCodeUnsupported", err)
+	}
+	if err := s.SetTimeZoneE(after); !errors.Is(err, ErrSchedulerStarted) {
+		t.Fatalf("SetTimeZoneE while started = %v, want ErrSchedulerStarted", err)
+	}
 	s.SetMatchSecond(false).SetTimeZone(after)
 	cfg := s.Config()
 	if cfg.Location != loc || !cfg.MatchSecond {
 		t.Fatalf("started scheduler config mutated: %#v", cfg)
 	}
 	s.Stop()
+	if err := s.SetMatchSecondE(false); err != nil {
+		t.Fatalf("SetMatchSecondE after stop: %v", err)
+	}
+	if err := s.SetTimeZoneE(after); err != nil {
+		t.Fatalf("SetTimeZoneE after stop: %v", err)
+	}
 	s.SetMatchSecond(false).SetTimeZone(after)
 	cfg = s.Config()
 	if cfg.Location != after || cfg.MatchSecond {
 		t.Fatalf("stopped scheduler config not updated: %#v", cfg)
+	}
+}
+
+func TestSetMatchSecondEWithOptionsReturnsStartedError(t *testing.T) {
+	s := NewSchedulerWithOptions(WithMatchSecond(true))
+	if err := s.Start(); err != nil {
+		t.Fatalf("start: %v", err)
+	}
+	defer s.Stop()
+
+	err := SetMatchSecondEWithOptions(false, WithDefaultScheduler(s))
+	if !errors.Is(err, ErrSchedulerStarted) {
+		t.Fatalf("SetMatchSecondEWithOptions while started = %v, want ErrSchedulerStarted", err)
+	}
+	if !s.IsMatchSecond() {
+		t.Fatal("started scheduler config should not be mutated")
 	}
 }
 

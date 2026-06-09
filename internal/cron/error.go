@@ -1,10 +1,14 @@
 package cron
 
 import (
+	"errors"
 	"fmt"
 
 	knifer "github.com/imajinyun/go-knifer"
 )
+
+// ErrSchedulerStarted is returned when immutable scheduler configuration is changed after Start.
+var ErrSchedulerStarted = errors.New("scheduler already started")
 
 // CronError is aligned with the utility toolkit CronException and represents cron-related errors.
 type CronError struct {
@@ -21,6 +25,10 @@ func NewCronError(format string, args ...any) *CronError {
 // WrapCronError wraps an underlying error with a formatted message.
 func WrapCronError(cause error, format string, args ...any) *CronError {
 	return &CronError{Code: knifer.ErrCodeInvalidInput, Msg: fmt.Sprintf(format, args...), Cause: cause}
+}
+
+func newSchedulerStartedError() *CronError {
+	return &CronError{Code: knifer.ErrCodeUnsupported, Msg: "cannot change scheduler config", Cause: ErrSchedulerStarted}
 }
 
 func (e *CronError) Error() string {

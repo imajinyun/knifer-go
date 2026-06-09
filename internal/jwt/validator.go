@@ -52,9 +52,6 @@ func (v *JWTValidator) ValidateAlgorithm(signer JWTSigner) *JWTValidator {
 	}
 	alg := v.jwt.Algorithm()
 	if alg == "" {
-		if _, ok := signer.(noneSigner); ok {
-			return v
-		}
 		v.err = NewJWTError("No algorithm defined in header!")
 		return v
 	}

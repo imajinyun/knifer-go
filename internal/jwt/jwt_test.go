@@ -77,74 +77,21 @@ func TestParseAndVerifyKnownToken(t *testing.T) {
 	}
 }
 
-func TestCreateNone(t *testing.T) {
-	j := New().
-		SetPayload("sub", "1234567890").
-		SetPayload("name", "looly").
-		SetPayload("admin", true).
-		SetSigner(NoneSigner())
-
-	tok, err := j.Sign()
-	if err != nil {
-		t.Fatalf("sign: %v", err)
-	}
-	parts := strings.Split(tok, ".")
-	if len(parts) != 3 || parts[2] != "" {
-		t.Fatalf("none signature should be empty: %q", tok)
-	}
-	parsed, err := Of(tok)
-	if err != nil {
-		t.Fatalf("parse: %v", err)
-	}
-	if !parsed.SetSigner(NoneSigner()).Verify() {
-		t.Fatalf("verify failed for none")
-	}
-}
-
-func TestVerifyRejectsNoneWithoutExplicitSigner(t *testing.T) {
-	tok, err := New().SetSigner(NoneSigner()).SetPayload("sub", "public").Sign()
-	if err != nil {
-		t.Fatalf("sign: %v", err)
-	}
-	parsed, err := Of(tok)
-	if err != nil {
-		t.Fatalf("parse: %v", err)
-	}
-	if parsed.Verify() {
-		t.Fatal("Verify should reject alg=none without explicit NoneSigner")
-	}
-	if parsed.Validate(0) {
-		t.Fatal("Validate should reject alg=none without explicit NoneSigner")
-	}
-	if !parsed.VerifyWith(NoneSigner()) {
-		t.Fatal("VerifyWith(NoneSigner) should still support explicit none tokens")
-	}
-}
-
-func TestSetKeyRejectsNoneByDefault(t *testing.T) {
-	tok, err := New().SetSigner(NoneSigner()).SetPayload("sub", "public").Sign()
-	if err != nil {
-		t.Fatalf("sign: %v", err)
-	}
+func TestSetKeyRejectsNone(t *testing.T) {
+	tok := "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJzdWIiOiJwdWJsaWMifQ."
 	parsed, err := Of(tok)
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
 
 	if parsed.SetKey([]byte("ignored")).Verify() {
-		t.Fatal("SetKey should not implicitly accept alg=none from an untrusted token")
+		t.Fatal("SetKey should reject alg=none")
 	}
 	if err := parsed.SetKeyStrict([]byte("ignored")); err == nil {
-		t.Fatal("SetKeyStrict should reject alg=none without explicit opt-in")
+		t.Fatal("SetKeyStrict should reject alg=none")
 	}
 	if Verify(tok, []byte("ignored")) {
-		t.Fatal("Verify should reject alg=none without explicit opt-in")
-	}
-	if err := parsed.SetKeyAllowNoneForTrustedToken(nil); err != nil {
-		t.Fatalf("SetKeyAllowNoneForTrustedToken: %v", err)
-	}
-	if !parsed.Verify() {
-		t.Fatal("explicit none opt-in should verify trusted none tokens")
+		t.Fatal("Verify should reject alg=none")
 	}
 }
 
@@ -194,27 +141,20 @@ func TestCreateTokenWithOptions(t *testing.T) {
 		t.Fatal("strict verification failed")
 	}
 
-	noneToken, err := CreateTokenWithOptions(WithTokenPayload(map[string]any{"scope": "public"}), WithTokenSigner(NoneSigner()))
+	customToken, err := CreateTokenWithOptions(WithTokenPayload(map[string]any{"scope": "public"}), WithTokenSigner(HS256(key)))
 	if err != nil {
 		t.Fatalf("CreateTokenWithOptions with signer: %v", err)
 	}
-	if !strings.HasSuffix(noneToken, ".") {
-		t.Fatalf("none token should have empty signature: %q", noneToken)
+	if customToken == "" || strings.HasSuffix(customToken, ".") {
+		t.Fatalf("custom signer token should be signed: %q", customToken)
 	}
 }
 
-func TestAlgMismatch(t *testing.T) {
-	// alg=none 时使用非 None signer 应失败
-	tok, _ := New().SetSigner(NoneSigner()).SetPayload("a", 1).Sign()
+func TestVerifyWithRejectsAlgorithmMismatch(t *testing.T) {
+	tok, _ := New().SetKey([]byte("k")).SetPayload("a", 1).Sign()
 	j, _ := Of(tok)
-	hs, _ := NewHMACSigner(AlgHS256, []byte("k"))
+	hs, _ := NewHMACSigner(AlgHS512, []byte("k"))
 	if j.VerifyWith(hs) {
-		t.Fatalf("none alg with HS256 signer should fail")
-	}
-	// alg=HS256 时使用 None signer 应失败
-	tok2, _ := New().SetKey([]byte("k")).SetPayload("a", 1).Sign()
-	j2, _ := Of(tok2)
-	if j2.VerifyWith(NoneSigner()) {
-		t.Fatalf("HS256 token with None signer should fail")
+		t.Fatalf("HS256 token with HS512 signer should fail")
 	}
 }

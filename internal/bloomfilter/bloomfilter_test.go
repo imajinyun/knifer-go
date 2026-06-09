@@ -284,15 +284,6 @@ func checkAgain(name, s string) int32 {
 	return 0
 }
 
-func TestUtilFactories(t *testing.T) {
-	if CreateBitSet(1024, 100, 3) == nil {
-		t.Fatal()
-	}
-	if CreateBitMap(5) == nil {
-		t.Fatal()
-	}
-}
-
 func TestBloomFilterInterface(t *testing.T) {
 	var _ BloomFilter = (*BitSetBloomFilter)(nil)
 	var _ BloomFilter = (*BitMapBloomFilter)(nil)

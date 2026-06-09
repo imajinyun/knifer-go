@@ -16,6 +16,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -30,11 +33,17 @@ jobs:
           go-version: ${{ matrix.go-version }}
           cache: true
 
+      - name: Verify module checksums
+        run: go mod verify
+
       - name: Vet
         run: go vet ./...
 
       - name: Check go mod tidy
         run: go mod tidy && git diff --exit-code -- go.mod go.sum
+
+      - name: Check generated diffs and whitespace
+        run: git diff --check && git diff --exit-code
 
       - name: Architecture check
         run: bash bin/check_arch.sh
@@ -50,6 +59,9 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-go@v6
@@ -61,6 +73,7 @@ jobs:
 
   govulncheck:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       contents: read
     steps:
@@ -78,6 +91,7 @@ jobs:
 
   codeql:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       security-events: write

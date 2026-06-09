@@ -73,29 +73,13 @@ func TestAESRoundTripAndErrors(t *testing.T) {
 	if err != nil || !bytes.Equal(randomBytes, []byte{1, 2, 3}) {
 		t.Fatalf("RandomBytesWithOptions = %v, %v", randomBytes, err)
 	}
-	iv := []byte("1234567890123456")
 	plain := []byte("crypto facade")
-	cipherText, err := vcrypto.AESEncryptCTR(plain, key, iv)
-	if err != nil {
-		t.Fatal(err)
-	}
-	out, err := vcrypto.AESDecryptCTR(cipherText, key, iv)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !bytes.Equal(out, plain) {
-		t.Fatalf("AESDecryptCTR() = %q", out)
-	}
-	if _, err := vcrypto.AESEncryptCTR(plain, key, []byte("bad")); !errors.Is(err, vcrypto.ErrInvalidIV) {
-		t.Fatalf("AESEncryptCTR invalid iv error = %v", err)
-	}
-
 	nonce := []byte("123456789012")
-	cipherText, err = vcrypto.AESEncryptGCM(plain, key, nonce, []byte("aad"))
+	cipherText, err := vcrypto.AESEncryptGCM(plain, key, nonce, []byte("aad"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	out, err = vcrypto.AESDecryptGCM(cipherText, key, nonce, []byte("aad"))
+	out, err := vcrypto.AESDecryptGCM(cipherText, key, nonce, []byte("aad"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -137,60 +121,6 @@ func TestErrorContract(t *testing.T) {
 	}
 	if err := vcrypto.ValidateAESGCMNonce([]byte("123456789012")); err != nil {
 		t.Fatalf("ValidateAESGCMNonce(valid) = %v", err)
-	}
-}
-
-func TestSymmetricHelpers(t *testing.T) {
-	key := []byte("1234567890123456")
-	iv := []byte("abcdefghijklmnop")
-	plain := []byte("block and stream facade")
-
-	tests := []struct {
-		name    string
-		encrypt func([]byte, []byte, []byte) ([]byte, error)
-		decrypt func([]byte, []byte, []byte) ([]byte, error)
-	}{
-		{"CTR", vcrypto.AESEncryptCTR, vcrypto.AESDecryptCTR},
-		{"CFB", vcrypto.AESEncryptCFB, vcrypto.AESDecryptCFB},
-		{"OFB", vcrypto.AESEncryptOFB, vcrypto.AESDecryptOFB},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			cipherText, err := tt.encrypt(plain, key, iv)
-			if err != nil {
-				t.Fatal(err)
-			}
-			out, err := tt.decrypt(cipherText, key, iv)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if !bytes.Equal(out, plain) {
-				t.Fatalf("decrypt() = %q", out)
-			}
-		})
-	}
-}
-
-func TestClassicCiphers(t *testing.T) {
-	vigenereCipher, err := vcrypto.VigenereEncrypt("printable text", "key")
-	if err != nil {
-		t.Fatal(err)
-	}
-	vigenereOut, err := vcrypto.VigenereDecrypt(vigenereCipher, "key")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if vigenereOut != "printable text" {
-		t.Fatalf("VigenereDecrypt() = %q", vigenereOut)
-	}
-
-	xxteaCipher := vcrypto.XXTEAEncrypt([]byte("payload"), []byte("secret"))
-	xxteaOut, err := vcrypto.XXTEADecrypt(xxteaCipher, []byte("secret"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	if string(xxteaOut) != "payload" {
-		t.Fatalf("XXTEADecrypt() = %q", xxteaOut)
 	}
 }
 

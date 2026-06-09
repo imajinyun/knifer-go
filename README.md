@@ -101,14 +101,14 @@ The project follows an “internal implementation + public facade” layout: `in
 | `vcache` | `github.com/imajinyun/go-knifer/vcache` | Generic caches: FIFO, LFU, LRU, Timed, Weak, and NoCache; supports TTL, clocks, removal listeners, lazy loading, ticker/runner providers, and weak-cache finalizer providers. Removal listeners run outside cache locks, so callbacks can safely re-enter the same cache. |
 | `vcaptcha` | `github.com/imajinyun/go-knifer/vcaptcha` | Image captcha generation: line, circle, shear, and GIF captchas, with random and math-expression generators. |
 | `vcron` | `github.com/imajinyun/go-knifer/vcron` | Cron expression parsing and task scheduling, including default/custom schedulers, configurable cron options, ID random-reader/clock/sleeper/runner providers, isolated per-call default scheduler overrides, running-task metrics, `Wait`, and graceful `Shutdown(ctx)`. |
-| `vcrypto` | `github.com/imajinyun/go-knifer/vcrypto` | Cryptography and digests: SHA-2, provider-backed digest helpers, HMAC, PBKDF2-SHA256, parameter signing, random bytes, AES CTR/CFB/OFB/GCM with block-factory options, Vigenere, XXTEA, RSA OAEP/PSS plus configurable data-signing options, PEM, and X.509 certificate helpers. |
+| `vcrypto` | `github.com/imajinyun/go-knifer/vcrypto` | Cryptography and digests: SHA-2, provider-backed digest helpers, HMAC, PBKDF2-SHA256, parameter signing, random bytes, AES-GCM with nonce/tag/block-factory options, RSA OAEP/PSS plus configurable data-signing options, PEM, and X.509 certificate helpers. |
 | `vdb` | `github.com/imajinyun/go-knifer/vdb` | Database helpers built on database/sql: SQL execution, named parameters, entities, conditions, query builders, transactions, pagination, lightweight metadata lookup, and injectable `sql.Open` providers. |
 | `vdfa` | `github.com/imajinyun/go-knifer/vdfa` | DFA word-tree matching: stop-rune filtering, first/all matches, dense and greedy match modes, found-word metadata, package-level matcher helpers, isolated matcher options, JSON marshal/unmarshal providers for `Any` helpers, text replacement, and resettable async runner providers for package-level initialization. |
 | `vhttp` | `github.com/imajinyun/go-knifer/vhttp` | Chainable HTTP client, isolated/global-config request construction, create/get/post `WithOptions` helpers, explicit-error `E` shortcuts, code-classified HTTP errors, provider-backed transports/request factories/multipart writers/download saves, BasicAuth, User-Agent parsing, provider-backed HTML cleaning/filtering, resettable transport/server starters, async server runner options, and simple server helpers. |
 | `vresty` | `github.com/imajinyun/go-knifer/vresty` | Resty v3 based HTTP facade: chainable requests, JSON/form/multipart bodies, isolated/global-config request construction, create/get/post `WithOptions` helpers, per-request client factories, resettable default Resty client providers, downloads, and lightweight response helpers. |
 | `vjson` | `github.com/imajinyun/go-knifer/vjson` | Ordered JSON objects/arrays, JSON parsing and formatting, path-based get/put, provider-backed marshal/unmarshal, injectable scalar parse/format functions, configurable object/array/bean/list conversion, and XML/JSON conversion with parser/writer options. |
 | `vxml` | `github.com/imajinyun/go-knifer/vxml` | XML helpers: parse/read/write/format, tree navigation, simple XPath-style lookup, escaping, map/bean conversion with parser/codec/scalar parser options, transform options, and namespace utilities. |
-| `vjwt` | `github.com/imajinyun/go-knifer/vjwt` | JWT creation, parsing, signing, verification, and time-claim validation; supports HMAC, RSA-PSS, ECDSA, none signers, and provider-backed JSON marshal/unmarshal options. |
+| `vjwt` | `github.com/imajinyun/go-knifer/vjwt` | JWT creation, parsing, signing, verification, and time-claim validation; supports HMAC, RSA-PSS, ECDSA, rejects unsigned `alg=none` tokens, and provides JSON marshal/unmarshal options. |
 | `vlog` | `github.com/imajinyun/go-knifer/vlog` | Logging facade: console/color console loggers, injectable color factories, log levels, global logger, static logging functions, per-call logger options, and isolated logger creation. |
 | `verr` | `github.com/imajinyun/go-knifer/verr` | Error helpers: panic recovery, error aggregation, multierror matching, collector construction options, stack capture/formatting, resettable log/stack caches, injectable logging/stack/exit/timer/runner providers, isolated logrus creation, and optional logrus/Sentry integration. |
 | `vconf` | `github.com/imajinyun/go-knifer/vconf` | Grouped configuration reader for setting/properties-style text, a simple YAML subset, and TOML parsing, with typed getters, schema validation, profile/remote/file loading options, SSRF-checked `LoadRemoteSafe`, environment expansion providers, watch ticker/runner providers, bounded reads, read-only snapshot guidance, and deep-copy `Clone` support. |
@@ -174,7 +174,7 @@ Provider coverage highlights:
 | File / config / archive / POI | `vfile` provider options, `vconf.LoadWithOptions`, `vconf.LoadRemoteSafeWithOptions`, `vconf.WatchWithOptions`, `vconf.WatchOptions.Runner`, `(*vconf.Conf).Clone`, `vzip.WithMaxBytes`, `vzip` provider options, `vpoi.WithOpenFileFunc`, `vpoi.WithNewFileFunc`, `vpoi.WithSaveAsFunc` |
 | Cron / DFA / ID / identity / random | `vcron.WithDefaultSchedulerOptions`, `vcron.NewConfigWithOptions`, `vcron.WithIDRandomReader`, `vcron.WithRunner`, `vcron.CronScheduleWithOptions`, `(*vcron.Scheduler).RunningCount`, `(*vcron.Scheduler).Wait`, `vcron.CronShutdown`, `vdfa.WithMatcherWords`, `vdfa.WithJSONMarshal`, `vdfa.WithJSONUnmarshal`, `vdfa.ContainsWithOptions`, `vdfa.ConfigureAsyncRunner`, `vdfa.ResetAsyncRunner`, `vid.NewIsolatedSnowflake`, `vid.CreateSnowflakeWithOptions`, `vid.WithSnowflakeCache`, `vid.WithFallbackRandomSource`, `vid.ConfigureDefaultFallbackRandomSourceProvider`, `vid.ResetDefaultFallbackRandomSource`, `vid.SetFallbackRandomSeed`, `vrand.SecureBytes`, `vrand.ConfigureDefaultRandomSourceProvider`, `vrand.ResetDefaultRandomSource`, `vrand.SetSeed`, `vident.BirthDateWithOptions` |
 | Encoding / JSON / XML / JWT / hash | `vcodec.Base64EncodeWithEncoding`, `vcodec.Base64DecodeWithEncoding`, `vcodec.Base64RawURLEncode`, `vcodec.Base64RawURLDecode`, `vhash.Hash32`, `vjson.WithMarshalFunc`, `vjson.WithUnmarshalFunc`, `vjson.WithParseUnmarshalFunc`, `vjson.WithBeanUnmarshalFunc`, `vjson.WithSprintFunc`, `vjson.WithParseIntFunc`, `vjson.WithParseFloatFunc`, `vjson.WithParseBoolFunc`, `vjson.WithFormatIntFunc`, `vjson.WithFormatFloatFunc`, `vjson.ParseObjWithOptions`, `vjson.ParseArrayWithOptions`, `vjson.ToBeanWithOptions`, `vjson.ToListWithOptions`, `vjson.XMLToJSONWithOptions`, `vjson.ToXMLWithOptions`, `vxml.WithScalarIntParser`, `vxml.WithScalarFloatParser`, `vxml.XMLToMapWithOptions`, `vxml.XMLNodeToMapWithOptions`, `vxml.XMLToMapIntoWithOptions`, `vxml.XMLNodeToMapIntoWithOptions`, `vxml.XMLToBeanWithOptions`, `vxml.XMLNodeToBeanWithOptions`, `vxml.TransformWithOptions`, `vxml.FormatWithOptions`, `vjwt.WithJSONMarshalFunc`, `vjwt.WithJSONUnmarshalFunc`, `vjwt.ParseTokenWithOptions`, `vjwt.WithTokenJSONOptions` |
-| Crypto / template / regex / validation / strings | `vcrypto.Digest`, `vcrypto.DigestHex`, `vcrypto.WithAESBlockFactory`, `vcrypto.WithGCMBlockFactory`, `vcrypto.AESEncryptCTRWithOptions`, `vcrypto.AESEncryptGCMWithOptions`, `vcrypto.SignWithRSAOptions`, `vcrypto.VerifyWithRSAOptions`, `vtpl.RenderWithOptions`, `vtpl.WithFuncMap`, `vtpl.WithTemplateFactory`, `vregex.WithCompileFunc`, `vregex.WithDotAll`, `vregex.MatchWithOptions`, `vregex.ReplaceAllFuncWithOptions`, `vvalid.IsEmailWithOptions`, `vvalid.WithMobileMatcher`, `vstr.ContainsEmojiWithOptions`, `vstr.RemoveEmojiWithOptions` |
+| Crypto / template / regex / validation / strings | `vcrypto.Digest`, `vcrypto.DigestHex`, `vcrypto.WithGCMBlockFactory`, `vcrypto.AESSealGCMWithOptions`, `vcrypto.AESEncryptGCMWithOptions`, `vcrypto.SignWithRSAOptions`, `vcrypto.VerifyWithRSAOptions`, `vtpl.RenderWithOptions`, `vtpl.WithFuncMap`, `vtpl.WithTemplateFactory`, `vregex.WithCompileFunc`, `vregex.WithDotAll`, `vregex.MatchWithOptions`, `vregex.ReplaceAllFuncWithOptions`, `vvalid.IsEmailWithOptions`, `vvalid.WithMobileMatcher`, `vstr.ContainsEmojiWithOptions`, `vstr.RemoveEmojiWithOptions` |
 | DB / network / number / URL / system / reflection / socket | `vdb.WithSQLOpenFunc`, `vnet.WithConnectDialer`, `vnet.WithPingDialer`, `vnet.WithAddressNetwork`, `vnet.WithTCPAddrResolver`, `vnet.WithUploadOpenSource`, `vnet.WithIPParser`, `vnet.WithCIDRParser`, `vnet.WithIPIntParser`, `vnet.WithWildcardIPParser`, `vnet.WithWildcardIntParser`, `vnet.IPv4ToLongWithOptions`, `vnet.IsInRangeWithOptions`, `vnum.WithParseFloatFunc`, `vnum.WithDoubleParseFloatFunc`, `vnum.WithDoubleFormatFloatFunc`, `vnum.CalculateWithOptions`, `vnum.ToDoubleWithOptions`, `vurl.WithQueryEscapeFunc`, `vurl.WithPathEscapeFunc`, `vurl.EncodeQueryWithOptions`, `vurl.EncodePathSegmentWithOptions`, `vurl.FormURLEncodeWithOptions`, `vurl.OpenSafeWithOptions`, `vurl.WithAllowedSchemes`, `vurl.WithAllowedHosts`, `vurl.WithRejectPrivateHosts`, `vurl.WithAllowLocalFiles`, `vsys.WithGoEnvOutputFunc`, `vsys.WithGoRootEnvLookupFunc`, `vsys.WithOSEnvLookupFunc`, `vsys.WithEnvLookupFunc`, `vsys.ResetInfoCache`, `vref.WithUnsafeAccess`, `vskt.WithThreadPoolSizeFunc`, `vskt.WithRunner`, `vskt.WithSocketIPParser` |
 | Errors / cache / logging / runtime | `verr.NewCollectorWithOptions`, `verr.WithCollectorLogFunc`, `verr.WithCollectorRunner`, `verr.WithCollectorContext`, `verr.WithCollectorLevel`, `verr.WithCollectorTimerFactory`, `verr.WithCollectorStackCaptureOptions`, `verr.WithLogFunc`, `verr.WithCollectorStackOptions`, `verr.WithDebugStackFunc`, `verr.WithCallersFunc`, `verr.WithFuncForPCFunc`, `verr.WithStackFrameCache`, `verr.ResetStackFrameCache`, `verr.ResetDefaultLogFunc`, `verr.NewIsolatedLogrusWithOptions`, `verr.MustExitWithOptions`, `vcache.WithClock`, `vcache.WithTickerFactory`, `vcache.WithRunner`, `vcache.WithWeakFinalizerFunc`, `vcache.WithWeakFinalizerEnabled`, `vlog.WithLogColorFactory`, `vlog.NewIsolatedLogger`, `vlog.LoggerWithOptions`, `vlog.InfoWithOptions` |
 
@@ -249,10 +249,11 @@ error types, sentinels, and cause chains.
 
 Security-sensitive helpers expose only the currently recommended public API
 surface. `vcrypto` keeps SHA-2 digests, HMAC-SHA-256/384/512, PBKDF2-SHA-256,
-AES CTR/CFB/OFB/GCM, RSA-OAEP encryption, and RSA-PSS signatures. JWT RSA
+AES-GCM, RSA-OAEP encryption, and RSA-PSS signatures. JWT RSA
 signing is exposed through RSA-PSS (`JWTAlgPS256`, `JWTAlgPS384`,
 `JWTAlgPS512`, `NewRSAPSSSigner`, and `PS256` / `PS384` / `PS512` helpers),
-alongside HMAC and ECDSA signers.
+alongside HMAC and ECDSA signers. Unsigned JWT `alg=none` tokens are rejected
+and no public none signer is exposed.
 
 Network and IO helpers prefer bounded, explicit behavior:
 
@@ -297,9 +298,8 @@ Network and IO helpers prefer bounded, explicit behavior:
 - `vskt.AioSession` serializes reads that share the session buffer and keeps
   buffers available during close callbacks, so lifecycle hooks can inspect the
   last received data safely.
-- JWT `none` signing is retained only for explicit opt-in compatibility and
-  tests. Verification rejects `alg=none` unless callers deliberately provide the
-  none signer; production code should use HMAC, RSA-PSS, or ECDSA signers.
+- JWT `alg=none` is always rejected; production code should use HMAC, RSA-PSS,
+  or ECDSA signers.
 
 ## 🚀 Install
 
@@ -1080,7 +1080,7 @@ func main() {
 ### Digest and JWT
 
 `vcrypto` intentionally exposes the safer cryptographic helpers: SHA-2 digests,
-HMAC-SHA-256/384/512, PBKDF2-SHA-256, AES CTR/CFB/OFB/GCM, RSA-OAEP, and
+HMAC-SHA-256/384/512, PBKDF2-SHA-256, AES-GCM, RSA-OAEP, and
 RSA-PSS. The examples below use AES-GCM for authenticated encryption and HMAC
 JWT signing for symmetric service tokens.
 

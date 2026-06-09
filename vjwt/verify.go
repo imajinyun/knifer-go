@@ -15,13 +15,13 @@ func VerifyJWTWithSigner(token string, signer JWTSigner) bool {
 }
 
 // Verify verifies a token using an HMAC key.
-// The none algorithm is rejected by default; callers must explicitly use NoneSigner for trusted none tokens.
+// The none algorithm is always rejected.
 func Verify(token string, key []byte) bool {
 	return jwtimpl.Verify(token, key)
 }
 
 // VerifyStrict verifies a token using the header algorithm without fallback.
-// The none algorithm is rejected by default; callers must explicitly use NoneSigner for trusted none tokens.
+// The none algorithm is always rejected.
 func VerifyStrict(token string, key []byte) bool {
 	return jwtimpl.VerifyStrict(token, key)
 }

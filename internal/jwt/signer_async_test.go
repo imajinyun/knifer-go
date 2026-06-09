@@ -146,10 +146,6 @@ func TestSignerUtilFactories(t *testing.T) {
 	if HS512([]byte("k")).Algorithm() != AlgHS512 {
 		t.Fatal()
 	}
-	if None().Algorithm() != AlgNone {
-		t.Fatal()
-	}
-
 	// PS*
 	priv, err := rsa.GenerateKey(rand.Reader, 1024)
 	if err != nil {
@@ -176,7 +172,6 @@ func TestAlgorithmName(t *testing.T) {
 		AlgHS512: "HmacSHA512",
 		AlgPS256: "SHA256withRSA_PSS",
 		AlgES256: "SHA256withECDSA",
-		AlgNone:  "None",
 	}
 	for id, name := range pairs {
 		if got := AlgorithmName(id); got != name {

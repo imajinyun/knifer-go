@@ -49,31 +49,9 @@ func TestHMACSigner_UnsupportedAlg(t *testing.T) {
 	}
 }
 
-func TestNoneSigner(t *testing.T) {
-	s := NoneSigner()
-	if s.Algorithm() != AlgNone {
-		t.Fatalf("alg: %s", s.Algorithm())
-	}
-	if s.Sign("h", "p") != "" {
-		t.Fatalf("none sign should be empty")
-	}
-	if !s.Verify("h", "p", "") {
-		t.Fatalf("none verify '' failed")
-	}
-	if s.Verify("h", "p", "x") {
-		t.Fatalf("none verify non-empty should fail")
-	}
-}
-
 func TestCreateSigner(t *testing.T) {
 	if _, err := CreateSigner("none", nil); err == nil {
-		t.Fatalf("CreateSigner should reject none by default")
-	}
-	if _, ok := must(CreateSignerAllowNoneForTrustedToken("none", nil))(t).(noneSigner); !ok {
-		t.Fatalf("expected explicit opt-in noneSigner")
-	}
-	if IsNoneAlg("") {
-		t.Fatalf("empty alg must not be treated as none")
+		t.Fatalf("CreateSigner should reject none")
 	}
 	if _, err := CreateSigner("", []byte("k")); err == nil {
 		t.Fatalf("expected error for empty alg")

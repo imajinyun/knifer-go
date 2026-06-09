@@ -24,16 +24,6 @@ func NewFuncFilterWithMachineNumE(maxValue int64, machineNum int, hashFunc HashF
 	return bloomfilter.NewFuncFilterWithMachineNumE(maxValue, machineNum, hashFunc)
 }
 
-// NewFuncFilterFromOptions delegates to the internal bloomfilter implementation.
-func NewFuncFilterFromOptions(opts ...FuncFilterOption) *FuncFilter {
-	return bloomfilter.NewFuncFilterWithOptions(opts...)
-}
-
-// NewFuncFilterFromOptionsE delegates to the internal bloomfilter implementation.
-func NewFuncFilterFromOptionsE(opts ...FuncFilterOption) (*FuncFilter, error) {
-	return bloomfilter.NewFuncFilterWithOptionsE(opts...)
-}
-
 // NewDefaultFilter delegates to the internal bloomfilter implementation.
 func NewDefaultFilter(maxValue int64) *FuncFilter {
 	return bloomfilter.NewDefaultFilter(maxValue)
@@ -147,44 +137,4 @@ func TianlHash(str string) int64 {
 // JavaDefaultHash delegates to the internal bloomfilter implementation.
 func JavaDefaultHash(str string) int32 {
 	return bloomfilter.JavaDefaultHash(str)
-}
-
-// CreateBitSet delegates to the internal bloomfilter implementation.
-func CreateBitSet(c, n, k int) *BitSetBloomFilter {
-	return bloomfilter.CreateBitSet(c, n, k)
-}
-
-// CreateBitSetE delegates to the internal bloomfilter implementation.
-func CreateBitSetE(c, n, k int) (*BitSetBloomFilter, error) {
-	return bloomfilter.CreateBitSetE(c, n, k)
-}
-
-// CreateBitSetWithOptions delegates to the internal bloomfilter implementation.
-func CreateBitSetWithOptions(opts ...BitSetBloomFilterOption) *BitSetBloomFilter {
-	return bloomfilter.NewBitSetBloomFilterWithOptions(opts...)
-}
-
-// CreateBitSetWithOptionsE delegates to the internal bloomfilter implementation.
-func CreateBitSetWithOptionsE(opts ...BitSetBloomFilterOption) (*BitSetBloomFilter, error) {
-	return bloomfilter.NewBitSetBloomFilterWithOptionsE(opts...)
-}
-
-// CreateBitMap delegates to the internal bloomfilter implementation.
-func CreateBitMap(m int) *BitMapBloomFilter {
-	return bloomfilter.CreateBitMap(m)
-}
-
-// CreateBitMapE delegates to the internal bloomfilter implementation.
-func CreateBitMapE(m int) (*BitMapBloomFilter, error) {
-	return bloomfilter.CreateBitMapE(m)
-}
-
-// CreateBitMapWithOptions delegates to the internal bloomfilter implementation.
-func CreateBitMapWithOptions(opts ...BitMapBloomFilterOption) *BitMapBloomFilter {
-	return bloomfilter.NewBitMapBloomFilterWithOptions(opts...)
-}
-
-// CreateBitMapWithOptionsE delegates to the internal bloomfilter implementation.
-func CreateBitMapWithOptionsE(opts ...BitMapBloomFilterOption) (*BitMapBloomFilter, error) {
-	return bloomfilter.NewBitMapBloomFilterWithOptionsE(opts...)
 }

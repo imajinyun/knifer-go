@@ -101,14 +101,14 @@ text := vcrypto.SHA256Hex("hello")
 | `vcache` | `github.com/imajinyun/go-knifer/vcache` | 泛型缓存：FIFO、LFU、LRU、Timed、Weak、NoCache，支持 TTL、clock、淘汰监听、懒加载、ticker/runner provider 和 weak-cache finalizer provider。 |
 | `vcaptcha` | `github.com/imajinyun/go-knifer/vcaptcha` | 图片验证码：线条、圆圈、扭曲、GIF 验证码，支持随机/数学表达式生成器。 |
 | `vcron` | `github.com/imajinyun/go-knifer/vcron` | Cron 表达式解析与任务调度，支持默认/自定义调度器、可配置 cron options、ID random-reader/clock/sleeper/runner provider，以及单次调用隔离的默认调度器覆盖。 |
-| `vcrypto` | `github.com/imajinyun/go-knifer/vcrypto` | 加密与摘要：SHA-2、provider-backed digest、HMAC、PBKDF2-SHA256、参数签名、随机字节、支持 block-factory options 的 AES CTR/CFB/OFB/GCM、Vigenere、XXTEA、RSA OAEP/PSS 与可配置数据签名、PEM 与 X.509 证书工具。 |
+| `vcrypto` | `github.com/imajinyun/go-knifer/vcrypto` | 加密与摘要：SHA-2、provider-backed digest、HMAC、PBKDF2-SHA256、参数签名、随机字节、支持 nonce/tag/block-factory options 的 AES-GCM、RSA OAEP/PSS 与可配置数据签名、PEM 与 X.509 证书工具。 |
 | `vdb` | `github.com/imajinyun/go-knifer/vdb` | 基于 database/sql 的数据库工具：SQL 执行、命名参数、Entity、条件、查询构造器、事务、分页、轻量元信息查询和可注入的 `sql.Open` provider。 |
 | `vdfa` | `github.com/imajinyun/go-knifer/vdfa` | DFA 词树匹配：停顿字符过滤、首个/全部匹配、密集/贪婪匹配、命中词位置元信息、包级匹配器、隔离 matcher options、`Any` 辅助函数的 JSON marshal/unmarshal provider、文本替换，以及用于包级异步初始化的可重置 async runner provider。 |
 | `vhttp` | `github.com/imajinyun/go-knifer/vhttp` | 链式 HTTP 客户端、隔离/global-config 请求构建、create/get/post `WithOptions` 辅助函数、provider-backed transport/request factory/multipart writer/download save、BasicAuth、User-Agent 解析、provider-backed HTML 清理/标签过滤、可重置 transport/server starters、异步服务端 runner option 和简易服务端辅助函数。 |
 | `vresty` | `github.com/imajinyun/go-knifer/vresty` | 基于 Resty v3 的 HTTP facade：链式请求、JSON/form/multipart 请求体、隔离/global-config 请求构建、create/get/post `WithOptions` 辅助函数、单次请求 client factory、可重置默认 Resty client provider、下载与轻量响应工具。 |
 | `vjson` | `github.com/imajinyun/go-knifer/vjson` | 有序 JSON 对象/数组、JSON 解析与格式化、路径表达式读写、provider-backed marshal/unmarshal、可注入 scalar parse/format 函数、可配置 Object/Array/Bean/List 转换，以及带 parser/writer options 的 XML/JSON 转换。 |
 | `vxml` | `github.com/imajinyun/go-knifer/vxml` | XML 工具：解析/读取/写出/格式化、树节点访问、简单 XPath 风格查询、转义、支持 parser/codec/scalar parser options 的 Map/Bean 转换、transform options 和命名空间辅助。 |
-| `vjwt` | `github.com/imajinyun/go-knifer/vjwt` | JWT 创建、解析、签名、验签与时间字段校验，支持 HMAC、RSA-PSS、ECDSA、none 等 signer，以及 provider-backed JSON marshal/unmarshal options。 |
+| `vjwt` | `github.com/imajinyun/go-knifer/vjwt` | JWT 创建、解析、签名、验签与时间字段校验，支持 HMAC、RSA-PSS、ECDSA，拒绝未签名的 `alg=none` token，并提供 JSON marshal/unmarshal options。 |
 | `vlog` | `github.com/imajinyun/go-knifer/vlog` | 日志 facade：console/color console logger、可注入颜色工厂、日志级别、全局 logger、静态日志函数、单次调用 logger options 和 isolated logger 创建。 |
 | `verr` | `github.com/imajinyun/go-knifer/verr` | 错误工具：panic recover、错误聚合、multierror 匹配、collector 构造 options、堆栈捕获/格式化、可重置 log/stack cache、可注入的 logging/stack/exit/timer/runner provider、隔离 logrus 创建，以及可选 logrus/Sentry 集成。 |
 | `vconf` | `github.com/imajinyun/go-knifer/vconf` | 分组配置读取：setting/properties 风格文本、简单 YAML 子集和 TOML 解析，支持类型化读取、schema 校验、profile/remote/file 加载 options、带 SSRF 防护的 `LoadRemoteSafe`、环境变量展开 provider、watch ticker/runner provider、读取大小限制、只读快照使用方式和深拷贝 `Clone`。 |
@@ -156,7 +156,7 @@ Provider 覆盖重点：
 | 文件 / 配置 / 压缩 / POI | `vfile` provider options、`vconf.LoadWithOptions`、`vconf.LoadRemoteSafeWithOptions`、`vconf.WatchWithOptions`、`vconf.WatchOptions.Runner`、`vzip.WithMaxBytes`、`vzip` provider options、`vpoi.WithOpenFileFunc`、`vpoi.WithNewFileFunc`、`vpoi.WithSaveAsFunc` |
 | Cron / DFA / ID / 身份 / 随机数 | `vcron.WithDefaultSchedulerOptions`、`vcron.NewConfigWithOptions`、`vcron.WithIDRandomReader`、`vcron.WithRunner`、`vcron.CronScheduleWithOptions`、`vdfa.WithMatcherWords`、`vdfa.WithJSONMarshal`、`vdfa.WithJSONUnmarshal`、`vdfa.ContainsWithOptions`、`vdfa.ConfigureAsyncRunner`、`vdfa.ResetAsyncRunner`、`vid.NewIsolatedSnowflake`、`vid.CreateSnowflakeWithOptions`、`vid.WithSnowflakeCache`、`vid.WithFallbackRandomSource`、`vid.ConfigureDefaultFallbackRandomSourceProvider`、`vid.ResetDefaultFallbackRandomSource`、`vid.SetFallbackRandomSeed`、`vrand.ConfigureDefaultRandomSourceProvider`、`vrand.ResetDefaultRandomSource`、`vrand.SetSeed`、`vident.BirthDateWithOptions` |
 | 编解码 / JSON / XML / JWT / hash | `vcodec.Base64EncodeWithEncoding`、`vcodec.Base64DecodeWithEncoding`、`vcodec.Base64RawURLEncode`、`vcodec.Base64RawURLDecode`、`vhash.Hash32`、`vjson.WithMarshalFunc`、`vjson.WithUnmarshalFunc`、`vjson.WithParseUnmarshalFunc`、`vjson.WithBeanUnmarshalFunc`、`vjson.WithSprintFunc`、`vjson.WithParseIntFunc`、`vjson.WithParseFloatFunc`、`vjson.WithParseBoolFunc`、`vjson.WithFormatIntFunc`、`vjson.WithFormatFloatFunc`、`vjson.ParseObjWithOptions`、`vjson.ParseArrayWithOptions`、`vjson.ToBeanWithOptions`、`vjson.ToListWithOptions`、`vjson.XMLToJSONWithOptions`、`vjson.ToXMLWithOptions`、`vxml.WithScalarIntParser`、`vxml.WithScalarFloatParser`、`vxml.XMLToMapWithOptions`、`vxml.XMLNodeToMapWithOptions`、`vxml.XMLToMapIntoWithOptions`、`vxml.XMLNodeToMapIntoWithOptions`、`vxml.XMLToBeanWithOptions`、`vxml.XMLNodeToBeanWithOptions`、`vxml.TransformWithOptions`、`vxml.FormatWithOptions`、`vjwt.WithJSONMarshalFunc`、`vjwt.WithJSONUnmarshalFunc`、`vjwt.ParseTokenWithOptions`、`vjwt.WithTokenJSONOptions` |
-| 加密 / 模板 / 正则 / 校验 / 字符串 | `vcrypto.Digest`、`vcrypto.DigestHex`、`vcrypto.WithAESBlockFactory`、`vcrypto.WithGCMBlockFactory`、`vcrypto.AESEncryptCTRWithOptions`、`vcrypto.AESEncryptGCMWithOptions`、`vcrypto.SignWithRSAOptions`、`vcrypto.VerifyWithRSAOptions`、`vtpl.RenderWithOptions`、`vtpl.WithFuncMap`、`vtpl.WithTemplateFactory`、`vregex.WithCompileFunc`、`vregex.WithDotAll`、`vregex.MatchWithOptions`、`vregex.ReplaceAllFuncWithOptions`、`vvalid.IsEmailWithOptions`、`vvalid.WithMobileMatcher`、`vstr.ContainsEmojiWithOptions`、`vstr.RemoveEmojiWithOptions` |
+| 加密 / 模板 / 正则 / 校验 / 字符串 | `vcrypto.Digest`、`vcrypto.DigestHex`、`vcrypto.WithGCMBlockFactory`、`vcrypto.AESSealGCMWithOptions`、`vcrypto.AESEncryptGCMWithOptions`、`vcrypto.SignWithRSAOptions`、`vcrypto.VerifyWithRSAOptions`、`vtpl.RenderWithOptions`、`vtpl.WithFuncMap`、`vtpl.WithTemplateFactory`、`vregex.WithCompileFunc`、`vregex.WithDotAll`、`vregex.MatchWithOptions`、`vregex.ReplaceAllFuncWithOptions`、`vvalid.IsEmailWithOptions`、`vvalid.WithMobileMatcher`、`vstr.ContainsEmojiWithOptions`、`vstr.RemoveEmojiWithOptions` |
 | DB / 网络 / 数字 / URL / 系统 / 反射 / socket | `vdb.WithSQLOpenFunc`、`vnet.WithConnectDialer`、`vnet.WithPingDialer`、`vnet.WithAddressNetwork`、`vnet.WithTCPAddrResolver`、`vnet.WithUploadOpenSource`、`vnet.WithIPParser`、`vnet.WithCIDRParser`、`vnet.WithIPIntParser`、`vnet.WithWildcardIPParser`、`vnet.WithWildcardIntParser`、`vnet.IPv4ToLongWithOptions`、`vnet.IsInRangeWithOptions`、`vnum.WithParseFloatFunc`、`vnum.WithDoubleParseFloatFunc`、`vnum.WithDoubleFormatFloatFunc`、`vnum.CalculateWithOptions`、`vnum.ToDoubleWithOptions`、`vurl.WithQueryEscapeFunc`、`vurl.WithPathEscapeFunc`、`vurl.EncodeQueryWithOptions`、`vurl.EncodePathSegmentWithOptions`、`vurl.FormURLEncodeWithOptions`、`vurl.OpenSafeWithOptions`、`vurl.WithAllowedSchemes`、`vurl.WithAllowedHosts`、`vurl.WithRejectPrivateHosts`、`vurl.WithAllowLocalFiles`、`vsys.WithGoEnvOutputFunc`、`vsys.WithGoRootEnvLookupFunc`、`vsys.WithOSEnvLookupFunc`、`vsys.WithEnvLookupFunc`、`vsys.ResetInfoCache`、`vref.WithUnsafeAccess`、`vskt.WithThreadPoolSizeFunc`、`vskt.WithRunner`、`vskt.WithSocketIPParser` |
 | 错误 / 缓存 / 日志 / 运行时 | `verr.NewCollectorWithOptions`、`verr.WithCollectorLogFunc`、`verr.WithCollectorRunner`、`verr.WithCollectorContext`、`verr.WithCollectorLevel`、`verr.WithCollectorTimerFactory`、`verr.WithCollectorStackCaptureOptions`、`verr.WithLogFunc`、`verr.WithCollectorStackOptions`、`verr.WithDebugStackFunc`、`verr.WithCallersFunc`、`verr.WithFuncForPCFunc`、`verr.WithStackFrameCache`、`verr.ResetStackFrameCache`、`verr.ResetDefaultLogFunc`、`verr.NewIsolatedLogrusWithOptions`、`verr.MustExitWithOptions`、`vcache.WithClock`、`vcache.WithTickerFactory`、`vcache.WithRunner`、`vcache.WithWeakFinalizerFunc`、`vcache.WithWeakFinalizerEnabled`、`vlog.WithLogColorFactory`、`vlog.NewIsolatedLogger`、`vlog.LoggerWithOptions`、`vlog.InfoWithOptions` |
 
@@ -210,9 +210,10 @@ vcron、vjob、vpoi 空 sheet 名、vcodec 解码失败、vdate 解析失败、v
 ### 安全与防护默认值
 
 安全敏感工具只保留当前推荐的公共 API。`vcrypto` 保留 SHA-2 摘要、HMAC-SHA-256/384/512、
-PBKDF2-SHA-256、AES CTR/CFB/OFB/GCM、RSA-OAEP 加密和 RSA-PSS 签名。JWT RSA
+PBKDF2-SHA-256、AES-GCM、RSA-OAEP 加密和 RSA-PSS 签名。JWT RSA
 签名通过 RSA-PSS 暴露（`JWTAlgPS256`、`JWTAlgPS384`、`JWTAlgPS512`、
 `NewRSAPSSSigner` 以及 `PS256` / `PS384` / `PS512` 辅助函数），同时保留 HMAC 与 ECDSA signer。
+未签名的 JWT `alg=none` token 会被拒绝，公共 API 不再暴露 none signer。
 
 网络与 IO 工具默认采用有边界、显式的行为：
 
@@ -953,7 +954,7 @@ func main() {
 ### 摘要与 JWT
 
 `vcrypto` 只暴露推荐的加密辅助能力：SHA-2 摘要、HMAC-SHA-256/384/512、PBKDF2-SHA-256、
-AES CTR/CFB/OFB/GCM、RSA-OAEP 和 RSA-PSS。下面示例使用 AES-GCM 做认证加密，并使用 HMAC JWT 签发对称服务 token。
+AES-GCM、RSA-OAEP 和 RSA-PSS。下面示例使用 AES-GCM 做认证加密，并使用 HMAC JWT 签发对称服务 token。
 
 ```go
 package main

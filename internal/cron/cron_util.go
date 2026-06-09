@@ -85,6 +85,18 @@ func SetMatchSecondWithOptions(b bool, opts ...DefaultSchedulerOption) {
 	applyDefaultSchedulerOptions(opts).SetMatchSecond(b)
 }
 
+// SetMatchSecondE sets whether the package-level scheduler matches seconds.
+// It returns ErrSchedulerStarted when the selected scheduler has already been started.
+func SetMatchSecondE(b bool) error {
+	return SetMatchSecondEWithOptions(b)
+}
+
+// SetMatchSecondEWithOptions sets whether the selected default scheduler matches seconds.
+// It returns ErrSchedulerStarted when the selected scheduler has already been started.
+func SetMatchSecondEWithOptions(b bool, opts ...DefaultSchedulerOption) error {
+	return applyDefaultSchedulerOptions(opts).SetMatchSecondE(b)
+}
+
 // Schedule registers a task on the package-level scheduler and returns its id.
 func Schedule(pattern string, task Task) (string, error) {
 	return ScheduleWithOptions(pattern, task)
