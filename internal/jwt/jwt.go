@@ -393,6 +393,9 @@ func (j *JWT) SignOptsWithOptions(addTypeIfNot bool, opts ...JSONOption) (string
 	headerB64 := b64URLEncode(hb)
 	payloadB64 := b64URLEncode(pb)
 	sig := j.signer.Sign(headerB64, payloadB64)
+	if sig == "" {
+		return "", NewJWTError("signer returned empty signature")
+	}
 	return headerB64 + "." + payloadB64 + "." + sig, nil
 }
 

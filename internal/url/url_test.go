@@ -165,7 +165,7 @@ func TestOpenSafeAllowsExplicitHostAndValidatesRedirects(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	r, err := OpenSafeWithOptions(target.URL, WithAllowedHosts(targetURL.Hostname()))
+	r, err := OpenSafeWithOptions(target.URL, WithAllowedHosts(targetURL.Hostname()), WithRejectPrivateHosts(false))
 	if err != nil {
 		t.Fatalf("OpenSafeWithOptions allow host: %v", err)
 	}
@@ -175,16 +175,33 @@ func TestOpenSafeAllowsExplicitHostAndValidatesRedirects(t *testing.T) {
 		t.Fatalf("safe body = %q, %v", data, err)
 	}
 
-	redirect := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "http://127.0.0.1/private", http.StatusFound)
-	}))
-	defer redirect.Close()
-	redirectURL, err := url.Parse(redirect.URL)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if _, err := OpenSafeWithOptions(redirect.URL, WithAllowedHosts(redirectURL.Hostname())); err == nil {
+	client := &http.Client{Transport: urlRoundTripperFunc(func(req *http.Request) (*http.Response, error) {
+		return &http.Response{
+			StatusCode: http.StatusFound,
+			Header:     http.Header{"Location": []string{"http://127.0.0.1/private"}},
+			Body:       io.NopCloser(strings.NewReader("")),
+			Request:    req,
+		}, nil
+	})}
+	if _, err := OpenSafeWithOptions("http://example.com/redirect",
+		WithHTTPClient(client),
+		WithAllowedHosts("example.com"),
+		WithLookupIP(func(context.Context, string) ([]net.IP, error) {
+			return []net.IP{net.ParseIP("93.184.216.34")}, nil
+		}),
+	); err == nil {
 		t.Fatal("OpenSafeWithOptions should reject unsafe redirect target")
+	}
+}
+
+func TestOpenSafeAllowedHostsDoesNotBypassPrivateRejection(t *testing.T) {
+	privateHosts := []string{"127.0.0.1", "localhost"}
+	for _, host := range privateHosts {
+		t.Run(host, func(t *testing.T) {
+			if _, err := OpenSafeWithOptions("http://"+host+"/config.yaml", WithAllowedHosts(host)); err == nil {
+				t.Fatal("OpenSafeWithOptions should reject allowlisted private host")
+			}
+		})
 	}
 }
 
@@ -211,6 +228,57 @@ func TestOpenSafeRevalidatesHostAtRoundTrip(t *testing.T) {
 	}
 	if lookupCount != 2 {
 		t.Fatalf("lookup count = %d, want 2", lookupCount)
+	}
+}
+
+func TestOpenSafeMaxBytes(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("abcd"))
+	}))
+	defer srv.Close()
+	srvURL, err := url.Parse(srv.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := OpenSafeWithOptions(srv.URL,
+		WithAllowedHosts(srvURL.Hostname()),
+		WithRejectPrivateHosts(false),
+		WithMaxBytes(3),
+	); err == nil {
+		t.Fatal("OpenSafeWithOptions should reject response with ContentLength exceeding max bytes")
+	}
+
+	unknownLengthClient := &http.Client{Transport: urlRoundTripperFunc(func(req *http.Request) (*http.Response, error) {
+		return &http.Response{
+			StatusCode:       http.StatusOK,
+			ContentLength:    -1,
+			Body:             io.NopCloser(strings.NewReader("abcd")),
+			Request:          req,
+			Header:           make(http.Header),
+			Uncompressed:     true,
+			Close:            true,
+			Proto:            "HTTP/1.1",
+			ProtoMajor:       1,
+			ProtoMinor:       1,
+			TransferEncoding: nil,
+		}, nil
+	})}
+	r, err := OpenSafeWithOptions("http://example.com/large",
+		WithHTTPClient(unknownLengthClient),
+		WithAllowedHosts("example.com"),
+		WithMaxBytes(3),
+		WithLookupIP(func(context.Context, string) ([]net.IP, error) {
+			return []net.IP{net.ParseIP("93.184.216.34")}, nil
+		}),
+	)
+	if err != nil {
+		t.Fatalf("OpenSafeWithOptions: %v", err)
+	}
+	_, err = io.ReadAll(r)
+	_ = r.Close()
+	if err == nil {
+		t.Fatal("OpenSafeWithOptions body read should fail when response exceeds max bytes")
 	}
 }
 

@@ -123,6 +123,20 @@ func TestNeedSigner(t *testing.T) {
 	}
 }
 
+func TestSignRejectsEmptySignature(t *testing.T) {
+	if tok, err := New().SetPayload("sub", "x").SetSigner(emptySigner{alg: AlgPS256}).Sign(); err == nil || tok != "" {
+		t.Fatalf("Sign should reject empty signature, token=%q err=%v", tok, err)
+	}
+}
+
+type emptySigner struct{ alg string }
+
+func (s emptySigner) Algorithm() string { return s.alg }
+
+func (emptySigner) Sign(string, string) string { return "" }
+
+func (emptySigner) Verify(string, string, string) bool { return false }
+
 func TestVerifyMismatchKey(t *testing.T) {
 	tok, err := New().SetPayload("a", 1).SetKey([]byte("right")).Sign()
 	if err != nil {

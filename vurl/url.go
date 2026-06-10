@@ -39,6 +39,8 @@ const (
 	JarURLSeparator = urlimpl.JarURLSeparator
 	// WarURLSeparator separates a war URL from an entry path.
 	WarURLSeparator = urlimpl.WarURLSeparator
+	// DefaultMaxBytes is the default response body limit used by OpenSafe.
+	DefaultMaxBytes = urlimpl.DefaultMaxBytes
 )
 
 // URLBuilder builds URLs from scheme, host, path, query, and fragment parts.
@@ -94,6 +96,9 @@ func WithRequestFactory(factory func(context.Context, string, string) (*http.Req
 func WithLookupIP(lookupIP func(context.Context, string) ([]net.IP, error)) ResourceOption {
 	return urlimpl.WithLookupIP(lookupIP)
 }
+
+// WithMaxBytes limits how many response body bytes OpenWithOptions may read.
+func WithMaxBytes(n int64) ResourceOption { return urlimpl.WithMaxBytes(n) }
 
 // WithAllowedSchemes restricts resource helpers to the provided URL schemes.
 func WithAllowedSchemes(schemes ...string) ResourceOption {

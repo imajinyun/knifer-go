@@ -43,6 +43,9 @@ const (
 	JarURLSeparator = "!/"
 	// WarURLSeparator separates a war URL from an entry path.
 	WarURLSeparator = "*/"
+
+	// DefaultMaxBytes is the default response body limit used by OpenSafe.
+	DefaultMaxBytes int64 = 64 << 20
 )
 
 type resourceConfig struct {
@@ -55,6 +58,7 @@ type resourceConfig struct {
 	stat           func(string) (os.FileInfo, error)
 	requestFactory func(context.Context, string, string) (*http.Request, error)
 	lookupIP       func(context.Context, string) ([]net.IP, error)
+	maxBytes       int64
 	allowedSchemes []string
 	allowedHosts   []string
 	rejectPrivate  bool
@@ -127,6 +131,12 @@ func WithLookupIP(lookupIP func(context.Context, string) ([]net.IP, error)) Reso
 	return func(c *resourceConfig) { c.lookupIP = lookupIP }
 }
 
+// WithMaxBytes limits how many response body bytes OpenWithOptions may read.
+// Non-positive values mean unlimited unless another option sets a positive limit.
+func WithMaxBytes(n int64) ResourceOption {
+	return func(c *resourceConfig) { c.maxBytes = n }
+}
+
 // WithAllowedSchemes restricts resource helpers to the provided URL schemes.
 func WithAllowedSchemes(schemes ...string) ResourceOption {
 	return func(c *resourceConfig) { c.allowedSchemes = append([]string(nil), schemes...) }
@@ -183,6 +193,7 @@ func safeResourceOptions(opts []ResourceOption) []ResourceOption {
 		WithAllowLocalFiles(false),
 		WithCheckStatus(true),
 		WithTimeout(10*time.Second),
+		WithMaxBytes(DefaultMaxBytes),
 		func(c *resourceConfig) { c.checkRedirect = true },
 	)
 	return append(safe, opts...)
@@ -497,6 +508,13 @@ func OpenWithOptions(raw string, opts ...ResourceOption) (io.ReadCloser, error) 
 		if err != nil {
 			return nil, err
 		}
+		if cfg.maxBytes > 0 && resp.ContentLength > cfg.maxBytes {
+			defer func() { _ = resp.Body.Close() }()
+			return nil, fmt.Errorf("response body exceeds max bytes: %d", cfg.maxBytes)
+		}
+		if cfg.maxBytes > 0 {
+			return limitReadCloser(resp.Body, cfg.maxBytes), nil
+		}
 		return resp.Body, nil
 	}
 	path := raw
@@ -547,6 +565,9 @@ func ContentLengthWithOptions(raw string, opts ...ResourceOption) (int64, error)
 			return -1, err
 		}
 		defer func() { _ = resp.Body.Close() }()
+		if cfg.maxBytes > 0 && resp.ContentLength > cfg.maxBytes {
+			return -1, fmt.Errorf("response body exceeds max bytes: %d", cfg.maxBytes)
+		}
 		return resp.ContentLength, nil
 	}
 	path := raw
@@ -637,7 +658,7 @@ func validateResourceURL(u *neturl.URL, cfg resourceConfig) error {
 		if len(cfg.allowedHosts) > 0 && !containsFold(cfg.allowedHosts, host) {
 			return fmt.Errorf("url host %q is not allowed", host)
 		}
-		if cfg.rejectPrivate && !containsFold(cfg.allowedHosts, host) {
+		if cfg.rejectPrivate {
 			private, err := isPrivateHost(cfg.ctx, cfg.lookupIP, host)
 			if err != nil {
 				return err
@@ -719,9 +740,6 @@ func safeDialContext(cfg resourceConfig) func(context.Context, string, string) (
 		if host == "" {
 			return nil, fmt.Errorf("dial host is blank")
 		}
-		if containsFold(cfg.allowedHosts, host) {
-			return dialer.DialContext(ctx, network, address)
-		}
 		ips, err := publicHostIPs(ctx, cfg, host)
 		if err != nil {
 			return nil, err
@@ -778,18 +796,45 @@ func (t safeResourceTransport) RoundTrip(req *http.Request) (*http.Response, err
 	}
 	if req.URL.Scheme == "http" || req.URL.Scheme == "https" {
 		host := strings.ToLower(req.URL.Hostname())
-		if !containsFold(t.cfg.allowedHosts, host) {
-			private, err := isPrivateHost(req.Context(), t.cfg.lookupIP, host)
-			if err != nil {
-				return nil, err
-			}
-			if private {
-				return nil, fmt.Errorf("url host %q resolves to a private address", host)
-			}
+		private, err := isPrivateHost(req.Context(), t.cfg.lookupIP, host)
+		if err != nil {
+			return nil, err
+		}
+		if private {
+			return nil, fmt.Errorf("url host %q resolves to a private address", host)
 		}
 	}
 	return t.base.RoundTrip(req)
 }
+
+type limitedReadCloser struct {
+	r         io.Reader
+	c         io.Closer
+	remaining int64
+}
+
+func limitReadCloser(rc io.ReadCloser, maxBytes int64) io.ReadCloser {
+	return &limitedReadCloser{r: rc, c: rc, remaining: maxBytes}
+}
+
+func (r *limitedReadCloser) Read(p []byte) (int, error) {
+	if r.remaining <= 0 {
+		var b [1]byte
+		n, err := r.r.Read(b[:])
+		if n > 0 {
+			return 0, fmt.Errorf("response body exceeds max bytes")
+		}
+		return 0, err
+	}
+	if int64(len(p)) > r.remaining {
+		p = p[:r.remaining]
+	}
+	n, err := r.r.Read(p)
+	r.remaining -= int64(n)
+	return n, err
+}
+
+func (r *limitedReadCloser) Close() error { return r.c.Close() }
 
 // Normalize normalizes a URL string by adding a default scheme and cleaning slashes.
 func Normalize(raw string, encodePath, replaceSlash bool) string {

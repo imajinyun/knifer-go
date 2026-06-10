@@ -65,6 +65,16 @@ func TestRSAPSSSignerWithOptions(t *testing.T) {
 	if sig := failing.Sign("a", "b"); sig != "" {
 		t.Fatalf("signature with failing random reader = %q, want empty", sig)
 	}
+	if token, err := New().SetPayload("u", 1).SetSigner(failing).Sign(); err == nil || token != "" {
+		t.Fatalf("Sign should reject RSA-PSS empty signature, token=%q err=%v", token, err)
+	}
+	publicOnly, err := NewRSAPSSSignerWithOptions(AlgPS256, nil, &priv.PublicKey)
+	if err != nil {
+		t.Fatalf("public-only signer: %v", err)
+	}
+	if token, err := New().SetPayload("u", 1).SetSigner(publicOnly).Sign(); err == nil || token != "" {
+		t.Fatalf("Sign should reject public-only RSA-PSS empty signature, token=%q err=%v", token, err)
+	}
 }
 
 func TestECDSASigner_RoundTrip(t *testing.T) {
@@ -118,6 +128,13 @@ func TestECDSASignerWithOptionsRandomReader(t *testing.T) {
 	}
 	if !j.VerifyWith(signer) {
 		t.Fatal("verify with custom ECDSA random reader failed")
+	}
+	verifier, err := NewECDSASignerWithOptions(AlgES256, nil, &priv.PublicKey)
+	if err != nil {
+		t.Fatalf("public-only signer: %v", err)
+	}
+	if token, err := New().SetPayload("u", 1).SetSigner(verifier).Sign(); err == nil || token != "" {
+		t.Fatalf("Sign should reject public-only ECDSA empty signature, token=%q err=%v", token, err)
 	}
 }
 
