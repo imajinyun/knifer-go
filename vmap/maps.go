@@ -14,6 +14,7 @@ func Of[K comparable, V any](kvs ...any) map[K]V       { return mapsimpl.Of[K, V
 func OfE[K comparable, V any](kvs ...any) (map[K]V, error) {
 	return mapsimpl.OfE[K, V](kvs...)
 }
+
 func FromPairs[K comparable, V any](pairs ...Pair[K, V]) map[K]V {
 	return mapsimpl.FromPairs(pairs...)
 }

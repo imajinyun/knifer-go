@@ -72,14 +72,22 @@ func WatchWithOptions(path string, opts WatchOptions, onChange func(*Conf, error
 				if sameSnapshot(last, current, opts.CompareContent) {
 					continue
 				}
-				last = current
 				if opts.Debounce > 0 {
 					select {
 					case <-opts.After(opts.Debounce):
 					case <-stop:
 						return
 					}
+					current, statErr = snapshot(path, opts)
+					if statErr != nil {
+						safeWatchChange(onChange, nil, statErr)
+						continue
+					}
+					if sameSnapshot(last, current, opts.CompareContent) {
+						continue
+					}
 				}
+				last = current
 				safeWatchEvent(opts.OnEvent, current)
 				conf, loadErr := LoadWithOptions(path, watchLoadOptions(opts))
 				safeWatchChange(onChange, conf, loadErr)

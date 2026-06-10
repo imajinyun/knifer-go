@@ -1,6 +1,6 @@
 module github.com/imajinyun/go-knifer
 
-go 1.25.0
+go 1.25.11
 
 require (
 	github.com/evalphobia/logrus_sentry v0.8.2
@@ -27,6 +27,13 @@ require (
 	github.com/xuri/efp v0.0.1 // indirect
 	github.com/xuri/nfp v0.0.2-0.20250530014748-2ddeb826f9a9 // indirect
 	golang.org/x/crypto v0.51.0 // indirect
+	golang.org/x/mod v0.35.0 // indirect
+	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/sys v0.45.0 // indirect
+	golang.org/x/telemetry v0.0.0-20260421165255-392afab6f40e // indirect
 	golang.org/x/text v0.37.0 // indirect
+	golang.org/x/tools v0.44.0 // indirect
+	golang.org/x/vuln v1.3.0 // indirect
 )
+
+tool golang.org/x/vuln/cmd/govulncheck
