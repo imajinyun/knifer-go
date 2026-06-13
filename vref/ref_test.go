@@ -79,6 +79,21 @@ func TestFacadeAdditionalTypeAndFieldHelpers(t *testing.T) {
 	if IsNilValue(reflect.ValueOf(1)) {
 		t.Fatal("IsNilValue facade returned true for non-nil int")
 	}
+	if !IsFunction(newFacadeSample) || IsFunction(nil) {
+		t.Fatal("IsFunction facade returned unexpected result")
+	}
+	if !IsIteratee(map[string]int{}) || !IsIteratee([]int{}) || !IsIteratee([1]int{}) || IsIteratee("value") || IsIteratee(nil) {
+		t.Fatal("IsIteratee facade returned unexpected result")
+	}
+	if !IsCollection([]int{}) || !IsCollection([1]int{}) || IsCollection(map[string]int{}) || IsCollection(nil) {
+		t.Fatal("IsCollection facade returned unexpected result")
+	}
+	if !IsSlice(nilSlice) || !IsArray([1]int{}) || !IsMap(map[string]int{}) {
+		t.Fatal("specific object predicate facade returned unexpected result")
+	}
+	if IsSlice(nil) || IsArray(nil) || IsMap(nil) {
+		t.Fatal("specific object predicate facade should reject nil")
+	}
 	if !IsFuncType(reflect.TypeOf(newFacadeSample)) || IsFuncType(nil) {
 		t.Fatal("IsFuncType facade returned unexpected result")
 	}

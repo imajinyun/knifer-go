@@ -28,6 +28,8 @@ subpackage APIs are treated as the compatibility boundary.
 - Added `vref` reflection helper APIs for nil-safe `reflect.Value` checks,
   type classification, interface implementation checks, and exported field name
   discovery.
+- Added `vref` object-level type predicate helpers for functions, iteratees,
+  collections, slices, arrays, and maps.
 - Added internal generic numeric constraints for shared implementation helpers
   and exposed generic `vnum` sum, average, min, max, and absolute-value APIs.
 - Added direct coverage for `internal/httpx/internal/shared` so HTTP protocol

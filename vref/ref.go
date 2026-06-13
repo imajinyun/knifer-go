@@ -24,6 +24,12 @@ func ValueOf(object any) reflect.Value                { return refimpl.ValueOf(o
 func IndirectValue(value reflect.Value) reflect.Value { return refimpl.IndirectValue(value) }
 func IsNil(object any) bool                           { return refimpl.IsNil(object) }
 func IsNilValue(value reflect.Value) bool             { return refimpl.IsNilValue(value) }
+func IsFunction(in any) bool                          { return refimpl.IsFunction(in) }
+func IsIteratee(in any) bool                          { return refimpl.IsIteratee(in) }
+func IsCollection(in any) bool                        { return refimpl.IsCollection(in) }
+func IsSlice(in any) bool                             { return refimpl.IsSlice(in) }
+func IsArray(in any) bool                             { return refimpl.IsArray(in) }
+func IsMap(in any) bool                               { return refimpl.IsMap(in) }
 func IsFuncType(typ reflect.Type) bool                { return refimpl.IsFuncType(typ) }
 func IsRangeableType(typ reflect.Type) bool           { return refimpl.IsRangeableType(typ) }
 func IsCollectionType(typ reflect.Type) bool          { return refimpl.IsCollectionType(typ) }

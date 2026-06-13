@@ -99,6 +99,24 @@ func IsNilValue(value reflect.Value) bool {
 	}
 }
 
+// IsFunction reports whether in is a func.
+func IsFunction(in any) bool { return isType(in, IsFuncType) }
+
+// IsIteratee reports whether in can be ranged over.
+func IsIteratee(in any) bool { return isType(in, IsRangeableType) }
+
+// IsCollection reports whether in is a collection (slice or array).
+func IsCollection(in any) bool { return isType(in, IsCollectionType) }
+
+// IsSlice reports whether in is a slice.
+func IsSlice(in any) bool { return isType(in, IsSliceType) }
+
+// IsArray reports whether in is an array.
+func IsArray(in any) bool { return isType(in, IsArrayType) }
+
+// IsMap reports whether in is a map.
+func IsMap(in any) bool { return isType(in, IsMapType) }
+
 // IsFuncType reports whether typ is a function type.
 func IsFuncType(typ reflect.Type) bool { return typ != nil && typ.Kind() == reflect.Func }
 
@@ -136,6 +154,14 @@ func IsArrayType(typ reflect.Type) bool { return typ != nil && typ.Kind() == ref
 
 // IsMapType reports whether typ is a map type.
 func IsMapType(typ reflect.Type) bool { return typ != nil && typ.Kind() == reflect.Map }
+
+// isType reports whether in is non-nil and its reflect.Type satisfies pred.
+func isType(in any, pred func(reflect.Type) bool) bool {
+	if in == nil {
+		return false
+	}
+	return pred(reflect.TypeOf(in))
+}
 
 var errorType = reflect.TypeOf((*error)(nil)).Elem()
 
