@@ -1296,22 +1296,19 @@ cd go-knifer
 Run tests:
 
 ```bash
-go test ./...
+make test
 ```
 
 Run the same local safety checks used by CI before opening a PR:
 
 ```bash
-go test -race -shuffle=on -coverprofile=coverage.out ./...
-bash bin/check_coverage.sh coverage.out
-bash bin/check_arch.sh
-golangci-lint run ./...
-go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+make check
 ```
 
-GitHub Actions runs the Go test matrix, architecture check, golangci-lint,
-govulncheck, and CodeQL. Dependabot is configured for Go modules and GitHub
-Actions updates.
+GitHub Actions reuses the Makefile targets for module verification, vet, tidy
+checks, architecture checks, race/shuffle tests, and coverage gates. It also
+runs golangci-lint, govulncheck, and CodeQL. Dependabot is configured for Go
+modules and GitHub Actions updates.
 
 Format code:
 
@@ -1328,6 +1325,9 @@ gofmt -w .
 - Coverage gate: CI enforces the repository baseline with
   `bash bin/check_coverage.sh coverage.out`. Raise `COVERAGE_THRESHOLD` as
   public facade and security-sensitive package coverage improves.
+- Stability gate: use `make check` locally before pushing so vet, architecture,
+  race/shuffle tests, coverage, lint, and vulnerability checks stay aligned with
+  CI.
 
 ## 🤝 Provide feedback or suggestions on bugs
 

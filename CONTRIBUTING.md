@@ -143,17 +143,14 @@ not add a second logging abstraction.
   usage, invalid input, and error classification.
 - Coverage is checked from `coverage.out`; keep the repository baseline passing
   and raise `COVERAGE_THRESHOLD` only after adding tests that support it.
+- Prefer `make check` for local stability validation so vet, architecture,
+  race/shuffle tests, coverage, lint, and vulnerability checks stay in one
+  documented path.
 
 ## Before you push
 
 ```bash
-go build ./...
-go vet ./...
-gofmt -l .                 # must be empty
-go test -race -shuffle=on -coverprofile=coverage.out ./...
-bash bin/check_coverage.sh coverage.out
-golangci-lint run ./...    # must report 0 issues
-bash bin/check_arch.sh
+make check
 ```
 
 ## Versioning

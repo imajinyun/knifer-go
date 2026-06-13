@@ -3,11 +3,20 @@ package vcrypto_test
 import (
 	"bytes"
 	stdcrypto "crypto"
+	"crypto/cipher"
 	"crypto/rsa"
 	"crypto/sha256"
+	"crypto/sha512"
+	"crypto/x509"
+	"crypto/x509/pkix"
 	"encoding/hex"
+	"encoding/pem"
 	"errors"
+	"hash"
+	"io"
+	"math/big"
 	"testing"
+	"time"
 
 	"github.com/imajinyun/go-knifer"
 	"github.com/imajinyun/go-knifer/vcrypto"
@@ -198,4 +207,150 @@ func TestRSAAndPEM(t *testing.T) {
 	if _, err := vcrypto.ParseRSAPublicKeyPEM(vcrypto.PublicKeyToPKCS1PEM(pub)); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func TestAdditionalDigestHMACAndKDFErrors(t *testing.T) {
+	payload := []byte("hello")
+	if got := vcrypto.DigestHex(payload, sha256.New); got != vcrypto.SHA256HexBytes(payload) {
+		t.Fatalf("DigestHex = %q", got)
+	}
+	if got := vcrypto.SHA384Hex(payload); got == "" || !bytes.Equal(vcrypto.SHA384(payload), vcrypto.Digest(payload, sha512New384)) {
+		t.Fatalf("SHA384 helpers returned unexpected values")
+	}
+	if got := vcrypto.SHA512HexBytes(payload); got != vcrypto.SHA512Hex("hello") {
+		t.Fatalf("SHA512HexBytes = %q", got)
+	}
+	if got := vcrypto.HMACHex(sha256.New, []byte("key"), payload); got != vcrypto.HMACSHA256Hex([]byte("key"), payload) {
+		t.Fatalf("HMACHex = %q", got)
+	}
+	if got := vcrypto.HMACSHA384Hex([]byte("key"), payload); got == "" {
+		t.Fatal("HMACSHA384Hex is empty")
+	}
+	if got := vcrypto.HMACSHA512Hex([]byte("key"), payload); got == "" {
+		t.Fatal("HMACSHA512Hex is empty")
+	}
+	if vcrypto.ConstantTimeEqual([]byte("short"), []byte("longer")) {
+		t.Fatal("ConstantTimeEqual returned true for different lengths")
+	}
+	if _, err := vcrypto.PBKDF2([]byte("password"), []byte("salt"), 0, 32, sha256.New); !errors.Is(err, vcrypto.ErrInvalidKey) {
+		t.Fatalf("PBKDF2 invalid iterations error = %v", err)
+	}
+	if _, err := vcrypto.PBKDF2([]byte("password"), []byte("salt"), 1, 0, sha256.New); !errors.Is(err, vcrypto.ErrInvalidKey) {
+		t.Fatalf("PBKDF2 invalid key length error = %v", err)
+	}
+	if _, err := vcrypto.PBKDF2([]byte("password"), []byte("salt"), 1, 32, nil); !errors.Is(err, vcrypto.ErrInvalidKey) {
+		t.Fatalf("PBKDF2 nil hash error = %v", err)
+	}
+}
+
+func TestAdditionalAESGCMAndRandomErrors(t *testing.T) {
+	key := bytes.Repeat([]byte{0x11}, 16)
+	plain := []byte("authenticated payload")
+	nonce, cipherText, err := vcrypto.AESSealGCMWithOptions(plain, key, []byte("aad"), vcrypto.WithGCMRandomOptions(vcrypto.WithRandomReader(bytes.NewReader(bytes.Repeat([]byte{0x22}, 12)))))
+	if err != nil {
+		t.Fatalf("AESSealGCMWithOptions: %v", err)
+	}
+	if !bytes.Equal(nonce, bytes.Repeat([]byte{0x22}, 12)) {
+		t.Fatalf("AESSealGCMWithOptions nonce = %x", nonce)
+	}
+	out, err := vcrypto.AESOpenGCM(cipherText, key, nonce, []byte("aad"))
+	if err != nil || !bytes.Equal(out, plain) {
+		t.Fatalf("AESOpenGCM = %q, %v", out, err)
+	}
+	out, err = vcrypto.AESOpenGCMWithOptions(cipherText, key, nonce, []byte("aad"))
+	if err != nil || !bytes.Equal(out, plain) {
+		t.Fatalf("AESOpenGCMWithOptions = %q, %v", out, err)
+	}
+	if _, _, err := vcrypto.AESSealGCMWithOptions(plain, key, nil, vcrypto.WithGCMNonceSize(12), vcrypto.WithGCMTagSize(16)); err == nil {
+		t.Fatal("AESSealGCMWithOptions with nonce and tag size error = nil")
+	}
+	if _, err := vcrypto.AESEncryptGCMWithOptions(plain, key, nonce, nil, vcrypto.WithGCMBlockFactory(func([]byte) (cipher.Block, error) {
+		return nil, errors.New("block factory failed")
+	})); err == nil {
+		t.Fatal("AESEncryptGCMWithOptions block factory error = nil")
+	}
+	if _, _, err := vcrypto.AESSealGCMWithOptions(plain, key, nil, vcrypto.WithGCMRandomOptions(vcrypto.WithRandomReader(io.LimitReader(bytes.NewReader(nil), 0)))); err == nil {
+		t.Fatal("AESSealGCMWithOptions random reader error = nil")
+	}
+	if _, err := vcrypto.AESDecryptGCM(cipherText, key, []byte("bad"), nil); !errors.Is(err, vcrypto.ErrInvalidIV) {
+		t.Fatalf("AESDecryptGCM invalid nonce error = %v", err)
+	}
+	if _, err := vcrypto.AESDecryptGCM(cipherText, key, nonce, []byte("wrong aad")); err == nil {
+		t.Fatal("AESDecryptGCM wrong aad error = nil")
+	}
+	if _, err := vcrypto.RandomBytes(-1); !errors.Is(err, vcrypto.ErrInvalidKey) {
+		t.Fatalf("RandomBytes negative error = %v", err)
+	}
+	if _, err := vcrypto.RandomBytesWithOptions(2, vcrypto.WithRandomReader(bytes.NewReader([]byte{1}))); err == nil {
+		t.Fatal("RandomBytesWithOptions short reader error = nil")
+	}
+}
+
+func TestAdditionalPEMCertificateAndRSAErrors(t *testing.T) {
+	priv, err := vcrypto.GenerateRSAKey(1024)
+	if err != nil {
+		t.Fatal(err)
+	}
+	pub := &priv.PublicKey
+	if _, err := vcrypto.ParseRSAPrivateKeyPEM([]byte("not pem")); !errors.Is(err, vcrypto.ErrInvalidKey) {
+		t.Fatalf("ParseRSAPrivateKeyPEM invalid = %v", err)
+	}
+	if _, err := vcrypto.ParseRSAPublicKeyPEM([]byte("not pem")); !errors.Is(err, vcrypto.ErrInvalidKey) {
+		t.Fatalf("ParseRSAPublicKeyPEM invalid = %v", err)
+	}
+	if _, err := vcrypto.ParseX509CertificatePEM([]byte("not pem")); !errors.Is(err, vcrypto.ErrInvalidKey) {
+		t.Fatalf("ParseX509CertificatePEM invalid = %v", err)
+	}
+
+	certDER, err := x509.CreateCertificate(bytes.NewReader(bytes.Repeat([]byte{0x42}, 1024)), &x509.Certificate{
+		SerialNumber: big.NewInt(1),
+		Subject:      pkix.Name{CommonName: "go-knifer.test"},
+		NotBefore:    time.Unix(0, 0),
+		NotAfter:     time.Unix(3600, 0),
+		KeyUsage:     x509.KeyUsageDigitalSignature,
+	}, &x509.Certificate{}, pub, priv)
+	if err != nil {
+		t.Fatalf("CreateCertificate: %v", err)
+	}
+	certPEM := pemEncode("CERTIFICATE", certDER)
+	cert, err := vcrypto.ParseX509CertificatePEM(certPEM)
+	if err != nil {
+		t.Fatalf("ParseX509CertificatePEM: %v", err)
+	}
+	if cert.Subject.CommonName != "go-knifer.test" {
+		t.Fatalf("certificate CN = %q", cert.Subject.CommonName)
+	}
+	certPub, err := vcrypto.PublicKeyFromCertificatePEM(certPEM)
+	if err != nil {
+		t.Fatalf("PublicKeyFromCertificatePEM: %v", err)
+	}
+	if certPub.N.Cmp(pub.N) != 0 {
+		t.Fatal("PublicKeyFromCertificatePEM returned different key")
+	}
+
+	digest := sha256.Sum256([]byte("payload"))
+	sig, err := vcrypto.RSASignPSSWithOptions(priv, stdcrypto.SHA256, digest[:], vcrypto.WithRSARandomReader(bytes.NewReader(bytes.Repeat([]byte{0x55}, 512))))
+	if err != nil {
+		t.Fatalf("RSASignPSSWithOptions: %v", err)
+	}
+	if err := vcrypto.RSAVerifyPSS(pub, stdcrypto.SHA256, digest[:], append([]byte(nil), sig[:len(sig)-1]...)); err == nil {
+		t.Fatal("RSAVerifyPSS tampered signature error = nil")
+	}
+	data := []byte("rsa digest payload")
+	digestSig, err := vcrypto.SignWithRSAOptions(data, priv, vcrypto.WithRSADigestHash(stdcrypto.SHA256, sha256.New), vcrypto.WithRSADigestRandomReader(bytes.NewReader(bytes.Repeat([]byte{0x66}, 512))))
+	if err != nil {
+		t.Fatalf("SignWithRSAOptions: %v", err)
+	}
+	if err := vcrypto.VerifyWithRSAOptions(data, digestSig, pub, vcrypto.WithRSADigestHash(stdcrypto.SHA256, sha256.New)); err != nil {
+		t.Fatalf("VerifyWithRSAOptions: %v", err)
+	}
+	if err := vcrypto.VerifyWithRSAOptions([]byte("different"), digestSig, pub); err == nil {
+		t.Fatal("VerifyWithRSAOptions tampered data error = nil")
+	}
+}
+
+func sha512New384() hash.Hash { return sha512.New384() }
+
+func pemEncode(typ string, der []byte) []byte {
+	return pem.EncodeToMemory(&pem.Block{Type: typ, Bytes: der})
 }

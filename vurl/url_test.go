@@ -3,12 +3,15 @@ package vurl_test
 import (
 	"context"
 	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/imajinyun/go-knifer/vurl"
 )
@@ -262,4 +265,191 @@ func TestFacadeSafeResourceHelpersRejectLocalhost(t *testing.T) {
 	if _, err := vurl.ContentLengthSafeWithOptions(server.URL); err == nil {
 		t.Fatal("ContentLengthSafeWithOptions(localhost) error = nil, want private host rejection")
 	}
+}
+
+func TestFacadeAdditionalParseFileAndBuilderHelpers(t *testing.T) {
+	if builder := vurl.NewURLBuilder().SetScheme("https").SetHost("example.com").AddPathSegment("a b").AddQuery("q", "go net").SetFragment("top"); builder.Build() != "https://example.com/a%20b?q=go+net#top" {
+		t.Fatalf("NewURLBuilder Build = %q", builder.Build())
+	}
+	parsedBuilder, err := vurl.ParseURLBuilder("https://example.com/base?x=1#frag")
+	if err != nil {
+		t.Fatalf("ParseURLBuilder: %v", err)
+	}
+	if got := parsedBuilder.AddPathSegment("next").Build(); got != "https://example.com/base/next?x=1#frag" {
+		t.Fatalf("ParseURLBuilder Build = %q", got)
+	}
+	if u, err := vurl.Parse(""); err != nil || u != nil {
+		t.Fatalf("Parse blank = %v, %v", u, err)
+	}
+	if u, err := vurl.ParseHTTP("https://example.com/a b"); err != nil || u.String() != "https://example.com/a%20b" {
+		t.Fatalf("ParseHTTP = %v, %v", u, err)
+	}
+	if _, err := vurl.ParseHTTP("/relative"); err == nil {
+		t.Fatal("ParseHTTP relative error = nil")
+	}
+	if got := vurl.StringURI("payload"); got != "string:///payload" {
+		t.Fatalf("StringURI = %q", got)
+	}
+	if got := vurl.StringURI("string:///payload"); got != "string:///payload" {
+		t.Fatalf("StringURI existing = %q", got)
+	}
+	if got := vurl.EncodeBlank("a\tb\nc"); got != "a%20b%20c" {
+		t.Fatalf("EncodeBlank = %q", got)
+	}
+	tmp := t.TempDir()
+	file := filepath.Join(tmp, "data.txt")
+	if err := os.WriteFile(file, []byte("file-data"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	fileURL, err := vurl.FileURL(file)
+	if err != nil {
+		t.Fatalf("FileURL: %v", err)
+	}
+	if fileURL.Scheme != vurl.URLProtocolFile {
+		t.Fatalf("FileURL scheme = %q", fileURL.Scheme)
+	}
+	if urls, err := vurl.FileURLs(file); err != nil || len(urls) != 1 || urls[0].Scheme != vurl.URLProtocolFile {
+		t.Fatalf("FileURLs = %#v, %v", urls, err)
+	}
+	if _, err := vurl.FileURL(""); err == nil {
+		t.Fatal("FileURL blank error = nil")
+	}
+	host := vurl.Host(&url.URL{Scheme: "https", Host: "example.com", Path: "/ignored"})
+	if host.String() != "https://example.com" || vurl.Host(nil) != nil {
+		t.Fatalf("Host helper = %v", host)
+	}
+	if got := vurl.FormURLEncode("a b+c"); got != "a+b%2Bc" {
+		t.Fatalf("FormURLEncode = %q", got)
+	}
+}
+
+func TestFacadeTrustedFileResourceWrappers(t *testing.T) {
+	tmp := t.TempDir()
+	file := filepath.Join(tmp, "trusted.txt")
+	if err := os.WriteFile(file, []byte("trusted"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	rc, err := vurl.Open(file)
+	if err != nil {
+		t.Fatalf("Open file: %v", err)
+	}
+	data, err := io.ReadAll(rc)
+	_ = rc.Close()
+	if err != nil || string(data) != "trusted" {
+		t.Fatalf("Open file data = %q, %v", data, err)
+	}
+	if length, err := vurl.ContentLength(file); err != nil || length != int64(len("trusted")) {
+		t.Fatalf("ContentLength = %d, %v", length, err)
+	}
+	if size, err := vurl.Size(file); err != nil || size != int64(len("trusted")) {
+		t.Fatalf("Size = %d, %v", size, err)
+	}
+	if _, err := vurl.OpenWithOptions(file, vurl.WithAllowedSchemes("http")); err == nil {
+		t.Fatal("OpenWithOptions disallowed scheme error = nil")
+	}
+	if _, err := vurl.OpenWithOptions(file, vurl.WithAllowLocalFiles(false)); err == nil {
+		t.Fatal("OpenWithOptions local file disabled error = nil")
+	}
+	if _, err := vurl.ContentLengthWithOptions(file, vurl.WithAllowLocalFiles(false)); err == nil {
+		t.Fatal("ContentLengthWithOptions local file disabled error = nil")
+	}
+}
+
+func TestFacadeSafeResourcePolicyAllowsPublicHost(t *testing.T) {
+	body := "public-body"
+	client := &http.Client{Transport: roundTripperFunc(func(req *http.Request) (*http.Response, error) {
+		if got := req.Header.Get("X-Safe"); got != "one" {
+			t.Fatalf("safe header = %q", got)
+		}
+		return &http.Response{
+			StatusCode:    http.StatusOK,
+			ContentLength: int64(len(body)),
+			Header:        http.Header{"Content-Length": []string{"11"}},
+			Body:          io.NopCloser(strings.NewReader(body)),
+			Request:       req,
+		}, nil
+	})}
+	lookup := func(context.Context, string) ([]net.IP, error) {
+		return []net.IP{net.ParseIP("8.8.8.8")}, nil
+	}
+	opts := []vurl.ResourceOption{
+		vurl.WithHTTPClient(client),
+		vurl.WithHeaders(http.Header{"X-Safe": []string{"one"}}),
+		vurl.WithTimeout(time.Second),
+		vurl.WithLookupIP(lookup),
+		vurl.WithAllowedHosts("public.example"),
+		vurl.WithRejectPrivateHosts(true),
+		vurl.WithMaxBytes(64),
+	}
+	rc, err := vurl.OpenSafeWithOptions("http://public.example/resource", opts...)
+	if err != nil {
+		t.Fatalf("OpenSafeWithOptions public: %v", err)
+	}
+	data, err := io.ReadAll(rc)
+	_ = rc.Close()
+	if err != nil || string(data) != body {
+		t.Fatalf("OpenSafeWithOptions data = %q, %v", data, err)
+	}
+	if length, err := vurl.ContentLengthSafeWithOptions("http://public.example/resource", opts...); err != nil || length != int64(len(body)) {
+		t.Fatalf("ContentLengthSafeWithOptions = %d, %v", length, err)
+	}
+	if _, err := vurl.OpenSafeWithOptions("ftp://public.example/resource", opts...); err == nil {
+		t.Fatal("OpenSafeWithOptions disallowed safe scheme error = nil")
+	}
+	if _, err := vurl.OpenSafeWithOptions("http://other.example/resource", opts...); err == nil {
+		t.Fatal("OpenSafeWithOptions disallowed host error = nil")
+	}
+	if _, err := vurl.OpenSafeWithOptions("http://private.example/resource", vurl.WithHTTPClient(client), vurl.WithLookupIP(func(context.Context, string) ([]net.IP, error) {
+		return []net.IP{net.ParseIP("10.0.0.1")}, nil
+	})); err == nil {
+		t.Fatal("OpenSafeWithOptions private resolver error = nil")
+	}
+}
+
+func TestFacadeResourceMaxBytesAndStatusErrors(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/large":
+			w.Header().Set("Content-Length", "10")
+			_, _ = w.Write([]byte("0123456789"))
+		default:
+			http.Error(w, "nope", http.StatusTeapot)
+		}
+	}))
+	defer server.Close()
+
+	if _, err := vurl.OpenWithOptions(server.URL+"/large", vurl.WithMaxBytes(2)); err == nil {
+		t.Fatal("OpenWithOptions content-length max bytes error = nil")
+	}
+	if _, err := vurl.ContentLengthWithOptions(server.URL+"/large", vurl.WithMaxBytes(2)); err == nil {
+		t.Fatal("ContentLengthWithOptions max bytes error = nil")
+	}
+	rc, err := vurl.OpenWithOptions(server.URL+"/large", vurl.WithMaxBytes(4), vurl.WithHTTPClient(&http.Client{Transport: stripLengthTransport{base: http.DefaultTransport}}))
+	if err != nil {
+		t.Fatalf("OpenWithOptions limited reader: %v", err)
+	}
+	_, err = io.ReadAll(rc)
+	_ = rc.Close()
+	if err == nil {
+		t.Fatal("limited reader overflow error = nil")
+	}
+	if _, err := vurl.OpenWithOptions(server.URL+"/status", vurl.WithCheckStatus(true)); err == nil {
+		t.Fatal("OpenWithOptions check status error = nil")
+	}
+}
+
+type roundTripperFunc func(*http.Request) (*http.Response, error)
+
+func (f roundTripperFunc) RoundTrip(req *http.Request) (*http.Response, error) { return f(req) }
+
+type stripLengthTransport struct{ base http.RoundTripper }
+
+func (t stripLengthTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	resp, err := t.base.RoundTrip(req)
+	if err != nil {
+		return nil, err
+	}
+	resp.ContentLength = -1
+	resp.Header.Del("Content-Length")
+	return resp, nil
 }

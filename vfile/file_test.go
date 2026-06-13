@@ -153,6 +153,80 @@ func TestFacadeProviderOptions(t *testing.T) {
 	}
 }
 
+func TestFacadeAdditionalReadAndProviderWrappers(t *testing.T) {
+	if got, err := ReadAll(ReaderFromString("all")); err != nil || string(got) != "all" {
+		t.Fatalf("ReadAll = %q, %v", got, err)
+	}
+	if got, err := ReadAllWithOptions(ReaderFromString("abcd"), WithMaxBytes(1), WithUnlimitedRead()); err != nil || string(got) != "abcd" {
+		t.Fatalf("ReadAllWithOptions unlimited = %q, %v", got, err)
+	}
+	if got, err := ReadLines(ReaderFromString("a\nb\n")); err != nil || len(got) != 2 || got[0] != "a" || got[1] != "b" {
+		t.Fatalf("ReadLines = %v, %v", got, err)
+	}
+
+	dir := t.TempDir()
+	path := dir + "/nested/out.txt"
+	mkdirCalled := false
+	openCalled := false
+	if err := WriteFileBytes(path, []byte("provider"),
+		WithDirPerm(0o700),
+		WithMkdirAll(func(p string, perm fs.FileMode) error {
+			mkdirCalled = strings.HasSuffix(p, "/nested") && perm == 0o700
+			return os.MkdirAll(p, perm)
+		}),
+		WithOpenFile(func(p string, flag int, perm fs.FileMode) (io.WriteCloser, error) {
+			openCalled = p == path && flag&os.O_CREATE != 0 && perm == 0o644
+			return os.OpenFile(p, flag, perm)
+		}),
+	); err != nil {
+		t.Fatalf("WriteFileBytes provider options: %v", err)
+	}
+	if !mkdirCalled || !openCalled {
+		t.Fatalf("provider called mkdir=%v open=%v", mkdirCalled, openCalled)
+	}
+	if got, err := ReadFileString(path); err != nil || got != "provider" {
+		t.Fatalf("ReadFileString provider file = %q, %v", got, err)
+	}
+}
+
+func TestFacadeAdditionalStatDeleteAndCopyEdges(t *testing.T) {
+	if IsFileWithOptions("dir", WithStat(func(string) (fs.FileInfo, error) {
+		return fakeDirFacadeFileInfo{name: "dir"}, nil
+	})) {
+		t.Fatal("IsFileWithOptions directory = true")
+	}
+	if !IsDirectoryWithOptions("dir", WithStat(func(string) (fs.FileInfo, error) {
+		return fakeDirFacadeFileInfo{name: "dir"}, nil
+	})) {
+		t.Fatal("IsDirectoryWithOptions directory = false")
+	}
+	if got := SizeWithOptions("x", WithStat(func(string) (fs.FileInfo, error) {
+		return fakeSizedFacadeFileInfo{name: "x", size: 42}, nil
+	})); got != 42 {
+		t.Fatalf("SizeWithOptions = %d", got)
+	}
+	if err := DelWithOptions("missing", WithStat(func(string) (fs.FileInfo, error) {
+		return nil, os.ErrNotExist
+	})); err != nil {
+		t.Fatalf("DelWithOptions missing = %v", err)
+	}
+	dir := t.TempDir()
+	src := dir + "/src.txt"
+	if err := os.WriteFile(src, []byte("copy"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := CopyFileWithOptions(src, dir+"/virtual-dst",
+		WithOpenFile(func(path string, flag int, perm fs.FileMode) (io.WriteCloser, error) {
+			if !strings.HasSuffix(path, "/virtual-dst") || flag&os.O_CREATE == 0 || perm == 0 {
+				t.Fatalf("copy openFile path=%q flag=%#x perm=%v", path, flag, perm)
+			}
+			return nopFacadeWriteCloser{Writer: io.Discard}, nil
+		}),
+	); err != nil {
+		t.Fatalf("CopyFileWithOptions providers: %v", err)
+	}
+}
+
 type fakeFacadeFileInfo struct {
 	name string
 }
@@ -163,3 +237,28 @@ func (f fakeFacadeFileInfo) Mode() fs.FileMode  { return 0o644 }
 func (f fakeFacadeFileInfo) ModTime() time.Time { return time.Unix(0, 0) }
 func (f fakeFacadeFileInfo) IsDir() bool        { return false }
 func (f fakeFacadeFileInfo) Sys() any           { return nil }
+
+type fakeDirFacadeFileInfo struct{ name string }
+
+func (f fakeDirFacadeFileInfo) Name() string       { return f.name }
+func (f fakeDirFacadeFileInfo) Size() int64        { return 0 }
+func (f fakeDirFacadeFileInfo) Mode() fs.FileMode  { return fs.ModeDir | 0o755 }
+func (f fakeDirFacadeFileInfo) ModTime() time.Time { return time.Unix(0, 0) }
+func (f fakeDirFacadeFileInfo) IsDir() bool        { return true }
+func (f fakeDirFacadeFileInfo) Sys() any           { return nil }
+
+type fakeSizedFacadeFileInfo struct {
+	name string
+	size int64
+}
+
+func (f fakeSizedFacadeFileInfo) Name() string       { return f.name }
+func (f fakeSizedFacadeFileInfo) Size() int64        { return f.size }
+func (f fakeSizedFacadeFileInfo) Mode() fs.FileMode  { return 0o644 }
+func (f fakeSizedFacadeFileInfo) ModTime() time.Time { return time.Unix(0, 0) }
+func (f fakeSizedFacadeFileInfo) IsDir() bool        { return false }
+func (f fakeSizedFacadeFileInfo) Sys() any           { return nil }
+
+type nopFacadeWriteCloser struct{ io.Writer }
+
+func (w nopFacadeWriteCloser) Close() error { return nil }

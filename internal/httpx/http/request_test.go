@@ -1,14 +1,17 @@
 package http
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
 	"io"
+	"mime/multipart"
 	"net"
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
 	"net/url"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -118,6 +121,168 @@ func TestRequestHeader(t *testing.T) {
 		t.Fatalf("body: %q", body)
 	}
 }
+
+func TestAdditionalClientFactoriesAndSafeWrappers(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Method", r.Method)
+		w.Header().Add("Set-Cookie", "sid=abc; Path=/")
+		_, _ = w.Write([]byte(r.Method + ":" + r.Header.Get("X-Client")))
+	}))
+	defer srv.Close()
+
+	cfg := SnapshotGlobalConfig()
+	cfg.Headers.Set("X-Client", "cfg")
+	client := NewClientWithConfig(cfg, WithHeader("X-Client", "opt"))
+	if got := client.Get(srv.URL).Execute().Body(); got != "GET:opt" {
+		t.Fatalf("client.Get body = %q", got)
+	}
+	if got := client.Post(srv.URL).Execute().Body(); got != "POST:opt" {
+		t.Fatalf("client.Post body = %q", got)
+	}
+	if got := NewIsolatedClient(WithClientGlobalConfig(cfg), WithClientRequestOptions(WithHeader("X-Client", "isolated"))).NewRequest(MethodPut, srv.URL).Execute().Body(); got != "PUT:isolated" {
+		t.Fatalf("NewIsolatedClient body = %q", got)
+	}
+	if got := (*Client)(nil).NewRequest(MethodDelete, srv.URL).Execute().Header("X-Method"); got != string(MethodDelete) {
+		t.Fatalf("nil client NewRequest method = %q", got)
+	}
+
+	allowLocal := WithURLPolicy(URLPolicy{AllowedSchemes: []string{"http", "https"}, RejectPrivate: false})
+	requests := []*HTTPRequest{
+		PostSafe(srv.URL, allowLocal),
+		Put(srv.URL),
+		PutSafe(srv.URL, allowLocal),
+		DeleteSafe(srv.URL, allowLocal),
+		PatchSafe(srv.URL, allowLocal),
+		Head(srv.URL),
+		HeadSafe(srv.URL, allowLocal),
+		Options(srv.URL),
+		OptionsSafe(srv.URL, allowLocal),
+		NewSafeRequest(MethodTrace, srv.URL, allowLocal),
+		client.NewSafeRequest(MethodOptions, srv.URL, allowLocal),
+	}
+	for _, req := range requests {
+		resp := req.Execute()
+		if resp.Err() != nil {
+			t.Fatalf("safe wrapper Execute: %v", resp.Err())
+		}
+		if resp.Status() == 0 {
+			t.Fatal("safe wrapper status = 0")
+		}
+	}
+
+	resp := Get(srv.URL).Cookie(&http.Cookie{Name: "k", Value: "v"}).Execute()
+	if resp.Err() != nil {
+		t.Fatalf("Get cookie Execute: %v", resp.Err())
+	}
+	if got := resp.Headers()["X-Method"]; len(got) != 1 || got[0] != http.MethodGet {
+		t.Fatalf("Headers()[X-Method] = %v", got)
+	}
+	if cookies := resp.Cookies(); len(cookies) != 1 || cookies[0].Name != "sid" {
+		t.Fatalf("Cookies = %#v", cookies)
+	}
+	var out bytes.Buffer
+	if n, err := resp.WriteTo(&out); err != nil || n != int64(out.Len()) || !strings.Contains(out.String(), "GET") {
+		t.Fatalf("WriteTo n=%d body=%q err=%v", n, out.String(), err)
+	}
+	if raw := resp.Raw(); raw == nil {
+		t.Fatal("Raw returned nil")
+	}
+	if err := resp.Close(); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+}
+
+func TestAdditionalRequestOptionsAndAccessors(t *testing.T) {
+	requestFactoryCalled := false
+	readAllCalled := false
+	transport := roundTripFunc(func(req *http.Request) (*http.Response, error) {
+		return &http.Response{
+			StatusCode:    http.StatusOK,
+			ContentLength: int64(len(req.Method + ":" + req.Header.Get("X-A"))),
+			Header:        http.Header{"Content-Type": []string{"text/plain"}},
+			Body:          io.NopCloser(strings.NewReader(req.Method + ":" + req.Header.Get("X-A"))),
+			Request:       req,
+		}, nil
+	})
+	cfg := SnapshotGlobalConfig()
+	cfg.Headers.Set("X-A", "cfg")
+	req := NewIsolatedRequest(MethodPost, "https://example.com/upload",
+		WithGlobalConfig(cfg),
+		WithHeaders(map[string]string{"X-A": "one", "X-B": "two"}),
+		WithClient(&http.Client{Transport: transport}),
+		WithTransport(transport),
+		WithTLSConfig(&tls.Config{MinVersion: tls.VersionTLS12}),
+		WithResponseReadAllFunc(func(r io.Reader) ([]byte, error) {
+			readAllCalled = true
+			return io.ReadAll(r)
+		}),
+		WithRequestFactory(func(method, rawURL string, body io.Reader) (*http.Request, error) {
+			requestFactoryCalled = true
+			return http.NewRequest(method, rawURL, body)
+		}),
+		WithMultipartWriterFactory(func(w io.Writer) MultipartWriter {
+			return multipart.NewWriter(w)
+		}),
+	)
+	req.Method(MethodPatch).URL("https://example.com/changed").AddHeader("X-A", "extra").Headers(map[string]string{"X-B": "two"}).CookieString("raw=cookie")
+	req.Client(&http.Client{Transport: transport}).URLPolicy(URLPolicy{AllowedSchemes: []string{"https"}, RejectPrivate: false})
+	resp := req.FormFileReader("file", "a.txt", strings.NewReader("file-data")).Execute()
+	if resp.Err() != nil {
+		t.Fatalf("multipart Execute: %v", resp.Err())
+	}
+	if got := resp.Body(); got != "PATCH:one" {
+		t.Fatalf("response body = %q", got)
+	}
+	if !requestFactoryCalled || !readAllCalled {
+		t.Fatalf("providers called request=%v readAll=%v", requestFactoryCalled, readAllCalled)
+	}
+	if got := NewRequestWithConfig(MethodGet, "https://example.com", cfg, WithTransport(transport)).Execute().Body(); got != "GET:cfg" {
+		t.Fatalf("NewRequestWithConfig body = %q", got)
+	}
+}
+
+func TestAdditionalGlobalHTMLAndUtilWrappers(t *testing.T) {
+	previous := SnapshotGlobalConfig()
+	defer ConfigureGlobalConfig(previous)
+	SetGlobalBoundary("boundary-extra")
+	SetGlobalDecodeURL(true)
+	AddGlobalHeader("X-Extra", "one")
+	defer RemoveGlobalHeader("X-Extra")
+	if GetGlobalBoundary() != "boundary-extra" || !IsGlobalDecodeURL() {
+		t.Fatalf("global boundary/decode = %q/%v", GetGlobalBoundary(), IsGlobalDecodeURL())
+	}
+	if got := CloneGlobalHeaders()["X-Extra"]; len(got) != 1 || got[0] != "one" {
+		t.Fatalf("CloneGlobalHeaders X-Extra = %v", got)
+	}
+	if got := CleanHTMLWithOptions("a[drop]b", WithHTMLTagRegexp(regexp.MustCompile(`\[.*?\]`)), WithHTMLCommentRegexp(regexp.MustCompile(`$^`))); got != "ab" {
+		t.Fatalf("CleanHTMLWithOptions = %q", got)
+	}
+	if got := FilterHTMLTagWithOptions("<custom>drop</custom><p>keep</p>", []string{"custom"}, WithHTMLFilterCompileFunc(regexp.Compile)); got != "<p>keep</p>" {
+		t.Fatalf("FilterHTMLTagWithOptions = %q", got)
+	}
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, _ := io.ReadAll(r.Body)
+		_, _ = w.Write([]byte(r.Method + ":" + string(body)))
+	}))
+	defer srv.Close()
+	if got, err := GetStringSafeE(srv.URL, WithURLPolicy(URLPolicy{AllowedSchemes: []string{"http", "https"}, RejectPrivate: false})); err != nil || got != "GET:" {
+		t.Fatalf("GetStringSafeE = %q, %v", got, err)
+	}
+	if got, err := GetWithTimeoutE(srv.URL, time.Second); err != nil || got != "GET:" {
+		t.Fatalf("GetWithTimeoutE = %q, %v", got, err)
+	}
+	if got, err := PostStringE(srv.URL, "body"); err != nil || got != "POST:body" {
+		t.Fatalf("PostStringE = %q, %v", got, err)
+	}
+	if got, err := PostStringSafeE(srv.URL, "safe", WithURLPolicy(URLPolicy{AllowedSchemes: []string{"http", "https"}, RejectPrivate: false})); err != nil || got != "POST:safe" {
+		t.Fatalf("PostStringSafeE = %q, %v", got, err)
+	}
+}
+
+type roundTripFunc func(*http.Request) (*http.Response, error)
+
+func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) { return f(req) }
 
 func TestRequestBasicAuth(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

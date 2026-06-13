@@ -6,7 +6,7 @@ name: go-knifer-ci
 env:
   GOLANGCI_LINT_VERSION: v2.12.2
   GO_1_25_PATCH_VERSION: "1.25.11"
-  COVERAGE_THRESHOLD: "72.2"
+  COVERAGE_THRESHOLD: "73.5"
 
 on:
   push:
@@ -35,25 +35,25 @@ jobs:
           cache: true
 
       - name: Verify module checksums
-        run: go mod verify
+        run: make mod-verify
 
       - name: Vet
-        run: go vet ./...
+        run: make vet
 
       - name: Check go mod tidy
-        run: go mod tidy && git diff --exit-code -- go.mod go.sum
+        run: make tidy-check
 
       - name: Check generated diffs and whitespace
-        run: git diff --check && git diff --exit-code
+        run: make diff-check
 
       - name: Architecture check
-        run: bash bin/check_arch.sh
+        run: make arch
 
       - name: Test
-        run: go test -race -shuffle=on -coverprofile=coverage.out ./...
+        run: make test-race
 
       - name: Check coverage threshold
-        run: bash bin/check_coverage.sh coverage.out
+        run: make coverage-check
 
       - name: Upload coverage
         uses: actions/upload-artifact@v7

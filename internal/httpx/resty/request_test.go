@@ -14,6 +14,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -728,3 +729,195 @@ func (w nopWriteCloser) Close() error { return nil }
 type restyRoundTripperFunc func(*http.Request) (*http.Response, error)
 
 func (f restyRoundTripperFunc) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
+
+func TestAdditionalClientFactoriesSafeWrappersAndMethods(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Method", r.Method)
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.Header().Add("Set-Cookie", "sid=abc; Path=/")
+		if r.Method != http.MethodHead {
+			_, _ = w.Write([]byte(r.Method + ":" + r.Header.Get("X-Client")))
+		}
+	}))
+	defer srv.Close()
+
+	cfg := SnapshotGlobalConfig()
+	cfg.Headers["X-Client"] = []string{"cfg"}
+	client := NewClientWithConfig(cfg, WithHeader("X-Client", "opt"))
+	if got := client.Get(srv.URL).Execute().Body(); got != "GET:opt" {
+		t.Fatalf("client.Get body = %q", got)
+	}
+	if got := client.Post(srv.URL).Execute().Body(); got != "POST:opt" {
+		t.Fatalf("client.Post body = %q", got)
+	}
+	if got := NewIsolatedClient(WithClientGlobalConfig(cfg), WithClientRequestOptions(WithHeader("X-Client", "isolated"))).NewRequest(MethodPut, srv.URL).Execute().Body(); got != "PUT:isolated" {
+		t.Fatalf("NewIsolatedClient body = %q", got)
+	}
+	if got := (*Client)(nil).NewRequest(MethodDelete, srv.URL).Execute().Header("X-Method"); got != string(MethodDelete) {
+		t.Fatalf("nil client NewRequest method = %q", got)
+	}
+
+	allowLocal := WithURLPolicy(URLPolicy{AllowedSchemes: []string{"http", "https"}, RejectPrivate: false})
+	requests := []*HTTPRequest{
+		PostSafe(srv.URL, allowLocal),
+		Put(srv.URL),
+		PutSafe(srv.URL, allowLocal),
+		Delete(srv.URL),
+		DeleteSafe(srv.URL, allowLocal),
+		Patch(srv.URL),
+		PatchSafe(srv.URL, allowLocal),
+		Head(srv.URL),
+		HeadSafe(srv.URL, allowLocal),
+		Options(srv.URL),
+		OptionsSafe(srv.URL, allowLocal),
+		NewSafeRequest(MethodTrace, srv.URL, allowLocal),
+		client.NewSafeRequest(MethodOptions, srv.URL, allowLocal),
+	}
+	for _, req := range requests {
+		resp := req.Execute()
+		if resp.Err() != nil {
+			t.Fatalf("safe wrapper Execute: %v", resp.Err())
+		}
+		if resp.Status() == 0 {
+			t.Fatal("safe wrapper status = 0")
+		}
+	}
+
+	resp := Get(srv.URL).Cookie("k", "v").Execute()
+	if resp.Err() != nil {
+		t.Fatalf("cookie Execute: %v", resp.Err())
+	}
+	if got := resp.Headers()["X-Method"]; len(got) != 1 || got[0] != http.MethodGet {
+		t.Fatalf("Headers()[X-Method] = %v", got)
+	}
+	if cookies := resp.Cookies(); len(cookies) != 1 || cookies[0].Name != "sid" {
+		t.Fatalf("Cookies = %#v", cookies)
+	}
+	if resp.ContentType() == "" || resp.ContentLength() == 0 || resp.RestyRaw() == nil {
+		t.Fatalf("response metadata type=%q length=%d raw=%v", resp.ContentType(), resp.ContentLength(), resp.RestyRaw())
+	}
+	var out bytes.Buffer
+	if n, err := resp.WriteTo(&out); err != nil || n != int64(out.Len()) || !strings.Contains(out.String(), "GET") {
+		t.Fatalf("WriteTo n=%d body=%q err=%v", n, out.String(), err)
+	}
+	if err := resp.Close(); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+}
+
+func TestAdditionalRequestAndUtilityWrappers(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, _ := io.ReadAll(r.Body)
+		_, _ = w.Write([]byte(r.Method + ":" + r.URL.Query().Get("q") + ":" + r.Header.Get("Authorization") + ":" + string(body)))
+	}))
+	defer srv.Close()
+
+	req := NewIsolatedRequest(MethodGet, srv.URL).
+		Method(MethodPost).
+		URL(srv.URL).
+		Headers(map[string]string{"X-A": "one"}).
+		AddHeader("X-A", "two").
+		CookieString("raw=cookie").
+		ContentType(string(ContentTypeTextPlain)).
+		Charset("utf-8").
+		Timeout(time.Second).
+		FollowRedirects(false).
+		MaxRedirects(1).
+		TLSConfig(&tls.Config{MinVersion: tls.VersionTLS12}).
+		RestyClient(grestry.New()).
+		URLPolicy(URLPolicy{AllowedSchemes: []string{"http", "https"}, RejectPrivate: false}).
+		BasicAuth("user", "pass").
+		BearerAuth("token").
+		Query("q", "one").
+		QueryMap(map[string]any{"q": "two"}).
+		BodyReader(strings.NewReader("reader-body")).
+		ErrorResult(&map[string]any{})
+	if req.method != MethodPost || req.rawURL != srv.URL || req.urlPolicy == nil || req.errorResult == nil {
+		t.Fatalf("request state method=%s url=%s policy=%#v", req.method, req.rawURL, req.urlPolicy)
+	}
+	resp := req.Execute()
+	if resp.Err() != nil {
+		t.Fatalf("Execute: %v", resp.Err())
+	}
+	if !strings.Contains(resp.Body(), "POST:two:Basic ") || !strings.Contains(resp.Body(), ":reader-body") {
+		t.Fatalf("response body = %q", resp.Body())
+	}
+
+	if got, err := GetWithTimeoutE(srv.URL, time.Second); err != nil || !strings.HasPrefix(got, "GET:") {
+		t.Fatalf("GetWithTimeoutE = %q, %v", got, err)
+	}
+	if got, err := GetWithTimeoutEWithOptions(srv.URL, time.Second, WithHeader("X-T", "v")); err != nil || !strings.HasPrefix(got, "GET:") {
+		t.Fatalf("GetWithTimeoutEWithOptions = %q, %v", got, err)
+	}
+	if got, err := PostStringSafeE(srv.URL, "safe", WithURLPolicy(URLPolicy{AllowedSchemes: []string{"http", "https"}, RejectPrivate: false})); err != nil || !strings.Contains(got, "POST:::safe") {
+		t.Fatalf("PostStringSafeE = %q, %v", got, err)
+	}
+	if got, err := PostFormSafeE(srv.URL, map[string]any{"a": "b"}, WithURLPolicy(URLPolicy{AllowedSchemes: []string{"http", "https"}, RejectPrivate: false})); err != nil || !strings.HasPrefix(got, "POST:") {
+		t.Fatalf("PostFormSafeE = %q, %v", got, err)
+	}
+	if got, err := PostJSONSafeE(srv.URL, `{"ok":true}`, WithURLPolicy(URLPolicy{AllowedSchemes: []string{"http", "https"}, RejectPrivate: false})); err != nil || !strings.Contains(got, `{"ok":true}`) {
+		t.Fatalf("PostJSONSafeE = %q, %v", got, err)
+	}
+
+	if !IsHTTP("http://example.com") || !IsHTTPS("https://example.com") {
+		t.Fatal("scheme helpers returned false")
+	}
+	if got := BuildContentType("text/plain", "utf-8"); got != "text/plain;charset=utf-8" {
+		t.Fatalf("BuildContentType = %q", got)
+	}
+	if !IsDefaultContentType("") || !IsFormURLEncoded("application/x-www-form-urlencoded;charset=utf-8") {
+		t.Fatal("content type predicates returned unexpected result")
+	}
+	if got := GetCharsetFromContentTypeWithOptions("text/plain; enc=gbk", WithCharsetRegexp(regexp.MustCompile(`enc=([a-z0-9-]+)`))); got != "gbk" {
+		t.Fatalf("GetCharsetFromContentTypeWithOptions = %q", got)
+	}
+	if got := GetCharsetFromHTMLWithOptions(`<meta data-charset="big5">`, WithMetaCharsetRegexp(regexp.MustCompile(`data-charset="([^"]+)"`))); got != "big5" {
+		t.Fatalf("GetCharsetFromHTMLWithOptions = %q", got)
+	}
+	if got := GetMimeType("payload.JSON"); got != "application/json" {
+		t.Fatalf("GetMimeType = %q", got)
+	}
+	if got := BuildBasicAuth("user", "pass"); !strings.HasPrefix(got, "Basic ") {
+		t.Fatalf("BuildBasicAuth = %q", got)
+	}
+}
+
+func TestAdditionalDownloadWrappers(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("download"))
+	}))
+	defer srv.Close()
+	allowLocal := WithURLPolicy(URLPolicy{AllowedSchemes: []string{"http", "https"}, RejectPrivate: false})
+
+	if got, err := DownloadStringE(srv.URL, ""); err != nil || got != "download" {
+		t.Fatalf("DownloadStringE = %q, %v", got, err)
+	}
+	if got, err := DownloadStringEWithOptions(srv.URL, "", WithMaxResponseBytes(64)); err != nil || got != "download" {
+		t.Fatalf("DownloadStringEWithOptions = %q, %v", got, err)
+	}
+	if got, err := DownloadStringSafeE(srv.URL, "", allowLocal); err != nil || got != "download" {
+		t.Fatalf("DownloadStringSafeE = %q, %v", got, err)
+	}
+	var buf bytes.Buffer
+	if n, err := Download(srv.URL, &buf); err != nil || n != int64(len("download")) || buf.String() != "download" {
+		t.Fatalf("Download n=%d body=%q err=%v", n, buf.String(), err)
+	}
+	buf.Reset()
+	if n, err := DownloadWithOptions(srv.URL, &buf, WithMaxResponseBytes(64)); err != nil || n != int64(len("download")) || buf.String() != "download" {
+		t.Fatalf("DownloadWithOptions n=%d body=%q err=%v", n, buf.String(), err)
+	}
+	buf.Reset()
+	if n, err := DownloadSafe(srv.URL, &buf, allowLocal); err != nil || n != int64(len("download")) || buf.String() != "download" {
+		t.Fatalf("DownloadSafe n=%d body=%q err=%v", n, buf.String(), err)
+	}
+	if b, err := DownloadBytesSafeE(srv.URL, allowLocal); err != nil || string(b) != "download" {
+		t.Fatalf("DownloadBytesSafeE = %q, %v", b, err)
+	}
+	dir := t.TempDir()
+	if n, err := DownloadFileSafeWithOptions(srv.URL, filepath.Join(dir, "safe.txt"), []RequestOption{allowLocal}, WithSaveOverwrite(true)); err != nil || n != int64(len("download")) {
+		t.Fatalf("DownloadFileSafeWithOptions n=%d err=%v", n, err)
+	}
+	if _, err := DownloadFileSafe(srv.URL, filepath.Join(dir, "blocked.txt")); err == nil {
+		t.Fatal("DownloadFileSafe default policy error = nil")
+	}
+}

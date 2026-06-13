@@ -6,8 +6,8 @@
 set -euo pipefail
 
 coverage_file="${1:-coverage.out}"
-threshold="${COVERAGE_THRESHOLD:-72.2}"
-package_thresholds="${PACKAGE_COVERAGE_THRESHOLDS:-github.com/imajinyun/go-knifer/vhttp=75.0 github.com/imajinyun/go-knifer/vresty=65.0 github.com/imajinyun/go-knifer/vconf=75.0 github.com/imajinyun/go-knifer/vzip=80.0}"
+threshold="${COVERAGE_THRESHOLD:-73.5}"
+package_thresholds="${PACKAGE_COVERAGE_THRESHOLDS:-github.com/imajinyun/go-knifer/vhttp=75.0 github.com/imajinyun/go-knifer/vresty=65.0 github.com/imajinyun/go-knifer/vconf=75.0 github.com/imajinyun/go-knifer/vzip=80.0 github.com/imajinyun/go-knifer/vcrypto=70.0 github.com/imajinyun/go-knifer/vurl=80.0 github.com/imajinyun/go-knifer/vfile=85.0 github.com/imajinyun/go-knifer/internal/httpx/http=75.0 github.com/imajinyun/go-knifer/internal/httpx/resty=75.0}"
 
 if [ ! -f "${coverage_file}" ]; then
 	echo "COVERAGE CHECK ERROR: ${coverage_file} does not exist" >&2
@@ -49,7 +49,9 @@ for gate in ${package_thresholds}; do
 			sub(/:.*/, "", file)
 			if (file ~ "^" pkg "/[^/]+\\.go$") {
 				statements += $2
-				covered += $2 * $3
+				if ($3 > 0) {
+					covered += $2
+				}
 			}
 		}
 		END {
