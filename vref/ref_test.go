@@ -1,8 +1,10 @@
 package vref
 
 import (
+	"context"
 	"reflect"
 	"testing"
+	"unsafe"
 )
 
 type facadeSample struct {
@@ -31,6 +33,10 @@ func (facadeMethodSample) String() string                { return "method-sample
 func (facadeMethodSample) SetName(string)                {}
 
 func newFacadeSample(name string) facadeSample { return facadeSample{Name: name} }
+
+type facadeError struct{}
+
+func (facadeError) Error() string { return "facade" }
 
 func TestFacadeReflectionHelpers(t *testing.T) {
 	s := &facadeSample{Name: "alice", hidden: "secret"}
@@ -65,6 +71,28 @@ func TestFacadeAdditionalTypeAndFieldHelpers(t *testing.T) {
 	var nilSlice []string
 	if !IsNil(nilSlice) || IsNil(1) {
 		t.Fatal("IsNil facade returned unexpected result")
+	}
+	var nilUnsafePointer unsafe.Pointer
+	if !IsNilValue(reflect.Value{}) || !IsNilValue(reflect.ValueOf(nilSlice)) || !IsNilValue(reflect.ValueOf(nilUnsafePointer)) {
+		t.Fatal("IsNilValue facade returned unexpected result")
+	}
+	if IsNilValue(reflect.ValueOf(1)) {
+		t.Fatal("IsNilValue facade returned true for non-nil int")
+	}
+	if !IsFuncType(reflect.TypeOf(newFacadeSample)) || IsFuncType(nil) {
+		t.Fatal("IsFuncType facade returned unexpected result")
+	}
+	if !IsRangeableType(reflect.TypeOf(map[string]int{})) || !IsRangeableType(reflect.TypeOf([]int{})) || IsRangeableType(reflect.TypeOf(1)) {
+		t.Fatal("IsRangeableType facade returned unexpected result")
+	}
+	if !IsCollectionType(reflect.TypeOf([1]int{})) || !IsCollectionType(reflect.TypeOf([]int{})) || IsCollectionType(reflect.TypeOf(map[string]int{})) {
+		t.Fatal("IsCollectionType facade returned unexpected result")
+	}
+	if !IsSliceType(reflect.TypeOf([]int{})) || !IsArrayType(reflect.TypeOf([1]int{})) || !IsMapType(reflect.TypeOf(map[string]int{})) {
+		t.Fatal("specific type predicate facade returned unexpected result")
+	}
+	if !ImplementsError(reflect.TypeOf(facadeError{})) || ImplementsError(nil) || !ImplementsContext(reflect.TypeOf(context.Background())) || ImplementsContext(nil) {
+		t.Fatal("interface implementation facade returned unexpected result")
 	}
 	if got := ValueOf(nil); got.IsValid() {
 		t.Fatalf("ValueOf(nil).IsValid() = true: %v", got)
@@ -104,6 +132,9 @@ func TestFacadeAdditionalTypeAndFieldHelpers(t *testing.T) {
 	}
 	if got := GetFieldsDirectly(target, true); len(got) < 4 {
 		t.Fatalf("GetFieldsDirectly embedded len = %d", len(got))
+	}
+	if got := GetPublicFieldNames(target); !reflect.DeepEqual(got, []string{"Alias", "Count"}) {
+		t.Fatalf("GetPublicFieldNames = %#v", got)
 	}
 	if got := GetFieldsValueWithOptions(target, []FieldAccessOption{WithAllowUnexported(true)}, func(field reflect.StructField) bool { return field.Name == "Count" }); len(got) != 1 || got[0] != 3 {
 		t.Fatalf("GetFieldsValueWithOptions = %#v", got)

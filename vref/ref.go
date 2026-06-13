@@ -23,6 +23,15 @@ func IndirectType(typ reflect.Type) reflect.Type      { return refimpl.IndirectT
 func ValueOf(object any) reflect.Value                { return refimpl.ValueOf(object) }
 func IndirectValue(value reflect.Value) reflect.Value { return refimpl.IndirectValue(value) }
 func IsNil(object any) bool                           { return refimpl.IsNil(object) }
+func IsNilValue(value reflect.Value) bool             { return refimpl.IsNilValue(value) }
+func IsFuncType(typ reflect.Type) bool                { return refimpl.IsFuncType(typ) }
+func IsRangeableType(typ reflect.Type) bool           { return refimpl.IsRangeableType(typ) }
+func IsCollectionType(typ reflect.Type) bool          { return refimpl.IsCollectionType(typ) }
+func IsSliceType(typ reflect.Type) bool               { return refimpl.IsSliceType(typ) }
+func IsArrayType(typ reflect.Type) bool               { return refimpl.IsArrayType(typ) }
+func IsMapType(typ reflect.Type) bool                 { return refimpl.IsMapType(typ) }
+func ImplementsError(typ reflect.Type) bool           { return refimpl.ImplementsError(typ) }
+func ImplementsContext(typ reflect.Type) bool         { return refimpl.ImplementsContext(typ) }
 func GetConstructor(target any) reflect.Value         { return refimpl.GetConstructor(target) }
 func GetConstructors(target any) []reflect.Value      { return refimpl.GetConstructors(target) }
 func GetConstructorsDirectly(target any) []reflect.Value {
@@ -35,6 +44,8 @@ func GetFieldMap(target any) map[string]reflect.StructField { return refimpl.Get
 func GetFields(target any, filters ...FieldFilter) []reflect.StructField {
 	return refimpl.GetFields(target, filters...)
 }
+
+func GetPublicFieldNames(target any) []string { return refimpl.GetPublicFieldNames(target) }
 
 func GetFieldsDirectly(target any, withEmbeddedFields bool) []reflect.StructField {
 	return refimpl.GetFieldsDirectly(target, withEmbeddedFields)

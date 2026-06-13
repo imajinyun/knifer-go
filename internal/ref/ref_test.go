@@ -1,8 +1,10 @@
 package ref
 
 import (
+	"context"
 	"reflect"
 	"testing"
+	"unsafe"
 )
 
 type embeddedSample struct {
@@ -24,6 +26,10 @@ func (s sample) Equal(other sample) bool { return s.Name == other.Name }
 func (s sample) HashCode() int           { return len(s.Name) }
 
 func newSample(name string, age int) sample { return sample{Name: name, Age: age} }
+
+type sampleError struct{}
+
+func (sampleError) Error() string { return "sample" }
 
 func TestFieldHelpers(t *testing.T) {
 	s := &sample{embeddedSample: embeddedSample{Base: "b"}, Name: "alice", Age: 18, hidden: "secret"}
@@ -67,6 +73,73 @@ func TestFieldHelpers(t *testing.T) {
 	}
 	if GetStaticFieldValue(123) != 123 || IsOuterClassField(field) {
 		t.Fatal("static/outer helpers failed")
+	}
+}
+
+func TestAdditionalTypeClassificationHelpers(t *testing.T) {
+	var nilSlice []string
+	var nilUnsafePointer unsafe.Pointer
+	if !IsNilValue(reflect.Value{}) || !IsNilValue(reflect.ValueOf(nilSlice)) || !IsNilValue(reflect.ValueOf(nilUnsafePointer)) {
+		t.Fatal("IsNilValue did not treat invalid or nil-able nil values as nil")
+	}
+	if IsNilValue(reflect.ValueOf(1)) {
+		t.Fatal("IsNilValue returned true for non-nil int")
+	}
+
+	tests := []struct {
+		name       string
+		typ        reflect.Type
+		funcType   bool
+		rangeable  bool
+		collection bool
+		sliceType  bool
+		arrayType  bool
+		mapType    bool
+	}{
+		{name: "nil"},
+		{name: "function", typ: reflect.TypeOf(func() {}), funcType: true},
+		{name: "slice", typ: reflect.TypeOf([]int{}), rangeable: true, collection: true, sliceType: true},
+		{name: "array", typ: reflect.TypeOf([1]int{}), rangeable: true, collection: true, arrayType: true},
+		{name: "map", typ: reflect.TypeOf(map[string]int{}), rangeable: true, mapType: true},
+		{name: "string", typ: reflect.TypeOf("value")},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if IsFuncType(tt.typ) != tt.funcType {
+				t.Fatalf("IsFuncType(%v) = %v", tt.typ, !tt.funcType)
+			}
+			if IsRangeableType(tt.typ) != tt.rangeable {
+				t.Fatalf("IsRangeableType(%v) = %v", tt.typ, !tt.rangeable)
+			}
+			if IsCollectionType(tt.typ) != tt.collection {
+				t.Fatalf("IsCollectionType(%v) = %v", tt.typ, !tt.collection)
+			}
+			if IsSliceType(tt.typ) != tt.sliceType {
+				t.Fatalf("IsSliceType(%v) = %v", tt.typ, !tt.sliceType)
+			}
+			if IsArrayType(tt.typ) != tt.arrayType {
+				t.Fatalf("IsArrayType(%v) = %v", tt.typ, !tt.arrayType)
+			}
+			if IsMapType(tt.typ) != tt.mapType {
+				t.Fatalf("IsMapType(%v) = %v", tt.typ, !tt.mapType)
+			}
+		})
+	}
+
+	if !ImplementsError(reflect.TypeOf(sampleError{})) || ImplementsError(nil) || ImplementsError(reflect.TypeOf("value")) {
+		t.Fatal("ImplementsError returned unexpected result")
+	}
+	if !ImplementsContext(reflect.TypeOf(context.Background())) || ImplementsContext(nil) || ImplementsContext(reflect.TypeOf(sampleError{})) {
+		t.Fatal("ImplementsContext returned unexpected result")
+	}
+	if got := GetPublicFieldNames(sample{}); !reflect.DeepEqual(got, []string{"Name", "Age"}) {
+		t.Fatalf("GetPublicFieldNames = %#v", got)
+	}
+	if got := GetPublicFieldNames((*sample)(nil)); !reflect.DeepEqual(got, []string{"Name", "Age"}) {
+		t.Fatalf("GetPublicFieldNames pointer = %#v", got)
+	}
+	if got := GetPublicFieldNames(123); got != nil {
+		t.Fatalf("GetPublicFieldNames non-struct = %#v", got)
 	}
 }
 

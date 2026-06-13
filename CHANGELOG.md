@@ -25,6 +25,9 @@ subpackage APIs are treated as the compatibility boundary.
   vulnerability check targets.
 - Fixed package-level coverage accounting so race-mode coverage profiles count
   each statement as covered once instead of multiplying by execution count.
+- Added `vref` reflection helper APIs for nil-safe `reflect.Value` checks,
+  type classification, interface implementation checks, and exported field name
+  discovery.
 - Documented release notes in a changelog so user-visible changes can be
   reviewed before tagging.
 

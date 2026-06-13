@@ -1,6 +1,7 @@
 package ref
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"reflect"
@@ -82,14 +83,69 @@ func IsNil(object any) bool {
 	if object == nil {
 		return true
 	}
-	v := reflect.ValueOf(object)
-	switch v.Kind() {
-	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Pointer, reflect.Slice:
-		return v.IsNil()
+	return IsNilValue(reflect.ValueOf(object))
+}
+
+// IsNilValue reports whether value is invalid or holds a nil-able nil value.
+func IsNilValue(value reflect.Value) bool {
+	if !value.IsValid() {
+		return true
+	}
+	switch value.Kind() {
+	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Pointer, reflect.Slice, reflect.UnsafePointer:
+		return value.IsNil()
 	default:
 		return false
 	}
 }
+
+// IsFuncType reports whether typ is a function type.
+func IsFuncType(typ reflect.Type) bool { return typ != nil && typ.Kind() == reflect.Func }
+
+// IsRangeableType reports whether typ can be ranged over.
+func IsRangeableType(typ reflect.Type) bool {
+	if typ == nil {
+		return false
+	}
+	switch typ.Kind() {
+	case reflect.Array, reflect.Slice, reflect.Map:
+		return true
+	default:
+		return false
+	}
+}
+
+// IsCollectionType reports whether typ is an array or slice type.
+func IsCollectionType(typ reflect.Type) bool {
+	if typ == nil {
+		return false
+	}
+	switch typ.Kind() {
+	case reflect.Array, reflect.Slice:
+		return true
+	default:
+		return false
+	}
+}
+
+// IsSliceType reports whether typ is a slice type.
+func IsSliceType(typ reflect.Type) bool { return typ != nil && typ.Kind() == reflect.Slice }
+
+// IsArrayType reports whether typ is an array type.
+func IsArrayType(typ reflect.Type) bool { return typ != nil && typ.Kind() == reflect.Array }
+
+// IsMapType reports whether typ is a map type.
+func IsMapType(typ reflect.Type) bool { return typ != nil && typ.Kind() == reflect.Map }
+
+var errorType = reflect.TypeOf((*error)(nil)).Elem()
+
+// ImplementsError reports whether typ implements error.
+func ImplementsError(typ reflect.Type) bool { return typ != nil && typ.Implements(errorType) }
+
+var contextType = reflect.TypeOf((*context.Context)(nil)).Elem()
+
+// ImplementsContext reports whether typ implements context.Context.
+func ImplementsContext(typ reflect.Type) bool { return typ != nil && typ.Implements(contextType) }
 
 // GetConstructor returns a constructor function when target itself is a function.
 func GetConstructor(target any) reflect.Value {
@@ -165,6 +221,21 @@ func GetFieldsDirectly(target any, withEmbeddedFields bool) []reflect.StructFiel
 		out = append(out, field)
 		if withEmbeddedFields && field.Anonymous {
 			out = append(out, GetFieldsDirectly(field.Type, true)...)
+		}
+	}
+	return out
+}
+
+// GetPublicFieldNames returns exported field names from a struct type.
+func GetPublicFieldNames(target any) []string {
+	fields := GetFieldsDirectly(target, false)
+	if len(fields) == 0 {
+		return nil
+	}
+	out := make([]string, 0, len(fields))
+	for _, field := range fields {
+		if field.IsExported() {
+			out = append(out, field.Name)
 		}
 	}
 	return out
