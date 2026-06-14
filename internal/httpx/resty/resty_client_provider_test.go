@@ -1,8 +1,9 @@
 package resty
 
 import (
-	grestry "resty.dev/v3"
 	"testing"
+
+	grestry "resty.dev/v3"
 )
 
 func TestRestyClientFactoryProviderLifecycle(t *testing.T) {

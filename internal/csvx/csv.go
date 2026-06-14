@@ -315,10 +315,6 @@ func newReader(r io.Reader, opts ...ReadOption) *csv.Reader {
 	return reader
 }
 
-func newWriter(w io.Writer, opts ...WriteOption) *csv.Writer {
-	return newWriterWithConfig(w, applyOptions(opts...))
-}
-
 func applyOptions(opts ...Option) config {
 	cfg := defaultConfig()
 	for _, opt := range opts {

@@ -14,11 +14,30 @@ func defaultRandomInt(max int) int { return randutil.RandomInt(max) }
 // randomColor returns a random RGBA color.
 func randomColor(randomInt func(max int) int) color.RGBA {
 	return color.RGBA{
-		R: uint8(randomInt(256)),
-		G: uint8(randomInt(256)),
-		B: uint8(randomInt(256)),
+		R: randomByte(randomInt),
+		G: randomByte(randomInt),
+		B: randomByte(randomInt),
 		A: 255,
 	}
+}
+
+func randomByte(randomInt func(max int) int) uint8 {
+	n := randomInt(256)
+	if n < 0 {
+		return 0
+	}
+	if n > 255 {
+		return 255
+	}
+	return uint8(n)
+}
+
+func colorComponent8(v uint32) uint8 {
+	v >>= 8
+	if v > 255 {
+		return 255
+	}
+	return uint8(v)
 }
 
 // fillBackground fills the image with the specified background color.
@@ -122,7 +141,12 @@ func shearX(img *image.RGBA, bg color.Color, randomIntRange func(min, max int) i
 				img.SetRGBA(x, y, img.RGBAAt(srcX, y))
 			} else {
 				r, g, b, a := bg.RGBA()
-				img.SetRGBA(x, y, color.RGBA{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8), uint8(a >> 8)})
+				img.SetRGBA(x, y, color.RGBA{
+					R: colorComponent8(r),
+					G: colorComponent8(g),
+					B: colorComponent8(b),
+					A: colorComponent8(a),
+				})
 			}
 		}
 	}
@@ -144,7 +168,12 @@ func shearY(img *image.RGBA, bg color.Color, randomIntRange func(min, max int) i
 				img.SetRGBA(x, y, img.RGBAAt(x, srcY))
 			} else {
 				r, g, b, a := bg.RGBA()
-				img.SetRGBA(x, y, color.RGBA{uint8(r >> 8), uint8(g >> 8), uint8(b >> 8), uint8(a >> 8)})
+				img.SetRGBA(x, y, color.RGBA{
+					R: colorComponent8(r),
+					G: colorComponent8(g),
+					B: colorComponent8(b),
+					A: colorComponent8(a),
+				})
 			}
 		}
 	}

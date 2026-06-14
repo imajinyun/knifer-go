@@ -68,7 +68,7 @@ func Thumbnail(w io.Writer, r io.Reader, maxEdge int, format string) error {
 		return err
 	}
 
-	src, _, err := decodeAny(r)
+	src, err := decodeAny(r)
 	if err != nil {
 		return err
 	}
@@ -106,7 +106,7 @@ func ConvertFormat(w io.Writer, r io.Reader, format string) error {
 		return err
 	}
 
-	src, _, err := decodeAny(r)
+	src, err := decodeAny(r)
 	if err != nil {
 		return err
 	}
@@ -134,16 +134,16 @@ func Info(r io.Reader) (width int, height int, format string, err error) {
 
 // decodeAny decodes r using the registered image formats, translating the
 // generic image.ErrFormat into a go-knifer classified error.
-func decodeAny(r io.Reader) (image.Image, string, error) {
-	img, name, err := image.Decode(r)
+func decodeAny(r io.Reader) (image.Image, error) {
+	img, _, err := image.Decode(r)
 	if err != nil {
-		return nil, "", &knifer.Error{
+		return nil, &knifer.Error{
 			Code:    knifer.ErrCodeInvalidInput,
 			Message: "image: decode failed",
 			Cause:   err,
 		}
 	}
-	return img, name, nil
+	return img, nil
 }
 
 // decodeConfigAny returns the configuration (bounds) of r without fully
@@ -249,8 +249,24 @@ func downsample(src image.Image, srcBounds image.Rectangle, newWidth, newHeight 
 			if count == 0 {
 				count = 1
 			}
-			dst.SetRGBA(dx, dy, color.RGBA{R: uint8(r / count), G: uint8(g / count), B: uint8(b / count), A: uint8(a / count)})
+			dst.SetRGBA(dx, dy, color.RGBA{
+				R: averageComponent8(r, count),
+				G: averageComponent8(g, count),
+				B: averageComponent8(b, count),
+				A: averageComponent8(a, count),
+			})
 		}
 	}
 	return dst
+}
+
+func averageComponent8(total, count uint64) uint8 {
+	if count == 0 {
+		return 0
+	}
+	avg := total / count
+	if avg > 255 {
+		return 255
+	}
+	return uint8(avg)
 }

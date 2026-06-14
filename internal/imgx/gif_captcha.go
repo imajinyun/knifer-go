@@ -136,11 +136,22 @@ func drawCodeFrame(img *image.RGBA, code string, highlight, w, h int, randomInt 
 		if i == highlight {
 			c = colorFunc()
 		} else {
-			r := uint8(160 + randomInt(80))
-			g := uint8(160 + randomInt(80))
-			b := uint8(160 + randomInt(80))
+			r := paleColorComponent(randomInt)
+			g := paleColorComponent(randomInt)
+			b := paleColorComponent(randomInt)
 			c = color.RGBA{R: r, G: g, B: b, A: 255}
 		}
 		drawChar(img, code[i], startX+i*charW, startY, scale, c)
 	}
+}
+
+func paleColorComponent(randomInt func(max int) int) uint8 {
+	n := 160 + randomInt(80)
+	if n < 0 {
+		return 0
+	}
+	if n > 255 {
+		return 255
+	}
+	return uint8(n)
 }

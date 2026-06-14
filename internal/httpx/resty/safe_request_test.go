@@ -6,8 +6,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	grestry "resty.dev/v3"
 	"testing"
+
+	grestry "resty.dev/v3"
 )
 
 func TestSafeRequestRejectsPrivateAndUnsafeRedirects(t *testing.T) {
@@ -36,13 +37,15 @@ func TestSafeRequestRejectsPrivateAndUnsafeRedirects(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	resp := GetSafe(srv.URL,
+	resp := GetSafe(
+		srv.URL,
 		WithURLPolicy(URLPolicy{AllowedSchemes: []string{"http", "https"}, AllowedHosts: []string{serverURL.Hostname()}}),
 	).Execute()
 	if resp.Err() != nil || resp.Body() != "safe" {
 		t.Fatalf("GetSafe allowed public policy host body=%q err=%v", resp.Body(), resp.Err())
 	}
-	if err := GetSafe(srv.URL+"/redirect",
+	if err := GetSafe(
+		srv.URL+"/redirect",
 		WithURLPolicy(URLPolicy{AllowedSchemes: []string{"http", "https"}, AllowedHosts: []string{serverURL.Hostname()}}),
 	).Execute().Err(); err == nil {
 		t.Fatal("GetSafe should reject unsafe redirect targets")
@@ -58,7 +61,8 @@ func TestSafeRequestAllowedHostsDoesNotBypassPrivateRejection(t *testing.T) {
 		t.Fatal("unsafe request reached base transport")
 		return nil, nil
 	}))
-	resp := GetSafe("http://example.com/config.yaml",
+	resp := GetSafe(
+		"http://example.com/config.yaml",
 		WithAllowedHosts("example.com"),
 		WithRestyClient(client),
 		WithLookupIP(func(context.Context, string) ([]net.IP, error) {
@@ -77,7 +81,8 @@ func TestSafeRequestRevalidatesHostAtRoundTrip(t *testing.T) {
 		t.Fatal("unsafe request reached base transport")
 		return nil, nil
 	}))
-	resp := GetSafe("http://example.com/config.yaml",
+	resp := GetSafe(
+		"http://example.com/config.yaml",
 		WithRestyClient(client),
 		WithLookupIP(func(context.Context, string) ([]net.IP, error) {
 			if lookupCount >= len(lookups) {

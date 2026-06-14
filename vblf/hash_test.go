@@ -37,14 +37,24 @@ func TestFacadeHashAliasesAndConstructors(t *testing.T) {
 		{"bloom-fnv", vblf.BloomFNVHash},
 	}
 	for _, in := range inputs {
-		if in.hash("abc") != in.hash("abc") {
+		first := in.hash("abc")
+		second := in.hash("abc")
+		if first != second {
 			t.Fatalf("%s hash should be deterministic", in.name)
 		}
 	}
-	if vblf.HfHash("abc") != vblf.HfHash("abc") || vblf.HfIpHash("127.0.0.1") != vblf.HfIpHash("127.0.0.1") || vblf.TianlHash("abc") != vblf.TianlHash("abc") {
+	hfFirst := vblf.HfHash("abc")
+	hfSecond := vblf.HfHash("abc")
+	hfIPFirst := vblf.HfIpHash("127.0.0.1")
+	hfIPSecond := vblf.HfIpHash("127.0.0.1")
+	tianlFirst := vblf.TianlHash("abc")
+	tianlSecond := vblf.TianlHash("abc")
+	if hfFirst != hfSecond || hfIPFirst != hfIPSecond || tianlFirst != tianlSecond {
 		t.Fatal("int64 hash aliases should be deterministic")
 	}
-	if vblf.JavaDefaultHash("abc") != vblf.JavaDefaultHash("abc") {
+	javaFirst := vblf.JavaDefaultHash("abc")
+	javaSecond := vblf.JavaDefaultHash("abc")
+	if javaFirst != javaSecond {
 		t.Fatal("JavaDefaultHash should be deterministic")
 	}
 
