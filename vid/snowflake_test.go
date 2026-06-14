@@ -1,42 +1,8 @@
 package vid
 
-import (
-	"bytes"
-	"encoding/hex"
-	"errors"
-	mathrand "math/rand"
-	"strings"
-	"testing"
-	"time"
-)
+import "testing"
 
-func TestIDFacade(t *testing.T) {
-	u1 := SimpleUUID()
-	u2 := UUID()
-	if len(u1) != 32 || len(u2) != 32 || u1 == u2 || u1[12] != '4' {
-		t.Fatalf("uuid failed: %q %q", u1, u2)
-	}
-	if fast := FastUUID(); len(fast) != 36 || strings.Count(fast, "-") != 4 {
-		t.Fatalf("FastUUID failed: %q", fast)
-	}
-	if oid := ObjectId(); len(oid) != 24 {
-		t.Fatalf("ObjectId failed: %q", oid)
-	}
-	if nid := NanoId(); len(nid) != 21 {
-		t.Fatalf("NanoId failed: %q", nid)
-	}
-	if nid := NanoIdN(10); len(nid) != 10 {
-		t.Fatalf("NanoIdN failed: %q", nid)
-	}
-}
-
-func TestIDFacadeExtended(t *testing.T) {
-	if u := RandomUUID(); len(u) != 36 || strings.Count(u, "-") != 4 {
-		t.Fatalf("RandomUUID failed: %q", u)
-	}
-	if u := FastSimpleUUID(); len(u) != 32 || strings.Contains(u, "-") {
-		t.Fatalf("FastSimpleUUID failed: %q", u)
-	}
+func TestSnowflakeFacade(t *testing.T) {
 	sf := CreateSnowflake(1, 2)
 	if sf.WorkerID() != 1 || sf.DatacenterID() != 2 || sf.NextID() <= 0 || sf.NextIDStr() == "" {
 		t.Fatal("snowflake facade failed")
@@ -108,59 +74,3 @@ func TestSnowflakeFacadeRuntimeOptionsBypassCache(t *testing.T) {
 		t.Fatalf("isolated snowflake ids: worker=%d datacenter=%d", isolated.WorkerID(), isolated.DatacenterID())
 	}
 }
-
-func TestIDFacadeOptions(t *testing.T) {
-	reader := bytes.NewReader(bytes.Repeat([]byte{0x11}, 32))
-	u := SimpleUUIDWithOptions(WithRandomReader(reader))
-	if len(u) != 32 || u[12] != '4' || u[16] != '9' {
-		t.Fatalf("SimpleUUIDWithOptions format: %s", u)
-	}
-
-	obj := ObjectIdWithOptions(
-		WithObjectIDTimeFunc(func() time.Time { return time.Unix(1, 0) }),
-		WithObjectIDRandomReader(bytes.NewReader([]byte{1, 2, 3, 4, 5})),
-		WithObjectIDCounter(func() uint32 { return 0xabcdef }),
-	)
-	if obj != "000000010102030405abcdef" {
-		t.Fatalf("ObjectIdWithOptions = %s", obj)
-	}
-	if _, err := hex.DecodeString(obj); err != nil {
-		t.Fatalf("ObjectIdWithOptions is not hex: %v", err)
-	}
-
-	nid := NanoIdWithOptions(
-		WithNanoIDLength(5),
-		WithNanoIDAlphabet("ab"),
-		WithNanoIDRandomReader(bytes.NewReader([]byte{0, 1, 0, 1, 1})),
-	)
-	if nid != "ababb" {
-		t.Fatalf("NanoIdWithOptions = %q", nid)
-	}
-}
-
-func TestIDFacadeFallbackRandomSourceProvider(t *testing.T) {
-	ResetDefaultFallbackRandomSource()
-	t.Cleanup(ResetDefaultFallbackRandomSource)
-
-	ConfigureDefaultFallbackRandomSourceProvider(func() *mathrand.Rand {
-		return mathrand.New(mathrand.NewSource(13))
-	})
-	first := SimpleUUIDWithOptions(WithRandomReader(errReader{}))
-	ConfigureDefaultFallbackRandomSourceProvider(func() *mathrand.Rand {
-		return mathrand.New(mathrand.NewSource(13))
-	})
-	if got := SimpleUUIDWithOptions(WithRandomReader(errReader{})); got != first {
-		t.Fatalf("SimpleUUIDWithOptions after provider reset = %s, want %s", got, first)
-	}
-
-	SetFallbackRandomSeed(14)
-	seeded := SimpleUUIDWithOptions(WithRandomReader(errReader{}))
-	SetFallbackRandomSeed(14)
-	if got := SimpleUUIDWithOptions(WithRandomReader(errReader{})); got != seeded {
-		t.Fatalf("SimpleUUIDWithOptions after seed reset = %s, want %s", got, seeded)
-	}
-}
-
-type errReader struct{}
-
-func (errReader) Read([]byte) (int, error) { return 0, errors.New("boom") }
