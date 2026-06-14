@@ -42,3 +42,27 @@ func TestNewPatternWithOptionsUsesParser(t *testing.T) {
 		t.Fatalf("custom parsed pattern mismatch")
 	}
 }
+
+func TestSchedulerPatternOptions(t *testing.T) {
+	parseCalls := 0
+	s := NewSchedulerWithOptions(
+		WithIDGenerator(func() string { return "custom-pattern-id" }),
+		WithSchedulerPatternOptions(WithPatternIntParser(func(text string) (int, error) {
+			parseCalls++
+			if text == "custom" {
+				return 30, nil
+			}
+			return strconv.Atoi(text)
+		})),
+	)
+	id, err := s.ScheduleFunc("custom * * * *", func() {})
+	if err != nil {
+		t.Fatalf("ScheduleFunc with pattern options: %v", err)
+	}
+	if id != "custom-pattern-id" || parseCalls == 0 {
+		t.Fatalf("pattern options not used: id=%q parseCalls=%d", id, parseCalls)
+	}
+	if got := s.GetPattern(id); got == nil || !got.Match(time.Date(2024, 1, 1, 12, 30, 0, 0, time.UTC), false) {
+		t.Fatalf("stored custom pattern = %#v", got)
+	}
+}
