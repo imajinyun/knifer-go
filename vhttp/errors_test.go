@@ -2,6 +2,7 @@ package vhttp_test
 
 import (
 	"errors"
+	"net/http"
 	"testing"
 
 	knifer "github.com/imajinyun/go-knifer"
@@ -25,5 +26,16 @@ func TestFacadeErrorNamesWithoutHTTPPrefix(t *testing.T) {
 	formatted := vhttp.Errorf("status %d", 500)
 	if got := errorString(formatted); got != "status 500" {
 		t.Fatalf("Errorf().Error() = %q, want status 500", got)
+	}
+}
+
+func TestFacadeErrorCodes(t *testing.T) {
+	cause := errors.New("bad request")
+	err := vhttp.NewErrorWithCode(knifer.ErrCodeInvalidInput, "invalid request", cause)
+	if !errors.Is(err, cause) || !errors.Is(err, knifer.ErrCodeInvalidInput) {
+		t.Fatalf("NewErrorWithCode does not unwrap cause or code: %v", err)
+	}
+	if got := vhttp.ErrorfWithCode(knifer.ErrCodeInvalidInput, "status %d", http.StatusBadRequest).Error(); got != "status 400" {
+		t.Fatalf("ErrorfWithCode = %q", got)
 	}
 }
