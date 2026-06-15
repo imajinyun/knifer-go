@@ -27,32 +27,33 @@
 
 | 我想使用 | 实际导入 |
 | --- | --- |
-| 裁剪、切分、命名转换、Unicode 转义、Ant 路径匹配、文本相似度或判空字符串 | [`vstr`](docs/doc/41-vstr.md) |
-| 对切片做过滤 / 映射 / 去重 / 分页 | [`vslice`](docs/doc/40-vslice.md) |
-| 创建、查询、转换、合并、差集或排序 map | [`vmap`](docs/doc/26-vmap.md) |
-| 把 `any` 宽松转成 int/float/bool/string | [`vconv`](docs/doc/07-vconv.md) |
-| 精确运算、舍入、表达式计算 | [`vnum`](docs/doc/29-vnum.md) |
-| SHA/HMAC、AES-GCM/RSA-PSS、参数签名 | [`vcrypto`](docs/doc/09-vcrypto.md) |
-| 非加密哈希（FNV、BKDR 等） | [`vhash`](docs/doc/17-vhash.md) |
-| URL 编解码、query 构建/解析，或安全打开不可信 HTTP(S) 资源 | [`vurl`](docs/doc/44-vurl.md) |
+| FIFO/LRU/LFU/TTL 缓存 | [`vcache`](docs/doc/04-vcache.md) |
 | Base64 / Hex 编解码 | [`vcodec`](docs/doc/05-vcodec.md) |
-| 读写 CSV records、map 或 struct | [`vcsv`](docs/doc/10-vcsv.md) |
-| 生成缩略图、PNG/JPEG/GIF 格式转换、读取图像元信息或生成图形验证码 | [`vimg`](docs/doc/21-vimg.md) |
-| 构建/解析 JSON、路径读写、JSON↔XML | [`vjson`](docs/doc/23-vjson.md) |
 | 加载本地或远程配置，包括带 SSRF 防护的远程配置 | [`vconf`](docs/doc/06-vconf.md) |
-| 解析、构建、遍历 XML | [`vxml`](docs/doc/46-vxml.md) |
+| 把 `any` 宽松转成 int/float/bool/string | [`vconv`](docs/doc/07-vconv.md) |
+| 定时任务调度 | [`vcron`](docs/doc/08-vcron.md) |
+| SHA/HMAC、AES-GCM/RSA-PSS、参数签名 | [`vcrypto`](docs/doc/09-vcrypto.md) |
+| 读写 CSV records、map 或 struct | [`vcsv`](docs/doc/10-vcsv.md) |
+| 日期格式化/解析、偏移、天数区间 | [`vdate`](docs/doc/11-vdate.md) |
+| 读写文件、路径、复制、建目录 | [`vfile`](docs/doc/15-vfile.md) |
+| 校验表单/输入数据，如邮箱、手机号、IP 等 | [`vform`](docs/doc/16-vform.md) |
+| 非加密哈希（FNV、BKDR 等） | [`vhash`](docs/doc/17-vhash.md) |
+| 发起 HTTP 请求（标准库） | [`vhttp`](docs/doc/18-vhttp.md) |
 | 生成 UUID / Snowflake / NanoId | [`vid`](docs/doc/19-vid.md) |
 | 校验或解析身份证号 | [`vident`](docs/doc/20-vident.md) |
-| 读写文件、路径、复制、建目录 | [`vfile`](docs/doc/15-vfile.md) |
-| 日期格式化/解析、偏移、天数区间 | [`vdate`](docs/doc/11-vdate.md) |
-| 发起 HTTP 请求（标准库） | [`vhttp`](docs/doc/18-vhttp.md) |
-| 发起 HTTP 请求（基于 Resty） | [`vresty`](docs/doc/36-vresty.md) |
-| 校验表单/输入数据，如邮箱、手机号、IP 等 | [`vform`](docs/doc/16-vform.md) |
-| 敏感数据脱敏 | [`vmask`](docs/doc/27-vmask.md) |
-| 本地评估密码强度并分级 | [`vpass`](docs/doc/31-vpass.md) |
+| 生成缩略图、PNG/JPEG/GIF 格式转换、读取图像元信息或生成图形验证码 | [`vimg`](docs/doc/21-vimg.md) |
+| 构建/解析 JSON、路径读写、JSON↔XML | [`vjson`](docs/doc/23-vjson.md) |
 | JWT 签发/校验 | [`vjwt`](docs/doc/24-vjwt.md) |
-| 定时任务调度 | [`vcron`](docs/doc/08-vcron.md) |
-| FIFO/LRU/LFU/TTL 缓存 | [`vcache`](docs/doc/04-vcache.md) |
+| 构建并发送文本/HTML 邮件、内联资源或附件 | [`vmail`](docs/doc/26-vmail.md) |
+| 创建、查询、转换、合并、差集或排序 map | [`vmap`](docs/doc/27-vmap.md) |
+| 敏感数据脱敏 | [`vmask`](docs/doc/28-vmask.md) |
+| 精确运算、舍入、表达式计算 | [`vnum`](docs/doc/30-vnum.md) |
+| 本地评估密码强度并分级 | [`vpass`](docs/doc/32-vpass.md) |
+| 发起 HTTP 请求（基于 Resty） | [`vresty`](docs/doc/37-vresty.md) |
+| 对切片做过滤 / 映射 / 去重 / 分页 | [`vslice`](docs/doc/41-vslice.md) |
+| 裁剪、切分、命名转换、Unicode 转义、Ant 路径匹配、文本相似度或判空字符串 | [`vstr`](docs/doc/42-vstr.md) |
+| URL 编解码、query 构建/解析，或安全打开不可信 HTTP(S) 资源 | [`vurl`](docs/doc/45-vurl.md) |
+| 解析、构建、遍历 XML | [`vxml`](docs/doc/47-vxml.md) |
 
 完整清单见下方模块矩阵。
 
@@ -62,53 +63,54 @@
 
 | 模块 | 导入路径 | 功能说明 |
 | --- | --- | --- |
-| [`vstr`](docs/doc/41-vstr.md) | `github.com/imajinyun/go-knifer/vstr` | 字符串与文本工具：空白判断、裁剪、切分、截取、格式化、provider-backed emoji、命名转换、默认值、Unicode 转义/反转义、Ant-style 路径匹配、rune 集 Jaccard 相似度、rune n-gram 相似度、SimHash、64-bit Hamming distance、HTML 转义，以及字符判断（空白、字母、数字、ASCII、字母或数字）。 |
-| [`vslice`](docs/doc/40-vslice.md) | `github.com/imajinyun/go-knifer/vslice` | Slice 工具：包含/索引、反转、去重、拼接、过滤/映射、截取、合并、集合操作和分页。 |
-| [`vmap`](docs/doc/26-vmap.md) | `github.com/imajinyun/go-knifer/vmap` | Map 工具：构造、空判断、contains/get/find、keys/values 与排序视图、map/filter/reject/partition、reduce/group/count、反转、合并/自定义冲突合并、交集/差集/对称差集、pick/omit、update/clone 和相等性判断。 |
-| [`vconv`](docs/doc/07-vconv.md) | `github.com/imajinyun/go-knifer/vconv` | 宽松类型转换：string、int、int64、float64、bool、bytes 及默认值版本。 |
-| [`vdate`](docs/doc/11-vdate.md) | `github.com/imajinyun/go-knifer/vdate` | 日期时间工具：常用布局、解析/格式化、日/月/年起止、偏移和比较。 |
-| [`vfile`](docs/doc/15-vfile.md) | `github.com/imajinyun/go-knifer/vfile` | 文件与 IO 工具：读写复制、按行读取、mkdir/touch/delete、文件名处理、静默关闭和 provider-backed 文件系统操作。 |
-| [`vcodec`](docs/doc/05-vcodec.md) | `github.com/imajinyun/go-knifer/vcodec` | 编解码工具：Base64、URL-safe Base64、raw URL-safe Base64、自定义 Base64 encoding provider 和 Hex。 |
-| [`vcsv`](docs/doc/10-vcsv.md) | `github.com/imajinyun/go-knifer/vcsv` | CSV 工具：读写分隔符、注释、字段数量、宽松引号、Trim、CRLF 等 options，支持 records/map 转换、map 写出、struct tag 导出和逐行回调。 |
-| [`vimg`](docs/doc/21-vimg.md) | `github.com/imajinyun/go-knifer/vimg` | 图像工具：按长边等比缩放缩略图、PNG/JPEG/GIF 格式互转、基础元信息（宽/高/格式），以及线条/圆圈/扭曲/GIF 图形验证码。 |
-| [`vurl`](docs/doc/44-vurl.md) | `github.com/imajinyun/go-knifer/vurl` | URL 与 URI 工具：解析、标准化、相对 URL 补全、query 编解码、支持注入 query/path escape provider 的 URL/路径/fragment 百分号编码、URL 构造、Data URI 构造、协议判断、文件 URL 转换、资源打开/大小查询，以及带 SSRF 防护的 `OpenSafe` / `ContentLengthSafe` 变体。 |
-| [`vnet`](docs/doc/28-vnet.md) | `github.com/imajinyun/go-knifer/vnet` | 网络工具：支持注入 IP/CIDR/int parser 的 IPv4/IPv6 转换、CIDR/范围/掩码、本地端口、主机/网卡/MAC 查询、TLS 配置、address/dial/ping provider options 和 multipart 表单辅助。 |
-| [`vobj`](docs/doc/30-vobj.md) | `github.com/imajinyun/go-knifer/vobj` | 对象工具：nil/空值判断、相等性、默认值、克隆/序列化、比较、类型检查和容器辅助。 |
-| [`vver`](docs/doc/45-vver.md) | `github.com/imajinyun/go-knifer/vver` | 版本工具：版本号比较、大小关系判断、表达式匹配、闭区间范围和自定义多表达式分隔符。 |
-| [`vref`](docs/doc/34-vref.md) | `github.com/imajinyun/go-knifer/vref` | 反射工具：字段查找与赋值、方法发现与调用、构造函数风格调用、类型/值工具、方法分类判断，以及显式 unsafe/unexported 字段访问选项。 |
 | [`vbean`](docs/doc/01-vbean.md) | `github.com/imajinyun/go-knifer/vbean` | Bean/结构体映射工具：struct/map 互转、copy properties、tag/alias 匹配、忽略空值/零值选项和弱类型转换。 |
-| [`vzip`](docs/doc/47-vzip.md) | `github.com/imajinyun/go-knifer/vzip` | ZIP、gzip、zlib 工具：压缩包创建/解压、条目读取、遍历、追加、内存条目、流式压缩、provider-backed 归档文件操作、默认有边界的解压/解压缩行为、路径穿越检查，以及解压时的符号链接逃逸检查。 |
-| [`vpoi`](docs/doc/32-vpoi.md) | `github.com/imajinyun/go-knifer/vpoi` | Office 文档工具：轻量 Excel XLSX 工作表列表、行读写、多工作表写入、内存工作簿创建，以及可注入的 workbook/文件系统 provider。 |
-| [`vmask`](docs/doc/27-vmask.md) | `github.com/imajinyun/go-knifer/vmask` | 脱敏工具：姓名、证件号、电话、地址、邮箱、密码、车牌、银行卡、IP、护照号和信用代码遮罩。 |
-| [`vpass`](docs/doc/31-vpass.md) | `github.com/imajinyun/go-knifer/vpass` | 密码工具：确定性的本地评分、强度分级、强/弱谓词、字符类别信号、重复/连续字符检测，以及小型常见弱密码列表。 |
-| [`vnum`](docs/doc/29-vnum.md) | `github.com/imajinyun/go-knifer/vnum` | 数字工具：精确加减乘除、舍入模式、provider-backed 解析/格式化、数字判断、不重复随机数、range、阶乘/组合数、最大公约数/最小公倍数、二进制转换、比较、字节转换、表达式计算和奇偶判断。 |
-| [`vrand`](docs/doc/33-vrand.md) | `github.com/imajinyun/go-knifer/vrand` | 随机工具：整数、浮点、布尔、字节、字符串、数字字符串、随机元素、确定性 seed，以及可重置的包级伪随机源 provider。 |
-| [`vid`](docs/doc/19-vid.md) | `github.com/imajinyun/go-knifer/vid` | ID 工具：random/simple/fast UUID、MongoDB 风格 ObjectId、Snowflake 生成器与单例 next-id、worker/datacenter id 推导、NanoId、fallback random source、isolated Snowflake 创建，以及可重置 fallback PRNG provider/seed。 |
-| [`vident`](docs/doc/20-vident.md) | `github.com/imajinyun/go-knifer/vident` | 身份标识工具：中国大陆身份证 15/18 位转换、合法性校验、校验码、可配置解析选项的生日/年龄/性别提取、省市区编码解析、遮罩，以及港澳台证件校验。 |
-| [`vhash`](docs/doc/17-vhash.md) | `github.com/imajinyun/go-knifer/vhash` | 非加密 Hash 工具：Additive、FNV、可注入 32-bit hash provider，以及一组经典字符串哈希（RS、JS、PJW、ELF、BKDR、SDBM、DJB、AP、HF、HFIP、TianL、Java 默认）。 |
-| [`vform`](docs/doc/16-vform.md) | `github.com/imajinyun/go-knifer/vform` | 表单与输入校验工具：邮箱、手机号、URL、IPv4/IPv6、身份证、中文和数字字符串，并支持规则敏感校验的 per-call matcher provider。 |
-| [`vtpl`](docs/doc/43-vtpl.md) | `github.com/imajinyun/go-knifer/vtpl` | Go html/template 渲染工具，支持单次调用配置模板名、FuncMap、分隔符、template factory 和 executor。 |
-| [`vregex`](docs/doc/35-vregex.md) | `github.com/imajinyun/go-knifer/vregex` | 正则工具：匹配、分组提取、命名分组、删除、计数、索引定位、模板/函数替换、元字符转义，以及单次调用 compiler / DOTALL options。 |
-| [`vbool`](docs/doc/03-vbool.md) | `github.com/imajinyun/go-knifer/vbool` | 布尔工具：取反、转 int、全真/任一为真判断。 |
 | [`vblf`](docs/doc/02-vblf.md) | `github.com/imajinyun/go-knifer/vblf` | 布隆过滤器：bitmap/bitset/filter 抽象、多种字符串哈希算法、option-based 构造器、返回校验错误而不是 panic 的 `E` 构造器，以及 provider-backed 文件初始化。 |
+| [`vbool`](docs/doc/03-vbool.md) | `github.com/imajinyun/go-knifer/vbool` | 布尔工具：取反、转 int、全真/任一为真判断。 |
 | [`vcache`](docs/doc/04-vcache.md) | `github.com/imajinyun/go-knifer/vcache` | 泛型缓存：FIFO、LFU、LRU、Timed、Weak、NoCache，支持 TTL、clock、淘汰监听、懒加载、ticker/runner provider 和 weak-cache finalizer provider。 |
+| [`vcodec`](docs/doc/05-vcodec.md) | `github.com/imajinyun/go-knifer/vcodec` | 编解码工具：Base64、URL-safe Base64、raw URL-safe Base64、自定义 Base64 encoding provider 和 Hex。 |
+| [`vconf`](docs/doc/06-vconf.md) | `github.com/imajinyun/go-knifer/vconf` | 分组配置读取：setting/properties 风格文本、简单 YAML 子集和 TOML 解析，支持类型化读取、schema 校验、profile/remote/file 加载 options、带 SSRF 防护的 `LoadRemoteSafe`、环境变量展开 provider、watch ticker/runner provider、读取大小限制、只读快照使用方式和深拷贝 `Clone`。 |
+| [`vconv`](docs/doc/07-vconv.md) | `github.com/imajinyun/go-knifer/vconv` | 宽松类型转换：string、int、int64、float64、bool、bytes 及默认值版本。 |
 | [`vcron`](docs/doc/08-vcron.md) | `github.com/imajinyun/go-knifer/vcron` | Cron 表达式解析与任务调度，支持默认/自定义调度器、可配置 cron options、ID random-reader/clock/sleeper/runner provider，以及单次调用隔离的默认调度器覆盖。 |
 | [`vcrypto`](docs/doc/09-vcrypto.md) | `github.com/imajinyun/go-knifer/vcrypto` | 加密与摘要：SHA-2、provider-backed digest、HMAC、PBKDF2-SHA256、参数签名、随机字节、支持 nonce/tag/block-factory options 的 AES-GCM、RSA OAEP/PSS 与可配置数据签名、PEM 与 X.509 证书工具。 |
+| [`vcsv`](docs/doc/10-vcsv.md) | `github.com/imajinyun/go-knifer/vcsv` | CSV 工具：读写分隔符、注释、字段数量、宽松引号、Trim、CRLF 等 options，支持 records/map 转换、map 写出、struct tag 导出和逐行回调。 |
+| [`vdate`](docs/doc/11-vdate.md) | `github.com/imajinyun/go-knifer/vdate` | 日期时间工具：常用布局、解析/格式化、日/月/年起止、偏移和比较。 |
 | [`vdb`](docs/doc/12-vdb.md) | `github.com/imajinyun/go-knifer/vdb` | 基于 database/sql 的数据库工具：SQL 执行、命名参数、Entity、条件、查询构造器、事务、分页、轻量元信息查询和可注入的 `sql.Open` provider。 |
 | [`vdfa`](docs/doc/13-vdfa.md) | `github.com/imajinyun/go-knifer/vdfa` | DFA 词树匹配：停顿字符过滤、首个/全部匹配、密集/贪婪匹配、命中词位置元信息、包级匹配器、隔离 matcher options、`Any` 辅助函数的 JSON marshal/unmarshal provider、文本替换，以及用于包级异步初始化的可重置 async runner provider。 |
+| [`verr`](docs/doc/14-verr.md) | `github.com/imajinyun/go-knifer/verr` | 错误工具：panic recover、错误聚合、multierror 匹配、collector 构造 options、堆栈捕获/格式化、可重置 log/stack cache、可注入的 logging/stack/exit/timer/runner provider、隔离 logrus 创建，以及可选 logrus/Sentry 集成。 |
+| [`vfile`](docs/doc/15-vfile.md) | `github.com/imajinyun/go-knifer/vfile` | 文件与 IO 工具：读写复制、按行读取、mkdir/touch/delete、文件名处理、静默关闭和 provider-backed 文件系统操作。 |
+| [`vform`](docs/doc/16-vform.md) | `github.com/imajinyun/go-knifer/vform` | 表单与输入校验工具：邮箱、手机号、URL、IPv4/IPv6、身份证、中文和数字字符串，并支持规则敏感校验的 per-call matcher provider。 |
+| [`vhash`](docs/doc/17-vhash.md) | `github.com/imajinyun/go-knifer/vhash` | 非加密 Hash 工具：Additive、FNV、可注入 32-bit hash provider，以及一组经典字符串哈希（RS、JS、PJW、ELF、BKDR、SDBM、DJB、AP、HF、HFIP、TianL、Java 默认）。 |
 | [`vhttp`](docs/doc/18-vhttp.md) | `github.com/imajinyun/go-knifer/vhttp` | 链式 HTTP 客户端、隔离/global-config 请求构建、create/get/post `WithOptions` 辅助函数、显式错误 `E` 快捷函数、带错误码分类的 HTTP 错误、provider-backed transport/request factory/multipart writer/download save、安全文件下载、BasicAuth、User-Agent 解析、provider-backed HTML 清理/标签过滤、可重置 transport/server starters、异步服务端 runner option 和简易服务端辅助函数。 |
-| [`vresty`](docs/doc/36-vresty.md) | `github.com/imajinyun/go-knifer/vresty` | 基于 Resty v3 的 HTTP facade：链式请求、JSON/form/multipart 请求体、隔离/global-config 请求构建、create/get/post `WithOptions` 辅助函数、单次请求 client factory、可重置默认 Resty client provider、下载与安全文件下载，以及轻量响应工具。 |
+| [`vid`](docs/doc/19-vid.md) | `github.com/imajinyun/go-knifer/vid` | ID 工具：random/simple/fast UUID、MongoDB 风格 ObjectId、Snowflake 生成器与单例 next-id、worker/datacenter id 推导、NanoId、fallback random source、isolated Snowflake 创建，以及可重置 fallback PRNG provider/seed。 |
+| [`vident`](docs/doc/20-vident.md) | `github.com/imajinyun/go-knifer/vident` | 身份标识工具：中国大陆身份证 15/18 位转换、合法性校验、校验码、可配置解析选项的生日/年龄/性别提取、省市区编码解析、遮罩，以及港澳台证件校验。 |
+| [`vimg`](docs/doc/21-vimg.md) | `github.com/imajinyun/go-knifer/vimg` | 图像工具：按长边等比缩放缩略图、PNG/JPEG/GIF 格式互转、基础元信息（宽/高/格式），以及线条/圆圈/扭曲/GIF 图形验证码。 |
+| [`vjob`](docs/doc/22-vjob.md) | `github.com/imajinyun/go-knifer/vjob` | 可切分任务执行：职责分离任务数据与调度配置，支持泛型 Slice/Map 适配、context 取消和串行合并回调；无需开启 generic type alias 实验。 |
 | [`vjson`](docs/doc/23-vjson.md) | `github.com/imajinyun/go-knifer/vjson` | 有序 JSON 对象/数组、JSON 解析与格式化、路径表达式读写、provider-backed marshal/unmarshal、可注入 scalar parse/format 函数、可配置 Object/Array/Bean/List 转换，以及带 parser/writer options 的 XML/JSON 转换。 |
-| [`vxml`](docs/doc/46-vxml.md) | `github.com/imajinyun/go-knifer/vxml` | XML 工具：解析/读取/写出/格式化、树节点访问、简单 XPath 风格查询、转义、支持 parser/codec/scalar parser options 的 Map/Bean 转换、transform options 和命名空间辅助。 |
 | [`vjwt`](docs/doc/24-vjwt.md) | `github.com/imajinyun/go-knifer/vjwt` | JWT 创建、解析、签名、验签与时间字段校验，支持 HMAC、RSA-PSS、ECDSA，拒绝未签名的 `alg=none` token，并提供 JSON marshal/unmarshal options。 |
 | [`vlog`](docs/doc/25-vlog.md) | `github.com/imajinyun/go-knifer/vlog` | 日志 facade：console/color console logger、可注入颜色工厂、日志级别、全局 logger、静态日志函数、单次调用 logger options 和 isolated logger 创建。 |
-| [`verr`](docs/doc/14-verr.md) | `github.com/imajinyun/go-knifer/verr` | 错误工具：panic recover、错误聚合、multierror 匹配、collector 构造 options、堆栈捕获/格式化、可重置 log/stack cache、可注入的 logging/stack/exit/timer/runner provider、隔离 logrus 创建，以及可选 logrus/Sentry 集成。 |
-| [`vconf`](docs/doc/06-vconf.md) | `github.com/imajinyun/go-knifer/vconf` | 分组配置读取：setting/properties 风格文本、简单 YAML 子集和 TOML 解析，支持类型化读取、schema 校验、profile/remote/file 加载 options、带 SSRF 防护的 `LoadRemoteSafe`、环境变量展开 provider、watch ticker/runner provider、读取大小限制、只读快照使用方式和深拷贝 `Clone`。 |
-| [`vset`](docs/doc/38-vset.md) | `github.com/imajinyun/go-knifer/vset` | 泛型与常用类型集合工具：支持添加、删除、包含判断、集合运算，以及 JSON/YAML 编解码辅助。 |
-| [`vjob`](docs/doc/22-vjob.md) | `github.com/imajinyun/go-knifer/vjob` | 可切分任务执行：职责分离任务数据与调度配置，支持泛型 Slice/Map 适配、context 取消和串行合并回调；无需开启 generic type alias 实验。 |
-| [`vsem`](docs/doc/37-vsem.md) | `github.com/imajinyun/go-knifer/vsem` | 加权计数信号量：支持 context 取消、FIFO 公平等待、非阻塞获取、关闭通知与占用数查询。 |
-| [`vskt`](docs/doc/39-vskt.md) | `github.com/imajinyun/go-knifer/vskt` | TCP socket 工具：普通连接、NIO/AIO server/client、协议编解码接口，以及可配置 thread-pool/listener/connection/runner/IP-parser provider。 |
-| [`vsys`](docs/doc/42-vsys.md) | `github.com/imajinyun/go-knifer/vsys` | 系统与运行时信息：主机、OS、用户、Go runtime、进程内存、goroutine、环境变量、可重置信息缓存，以及可注入的 env/command/runtime provider。 |
+| [`vmail`](docs/doc/26-vmail.md) | `github.com/imajinyun/go-knifer/vmail` | 邮件工具：RFC 5322 地址解析、链式消息构建、MIME mixed/related/alternative 渲染、文本/HTML 正文、内联文件、附件、context-aware SMTP 发送、默认强制 TLS、CRLF 注入检查、附件大小限制，以及可注入 sender/dialer/boundary generator。 |
+| [`vmap`](docs/doc/27-vmap.md) | `github.com/imajinyun/go-knifer/vmap` | Map 工具：构造、空判断、contains/get/find、keys/values 与排序视图、map/filter/reject/partition、reduce/group/count、反转、合并/自定义冲突合并、交集/差集/对称差集、pick/omit、update/clone 和相等性判断。 |
+| [`vmask`](docs/doc/28-vmask.md) | `github.com/imajinyun/go-knifer/vmask` | 脱敏工具：姓名、证件号、电话、地址、邮箱、密码、车牌、银行卡、IP、护照号和信用代码遮罩。 |
+| [`vnet`](docs/doc/29-vnet.md) | `github.com/imajinyun/go-knifer/vnet` | 网络工具：支持注入 IP/CIDR/int parser 的 IPv4/IPv6 转换、CIDR/范围/掩码、本地端口、主机/网卡/MAC 查询、TLS 配置、address/dial/ping provider options 和 multipart 表单辅助。 |
+| [`vnum`](docs/doc/30-vnum.md) | `github.com/imajinyun/go-knifer/vnum` | 数字工具：精确加减乘除、舍入模式、provider-backed 解析/格式化、数字判断、不重复随机数、range、阶乘/组合数、最大公约数/最小公倍数、二进制转换、比较、字节转换、表达式计算和奇偶判断。 |
+| [`vobj`](docs/doc/31-vobj.md) | `github.com/imajinyun/go-knifer/vobj` | 对象工具：nil/空值判断、相等性、默认值、克隆/序列化、比较、类型检查和容器辅助。 |
+| [`vpass`](docs/doc/32-vpass.md) | `github.com/imajinyun/go-knifer/vpass` | 密码工具：确定性的本地评分、强度分级、强/弱谓词、字符类别信号、重复/连续字符检测，以及小型常见弱密码列表。 |
+| [`vpoi`](docs/doc/33-vpoi.md) | `github.com/imajinyun/go-knifer/vpoi` | Office 文档工具：轻量 Excel XLSX 工作表列表、行读写、多工作表写入、内存工作簿创建，以及可注入的 workbook/文件系统 provider。 |
+| [`vrand`](docs/doc/34-vrand.md) | `github.com/imajinyun/go-knifer/vrand` | 随机工具：整数、浮点、布尔、字节、字符串、数字字符串、随机元素、确定性 seed，以及可重置的包级伪随机源 provider。 |
+| [`vref`](docs/doc/35-vref.md) | `github.com/imajinyun/go-knifer/vref` | 反射工具：字段查找与赋值、方法发现与调用、构造函数风格调用、类型/值工具、方法分类判断，以及显式 unsafe/unexported 字段访问选项。 |
+| [`vregex`](docs/doc/36-vregex.md) | `github.com/imajinyun/go-knifer/vregex` | 正则工具：匹配、分组提取、命名分组、删除、计数、索引定位、模板/函数替换、元字符转义，以及单次调用 compiler / DOTALL options。 |
+| [`vresty`](docs/doc/37-vresty.md) | `github.com/imajinyun/go-knifer/vresty` | 基于 Resty v3 的 HTTP facade：链式请求、JSON/form/multipart 请求体、隔离/global-config 请求构建、create/get/post `WithOptions` 辅助函数、单次请求 client factory、可重置默认 Resty client provider、下载与安全文件下载，以及轻量响应工具。 |
+| [`vsem`](docs/doc/38-vsem.md) | `github.com/imajinyun/go-knifer/vsem` | 加权计数信号量：支持 context 取消、FIFO 公平等待、非阻塞获取、关闭通知与占用数查询。 |
+| [`vset`](docs/doc/39-vset.md) | `github.com/imajinyun/go-knifer/vset` | 泛型与常用类型集合工具：支持添加、删除、包含判断、集合运算，以及 JSON/YAML 编解码辅助。 |
+| [`vskt`](docs/doc/40-vskt.md) | `github.com/imajinyun/go-knifer/vskt` | TCP socket 工具：普通连接、NIO/AIO server/client、协议编解码接口，以及可配置 thread-pool/listener/connection/runner/IP-parser provider。 |
+| [`vslice`](docs/doc/41-vslice.md) | `github.com/imajinyun/go-knifer/vslice` | Slice 工具：包含/索引、反转、去重、拼接、过滤/映射、截取、合并、集合操作和分页。 |
+| [`vstr`](docs/doc/42-vstr.md) | `github.com/imajinyun/go-knifer/vstr` | 字符串与文本工具：空白判断、裁剪、切分、截取、格式化、provider-backed emoji、命名转换、默认值、Unicode 转义/反转义、Ant-style 路径匹配、rune 集 Jaccard 相似度、rune n-gram 相似度、SimHash、64-bit Hamming distance、HTML 转义，以及字符判断（空白、字母、数字、ASCII、字母或数字）。 |
+| [`vsys`](docs/doc/43-vsys.md) | `github.com/imajinyun/go-knifer/vsys` | 系统与运行时信息：主机、OS、用户、Go runtime、进程内存、goroutine、环境变量、可重置信息缓存，以及可注入的 env/command/runtime provider。 |
+| [`vtpl`](docs/doc/44-vtpl.md) | `github.com/imajinyun/go-knifer/vtpl` | Go html/template 渲染工具，支持单次调用配置模板名、FuncMap、分隔符、template factory 和 executor。 |
+| [`vurl`](docs/doc/45-vurl.md) | `github.com/imajinyun/go-knifer/vurl` | URL 与 URI 工具：解析、标准化、相对 URL 补全、query 编解码、支持注入 query/path escape provider 的 URL/路径/fragment 百分号编码、URL 构造、Data URI 构造、协议判断、文件 URL 转换、资源打开/大小查询，以及带 SSRF 防护的 `OpenSafe` / `ContentLengthSafe` 变体。 |
+| [`vver`](docs/doc/46-vver.md) | `github.com/imajinyun/go-knifer/vver` | 版本工具：版本号比较、大小关系判断、表达式匹配、闭区间范围和自定义多表达式分隔符。 |
+| [`vxml`](docs/doc/47-vxml.md) | `github.com/imajinyun/go-knifer/vxml` | XML 工具：解析/读取/写出/格式化、树节点访问、简单 XPath 风格查询、转义、支持 parser/codec/scalar parser options 的 Map/Bean 转换、transform options 和命名空间辅助。 |
+| [`vzip`](docs/doc/48-vzip.md) | `github.com/imajinyun/go-knifer/vzip` | ZIP、gzip、zlib 工具：压缩包创建/解压、条目读取、遍历、追加、内存条目、流式压缩、provider-backed 归档文件操作、默认有边界的解压/解压缩行为、路径穿越检查，以及解压时的符号链接逃逸检查。 |
 
 ## 🧭 架构与包边界
 
