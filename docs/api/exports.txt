@@ -3972,6 +3972,27 @@ github.com/imajinyun/go-knifer/vfile
   type StatOption
   type WriteOption
 
+github.com/imajinyun/go-knifer/vform
+  func IsChinese
+  func IsChineseWithOptions
+  func IsEmail
+  func IsEmailWithOptions
+  func IsIDCard
+  func IsIDCardWithOptions
+  func IsIPv4
+  func IsIPv6
+  func IsMobile
+  func IsMobileWithOptions
+  func IsNumberStr
+  func IsNumberStrWithOptions
+  func IsURL
+  func WithChineseMatcher
+  func WithEmailMatcher
+  func WithIDCardMatcher
+  func WithMobileMatcher
+  func WithNumberMatcher
+  type Option
+
 github.com/imajinyun/go-knifer/vhash
   func AdditiveHash
   func ApHash
@@ -6049,27 +6070,6 @@ github.com/imajinyun/go-knifer/vurl
   type NormalizeOption
   type ResourceOption
   type URLBuilder
-
-github.com/imajinyun/go-knifer/vvalid
-  func IsChinese
-  func IsChineseWithOptions
-  func IsEmail
-  func IsEmailWithOptions
-  func IsIDCard
-  func IsIDCardWithOptions
-  func IsIPv4
-  func IsIPv6
-  func IsMobile
-  func IsMobileWithOptions
-  func IsNumberStr
-  func IsNumberStrWithOptions
-  func IsURL
-  func WithChineseMatcher
-  func WithEmailMatcher
-  func WithIDCardMatcher
-  func WithMobileMatcher
-  func WithNumberMatcher
-  type Option
 
 github.com/imajinyun/go-knifer/vver
   const DefaultVersionsDelimiter

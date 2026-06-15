@@ -62,7 +62,7 @@ Not sure which package to import? Start from what you want to do:
 | Format/parse dates, offsets, day ranges | `vdate` |
 | Send HTTP requests (standard library) | `vhttp` |
 | Send HTTP requests (Resty-based) | `vresty` |
-| Validate email/mobile/IP, etc. | `vvalid` |
+| Validate form/input data such as email/mobile/IP | `vform` |
 | Mask sensitive data | `vmask` |
 | Score and classify password strength locally | `vpass` |
 | JWT sign/verify | `vjwt` |
@@ -101,7 +101,7 @@ The project follows an “internal implementation + public facade” layout: `in
 | `vid` | `github.com/imajinyun/go-knifer/vid` | ID helpers: random/simple/fast UUIDs, MongoDB-style ObjectId, Snowflake generators and singleton next-id helpers, worker/datacenter id derivation, NanoId generation, fallback random sources, isolated Snowflake creation, and resettable fallback PRNG providers/seeds. |
 | `vident` | `github.com/imajinyun/go-knifer/vident` | Identity helpers: mainland China ID card 15/18-digit conversion, validation, check code, birthday/age/gender extraction with parsing options, province/city/district code parsing, masking, and Hong Kong/Macau/Taiwan card validation. |
 | `vhash` | `github.com/imajinyun/go-knifer/vhash` | Non-cryptographic hash helpers: additive, FNV, injectable 32-bit hash providers, and a set of classic string hashes (RS, JS, PJW, ELF, BKDR, SDBM, DJB, AP, HF, HFIP, TianL, Java default). |
-| `vvalid` | `github.com/imajinyun/go-knifer/vvalid` | Validation helpers: email, mobile, URL, IPv4/IPv6, ID card, Chinese text, number string checks, and per-call matcher providers for rule-sensitive checks. |
+| `vform` | `github.com/imajinyun/go-knifer/vform` | Form and input validation helpers: email, mobile, URL, IPv4/IPv6, ID card, Chinese text, number string checks, and per-call matcher providers for rule-sensitive checks. |
 | `vtpl` | `github.com/imajinyun/go-knifer/vtpl` | Go html/template rendering helpers with per-call template name, FuncMap, delimiter, factory, and executor options. |
 | `vregex` | `github.com/imajinyun/go-knifer/vregex` | Regular-expression helpers: matching, group extraction, named groups, deletion, counting, index lookup, template/function replacement, escaping, and per-call compiler / DOTALL options. |
 | `vbool` | `github.com/imajinyun/go-knifer/vbool` | Boolean helpers: negate, bool-to-int, all/any checks. |
@@ -138,7 +138,7 @@ Facade rules:
 - Small utility packages may use hand-written thin facades; larger modules may
   keep generated `facade.go` files. In either case, newly exported internal APIs
   should be reviewed before being exposed publicly.
-- Facades may keep short names such as `vvalid`, `vmask`, `vsem`, `vskt`,
+- Facades may keep short names such as `vform`, `vmask`, `vsem`, `vskt`,
   `vblf`, and `vver`; their meaning is documented in the module table above
   instead of changing established import paths.
 
@@ -192,7 +192,7 @@ Provider coverage highlights:
 | File / config / archive / POI | `vfile` provider options, `vconf.LoadWithOptions`, `vconf.LoadRemoteSafeWithOptions`, `vconf.WatchWithOptions`, `vconf.WatchOptions.Runner`, `(*vconf.Conf).Clone`, `vzip.WithMaxBytes`, `vzip` provider options, `vpoi.WithOpenFileFunc`, `vpoi.WithNewFileFunc`, `vpoi.WithSaveAsFunc` |
 | Cron / DFA / ID / identity / random | `vcron.WithDefaultSchedulerOptions`, `vcron.NewConfigWithOptions`, `vcron.WithIDRandomReader`, `vcron.WithRunner`, `vcron.CronScheduleWithOptions`, `(*vcron.Scheduler).RunningCount`, `(*vcron.Scheduler).Wait`, `vcron.CronShutdown`, `vdfa.WithMatcherWords`, `vdfa.WithJSONMarshal`, `vdfa.WithJSONUnmarshal`, `vdfa.ContainsWithOptions`, `vdfa.ConfigureAsyncRunner`, `vdfa.ResetAsyncRunner`, `vid.NewIsolatedSnowflake`, `vid.CreateSnowflakeWithOptions`, `vid.WithSnowflakeCache`, `vid.WithFallbackRandomSource`, `vid.ConfigureDefaultFallbackRandomSourceProvider`, `vid.ResetDefaultFallbackRandomSource`, `vid.SetFallbackRandomSeed`, `vrand.SecureBytes`, `vrand.ConfigureDefaultRandomSourceProvider`, `vrand.ResetDefaultRandomSource`, `vrand.SetSeed`, `vident.BirthDateWithOptions` |
 | Encoding / image / JSON / XML / JWT / hash | `vcodec.Base64EncodeWithEncoding`, `vcodec.Base64DecodeWithEncoding`, `vcodec.Base64RawURLEncode`, `vcodec.Base64RawURLDecode`, `vimg.Thumbnail`, `vimg.ConvertFormat`, `vimg.Info`, `vimg.NewLineCaptcha`, `vimg.NewCircleCaptcha`, `vimg.NewShearCaptcha`, `vimg.NewGifCaptcha`, `vhash.Hash32`, `vjson.WithMarshalFunc`, `vjson.WithUnmarshalFunc`, `vjson.WithParseUnmarshalFunc`, `vjson.WithBeanUnmarshalFunc`, `vjson.WithSprintFunc`, `vjson.WithParseIntFunc`, `vjson.WithParseFloatFunc`, `vjson.WithParseBoolFunc`, `vjson.WithFormatIntFunc`, `vjson.WithFormatFloatFunc`, `vjson.ParseObjWithOptions`, `vjson.ParseArrayWithOptions`, `vjson.ToBeanWithOptions`, `vjson.ToListWithOptions`, `vjson.XMLToJSONWithOptions`, `vjson.ToXMLWithOptions`, `vxml.WithScalarIntParser`, `vxml.WithScalarFloatParser`, `vxml.XMLToMapWithOptions`, `vxml.XMLNodeToMapWithOptions`, `vxml.XMLToMapIntoWithOptions`, `vxml.XMLNodeToMapIntoWithOptions`, `vxml.XMLToBeanWithOptions`, `vxml.XMLNodeToBeanWithOptions`, `vxml.TransformWithOptions`, `vxml.FormatWithOptions`, `vjwt.WithJSONMarshalFunc`, `vjwt.WithJSONUnmarshalFunc`, `vjwt.ParseTokenWithOptions`, `vjwt.WithTokenJSONOptions` |
-| Crypto / password / template / regex / validation / strings | `vcrypto.Digest`, `vcrypto.DigestHex`, `vcrypto.WithGCMBlockFactory`, `vcrypto.AESSealGCMWithOptions`, `vcrypto.AESEncryptGCMWithOptions`, `vcrypto.SignWithRSAOptions`, `vcrypto.VerifyWithRSAOptions`, `vpass.Analyze`, `vpass.Score`, `vpass.StrengthOf`, `vpass.IsStrong`, `vpass.IsWeak`, `vtpl.RenderWithOptions`, `vtpl.WithFuncMap`, `vtpl.WithTemplateFactory`, `vregex.WithCompileFunc`, `vregex.WithDotAll`, `vregex.MatchWithOptions`, `vregex.ReplaceAllFuncWithOptions`, `vvalid.IsEmailWithOptions`, `vvalid.WithMobileMatcher`, `vstr.ContainsEmojiWithOptions`, `vstr.RemoveEmojiWithOptions`, `vstr.JaccardSimilarity`, `vstr.NGramSimilarity`, `vstr.SimHash`, `vstr.HammingDistance64` |
+| Crypto / password / template / regex / validation / strings | `vcrypto.Digest`, `vcrypto.DigestHex`, `vcrypto.WithGCMBlockFactory`, `vcrypto.AESSealGCMWithOptions`, `vcrypto.AESEncryptGCMWithOptions`, `vcrypto.SignWithRSAOptions`, `vcrypto.VerifyWithRSAOptions`, `vpass.Analyze`, `vpass.Score`, `vpass.StrengthOf`, `vpass.IsStrong`, `vpass.IsWeak`, `vtpl.RenderWithOptions`, `vtpl.WithFuncMap`, `vtpl.WithTemplateFactory`, `vregex.WithCompileFunc`, `vregex.WithDotAll`, `vregex.MatchWithOptions`, `vregex.ReplaceAllFuncWithOptions`, `vform.IsEmailWithOptions`, `vform.WithMobileMatcher`, `vstr.ContainsEmojiWithOptions`, `vstr.RemoveEmojiWithOptions`, `vstr.JaccardSimilarity`, `vstr.NGramSimilarity`, `vstr.SimHash`, `vstr.HammingDistance64` |
 | DB / network / number / URL / system / reflection / socket | `vdb.WithSQLOpenFunc`, `vnet.WithConnectDialer`, `vnet.WithPingDialer`, `vnet.WithAddressNetwork`, `vnet.WithTCPAddrResolver`, `vnet.WithUploadOpenSource`, `vnet.WithIPParser`, `vnet.WithCIDRParser`, `vnet.WithIPIntParser`, `vnet.WithWildcardIPParser`, `vnet.WithWildcardIntParser`, `vnet.IPv4ToLongWithOptions`, `vnet.IsInRangeWithOptions`, `vnum.WithParseFloatFunc`, `vnum.WithDoubleParseFloatFunc`, `vnum.WithDoubleFormatFloatFunc`, `vnum.CalculateWithOptions`, `vnum.ToDoubleWithOptions`, `vurl.WithQueryEscapeFunc`, `vurl.WithPathEscapeFunc`, `vurl.EncodeQueryWithOptions`, `vurl.EncodePathSegmentWithOptions`, `vurl.FormURLEncodeWithOptions`, `vurl.OpenSafeWithOptions`, `vurl.WithAllowedSchemes`, `vurl.WithAllowedHosts`, `vurl.WithRejectPrivateHosts`, `vurl.WithAllowLocalFiles`, `vsys.WithGoEnvOutputFunc`, `vsys.WithGoRootEnvLookupFunc`, `vsys.WithOSEnvLookupFunc`, `vsys.WithEnvLookupFunc`, `vsys.ResetInfoCache`, `vref.WithUnsafeAccess`, `vskt.WithThreadPoolSizeFunc`, `vskt.WithRunner`, `vskt.WithSocketIPParser` |
 | Errors / cache / logging / runtime | `verr.NewCollectorWithOptions`, `verr.WithCollectorLogFunc`, `verr.WithCollectorRunner`, `verr.WithCollectorContext`, `verr.WithCollectorLevel`, `verr.WithCollectorTimerFactory`, `verr.WithCollectorStackCaptureOptions`, `verr.WithLogFunc`, `verr.WithCollectorStackOptions`, `verr.WithDebugStackFunc`, `verr.WithCallersFunc`, `verr.WithFuncForPCFunc`, `verr.WithStackFrameCache`, `verr.ResetStackFrameCache`, `verr.ResetDefaultLogFunc`, `verr.NewIsolatedLogrusWithOptions`, `verr.MustExitWithOptions`, `vcache.WithClock`, `vcache.WithTickerFactory`, `vcache.WithRunner`, `vcache.WithWeakFinalizerFunc`, `vcache.WithWeakFinalizerEnabled`, `vlog.WithLogColorFactory`, `vlog.NewIsolatedLogger`, `vlog.LoggerWithOptions`, `vlog.InfoWithOptions` |
 
@@ -229,7 +229,7 @@ Database helpers belong to `internal/db` and are exposed through `vdb`; DFA text
 matching belongs to `internal/dfa` and is exposed through `vdfa`; office-document
 helpers belong to `internal/poi` and are exposed through `vpoi`. Cross-domain
 input validators belong to `internal/validator` and are exposed through
-`vvalid`; domain-specific parsing and richer operations still stay in their
+`vform`; domain-specific parsing and richer operations still stay in their
 domain packages such as `vident`, `vnet`, and `vurl`.
 
 ### Error contract
@@ -456,11 +456,11 @@ The same pattern is used by socket helpers as configuration options, for example
 `vskt.NewSocketConfigWithOptions(vskt.WithSocketIPParser(parseIP))` or
 `vskt.NewNioClientWithOptions(host, port, vskt.WithSocketIPParser(parseIP))`.
 
-### Validation helpers
+### Form and input validation helpers
 
-`vvalid` provides a short public entry point for common input checks. It keeps
-the frequently used boolean validators together while delegating the actual
-domain logic to the corresponding internal packages.
+`vform` provides a short public entry point for common form and input checks. It
+keeps the frequently used boolean validators together while delegating the
+actual domain logic to the corresponding internal packages.
 
 ```go
 package main
@@ -468,18 +468,18 @@ package main
 import (
   "fmt"
 
-  "github.com/imajinyun/go-knifer/vvalid"
+  "github.com/imajinyun/go-knifer/vform"
 )
 
 func main() {
-  fmt.Println(vvalid.IsEmail("a@b.com"))
-  fmt.Println(vvalid.IsMobile("13812345678"))
-  fmt.Println(vvalid.IsURL("https://example.com"))
-  fmt.Println(vvalid.IsIPv4("127.0.0.1"))
-  fmt.Println(vvalid.IsIPv6("2001:db8::1"))
-  fmt.Println(vvalid.IsIDCard("11010519491231002X"))
-  fmt.Println(vvalid.IsChinese("你好"))
-  fmt.Println(vvalid.IsNumberStr("-3.14"))
+  fmt.Println(vform.IsEmail("a@b.com"))
+  fmt.Println(vform.IsMobile("13812345678"))
+  fmt.Println(vform.IsURL("https://example.com"))
+  fmt.Println(vform.IsIPv4("127.0.0.1"))
+  fmt.Println(vform.IsIPv6("2001:db8::1"))
+  fmt.Println(vform.IsIDCard("11010519491231002X"))
+  fmt.Println(vform.IsChinese("你好"))
+  fmt.Println(vform.IsNumberStr("-3.14"))
 }
 ```
 

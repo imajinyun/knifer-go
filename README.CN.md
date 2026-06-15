@@ -60,7 +60,7 @@ text := vcrypto.SHA256Hex("hello")
 | 日期格式化/解析、偏移、天数区间 | `vdate` |
 | 发起 HTTP 请求（标准库） | `vhttp` |
 | 发起 HTTP 请求（基于 Resty） | `vresty` |
-| 校验邮箱/手机号/IP 等 | `vvalid` |
+| 校验表单/输入数据，如邮箱、手机号、IP 等 | `vform` |
 | 敏感数据脱敏 | `vmask` |
 | 本地评估密码强度并分级 | `vpass` |
 | JWT 签发/校验 | `vjwt` |
@@ -99,7 +99,7 @@ text := vcrypto.SHA256Hex("hello")
 | `vid` | `github.com/imajinyun/go-knifer/vid` | ID 工具：random/simple/fast UUID、MongoDB 风格 ObjectId、Snowflake 生成器与单例 next-id、worker/datacenter id 推导、NanoId、fallback random source、isolated Snowflake 创建，以及可重置 fallback PRNG provider/seed。 |
 | `vident` | `github.com/imajinyun/go-knifer/vident` | 身份标识工具：中国大陆身份证 15/18 位转换、合法性校验、校验码、可配置解析选项的生日/年龄/性别提取、省市区编码解析、遮罩，以及港澳台证件校验。 |
 | `vhash` | `github.com/imajinyun/go-knifer/vhash` | 非加密 Hash 工具：Additive、FNV、可注入 32-bit hash provider，以及一组经典字符串哈希（RS、JS、PJW、ELF、BKDR、SDBM、DJB、AP、HF、HFIP、TianL、Java 默认）。 |
-| `vvalid` | `github.com/imajinyun/go-knifer/vvalid` | 校验工具：邮箱、手机号、URL、IPv4/IPv6、身份证、中文和数字字符串，并支持规则敏感校验的 per-call matcher provider。 |
+| `vform` | `github.com/imajinyun/go-knifer/vform` | 表单与输入校验工具：邮箱、手机号、URL、IPv4/IPv6、身份证、中文和数字字符串，并支持规则敏感校验的 per-call matcher provider。 |
 | `vtpl` | `github.com/imajinyun/go-knifer/vtpl` | Go html/template 渲染工具，支持单次调用配置模板名、FuncMap、分隔符、template factory 和 executor。 |
 | `vregex` | `github.com/imajinyun/go-knifer/vregex` | 正则工具：匹配、分组提取、命名分组、删除、计数、索引定位、模板/函数替换、元字符转义，以及单次调用 compiler / DOTALL options。 |
 | `vbool` | `github.com/imajinyun/go-knifer/vbool` | 布尔工具：取反、转 int、全真/任一为真判断。 |
@@ -134,7 +134,7 @@ facade 规则：
 - `v<domain>` 负责暴露该领域稳定的公共 API。
 - 简单工具包可以手写轻量转发；较大的模块可以保留生成的 `facade.go`。无论哪种方式，
   internal 新增导出 API 时，都应先评估是否需要进入 public facade。
-- `vvalid`、`vmask`、`vsem`、`vskt`、`vblf`、`vver` 等短命名继续保留，通过上方模块表说明含义，
+- `vform`、`vmask`、`vsem`、`vskt`、`vblf`、`vver` 等短命名继续保留，通过上方模块表说明含义，
   不再通过改名破坏已有导入路径。
 
 可配置 API 与 Provider 注入：
@@ -161,7 +161,7 @@ Provider 覆盖重点：
 | 文件 / 配置 / 压缩 / POI | `vfile` provider options、`vconf.LoadWithOptions`、`vconf.LoadRemoteSafeWithOptions`、`vconf.WatchWithOptions`、`vconf.WatchOptions.Runner`、`vzip.WithMaxBytes`、`vzip` provider options、`vpoi.WithOpenFileFunc`、`vpoi.WithNewFileFunc`、`vpoi.WithSaveAsFunc` |
 | Cron / DFA / ID / 身份 / 随机数 | `vcron.WithDefaultSchedulerOptions`、`vcron.NewConfigWithOptions`、`vcron.WithIDRandomReader`、`vcron.WithRunner`、`vcron.CronScheduleWithOptions`、`vdfa.WithMatcherWords`、`vdfa.WithJSONMarshal`、`vdfa.WithJSONUnmarshal`、`vdfa.ContainsWithOptions`、`vdfa.ConfigureAsyncRunner`、`vdfa.ResetAsyncRunner`、`vid.NewIsolatedSnowflake`、`vid.CreateSnowflakeWithOptions`、`vid.WithSnowflakeCache`、`vid.WithFallbackRandomSource`、`vid.ConfigureDefaultFallbackRandomSourceProvider`、`vid.ResetDefaultFallbackRandomSource`、`vid.SetFallbackRandomSeed`、`vrand.ConfigureDefaultRandomSourceProvider`、`vrand.ResetDefaultRandomSource`、`vrand.SetSeed`、`vident.BirthDateWithOptions` |
 | 编解码 / 图像 / JSON / XML / JWT / hash | `vcodec.Base64EncodeWithEncoding`、`vcodec.Base64DecodeWithEncoding`、`vcodec.Base64RawURLEncode`、`vcodec.Base64RawURLDecode`、`vimg.Thumbnail`、`vimg.ConvertFormat`、`vimg.Info`、`vimg.NewLineCaptcha`、`vimg.NewCircleCaptcha`、`vimg.NewShearCaptcha`、`vimg.NewGifCaptcha`、`vhash.Hash32`、`vjson.WithMarshalFunc`、`vjson.WithUnmarshalFunc`、`vjson.WithParseUnmarshalFunc`、`vjson.WithBeanUnmarshalFunc`、`vjson.WithSprintFunc`、`vjson.WithParseIntFunc`、`vjson.WithParseFloatFunc`、`vjson.WithParseBoolFunc`、`vjson.WithFormatIntFunc`、`vjson.WithFormatFloatFunc`、`vjson.ParseObjWithOptions`、`vjson.ParseArrayWithOptions`、`vjson.ToBeanWithOptions`、`vjson.ToListWithOptions`、`vjson.XMLToJSONWithOptions`、`vjson.ToXMLWithOptions`、`vxml.WithScalarIntParser`、`vxml.WithScalarFloatParser`、`vxml.XMLToMapWithOptions`、`vxml.XMLNodeToMapWithOptions`、`vxml.XMLToMapIntoWithOptions`、`vxml.XMLNodeToMapIntoWithOptions`、`vxml.XMLToBeanWithOptions`、`vxml.XMLNodeToBeanWithOptions`、`vxml.TransformWithOptions`、`vxml.FormatWithOptions`、`vjwt.WithJSONMarshalFunc`、`vjwt.WithJSONUnmarshalFunc`、`vjwt.ParseTokenWithOptions`、`vjwt.WithTokenJSONOptions` |
-| 加密 / 密码 / 模板 / 正则 / 校验 / 字符串 | `vcrypto.Digest`、`vcrypto.DigestHex`、`vcrypto.WithGCMBlockFactory`、`vcrypto.AESSealGCMWithOptions`、`vcrypto.AESEncryptGCMWithOptions`、`vcrypto.SignWithRSAOptions`、`vcrypto.VerifyWithRSAOptions`、`vpass.Analyze`、`vpass.Score`、`vpass.StrengthOf`、`vpass.IsStrong`、`vpass.IsWeak`、`vtpl.RenderWithOptions`、`vtpl.WithFuncMap`、`vtpl.WithTemplateFactory`、`vregex.WithCompileFunc`、`vregex.WithDotAll`、`vregex.MatchWithOptions`、`vregex.ReplaceAllFuncWithOptions`、`vvalid.IsEmailWithOptions`、`vvalid.WithMobileMatcher`、`vstr.ContainsEmojiWithOptions`、`vstr.RemoveEmojiWithOptions`、`vstr.JaccardSimilarity`、`vstr.NGramSimilarity`、`vstr.SimHash`、`vstr.HammingDistance64` |
+| 加密 / 密码 / 模板 / 正则 / 校验 / 字符串 | `vcrypto.Digest`、`vcrypto.DigestHex`、`vcrypto.WithGCMBlockFactory`、`vcrypto.AESSealGCMWithOptions`、`vcrypto.AESEncryptGCMWithOptions`、`vcrypto.SignWithRSAOptions`、`vcrypto.VerifyWithRSAOptions`、`vpass.Analyze`、`vpass.Score`、`vpass.StrengthOf`、`vpass.IsStrong`、`vpass.IsWeak`、`vtpl.RenderWithOptions`、`vtpl.WithFuncMap`、`vtpl.WithTemplateFactory`、`vregex.WithCompileFunc`、`vregex.WithDotAll`、`vregex.MatchWithOptions`、`vregex.ReplaceAllFuncWithOptions`、`vform.IsEmailWithOptions`、`vform.WithMobileMatcher`、`vstr.ContainsEmojiWithOptions`、`vstr.RemoveEmojiWithOptions`、`vstr.JaccardSimilarity`、`vstr.NGramSimilarity`、`vstr.SimHash`、`vstr.HammingDistance64` |
 | DB / 网络 / 数字 / URL / 系统 / 反射 / socket | `vdb.WithSQLOpenFunc`、`vnet.WithConnectDialer`、`vnet.WithPingDialer`、`vnet.WithAddressNetwork`、`vnet.WithTCPAddrResolver`、`vnet.WithUploadOpenSource`、`vnet.WithIPParser`、`vnet.WithCIDRParser`、`vnet.WithIPIntParser`、`vnet.WithWildcardIPParser`、`vnet.WithWildcardIntParser`、`vnet.IPv4ToLongWithOptions`、`vnet.IsInRangeWithOptions`、`vnum.WithParseFloatFunc`、`vnum.WithDoubleParseFloatFunc`、`vnum.WithDoubleFormatFloatFunc`、`vnum.CalculateWithOptions`、`vnum.ToDoubleWithOptions`、`vurl.WithQueryEscapeFunc`、`vurl.WithPathEscapeFunc`、`vurl.EncodeQueryWithOptions`、`vurl.EncodePathSegmentWithOptions`、`vurl.FormURLEncodeWithOptions`、`vurl.OpenSafeWithOptions`、`vurl.WithAllowedSchemes`、`vurl.WithAllowedHosts`、`vurl.WithRejectPrivateHosts`、`vurl.WithAllowLocalFiles`、`vsys.WithGoEnvOutputFunc`、`vsys.WithGoRootEnvLookupFunc`、`vsys.WithOSEnvLookupFunc`、`vsys.WithEnvLookupFunc`、`vsys.ResetInfoCache`、`vref.WithUnsafeAccess`、`vskt.WithThreadPoolSizeFunc`、`vskt.WithRunner`、`vskt.WithSocketIPParser` |
 | 错误 / 缓存 / 日志 / 运行时 | `verr.NewCollectorWithOptions`、`verr.WithCollectorLogFunc`、`verr.WithCollectorRunner`、`verr.WithCollectorContext`、`verr.WithCollectorLevel`、`verr.WithCollectorTimerFactory`、`verr.WithCollectorStackCaptureOptions`、`verr.WithLogFunc`、`verr.WithCollectorStackOptions`、`verr.WithDebugStackFunc`、`verr.WithCallersFunc`、`verr.WithFuncForPCFunc`、`verr.WithStackFrameCache`、`verr.ResetStackFrameCache`、`verr.ResetDefaultLogFunc`、`verr.NewIsolatedLogrusWithOptions`、`verr.MustExitWithOptions`、`vcache.WithClock`、`vcache.WithTickerFactory`、`vcache.WithRunner`、`vcache.WithWeakFinalizerFunc`、`vcache.WithWeakFinalizerEnabled`、`vlog.WithLogColorFactory`、`vlog.NewIsolatedLogger`、`vlog.LoggerWithOptions`、`vlog.InfoWithOptions` |
 
@@ -186,7 +186,7 @@ Provider 覆盖重点：
 
 数据库工具归属 `internal/db`，并通过 `vdb` 对外暴露；DFA 文本匹配归属 `internal/dfa`，并通过
 `vdfa` 对外暴露；Office 文档工具归属 `internal/poi`，并通过 `vpoi` 对外暴露。跨领域通用输入校验归属
-`internal/validator`，并通过 `vvalid` 对外暴露；领域内解析和更丰富的操作仍留在 `vident`、`vnet`、`vurl` 等领域包。
+`internal/validator`，并通过 `vform` 对外暴露；领域内解析和更丰富的操作仍留在 `vident`、`vnet`、`vurl` 等领域包。
 
 ### 错误契约
 
@@ -379,9 +379,9 @@ socket 工具也使用同样的配置方式，例如
 `vskt.NewSocketConfigWithOptions(vskt.WithSocketIPParser(parseIP))` 或
 `vskt.NewNioClientWithOptions(host, port, vskt.WithSocketIPParser(parseIP))`。
 
-### 校验工具
+### 表单与输入校验工具
 
-`vvalid` 提供常用输入校验的短 public 入口，把高频布尔校验集中到一个包中，具体领域能力仍委托给对应的内部实现。
+`vform` 提供常用表单与输入校验的短 public 入口，把高频布尔校验集中到一个包中，具体领域能力仍委托给对应的内部实现。
 
 ```go
 package main
@@ -389,18 +389,18 @@ package main
 import (
   "fmt"
 
-  "github.com/imajinyun/go-knifer/vvalid"
+  "github.com/imajinyun/go-knifer/vform"
 )
 
 func main() {
-  fmt.Println(vvalid.IsEmail("a@b.com"))
-  fmt.Println(vvalid.IsMobile("13812345678"))
-  fmt.Println(vvalid.IsURL("https://example.com"))
-  fmt.Println(vvalid.IsIPv4("127.0.0.1"))
-  fmt.Println(vvalid.IsIPv6("2001:db8::1"))
-  fmt.Println(vvalid.IsIDCard("11010519491231002X"))
-  fmt.Println(vvalid.IsChinese("你好"))
-  fmt.Println(vvalid.IsNumberStr("-3.14"))
+  fmt.Println(vform.IsEmail("a@b.com"))
+  fmt.Println(vform.IsMobile("13812345678"))
+  fmt.Println(vform.IsURL("https://example.com"))
+  fmt.Println(vform.IsIPv4("127.0.0.1"))
+  fmt.Println(vform.IsIPv6("2001:db8::1"))
+  fmt.Println(vform.IsIDCard("11010519491231002X"))
+  fmt.Println(vform.IsChinese("你好"))
+  fmt.Println(vform.IsNumberStr("-3.14"))
 }
 ```
 

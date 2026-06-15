@@ -63,7 +63,7 @@ please follow the conventions below. Most of them are enforced by CI
 | vskt | socket | internal/socket |
 | vsys | system | internal/system |
 | vtpl | template | internal/template |
-| vvalid | validator / validation | internal/validator |
+| vform | form/input validation | internal/validator |
 | vver | version | internal/version |
 
 ## Package placement

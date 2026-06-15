@@ -76,7 +76,7 @@
 //
 //	vid     generated IDs (UUID/Snowflake/ObjectId/NanoId)
 //	vident  legal identity numbers (ID cards)
-//	vvalid  value validators (VALIDation)
+//	vform   form and input validators
 //	vver    version comparison (VERsion)
 //	vdb     database/sql helpers
 //

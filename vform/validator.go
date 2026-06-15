@@ -1,4 +1,4 @@
-package vvalid
+package vform
 
 import validatorimpl "github.com/imajinyun/go-knifer/internal/validator"
 
