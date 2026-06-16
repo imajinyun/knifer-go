@@ -26,6 +26,22 @@ When the user asks to implement, rename, refactor, document, or otherwise modify
 8. Stage only files belonging to the requested logical change, commit them, and push the branch to the configured remote when the user asks to commit/push or when the workflow explicitly requires it.
 9. After pushing, run `git status --porcelain=v1 -b` to confirm the branch is clean/in sync, then report the commit hash, pushed branch, validation commands, and any intentionally excluded local files.
 
+## Collection modernization workflow
+
+When changing `internal/slice`, `vslice`, `internal/maps`, or `vmap`, keep the package focused on typed convenience helpers that complement the Go standard library rather than reimplementing it:
+
+1. Prefer Go 1.21+ standard packages for overlapping behavior before adding or keeping custom loops:
+   - Use `slices.Contains`, `slices.Index`, `slices.IndexFunc`, `slices.Reverse`, `slices.Clone`, `slices.Concat`, `slices.DeleteFunc`, `slices.Sorted`, and `slices.SortedFunc` where they preserve the existing API contract.
+   - Use `maps.Clone`, `maps.Copy`, `maps.Equal`, `maps.EqualFunc`, `maps.Keys`, `maps.Values`, and `maps.All` where they preserve the existing API contract.
+   - Use `cmp.Or` for simple zero-value fallback helpers when that exactly matches the function semantics.
+2. Keep custom implementations for behavior the standard library does not cover directly, especially order-preserving `Uniq`/`UniqBy`, `GroupBy`, `CountBy`, `KeyBy`, `Chunk`, `PartitionBy`, set-style helpers, typed pair conversions, and facade compatibility functions.
+3. For Go 1.23+ iterator support, expose adapters instead of inventing callback-only APIs:
+   - Slice packages should provide value and indexed adapters backed by `slices.Values` and `slices.All`.
+   - Map packages should provide key-value, key-only, and value-only adapters backed by `maps.All`, `maps.Keys`, and `maps.Values`.
+4. Preserve existing nil/empty return contracts. If a public helper historically returns a non-nil empty slice or map, wrap standard-library results as needed so callers do not observe a regression.
+5. Any new public facade function in `vslice` or `vmap` must update `docs/api/exports.txt` via the API compatibility workflow and include focused tests in both the internal package and facade package.
+6. Validate collection changes with focused tests first (`./internal/slice ./vslice` or `./internal/maps ./vmap`), then run the normal repository gates from the general workflow before reporting completion.
+
 ## Package test governance workflow
 
 When the user asks to continue package test governance, package-level test cleanup, or uses equivalent Chinese wording such as “继续推进包测试治理”, treat it as an autonomous rolling workflow:
