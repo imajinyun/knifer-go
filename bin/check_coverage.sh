@@ -7,7 +7,7 @@ set -euo pipefail
 
 coverage_file="${1:-coverage.out}"
 threshold="${COVERAGE_THRESHOLD:-75.2}"
-package_thresholds="${PACKAGE_COVERAGE_THRESHOLDS:-github.com/imajinyun/go-knifer/vhttp=75.0 github.com/imajinyun/go-knifer/vresty=65.0 github.com/imajinyun/go-knifer/vconf=75.0 github.com/imajinyun/go-knifer/vzip=80.0 github.com/imajinyun/go-knifer/vcrypto=70.0 github.com/imajinyun/go-knifer/vurl=80.0 github.com/imajinyun/go-knifer/vfile=85.0 github.com/imajinyun/go-knifer/internal/httpx/http=75.0 github.com/imajinyun/go-knifer/internal/httpx/resty=75.0 github.com/imajinyun/go-knifer/internal/httpx/internal/shared=80.0}"
+package_thresholds="${PACKAGE_COVERAGE_THRESHOLDS:-github.com/imajinyun/go-knifer/vhttp=75.0 github.com/imajinyun/go-knifer/vresty=65.0 github.com/imajinyun/go-knifer/vconf=75.0 github.com/imajinyun/go-knifer/vzip=80.0 github.com/imajinyun/go-knifer/vcrypto=70.0 github.com/imajinyun/go-knifer/vurl=80.0 github.com/imajinyun/go-knifer/vfile=85.0 github.com/imajinyun/go-knifer/vset=80.0 github.com/imajinyun/go-knifer/internal/httpx/http=75.0 github.com/imajinyun/go-knifer/internal/httpx/resty=75.0 github.com/imajinyun/go-knifer/internal/httpx/internal/shared=80.0}"
 
 if [ ! -f "${coverage_file}" ]; then
 	echo "COVERAGE CHECK ERROR: ${coverage_file} does not exist" >&2

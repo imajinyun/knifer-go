@@ -4,6 +4,20 @@ import "testing"
 
 var benchMapResult any
 
+type benchMapSize struct {
+	name string
+	size int
+}
+
+func mapBenchSizes() []benchMapSize {
+	return []benchMapSize{
+		{name: "empty", size: 0},
+		{name: "small", size: 16},
+		{name: "medium", size: 1024},
+		{name: "large", size: 4096},
+	}
+}
+
 func makeBenchMap(n int) map[int]int {
 	m := make(map[int]int, n)
 	for i := 0; i < n; i++ {
@@ -13,25 +27,37 @@ func makeBenchMap(n int) map[int]int {
 }
 
 func BenchmarkFilter(b *testing.B) {
-	m := makeBenchMap(4096)
-	b.ReportAllocs()
-	for b.Loop() {
-		benchMapResult = Filter(m, func(_ int, v int) bool { return v%2 == 0 })
+	for _, tt := range mapBenchSizes() {
+		m := makeBenchMap(tt.size)
+		b.Run(tt.name, func(b *testing.B) {
+			b.ReportAllocs()
+			for b.Loop() {
+				benchMapResult = Filter(m, func(_ int, v int) bool { return v%2 == 0 })
+			}
+		})
 	}
 }
 
 func BenchmarkSortedKeys(b *testing.B) {
-	m := makeBenchMap(4096)
-	b.ReportAllocs()
-	for b.Loop() {
-		benchMapResult = SortedKeys(m)
+	for _, tt := range mapBenchSizes() {
+		m := makeBenchMap(tt.size)
+		b.Run(tt.name, func(b *testing.B) {
+			b.ReportAllocs()
+			for b.Loop() {
+				benchMapResult = SortedKeys(m)
+			}
+		})
 	}
 }
 
 func BenchmarkClone(b *testing.B) {
-	m := makeBenchMap(4096)
-	b.ReportAllocs()
-	for b.Loop() {
-		benchMapResult = Clone(m)
+	for _, tt := range mapBenchSizes() {
+		m := makeBenchMap(tt.size)
+		b.Run(tt.name, func(b *testing.B) {
+			b.ReportAllocs()
+			for b.Loop() {
+				benchMapResult = Clone(m)
+			}
+		})
 	}
 }

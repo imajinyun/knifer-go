@@ -59,3 +59,26 @@ func TestInitWithOptionsFacadeSentryInjection(t *testing.T) {
 		t.Fatalf("hook client=%v levels=%v added=%v", hookClient, hookLevels, hookAdded)
 	}
 }
+
+func TestNewIsolatedLogrusWithOptionsFacade(t *testing.T) {
+	var globalConfigured bool
+	logger := verr.NewIsolatedLogrusWithOptions(
+		verr.WithEnvLookupFunc(func(string) string { return "" }),
+		verr.WithLogOutput(io.Discard),
+		verr.WithReportCaller(false),
+		verr.WithLogrusConfigurer(
+			func(bool) { globalConfigured = true },
+			func(io.Writer) { globalConfigured = true },
+			func(logrus.Formatter) { globalConfigured = true },
+		),
+	)
+	if logger == nil {
+		t.Fatal("NewIsolatedLogrusWithOptions returned nil")
+	}
+	if globalConfigured {
+		t.Fatal("isolated logger should not call global logrus configurers")
+	}
+	if logger.Out != io.Discard || logger.ReportCaller {
+		t.Fatalf("isolated logger out=%T reportCaller=%v", logger.Out, logger.ReportCaller)
+	}
+}

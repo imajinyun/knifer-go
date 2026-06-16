@@ -292,16 +292,37 @@ cd go-knifer
 运行测试：
 
 ```bash
-go test ./...
+make test
 ```
 
-提交 PR 前建议本地运行与 CI 对齐的安全检查：
+本地运行 CI 测试作业同级别的门禁，包括模块校验、vet、tidy/diff 清洁度、架构检查、race/shuffle 测试、覆盖率门禁和 API 快照检查：
 
 ```bash
-go test -race -shuffle=on ./...
-bash bin/check_arch.sh
-golangci-lint run ./...
-go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+make ci-test
+```
+
+提交 PR 前建议运行与 CI 对齐的完整本地稳定性检查：
+
+```bash
+make check
+```
+
+`make check` 包含 `ci-test` 同级别检查，并额外运行 `golangci-lint` 和 `govulncheck`。如需单独扫描漏洞，使用：
+
+```bash
+make govulncheck
+```
+
+运行 slice、map、string、numeric 热点工具函数的 benchmark 基线：
+
+```bash
+make bench-core
+```
+
+只有在需要用统计方式比较性能变化时，才提高运行次数和单轮时长：
+
+```bash
+make bench-core BENCHCOUNT=10 BENCHTIME=3s
 ```
 
 GitHub Actions 会运行 Go 测试矩阵、架构检查、golangci-lint、govulncheck 和 CodeQL。
@@ -312,6 +333,14 @@ Dependabot 已配置 Go modules 与 GitHub Actions 依赖更新。
 ```bash
 gofmt -w .
 ```
+
+## 🛡️ 治理
+
+- 安全报告：请参见 [SECURITY.md](./SECURITY.md)，不要在公开 Issue 中披露疑似漏洞。
+- 覆盖率门禁：CI 使用 `bash bin/check_coverage.sh coverage.out` 校验仓库总覆盖率和重点包覆盖率。只有在新增测试支撑后，才提升 `COVERAGE_THRESHOLD` 或 `PACKAGE_COVERAGE_THRESHOLDS`。
+- API 门禁：`make api-check` 会将根包和顶层 `v*` 包的导出符号与 `docs/api/exports.txt` 对比。只有有意修改公共 API 时才刷新并提交快照。
+- 稳定性门禁：提交前优先使用 `make check`，保持 vet、架构检查、race/shuffle 测试、覆盖率、API 兼容、lint 和漏洞扫描与 CI 对齐。
+- Benchmark 基线：使用 `make bench-core` 确认热点工具函数 benchmark 可运行。除非另行使用 `benchstat` 做多轮对比，否则 benchmark 输出只作为基线，不作为性能提升结论。
 
 ## 🤝 问题反馈与建议
 
@@ -329,7 +358,7 @@ gofmt -w .
 
 1. 新增能力优先放入合适的 `internal/*` 实现包，再由对应 `v*` 包暴露对外 API；
 2. 新增或修改公共 API 时补充必要注释；
-3. 为核心逻辑补充单元测试，提交前执行 `go test ./...`；
+3. 为核心逻辑补充单元测试，提交前优先执行 `make check`；
 4. 保持代码经过 `gofmt` 格式化；
 5. 避免引入不必要的第三方依赖，优先复用标准库。
 

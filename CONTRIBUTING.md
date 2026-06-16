@@ -147,6 +147,25 @@ not add a second logging abstraction.
   race/shuffle tests, coverage, lint, and vulnerability checks stay in one
   documented path.
 
+## Governance checks
+
+- Use `make ci-test` to run the CI test-job gates locally: module verification,
+  vet, tidy/diff checks, architecture checks, race/shuffle tests, coverage gates,
+  and API compatibility.
+- Use `make check` before pushing non-trivial changes. It includes the CI test
+  gates plus `golangci-lint` and `govulncheck`.
+- Run `make govulncheck` before changing dependencies or security-sensitive code.
+  Treat reachable findings separately from dependency-only findings.
+- Public facade examples should be executable `ExampleXxx` tests when possible.
+  Sort map-derived output and assert deterministic properties for random, time,
+  or IO-heavy examples.
+- Generate coverage from a fresh profile before enforcing gates:
+  `go test -race -shuffle=on -coverprofile=coverage.out ./...` followed by
+  `make coverage-check`. Do not rely on a stale `coverage.out`.
+- Use `make bench-core` to run benchmark baselines for hot-path slice, map,
+  string, and numeric helpers. Benchmark output is a baseline; only claim a
+  performance change after a repeated `benchstat` comparison.
+
 ## Before you push
 
 ```bash

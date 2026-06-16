@@ -390,6 +390,18 @@ make check
 `make check` includes the `ci-test` class of checks plus `golangci-lint` and
 `govulncheck`.
 
+Run the core benchmark baselines for slice, map, string, and numeric helpers:
+
+```bash
+make bench-core
+```
+
+Use repeated benchmark runs only when comparing performance statistically:
+
+```bash
+make bench-core BENCHCOUNT=10 BENCHTIME=3s
+```
+
 Refresh the API snapshot after an intentional exported API change:
 
 ```bash
@@ -416,8 +428,8 @@ gofmt -w .
 - Coverage gate: CI enforces the repository baseline with
   `bash bin/check_coverage.sh coverage.out`. The current repository threshold is
   75.2%, with package gates for security-sensitive facades such as `vhttp`,
-  `vresty`, `vconf`, `vzip`, `vcrypto`, `vurl`, and `vfile`, plus the core HTTP
-  implementation packages. Raise `COVERAGE_THRESHOLD` or
+  `vresty`, `vconf`, `vzip`, `vcrypto`, `vurl`, `vfile`, and `vset`, plus the
+  core HTTP implementation packages. Raise `COVERAGE_THRESHOLD` or
   `PACKAGE_COVERAGE_THRESHOLDS` only after adding tests that support the new
   gate.
 - API gate: `make api-check` compares root-package and top-level `v*` exported
@@ -426,6 +438,9 @@ gofmt -w .
 - Stability gate: use `make check` locally before pushing so vet, architecture,
   race/shuffle tests, coverage, API compatibility, lint, and vulnerability
   checks stay aligned with CI.
+- Benchmark baseline: use `make bench-core` to ensure hot-path benchmark suites
+  run. Treat the output as a baseline unless a separate `benchstat` comparison
+  proves a performance change.
 
 ## 🤝 Provide feedback or suggestions on bugs
 
