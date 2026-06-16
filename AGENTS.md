@@ -11,14 +11,20 @@ When the user asks to implement, rename, refactor, document, or otherwise modify
    - `go test -v -gcflags="all=-l -N" ./<changed-package>` for affected Go packages.
    - `go test -v -gcflags="all=-l -N" ./...` for repository-wide regressions.
    - `go vet ./...` after code or public API changes.
+   - `bash bin/check_arch.sh` after production code changes.
    - `bash bin/check_api_compat.sh`; if the public API change is intentional, run `UPDATE_API=1 bash bin/check_api_compat.sh` and re-run the check. Public facade additions must update `docs/api/exports.txt` in the same logical change.
    - `golangci-lint run ./...` after non-trivial Go code or test changes when the tool is available.
    - For coverage gates, first generate a fresh profile, then pass that exact file to the checker, e.g. `go test -race -shuffle=on -coverprofile=/tmp/go-knifer-coverage.out ./...` followed by `bash bin/check_coverage.sh /tmp/go-knifer-coverage.out`. Do not rely on an implicit or stale `coverage.out`.
    - `git diff --check` before committing.
 5. If validation fails, fix the cause and re-run the failing command before reporting completion.
-6. Generate a conventional commit message from the actual diff, preferring concise messages such as `feat: ...`, `fix: ...`, `docs: ...`, `refactor: ...`, or `test: ...`.
-7. Stage only files belonging to the requested logical change, commit them, and push the branch to the configured remote when the user asks to commit/push or when the workflow explicitly requires it.
-8. After pushing, report the commit hash, pushed branch, validation commands, and any intentionally excluded local files.
+6. Before committing, re-check the final staged logical change:
+   - Run `git status --porcelain=v1 -b` and review `git diff --stat` / `git diff --staged --stat` so the commit contains only the requested files.
+   - Ensure the latest validation was run after the final edit/API snapshot update, not before it.
+   - For non-trivial Go changes, the pre-commit validation set should include: focused package tests, `go test -v -gcflags="all=-l -N" ./...`, `go vet ./...`, `bash bin/check_arch.sh`, `bash bin/check_api_compat.sh`, `golangci-lint run ./...`, `go test -race -shuffle=on -coverprofile=/tmp/go-knifer-coverage.out ./...`, `bash bin/check_coverage.sh /tmp/go-knifer-coverage.out`, and `git diff --check`.
+   - If a public API snapshot was intentionally refreshed, run the API check once to observe the stale snapshot, then `UPDATE_API=1 bash bin/check_api_compat.sh`, then re-run `bash bin/check_api_compat.sh` and include `docs/api/exports.txt` in the same logical commit.
+7. Generate a conventional commit message from the actual diff, preferring concise messages such as `feat: ...`, `fix: ...`, `docs: ...`, `refactor: ...`, or `test: ...`.
+8. Stage only files belonging to the requested logical change, commit them, and push the branch to the configured remote when the user asks to commit/push or when the workflow explicitly requires it.
+9. After pushing, run `git status --porcelain=v1 -b` to confirm the branch is clean/in sync, then report the commit hash, pushed branch, validation commands, and any intentionally excluded local files.
 
 ## Package test governance workflow
 
