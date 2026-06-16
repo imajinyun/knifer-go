@@ -1,10 +1,14 @@
 package vzip_test
 
 import (
+	archivezip "archive/zip"
+	"bytes"
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
 
+	knifer "github.com/imajinyun/go-knifer"
 	"github.com/imajinyun/go-knifer/vzip"
 )
 
@@ -53,5 +57,32 @@ func TestFacadeZipAppendAndUnzipOptions(t *testing.T) {
 	}
 	if err := vzip.UnzipToLimit(archive, filepath.Join(tmp, "limit"), 1); err == nil {
 		t.Fatal("UnzipToLimit should reject content larger than limit")
+	}
+}
+
+func TestFacadeUnzipRejectsPathTraversal(t *testing.T) {
+	tmp := t.TempDir()
+	archive := filepath.Join(tmp, "bad.zip")
+	var buf bytes.Buffer
+	zw := archivezip.NewWriter(&buf)
+	w, err := zw.Create("../evil.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := w.Write([]byte("bad")); err != nil {
+		t.Fatal(err)
+	}
+	if err := zw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(archive, buf.Bytes(), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := vzip.UnzipTo(archive, filepath.Join(tmp, "dest")); !errors.Is(err, knifer.ErrCodeInvalidInput) {
+		t.Fatalf("UnzipTo traversal error = %v, want invalid input", err)
+	}
+	if _, err := os.Stat(filepath.Join(tmp, "evil.txt")); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("path traversal wrote outside destination, stat err=%v", err)
 	}
 }

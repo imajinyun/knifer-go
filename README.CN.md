@@ -319,6 +319,12 @@ make govulncheck
 make bench-core
 ```
 
+运行对应 public facade 包的 benchmark 基线：
+
+```bash
+make bench-facade
+```
+
 只有在需要用统计方式比较性能变化时，才提高运行次数和单轮时长：
 
 ```bash
@@ -340,7 +346,7 @@ gofmt -w .
 - 覆盖率门禁：CI 使用 `bash bin/check_coverage.sh coverage.out` 校验仓库总覆盖率和重点包覆盖率。只有在新增测试支撑后，才提升 `COVERAGE_THRESHOLD` 或 `PACKAGE_COVERAGE_THRESHOLDS`。
 - API 门禁：`make api-check` 会将根包和顶层 `v*` 包的导出符号与 `docs/api/exports.txt` 对比。只有有意修改公共 API 时才刷新并提交快照。
 - 稳定性门禁：提交前优先使用 `make check`，保持 vet、架构检查、race/shuffle 测试、覆盖率、API 兼容、lint 和漏洞扫描与 CI 对齐。
-- Benchmark 基线：使用 `make bench-core` 确认热点工具函数 benchmark 可运行。除非另行使用 `benchstat` 做多轮对比，否则 benchmark 输出只作为基线，不作为性能提升结论。
+- Benchmark 基线：使用 `make bench-core` 确认热点工具函数 benchmark 可运行，使用 `make bench-facade` 确认对应 public facade 包 benchmark 可运行。除非另行使用 `benchstat` 做多轮对比，否则 benchmark 输出只作为基线，不作为性能提升结论。
 
 ## 🤝 问题反馈与建议
 

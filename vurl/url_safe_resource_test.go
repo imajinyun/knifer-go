@@ -86,6 +86,28 @@ func TestFacadeSafeResourcePolicyAllowsPublicHost(t *testing.T) {
 	}
 }
 
+func TestFacadeSafeResourceRejectsUnsafeRedirect(t *testing.T) {
+	client := &http.Client{Transport: roundTripperFunc(func(req *http.Request) (*http.Response, error) {
+		return &http.Response{
+			StatusCode: http.StatusFound,
+			Header:     http.Header{"Location": []string{"http://127.0.0.1/private"}},
+			Body:       io.NopCloser(strings.NewReader("")),
+			Request:    req,
+		}, nil
+	})}
+	lookup := func(context.Context, string) ([]net.IP, error) {
+		return []net.IP{net.ParseIP("93.184.216.34")}, nil
+	}
+	if rc, err := vurl.OpenSafeWithOptions("http://example.com/redirect",
+		vurl.WithHTTPClient(client),
+		vurl.WithAllowedHosts("example.com"),
+		vurl.WithLookupIP(lookup),
+	); err == nil {
+		_ = rc.Close()
+		t.Fatal("OpenSafeWithOptions unsafe redirect error = nil")
+	}
+}
+
 type roundTripperFunc func(*http.Request) (*http.Response, error)
 
 func (f roundTripperFunc) RoundTrip(req *http.Request) (*http.Response, error) { return f(req) }

@@ -1,6 +1,7 @@
 package verr_test
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"testing"
@@ -26,5 +27,25 @@ func TestStackTraceWithOptionsFacade(t *testing.T) {
 	formatted := fmt.Sprintf("%+v", stack)
 	if !strings.Contains(formatted, "TestStackTraceWithOptionsFacade") {
 		t.Fatalf("formatted stack = %q, want current test", formatted)
+	}
+}
+
+type facadeStackError struct{ error }
+
+func (facadeStackError) Stack() string { return "attached facade stack" }
+
+func TestGetStackWithOptionsFacade(t *testing.T) {
+	if got := verr.GetStackWithOptions(nil, verr.WithDebugStackFunc(func() []byte { return []byte("unused") })); got != "" {
+		t.Fatalf("GetStackWithOptions(nil) = %q, want empty", got)
+	}
+
+	stacked := facadeStackError{error: errors.New("stacked")}
+	if got := verr.GetStackWithOptions(stacked, verr.WithDebugStackFunc(func() []byte { return []byte("unused") })); got != "attached facade stack" {
+		t.Fatalf("GetStackWithOptions(stacked) = %q, want attached stack", got)
+	}
+
+	plain := errors.New("plain")
+	if got := verr.GetStackWithOptions(plain, verr.WithDebugStackFunc(func() []byte { return []byte("fallback facade stack") })); got != "fallback facade stack" {
+		t.Fatalf("GetStackWithOptions(plain) = %q, want fallback stack", got)
 	}
 }

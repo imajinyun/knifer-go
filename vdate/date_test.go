@@ -51,11 +51,49 @@ func TestDateFacade(t *testing.T) {
 
 func TestDateFacadeClockOptions(t *testing.T) {
 	fixed := time.Date(2026, 6, 6, 12, 34, 56, 0, time.FixedZone("facade-clock", 8*60*60))
+	if got := Now(); got.IsZero() {
+		t.Fatal("Now() returned zero time")
+	}
+	if got := Today(); got.Hour() != 0 || got.Minute() != 0 || got.Second() != 0 || got.Nanosecond() != 0 {
+		t.Fatalf("Today() = %v, want beginning of local day", got)
+	}
 	if got := NowWithOptions(WithClock(func() time.Time { return fixed })); !got.Equal(fixed) {
 		t.Fatalf("NowWithOptions = %v, want %v", got, fixed)
 	}
 	if got := TodayWithOptions(WithClock(func() time.Time { return fixed })); !got.Equal(time.Date(2026, 6, 6, 0, 0, 0, 0, fixed.Location())) {
 		t.Fatalf("TodayWithOptions = %v", got)
+	}
+}
+
+func TestDateFacadeParseProviderOptions(t *testing.T) {
+	loc := time.FixedZone("parse-provider", 9*60*60)
+	want := time.Date(2026, 6, 16, 10, 11, 12, 0, loc)
+	called := false
+	got, err := ParseLayoutWithOptions("custom", "layout",
+		WithLocation(loc),
+		WithParseInLocationFunc(func(layout, value string, location *time.Location) (time.Time, error) {
+			called = true
+			if layout != "layout" || value != "custom" || location != loc {
+				t.Fatalf("parser args layout=%q value=%q location=%v", layout, value, location)
+			}
+			return want, nil
+		}),
+	)
+	if err != nil || !got.Equal(want) || !called {
+		t.Fatalf("ParseLayoutWithOptions custom parser = %v, %v called=%v", got, err, called)
+	}
+
+	got, err = ParseWithOptions("custom",
+		WithLocation(loc),
+		WithParseInLocationFunc(func(layout, value string, location *time.Location) (time.Time, error) {
+			if layout != NormDatetimePattern || value != "custom" || location != loc {
+				t.Fatalf("ParseWithOptions parser args layout=%q value=%q location=%v", layout, value, location)
+			}
+			return want, nil
+		}),
+	)
+	if err != nil || !got.Equal(want) {
+		t.Fatalf("ParseWithOptions custom parser = %v, %v", got, err)
 	}
 }
 

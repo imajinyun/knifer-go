@@ -163,8 +163,9 @@ not add a second logging abstraction.
   `go test -race -shuffle=on -coverprofile=coverage.out ./...` followed by
   `make coverage-check`. Do not rely on a stale `coverage.out`.
 - Use `make bench-core` to run benchmark baselines for hot-path slice, map,
-  string, and numeric helpers. Benchmark output is a baseline; only claim a
-  performance change after a repeated `benchstat` comparison.
+  string, and numeric helpers, or `make bench-facade` for the matching public
+  facade packages. Benchmark output is a baseline; only claim a performance
+  change after a repeated `benchstat` comparison.
 
 ## Before you push
 

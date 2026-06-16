@@ -396,6 +396,12 @@ Run the core benchmark baselines for slice, map, string, and numeric helpers:
 make bench-core
 ```
 
+Run the matching public facade benchmark baselines:
+
+```bash
+make bench-facade
+```
+
 Use repeated benchmark runs only when comparing performance statistically:
 
 ```bash
@@ -439,8 +445,9 @@ gofmt -w .
   race/shuffle tests, coverage, API compatibility, lint, and vulnerability
   checks stay aligned with CI.
 - Benchmark baseline: use `make bench-core` to ensure hot-path benchmark suites
-  run. Treat the output as a baseline unless a separate `benchstat` comparison
-  proves a performance change.
+  run, or `make bench-facade` for the matching public facade packages. Treat the
+  output as a baseline unless a separate `benchstat` comparison proves a
+  performance change.
 
 ## 🤝 Provide feedback or suggestions on bugs
 
