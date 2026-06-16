@@ -498,7 +498,7 @@ func LevenshteinDistance(a, b string) int {
 			if lr != rr {
 				cost = 1
 			}
-			curr[j+1] = min3(curr[j]+1, prev[j+1]+1, prev[j]+cost)
+			curr[j+1] = min(curr[j]+1, prev[j+1]+1, prev[j]+cost)
 		}
 		prev, curr = curr, prev
 	}
@@ -698,14 +698,4 @@ func hashString64(s string) uint64 {
 	h := fnv.New64a()
 	_, _ = h.Write([]byte(s))
 	return h.Sum64()
-}
-
-func min3(a, b, c int) int {
-	if a > b {
-		a = b
-	}
-	if a > c {
-		a = c
-	}
-	return a
 }

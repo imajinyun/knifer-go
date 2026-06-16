@@ -160,7 +160,7 @@ type barcodeConfig struct {
 	qrMask       int
 	forceCodeSet string
 	gs1Format    bool
-	hints        map[gozxing.EncodeHintType]interface{}
+	hints        map[gozxing.EncodeHintType]any
 	logo         image.Image
 	logoWidth    int
 	logoHeight   int
@@ -172,7 +172,7 @@ type DecodeOption func(*decodeConfig) error
 
 type decodeConfig struct {
 	formats []BarcodeFormat
-	hints   map[gozxing.DecodeHintType]interface{}
+	hints   map[gozxing.DecodeHintType]any
 }
 
 // DecodeResult contains decoded barcode payload and metadata.
@@ -180,7 +180,7 @@ type DecodeResult struct {
 	Text     string
 	Format   BarcodeFormat
 	RawBytes []byte
-	Metadata map[string]interface{}
+	Metadata map[string]any
 }
 
 func defaultBarcodeConfig(format BarcodeFormat) barcodeConfig {
@@ -400,10 +400,10 @@ func WithQRCodeLogoRatio(ratio int) QRCodeOption {
 }
 
 // WithBarcodeEncodeHint sets a raw gozxing encode hint.
-func WithBarcodeEncodeHint(hint gozxing.EncodeHintType, value interface{}) BarcodeOption {
+func WithBarcodeEncodeHint(hint gozxing.EncodeHintType, value any) BarcodeOption {
 	return func(c *barcodeConfig) error {
 		if c.hints == nil {
-			c.hints = make(map[gozxing.EncodeHintType]interface{})
+			c.hints = make(map[gozxing.EncodeHintType]any)
 		}
 		c.hints[hint] = value
 		return nil
@@ -454,7 +454,7 @@ func WithDecodeCharacterSet(characterSet string) DecodeOption {
 }
 
 // WithDecodeHint sets a raw gozxing decode hint.
-func WithDecodeHint(hint gozxing.DecodeHintType, value interface{}) DecodeOption {
+func WithDecodeHint(hint gozxing.DecodeHintType, value any) DecodeOption {
 	return func(c *decodeConfig) error {
 		setDecodeHint(c, hint, value)
 		return nil
@@ -653,7 +653,7 @@ func DecodeBarcodeImage(img image.Image, opts ...DecodeOption) (*DecodeResult, e
 			formats = append(formats, goFormat)
 		}
 		if hints == nil {
-			hints = make(map[gozxing.DecodeHintType]interface{})
+			hints = make(map[gozxing.DecodeHintType]any)
 		}
 		hints[gozxing.DecodeHintType_POSSIBLE_FORMATS] = formats
 	}
@@ -716,8 +716,8 @@ func encodeBarcodeMatrix(content string, format BarcodeFormat, opts ...BarcodeOp
 	return matrix, cfg, nil
 }
 
-func encodeHints(cfg barcodeConfig, format BarcodeFormat) (map[gozxing.EncodeHintType]interface{}, error) {
-	hints := make(map[gozxing.EncodeHintType]interface{}, len(cfg.hints)+6)
+func encodeHints(cfg barcodeConfig, format BarcodeFormat) (map[gozxing.EncodeHintType]any, error) {
+	hints := make(map[gozxing.EncodeHintType]any, len(cfg.hints)+6)
 	for k, v := range cfg.hints {
 		hints[k] = v
 	}
@@ -900,7 +900,7 @@ func drawBarcodeLogo(dst *image.RGBA, cfg barcodeConfig) {
 	if logoWidth <= 0 || logoHeight <= 0 {
 		return
 	}
-	padding := maxInt(2, minInt(logoWidth, logoHeight)/12)
+	padding := max(2, min(logoWidth, logoHeight)/12)
 	bg := image.Rect(left-padding, top-padding, left+logoWidth+padding, top+logoHeight+padding).Intersect(dst.Bounds())
 	draw.Draw(dst, bg, &image.Uniform{cfg.background}, image.Point{}, draw.Src)
 	draw.Draw(dst, image.Rect(left, top, left+logoWidth, top+logoHeight), logo, image.Point{}, draw.Over)
@@ -913,7 +913,7 @@ func prepareBarcodeLogo(cfg barcodeConfig, bounds image.Rectangle) (image.Image,
 	if logoWidth <= 0 || logoHeight <= 0 {
 		maxWidth := bounds.Dx() / cfg.logoRatio
 		maxHeight := bounds.Dy() / cfg.logoRatio
-		logoWidth, logoHeight = fitLongEdge(logoBounds.Dx(), logoBounds.Dy(), minInt(maxWidth, maxHeight))
+		logoWidth, logoHeight = fitLongEdge(logoBounds.Dx(), logoBounds.Dy(), min(maxWidth, maxHeight))
 	}
 	if logoWidth <= 0 || logoHeight <= 0 {
 		return nil, 0, 0, 0, 0
@@ -972,7 +972,7 @@ func renderBarcodeSVG(matrix *gozxing.BitMatrix, cfg barcodeConfig) (string, err
 			if err != nil {
 				return "", err
 			}
-			padding := maxInt(2, minInt(logoWidth, logoHeight)/12)
+			padding := max(2, min(logoWidth, logoHeight)/12)
 			bgRect := image.Rect(left-padding, top-padding, left+logoWidth+padding, top+logoHeight+padding).
 				Intersect(image.Rect(0, 0, width, height))
 			fmt.Fprintf(
@@ -1033,9 +1033,9 @@ func withDecodeBoolHint(hint gozxing.DecodeHintType, enabled bool) DecodeOption 
 	}
 }
 
-func setDecodeHint(c *decodeConfig, hint gozxing.DecodeHintType, value interface{}) {
+func setDecodeHint(c *decodeConfig, hint gozxing.DecodeHintType, value any) {
 	if c.hints == nil {
-		c.hints = make(map[gozxing.DecodeHintType]interface{})
+		c.hints = make(map[gozxing.DecodeHintType]any)
 	}
 	c.hints[hint] = value
 }
@@ -1049,7 +1049,7 @@ func newDecodeResult(result *gozxing.Result) *DecodeResult {
 		RawBytes: slices.Clone(raw),
 	}
 	if len(metadata) > 0 {
-		out.Metadata = make(map[string]interface{}, len(metadata))
+		out.Metadata = make(map[string]any, len(metadata))
 		for k, v := range metadata {
 			out.Metadata[k.String()] = v
 		}
@@ -1159,18 +1159,4 @@ func isOneDimensionalFormat(format BarcodeFormat) bool {
 	default:
 		return false
 	}
-}
-
-func minInt(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func maxInt(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
 }

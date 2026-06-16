@@ -371,10 +371,3 @@ func compareNumberString(a, b string) int {
 }
 
 func isASCIIDigit(b byte) bool { return b >= '0' && b <= '9' }
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}

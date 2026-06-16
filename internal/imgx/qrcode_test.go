@@ -152,7 +152,7 @@ func TestQRCodeSVGAndASCII(t *testing.T) {
 	for _, want := range []string{`<svg xmlns="http://www.w3.org/2000/svg"`, `fill="#010203"`, `<path`} {
 		want = strings.ReplaceAll(want, `\"`, `"`)
 		if !strings.Contains(svg, want) {
-			t.Fatalf("QRCodeSVG missing %q in %q", want, svg[:minInt(len(svg), 120)])
+			t.Fatalf("QRCodeSVG missing %q in %q", want, svg[:min(len(svg), 120)])
 		}
 	}
 
@@ -161,7 +161,7 @@ func TestQRCodeSVGAndASCII(t *testing.T) {
 		t.Fatalf("QRCodeASCII: %v", err)
 	}
 	if !strings.Contains(ascii, "██") || !strings.Contains(ascii, "\n") {
-		t.Fatalf("QRCodeASCII did not contain expected blocks/newlines: %q", ascii[:minInt(len(ascii), 80)])
+		t.Fatalf("QRCodeASCII did not contain expected blocks/newlines: %q", ascii[:min(len(ascii), 80)])
 	}
 
 	customASCII, err := QRCodeASCIIWithChars("ascii payload", "##", "..", WithQRCodeSize(33), WithQRCodeMargin(1))
@@ -169,7 +169,7 @@ func TestQRCodeSVGAndASCII(t *testing.T) {
 		t.Fatalf("QRCodeASCIIWithChars: %v", err)
 	}
 	if !strings.Contains(customASCII, "##") || !strings.Contains(customASCII, "..") {
-		t.Fatalf("QRCodeASCIIWithChars missing custom chars: %q", customASCII[:minInt(len(customASCII), 80)])
+		t.Fatalf("QRCodeASCIIWithChars missing custom chars: %q", customASCII[:min(len(customASCII), 80)])
 	}
 }
 
@@ -191,7 +191,7 @@ func TestQRCodeOutputs(t *testing.T) {
 				t.Fatalf("QRCodeBytes: %v", err)
 			}
 			if !strings.Contains(string(data), tc.want) {
-				t.Fatalf("QRCodeBytes missing %q in %q", tc.want, string(data[:minInt(len(data), 80)]))
+				t.Fatalf("QRCodeBytes missing %q in %q", tc.want, string(data[:min(len(data), 80)]))
 			}
 		})
 	}
@@ -212,7 +212,7 @@ func TestQRCodeTransparentBackground(t *testing.T) {
 		t.Fatalf("QRCodeSVG: %v", err)
 	}
 	if !strings.Contains(svg, `fill="rgba(0,0,0,0.000)"`) {
-		t.Fatalf("QRCodeSVG missing transparent fill: %q", svg[:minInt(len(svg), 160)])
+		t.Fatalf("QRCodeSVG missing transparent fill: %q", svg[:min(len(svg), 160)])
 	}
 }
 
@@ -230,7 +230,7 @@ func TestQRCodeSVGWithLogo(t *testing.T) {
 	for _, want := range []string{`<image `, `href="data:image/png;base64,`, `<rect`} {
 		want = strings.ReplaceAll(want, `\"`, `"`)
 		if !strings.Contains(svg, want) {
-			t.Fatalf("QRCodeSVG missing %q in %q", want, svg[:minInt(len(svg), 160)])
+			t.Fatalf("QRCodeSVG missing %q in %q", want, svg[:min(len(svg), 160)])
 		}
 	}
 }
@@ -258,7 +258,7 @@ func TestBarcodeBase64Data(t *testing.T) {
 		t.Fatalf("QRCodeBase64Data: %v", err)
 	}
 	if !strings.HasPrefix(data, "data:image/png;base64,") {
-		t.Fatalf("QRCodeBase64Data prefix = %q", data[:minInt(len(data), 30)])
+		t.Fatalf("QRCodeBase64Data prefix = %q", data[:min(len(data), 30)])
 	}
 }
 

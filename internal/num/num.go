@@ -325,7 +325,7 @@ func RoundStr(v float64, scale int) string {
 
 // RoundStrWithOptions returns Round formatted with fixed scale digits using custom providers.
 func RoundStrWithOptions(v float64, scale int, opts ...FormatOption) string {
-	return applyFormatOptions(opts).formatFloat(Round(v, scale), 'f', maxInt(scale, 0), 64)
+	return applyFormatOptions(opts).formatFloat(Round(v, scale), 'f', max(scale, 0), 64)
 }
 
 // RoundHalfEvenFloat rounds with banker rounding.
@@ -382,7 +382,7 @@ func FormatPercent(number float64, scale int) string {
 
 // FormatPercentWithOptions formats number as a percentage with scale fraction digits using custom providers.
 func FormatPercentWithOptions(number float64, scale int, opts ...FormatOption) string {
-	return DecimalFormatWithOptions("0."+strings.Repeat("0", maxInt(scale, 0))+"%", number, opts...)
+	return DecimalFormatWithOptions("0."+strings.Repeat("0", max(scale, 0))+"%", number, opts...)
 }
 
 // IsNumber reports whether s is a valid number, including hex and scientific notation.
@@ -1351,13 +1351,6 @@ func absInt(v int) int {
 		return -v
 	}
 	return v
-}
-
-func maxInt(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
 }
 
 func mathSubNode(selectNum, minNum int) int {
