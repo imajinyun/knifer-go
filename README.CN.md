@@ -345,7 +345,7 @@ gofmt -w .
 - 安全报告：请参见 [SECURITY.md](./SECURITY.md)，不要在公开 Issue 中披露疑似漏洞。
 - 覆盖率门禁：CI 使用 `bash bin/check_coverage.sh coverage.out` 校验仓库总覆盖率和重点包覆盖率。只有在新增测试支撑后，才提升 `COVERAGE_THRESHOLD` 或 `PACKAGE_COVERAGE_THRESHOLDS`。
 - API 门禁：`make api-check` 会将根包和顶层 `v*` 包的函数签名、导出类型定义、导出结构体字段、接口方法和方法集与 `docs/api/exports.txt` 对比。只有有意修改公共 API 时才刷新并提交快照。
-- 稳定性门禁：提交前优先使用 `make check`，保持 vet、架构检查、race/shuffle 测试、覆盖率、API 兼容、lint 和漏洞扫描与 CI 对齐。
+- 工作流门禁：使用 `make quick-check` 进行快速本地验证，使用 `make security-check` 执行 lint 与漏洞扫描，使用 `make full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out` 执行完整提交前门禁，使用 `make ci-test` 对齐 GitHub Actions 的测试作业。`make check` 是完整本地门禁的别名，用于保持 vet、架构检查、race/shuffle 测试、覆盖率、API 兼容、lint 和漏洞扫描与 CI 对齐。
 - 安全抑制：保持 `.golangci.yml`、`#nosec` 和 `//nolint:gosec` 例外范围足够窄，并在调用点说明原因；扩大排除前优先补充边界或回归测试。
 - Benchmark 基线：使用 `make bench-core` 确认热点工具函数 benchmark 可运行，使用 `make bench-facade` 确认对应 public facade 包 benchmark 可运行。除非另行使用 `benchstat` 做多轮对比，否则 benchmark 输出只作为基线，不作为性能提升结论。
 

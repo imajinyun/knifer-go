@@ -1,4 +1,4 @@
-.PHONY: help test test-race coverage-profile coverage-report coverage-check api-check mod-verify tidy-check diff-check vet arch lint govulncheck security-check bench bench-core bench-facade bench-smoke check ci-test
+.PHONY: help test test-race coverage-profile coverage-report coverage-check api-check mod-verify tidy-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check bench bench-core bench-facade bench-smoke check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -20,7 +20,9 @@ help:
 	@echo "  bench-core      Run core benchmark baselines"
 	@echo "  bench-facade    Run facade benchmark baselines"
 	@echo "  bench-smoke     Run a short core benchmark smoke check"
+	@echo "  quick-check     Run fast local governance gates"
 	@echo "  security-check  Run lint and govulncheck"
+	@echo "  full-check      Run full local gates with race coverage"
 	@echo "  api-check       Verify exported API snapshot is current"
 	@echo "  check           Run local stability gates"
 	@echo "  ci-test         Run CI test-job gates"
@@ -49,9 +51,13 @@ tidy-check:
 	$(GO) mod tidy
 	git diff --exit-code -- go.mod go.sum
 
-diff-check:
+diff-whitespace:
 	git diff --check
+
+diff-clean:
 	git diff --exit-code
+
+diff-check: diff-whitespace diff-clean
 
 vet:
 	$(GO) vet $(PKGS)
@@ -65,7 +71,11 @@ lint:
 govulncheck:
 	$(GO) tool govulncheck $(PKGS)
 
+quick-check: mod-verify vet arch test api-check diff-whitespace
+
 security-check: lint govulncheck
+
+full-check: mod-verify vet arch test-race coverage-check api-check lint govulncheck diff-whitespace
 
 bench:
 	$(GO) test -bench=$(BENCH) -benchmem -benchtime=$(BENCHTIME) -count=$(BENCHCOUNT) -run=^$$ $(BENCH_PKGS)
@@ -78,6 +88,6 @@ bench-facade:
 bench-smoke:
 	$(GO) test -bench=Benchmark -benchtime=100ms -count=1 -run=^$$ $(BENCH_PKGS) $(BENCH_FACADE_PKGS)
 
-check: mod-verify vet arch test-race coverage-check api-check lint govulncheck
+check: full-check
 
 ci-test: mod-verify vet tidy-check diff-check arch test-race coverage-check api-check

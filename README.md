@@ -444,9 +444,12 @@ gofmt -w .
   signatures, exported fields, interface methods, and method sets against
   `docs/api/exports.txt`. Commit the refreshed snapshot only for intentional
   public API changes.
-- Stability gate: use `make check` locally before pushing so vet, architecture,
-  race/shuffle tests, coverage, API compatibility, lint, and vulnerability
-  checks stay aligned with CI.
+- Workflow gates: use `make quick-check` for fast local validation, `make
+  security-check` for lint and vulnerability scanning, `make full-check
+  COVERAGE_FILE=/tmp/go-knifer-coverage.out` for the full pre-push gate, and
+  `make ci-test` for the GitHub Actions test-job gate. `make check` is an alias
+  for the full local gate so vet, architecture, race/shuffle tests, coverage,
+  API compatibility, lint, and vulnerability checks stay aligned with CI.
 - Security suppressions: keep `.golangci.yml`, `#nosec`, and
   `//nolint:gosec` exceptions narrow and justified at the call site; prefer a
   regression test before broadening an exclusion.

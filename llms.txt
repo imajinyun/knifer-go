@@ -12,8 +12,11 @@
 
 ## Validation commands
 
-- `make ci-test`: module verification, vet, tidy/diff checks, architecture checks, race/shuffle tests, coverage gate, and exported API snapshot check.
-- `make check`: local full gate, including lint and vulnerability scan.
+- `make quick-check`: fast local gate with module verification, vet, architecture check, unit tests, API snapshot check, and whitespace diff check.
+- `make security-check`: lint and govulncheck vulnerability scan.
+- `make full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out`: full local pre-push gate with module verification, vet, architecture check, race/shuffle coverage, coverage gate, API snapshot check, lint, vulnerability scan, and whitespace diff check.
+- `make ci-test`: GitHub Actions test-job gate with module verification, vet, tidy/diff checks, architecture check, race/shuffle coverage, coverage gate, and exported API snapshot check.
+- `make check`: alias for `make full-check`.
 - `UPDATE_API=1 make api-check`: refresh the root-package and top-level `v*` API snapshot after intentional public API signature, exported field, interface method, or method-set changes.
 
 ## Governance notes
