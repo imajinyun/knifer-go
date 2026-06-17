@@ -13,17 +13,24 @@ import (
 type recordingDialer struct {
 	network string
 	address string
+	ctxErr  error
 	data    chan []byte
 }
 
-func (d *recordingDialer) DialContext(_ context.Context, network, address string) (stdnet.Conn, error) {
+func (d *recordingDialer) DialContext(ctx context.Context, network, address string) (stdnet.Conn, error) {
 	d.network = network
 	d.address = address
+	d.ctxErr = ctx.Err()
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
 	client, server := stdnet.Pipe()
 	go func() {
 		defer func() { _ = server.Close() }()
 		payload, _ := io.ReadAll(server)
-		d.data <- payload
+		if d.data != nil {
+			d.data <- payload
+		}
 	}()
 	return client, nil
 }
@@ -56,5 +63,26 @@ func TestVNetConnectOptionsFacade(t *testing.T) {
 	dialer = &recordingDialer{data: make(chan []byte, 1)}
 	if !vnet.IsOpenWithOptions(addr, vnet.WithConnectDialer(dialer)) {
 		t.Fatal("IsOpenWithOptions should report true")
+	}
+}
+
+func TestVNetConnectAndPingContextFacade(t *testing.T) {
+	canceled, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	dialer := &recordingDialer{}
+	if _, err := vnet.ConnectWithOptions("example.com", 80, vnet.WithConnectContext(canceled), vnet.WithConnectDialer(dialer)); err == nil {
+		t.Fatal("ConnectWithOptions should return canceled context error")
+	}
+	if dialer.ctxErr == nil {
+		t.Fatal("ConnectWithOptions did not pass the configured context to dialer")
+	}
+
+	dialer = &recordingDialer{}
+	if vnet.PingWithOptions("example.com", vnet.WithPingContext(canceled), vnet.WithPingDialer(dialer), vnet.WithPingPorts(80)) {
+		t.Fatal("PingWithOptions should report false for canceled context")
+	}
+	if dialer.ctxErr == nil {
+		t.Fatal("PingWithOptions did not pass the configured context to dialer")
 	}
 }

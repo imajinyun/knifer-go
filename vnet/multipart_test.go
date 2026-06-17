@@ -2,6 +2,7 @@ package vnet_test
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"io/fs"
 	"mime/multipart"
@@ -72,9 +73,64 @@ func TestVNetUploadSaveOptionsFacade(t *testing.T) {
 	}
 }
 
+func TestVNetUploadOpenSourceFacade(t *testing.T) {
+	req := multipartRequest(t, "avatar", "a.txt", "ignored")
+	form, err := vnet.ParseMultipartForm(req, vnet.NewUploadSetting())
+	if err != nil {
+		t.Fatalf("ParseMultipartForm: %v", err)
+	}
+	file := form.GetFile("avatar")
+
+	var opened *multipart.FileHeader
+	var written bytes.Buffer
+	err = vnet.SaveUploadedFile(file, "/virtual/upload/a.txt",
+		vnet.WithUploadOpenSource(func(f *multipart.FileHeader) (multipart.File, error) {
+			opened = f
+			return uploadReadCloser{Reader: bytes.NewReader([]byte("from-source-provider"))}, nil
+		}),
+		vnet.WithUploadMkdirAll(func(string, fs.FileMode) error { return nil }),
+		vnet.WithUploadOpenFile(func(string, int, fs.FileMode) (io.WriteCloser, error) {
+			return nopWriteCloser{Writer: &written}, nil
+		}),
+	)
+	if err != nil {
+		t.Fatalf("SaveUploadedFile with source provider: %v", err)
+	}
+	if opened != file || written.String() != "from-source-provider" {
+		t.Fatalf("source provider opened=%v content=%q", opened == file, written.String())
+	}
+
+	wantErr := errors.New("open source")
+	err = vnet.SaveUploadedFile(file, "/virtual/upload/a.txt",
+		vnet.WithUploadOpenSource(func(*multipart.FileHeader) (multipart.File, error) { return nil, wantErr }),
+		vnet.WithUploadMkdirAll(func(string, fs.FileMode) error { return nil }),
+	)
+	if !errors.Is(err, wantErr) {
+		t.Fatalf("SaveUploadedFile open source err = %v, want %v", err, wantErr)
+	}
+}
+
 type nopWriteCloser struct{ io.Writer }
 
 func (w nopWriteCloser) Close() error { return nil }
+
+type uploadReadCloser struct{ io.Reader }
+
+func (r uploadReadCloser) ReadAt(p []byte, off int64) (int, error) {
+	if seeker, ok := r.Reader.(io.ReaderAt); ok {
+		return seeker.ReadAt(p, off)
+	}
+	return 0, errors.New("ReadAt unsupported")
+}
+
+func (r uploadReadCloser) Seek(offset int64, whence int) (int64, error) {
+	if seeker, ok := r.Reader.(io.Seeker); ok {
+		return seeker.Seek(offset, whence)
+	}
+	return 0, errors.New("Seek unsupported")
+}
+
+func (r uploadReadCloser) Close() error { return nil }
 
 func multipartRequest(t *testing.T, field, filename, content string) *http.Request {
 	t.Helper()

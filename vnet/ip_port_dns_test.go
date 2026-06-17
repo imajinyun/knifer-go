@@ -1,7 +1,10 @@
 package vnet_test
 
 import (
+	"context"
+	"math/big"
 	stdnet "net"
+	"reflect"
 	"strconv"
 	"testing"
 	"time"
@@ -22,6 +25,120 @@ func TestVNetFacade(t *testing.T) {
 	}
 	if vnet.CreateTLSConfig() == nil || vnet.NewUploadSetting().MemoryThreshold == 0 {
 		t.Fatal("TLS/upload helpers failed")
+	}
+}
+
+func TestVNetIPFacadeWrappers(t *testing.T) {
+	parseIP := func(s string) stdnet.IP {
+		if s == "alias" {
+			return stdnet.ParseIP("192.0.2.1")
+		}
+		return stdnet.ParseIP(s)
+	}
+	parseCIDR := func(s string) (stdnet.IP, *stdnet.IPNet, error) {
+		if s == "alias/24" {
+			return stdnet.ParseCIDR("192.0.2.0/24")
+		}
+		return stdnet.ParseCIDR(s)
+	}
+
+	if got, err := vnet.IPv4ToLongWithOptions("alias", vnet.WithIPParser(parseIP)); err != nil || got != 3221225985 {
+		t.Fatalf("IPv4ToLongWithOptions = %d, %v", got, err)
+	}
+	if got := vnet.IPv4ToLongDefaultWithOptions("bad", 42, vnet.WithIPParser(func(string) stdnet.IP { return nil })); got != 42 {
+		t.Fatalf("IPv4ToLongDefaultWithOptions = %d", got)
+	}
+	if got, err := vnet.IPv6ToBigIntWithOptions("::1", vnet.WithIPParser(parseIP)); err != nil || got.Sign() == 0 {
+		t.Fatalf("IPv6ToBigIntWithOptions = %v, %v", got, err)
+	}
+	if got, err := vnet.BigIntToIPv6(big.NewInt(1)); err != nil || got != "::1" {
+		t.Fatalf("BigIntToIPv6 = %q, %v", got, err)
+	}
+	if !vnet.IsIPWithOptions("alias", vnet.WithIPParser(parseIP)) || !vnet.IsIPv4WithOptions("alias", vnet.WithIPParser(parseIP)) {
+		t.Fatal("IP validators did not use parser option")
+	}
+	if vnet.IsIPv6WithOptions("alias", vnet.WithIPParser(parseIP)) {
+		t.Fatal("IsIPv6WithOptions should reject IPv4 alias")
+	}
+	if !vnet.IsInnerIPWithOptions("10.0.0.1", vnet.WithIPParser(parseIP)) {
+		t.Fatal("IsInnerIPWithOptions should accept private IPv4")
+	}
+	if got, err := vnet.FormatIPBlockWithOptions("alias", "255.255.255.0", vnet.WithIPParser(parseIP)); err != nil || got != "alias/24" {
+		t.Fatalf("FormatIPBlockWithOptions = %q, %v", got, err)
+	}
+	if got, err := vnet.BeginIPWithOptions("alias", 24, vnet.WithIPParser(parseIP)); err != nil || got != "192.0.2.0" {
+		t.Fatalf("BeginIPWithOptions = %q, %v", got, err)
+	}
+	if got, err := vnet.EndIPWithOptions("alias", 24, vnet.WithIPParser(parseIP)); err != nil || got != "192.0.2.255" {
+		t.Fatalf("EndIPWithOptions = %q, %v", got, err)
+	}
+	if got, err := vnet.MaskBitByMaskWithOptions("255.255.255.0", vnet.WithIPParser(parseIP)); err != nil || got != 24 {
+		t.Fatalf("MaskBitByMaskWithOptions = %d, %v", got, err)
+	}
+	if got, err := vnet.MaskByIPRangeWithOptions("192.0.2.0", "192.0.2.255", vnet.WithIPParser(parseIP)); err != nil || got != "255.255.255.0" {
+		t.Fatalf("MaskByIPRangeWithOptions = %q, %v", got, err)
+	}
+	if got, err := vnet.CountByIPRangeWithOptions("192.0.2.0", "192.0.2.3", vnet.WithIPParser(parseIP)); err != nil || got != 4 {
+		t.Fatalf("CountByIPRangeWithOptions = %d, %v", got, err)
+	}
+	if !vnet.IsMaskValidWithOptions("255.255.255.0", vnet.WithIPParser(parseIP)) || !vnet.IsMaskBitValid(24) {
+		t.Fatal("mask validators failed")
+	}
+	if got, err := vnet.ListIPsWithOptions("192.0.2.1-192.0.2.2", true, vnet.WithIPParser(parseIP)); err != nil || !reflect.DeepEqual(got, []string{"192.0.2.1", "192.0.2.2"}) {
+		t.Fatalf("ListIPsWithOptions = %#v, %v", got, err)
+	}
+	if got, err := vnet.ListIPCIDRWithOptions("alias", 30, true, vnet.WithIPParser(parseIP)); err != nil || len(got) != 4 {
+		t.Fatalf("ListIPCIDRWithOptions = %#v, %v", got, err)
+	}
+	if got, err := vnet.ListIPRangeWithOptions("192.0.2.1", "192.0.2.2", vnet.WithIPParser(parseIP)); err != nil || !reflect.DeepEqual(got, []string{"192.0.2.1", "192.0.2.2"}) {
+		t.Fatalf("ListIPRangeWithOptions = %#v, %v", got, err)
+	}
+	if !vnet.IsInRangeWithOptions("alias", "alias/24", vnet.WithIPParser(parseIP), vnet.WithCIDRParser(parseCIDR)) {
+		t.Fatal("IsInRangeWithOptions should use custom parsers")
+	}
+	if got := vnet.HideIPPartLong(0xC0000201); got != "192.0.2.*" {
+		t.Fatalf("HideIPPartLong = %q", got)
+	}
+}
+
+func TestVNetWildcardFacadeWrappers(t *testing.T) {
+	if !vnet.MatchesWildcardWithOptions("10.0.*.1", "10.0.2.1") {
+		t.Fatal("MatchesWildcardWithOptions should match wildcard segment")
+	}
+	calledParser := false
+	matched := vnet.MatchesWildcardWithOptions("10.0.*.1", "alias",
+		vnet.WithWildcardIPParser(func(s string) stdnet.IP {
+			calledParser = true
+			if s == "alias" {
+				return stdnet.ParseIP("10.0.2.1")
+			}
+			return stdnet.ParseIP(s)
+		}),
+	)
+	if !matched || !calledParser {
+		t.Fatalf("MatchesWildcardWithOptions matched=%v calledParser=%v", matched, calledParser)
+	}
+}
+
+func TestVNetDNSFacadeWrappers(t *testing.T) {
+	ascii, err := vnet.IDNToASCII("bücher.example")
+	if err != nil || ascii != "xn--bcher-kva.example" {
+		t.Fatalf("IDNToASCII = %q, %v", ascii, err)
+	}
+	if got := vnet.GetMultistageReverseProxyIP("unknown, , 203.0.113.10"); got != "203.0.113.10" {
+		t.Fatalf("GetMultistageReverseProxyIP = %q", got)
+	}
+	if !vnet.IsUnknown(" UNKNOWN ") || vnet.IsUnknown("203.0.113.10") {
+		t.Fatal("IsUnknown returned unexpected result")
+	}
+	cookies := vnet.ParseCookies("sid=abc; theme=dark")
+	if len(cookies) != 2 || cookies[0].Name != "sid" || cookies[0].Value != "abc" {
+		t.Fatalf("ParseCookies = %#v", cookies)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if _, err := vnet.GetIPByHostWithOptions("example.com", vnet.WithResolveContext(ctx), vnet.WithResolver(stdnet.DefaultResolver)); err == nil {
+		t.Fatal("GetIPByHostWithOptions should return canceled context error")
 	}
 }
 
