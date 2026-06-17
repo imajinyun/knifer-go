@@ -818,7 +818,6 @@ github.com/imajinyun/go-knifer/verr
   func WithLogHookAdder(addHook func(github.com/sirupsen/logrus.Hook)) InitOption
   func WithLogOutput(output io.Writer) InitOption
   func WithLogrusConfigurer(setReportCaller func(bool), setOutput func(io.Writer), setFormatter func(github.com/sirupsen/logrus.Formatter)) InitOption
-  func WithRavenSetDSNFunc(setDSN func(string) error) InitOption
   func WithReportCaller(reportCaller bool) InitOption
   func WithSentryClient(client *github.com/getsentry/sentry-go.Client) InitOption
   func WithSentryClientFactory(factory func(github.com/getsentry/sentry-go.ClientOptions) (*github.com/getsentry/sentry-go.Client, error)) InitOption

@@ -20,7 +20,6 @@ func TestInitWithOptionsUsesInjectedProviders(t *testing.T) {
 	var output io.Writer
 	var formatter logrus.Formatter
 	var getenvKey string
-	var setDSN string
 	var clientOptions sentry.ClientOptions
 	var hookClient *sentry.Client
 	var hookLevels []logrus.Level
@@ -37,10 +36,6 @@ func TestInitWithOptionsUsesInjectedProviders(t *testing.T) {
 			func(w io.Writer) { output = w },
 			func(f logrus.Formatter) { formatter = f },
 		),
-		WithRavenSetDSNFunc(func(dsn string) error {
-			setDSN = dsn
-			return nil
-		}),
 		WithSentryClientFactory(func(options sentry.ClientOptions) (*sentry.Client, error) {
 			clientOptions = options
 			return sentry.NewClient(options)
@@ -57,8 +52,8 @@ func TestInitWithOptionsUsesInjectedProviders(t *testing.T) {
 	if !reportCaller || output != io.Discard || formatter != EmptyFormatter {
 		t.Fatalf("logrus config = reportCaller %v output %T formatter %T", reportCaller, output, formatter)
 	}
-	if getenvKey != "CUSTOM_DSN" || setDSN != "https://public@example.com/1" {
-		t.Fatalf("dsn providers key=%q dsn=%q", getenvKey, setDSN)
+	if getenvKey != "CUSTOM_DSN" {
+		t.Fatalf("dsn provider key=%q", getenvKey)
 	}
 	if clientOptions.Dsn != "https://public@example.com/1" || !clientOptions.AttachStacktrace {
 		t.Fatalf("client options = %#v", clientOptions)

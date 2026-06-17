@@ -13,9 +13,30 @@ func TestFacadeSAXTransformWriteAndFormat(t *testing.T) {
 	if err := TransformWith(strings.NewReader(`<root><a>1</a></root>`), &out, WithOmitDeclaration(true)); err != nil || out.String() != `<root><a>1</a></root>` {
 		t.Fatalf("TransformWith facade = %q, %v", out.String(), err)
 	}
+	out.Reset()
+	if err := TransformWithOptions(
+		strings.NewReader(`<root><a>1</a></root>`),
+		&out,
+		WithTransformParseOptions(WithNamespaceAware(false)),
+		WithTransformWriteOptions(WithOmitDeclaration(true), WithIndent(2)),
+	); err != nil || !strings.Contains(out.String(), "\n  <a>") {
+		t.Fatalf("TransformWithOptions facade = %q, %v", out.String(), err)
+	}
 	formatted, err := Format(`<root><a>1</a></root>`)
 	if err != nil || !strings.Contains(formatted, "\n  <a>") {
 		t.Fatalf("Format facade = %q, %v", formatted, err)
+	}
+	formatted, err = FormatWithOptions(
+		`<root xmlns:p="urn:p"><p:a>1</p:a></root>`,
+		WithFormatParseOptions(WithNamespaceAware(false)),
+		WithFormatWriteOptions(WithOmitDeclaration(true), WithIndent(4)),
+	)
+	if err != nil || !strings.Contains(formatted, "\n    <a>") || strings.Contains(formatted, "<?xml") {
+		t.Fatalf("FormatWithOptions facade = %q, %v", formatted, err)
+	}
+	namespaced, err := MarshalMap(map[string]any{"name": "go"}, WithRootName("user"), WithNamespace("urn:test"), WithOmitDeclaration(true))
+	if err != nil || !strings.Contains(namespaced, `xmlns="urn:test"`) {
+		t.Fatalf("MarshalMap WithNamespace = %q, %v", namespaced, err)
 	}
 	writePath := t.TempDir() + "/out.xml"
 	if err := WriteFile(writePath, CreateXMLWithRoot("root"), WithOmitDeclaration(true)); err != nil {

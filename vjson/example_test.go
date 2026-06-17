@@ -33,3 +33,26 @@ func ExampleParseObj_error() {
 	fmt.Println(errors.Is(err, knifer.ErrCodeInvalidInput))
 	// Output: true
 }
+
+func ExamplePutByPath() {
+	root := vjson.NewObject()
+	_ = vjson.PutByPath(root, "user.name", "go-knifer")
+	fmt.Println(vjson.GetByPath(root, "user.name"))
+	// Output: go-knifer
+}
+
+func ExampleToBean() {
+	type user struct {
+		Name string `json:"name"`
+	}
+	var u user
+	_ = vjson.ToBean(`{"name":"go-knifer"}`, &u)
+	fmt.Println(u.Name)
+	// Output: go-knifer
+}
+
+func ExampleXMLToJSON() {
+	obj, _ := vjson.XMLToJSON(`<user><name>go-knifer</name></user>`)
+	fmt.Println(vjson.GetByPath(obj, "user.name"))
+	// Output: go-knifer
+}

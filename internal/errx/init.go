@@ -25,7 +25,6 @@ type initConfig struct {
 	reportCaller    bool
 	levels          []logrus.Level
 	getenv          func(string) string
-	legacySetDSN    func(string) error
 	sentryOptions   sentry.ClientOptions
 	sentryClient    *sentry.Client
 	newSentryClient func(sentry.ClientOptions) (*sentry.Client, error)
@@ -69,18 +68,6 @@ func WithEnvLookupFunc(getenv func(string) string) InitOption {
 	return func(c *initConfig) {
 		if getenv != nil {
 			c.getenv = getenv
-		}
-	}
-}
-
-// WithRavenSetDSNFunc sets a legacy hook invoked with the resolved DSN before
-// the sentry-go client is created.
-//
-// Deprecated: use WithSentryClientFactory or WithSentryClientOptions instead.
-func WithRavenSetDSNFunc(setDSN func(string) error) InitOption {
-	return func(c *initConfig) {
-		if setDSN != nil {
-			c.legacySetDSN = setDSN
 		}
 	}
 }
@@ -333,12 +320,6 @@ func InitWithOptions(opts ...InitOption) {
 	if cfg.dsn == "" {
 		return
 	}
-	if cfg.legacySetDSN != nil {
-		if err := cfg.legacySetDSN(cfg.dsn); err != nil {
-			cfg.logError(err, "sentry init failed")
-			return
-		}
-	}
 	client, err := buildSentryClient(cfg)
 	if err != nil {
 		cfg.logError(err, "sentry init failed")
@@ -369,12 +350,6 @@ func NewIsolatedLogrusWithOptions(opts ...InitOption) *logrus.Logger {
 	}
 	if cfg.dsn == "" {
 		return logger
-	}
-	if cfg.legacySetDSN != nil {
-		if err := cfg.legacySetDSN(cfg.dsn); err != nil {
-			cfg.logError(err, "sentry init failed")
-			return logger
-		}
 	}
 	client, err := buildSentryClient(cfg)
 	if err != nil {

@@ -126,14 +126,6 @@ func WithEnvLookupFunc(getenv func(string) string) InitOption {
 	return errimpl.WithEnvLookupFunc(getenv)
 }
 
-// WithRavenSetDSNFunc sets a legacy hook invoked with the resolved DSN before
-// the sentry-go client is created.
-//
-// Deprecated: use WithSentryClientFactory or WithSentryClientOptions instead.
-func WithRavenSetDSNFunc(setDSN func(string) error) InitOption {
-	return errimpl.WithRavenSetDSNFunc(setDSN)
-}
-
 // WithSentryClientOptions sets sentry-go client options used when creating the Sentry client.
 func WithSentryClientOptions(options sentry.ClientOptions) InitOption {
 	return errimpl.WithSentryClientOptions(options)

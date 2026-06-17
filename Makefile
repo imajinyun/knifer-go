@@ -1,4 +1,4 @@
-.PHONY: help test test-race coverage-profile coverage-report coverage-check api-check mod-verify tidy-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check bench bench-core bench-facade bench-smoke check ci-test
+.PHONY: help test test-race coverage-profile coverage-report coverage-check api-check mod-verify tidy-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check bench bench-core bench-facade bench-codec bench-smoke check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -7,6 +7,7 @@ COVERAGE_FILE ?= coverage.out
 BENCH ?= .
 BENCH_PKGS ?= ./internal/slice ./internal/maps ./internal/str ./internal/num
 BENCH_FACADE_PKGS ?= ./vslice ./vmap ./vstr ./vnum
+BENCH_CODEC_PKGS ?= ./internal/json ./vjson ./internal/xml ./vxml
 BENCHTIME ?= 1s
 BENCHCOUNT ?= 1
 
@@ -19,6 +20,7 @@ help:
 	@echo "  coverage-check  Enforce repository and package coverage gates"
 	@echo "  bench-core      Run core benchmark baselines"
 	@echo "  bench-facade    Run facade benchmark baselines"
+	@echo "  bench-codec     Run JSON/XML benchmark baselines"
 	@echo "  bench-smoke     Run a short core benchmark smoke check"
 	@echo "  quick-check     Run fast local governance gates"
 	@echo "  security-check  Run lint and govulncheck"
@@ -85,8 +87,11 @@ bench-core: bench
 bench-facade:
 	$(GO) test -bench=$(BENCH) -benchmem -benchtime=$(BENCHTIME) -count=$(BENCHCOUNT) -run=^$$ $(BENCH_FACADE_PKGS)
 
+bench-codec:
+	$(GO) test -bench=$(BENCH) -benchmem -benchtime=$(BENCHTIME) -count=$(BENCHCOUNT) -run=^$$ $(BENCH_CODEC_PKGS)
+
 bench-smoke:
-	$(GO) test -bench=Benchmark -benchtime=100ms -count=1 -run=^$$ $(BENCH_PKGS) $(BENCH_FACADE_PKGS)
+	$(GO) test -bench=Benchmark -benchtime=100ms -count=1 -run=^$$ $(BENCH_PKGS) $(BENCH_FACADE_PKGS) $(BENCH_CODEC_PKGS)
 
 check: full-check
 

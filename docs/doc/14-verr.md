@@ -92,8 +92,7 @@ func main() {
 
 `InitWithOptions` accepts Sentry factories so production code can use
 `sentry-go` while tests inject isolated clients and hook registration. Prefer
-`WithSentryClientOptions`, `WithSentryClient`, or `WithSentryClientFactory` for
-new code. `WithRavenSetDSNFunc` is kept only for legacy migration paths.
+`WithSentryClientOptions`, `WithSentryClient`, or `WithSentryClientFactory`.
 
 ```go
 package main
