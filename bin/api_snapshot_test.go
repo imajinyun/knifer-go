@@ -72,6 +72,75 @@ func Hidden() {}
 	}
 }
 
+func TestGenerateSnapshotIncludesGenericAndEmbeddedAPIDetails(t *testing.T) {
+	root := t.TempDir()
+	writeTestFile(t, root, "go.mod", "module github.com/imajinyun/go-knifer\n\ngo 1.25.0\n")
+	writeTestFile(t, root, "vcompat/compat.go", `package vcompat
+
+import "time"
+
+const Enabled = true
+
+type private struct {
+	Value string
+}
+
+type Number interface {
+	~int | ~int64
+}
+
+type DurationMap = map[string]time.Duration
+
+type Box[T any] struct {
+	Item T
+	time.Time
+	private
+	hidden string
+}
+
+type Handler[T Number] interface {
+	Handle(Box[T], ...time.Duration) (private, error)
+	reset()
+}
+
+func Transform[T Number](box Box[T], labels ...string) (out Box[T], err error) {
+	return box, nil
+}
+
+func (b Box[T]) Value() T { return b.Item }
+
+func (b *Box[T]) Set(value T) *Box[T] {
+	b.Item = value
+	return b
+}
+`)
+
+	lines, err := generateSnapshot(root)
+	if err != nil {
+		t.Fatalf("generateSnapshot() error = %v", err)
+	}
+	snapshot := strings.Join(lines, "\n")
+	for _, want := range []string{
+		"const Enabled untyped bool = true",
+		"func Transform[T Number](box Box[T], labels ...string) (out Box[T], err error)",
+		"method (*Box[T]) Set(value T) *Box[T]",
+		"method (Box[T]) Value() T",
+		"type Box[T any] struct{ Item T; time.Time time.Time }",
+		"type DurationMap = map[string]time.Duration",
+		"type Handler[T Number] interface{ Handle(Box[T], ...time.Duration) (private, error) }",
+		"type Number interface{}",
+	} {
+		if !strings.Contains(snapshot, want) {
+			t.Fatalf("snapshot missing %q:\n%s", want, snapshot)
+		}
+	}
+	for _, unwanted := range []string{"hidden string", "reset()", "type private"} {
+		if strings.Contains(snapshot, unwanted) {
+			t.Fatalf("snapshot unexpectedly contains %q:\n%s", unwanted, snapshot)
+		}
+	}
+}
+
 func writeTestFile(t *testing.T, root, name, content string) {
 	t.Helper()
 	path := filepath.Join(root, name)
