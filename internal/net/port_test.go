@@ -3,6 +3,7 @@ package net
 import (
 	"errors"
 	stdnet "net"
+	"reflect"
 	"strconv"
 	"testing"
 )
@@ -86,5 +87,69 @@ func TestPortOptionsUseListenerFactory(t *testing.T) {
 	}
 	if IsUsableLocalPortWithOptions(12345, WithPortListenerFactory(factory)) {
 		t.Fatal("IsUsableLocalPortWithOptions should reject listener factory errors")
+	}
+}
+
+func TestPortRangeWrappersWithListenerFactory(t *testing.T) {
+	usable := map[int]bool{1002: true, 1004: true, 1005: true, 1024: true}
+	seen := make([]int, 0)
+	factory := func(_ string, address string) (stdnet.Listener, error) {
+		_, portText, err := stdnet.SplitHostPort(address)
+		if err != nil {
+			return nil, err
+		}
+		port, err := strconv.Atoi(portText)
+		if err != nil {
+			return nil, err
+		}
+		seen = append(seen, port)
+		if !usable[port] {
+			return nil, errors.New("occupied")
+		}
+		return stubListener{}, nil
+	}
+	opts := []PortOption{WithPortListenerFactory(factory), WithPortHost(""), WithPortNetwork("")}
+
+	if got, err := GetUsableLocalPortInRangeWithOptions(1000, 1003, opts...); err != nil || got != 1002 {
+		t.Fatalf("GetUsableLocalPortInRangeWithOptions = %d, %v", got, err)
+	}
+	if got, err := GetUsableLocalPortFromWithOptions(1004, opts...); err != nil || got != 1004 {
+		t.Fatalf("GetUsableLocalPortFromWithOptions = %d, %v", got, err)
+	}
+	if got, err := GetUsableLocalPortWithOptions(opts...); err != nil || got != 1024 {
+		t.Fatalf("GetUsableLocalPortWithOptions = %d, %v", got, err)
+	}
+	if got, err := GetUsableLocalPortsWithOptions(2, 1000, 1005, opts...); err != nil || !reflect.DeepEqual(got, []int{1002, 1004}) {
+		t.Fatalf("GetUsableLocalPortsWithOptions = %#v, %v", got, err)
+	}
+	if got, err := GetUsableLocalPortsWithOptions(0, 1000, 1005, opts...); err != nil || got != nil {
+		t.Fatalf("GetUsableLocalPortsWithOptions zero = %#v, %v", got, err)
+	}
+	if _, err := GetUsableLocalPortInRangeWithOptions(1005, 1000, opts...); err == nil {
+		t.Fatalf("GetUsableLocalPortInRangeWithOptions should reject invalid range")
+	}
+	if got, err := GetUsableLocalPortsWithOptions(2, 1000, 1003, opts...); err == nil || !reflect.DeepEqual(got, []int{1002}) {
+		t.Fatalf("partial usable ports = %#v, %v", got, err)
+	}
+	if len(seen) == 0 {
+		t.Fatalf("listener factory was not used")
+	}
+}
+
+func TestLocalPortGeneratorBoundaries(t *testing.T) {
+	if _, err := (*LocalPortGenerator)(nil).Gen(); err == nil {
+		t.Fatalf("nil generator should return error")
+	}
+	factory := func(_ string, _ string) (stdnet.Listener, error) { return stubListener{}, nil }
+	g := NewLocalPortGenerator(1234)
+	port, err := g.GenWithOptions(WithPortListenerFactory(factory))
+	if err != nil || port != 1234 {
+		t.Fatalf("NewLocalPortGenerator.GenWithOptions = %d, %v", port, err)
+	}
+	if got := HideIPPart("localhost"); got != "localhost" {
+		t.Fatalf("HideIPPart(localhost) = %q", got)
+	}
+	if got := HideIPPartLong(0x7f000001); got != "127.0.0.*" {
+		t.Fatalf("HideIPPartLong = %q", got)
 	}
 }

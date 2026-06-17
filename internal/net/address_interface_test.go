@@ -28,6 +28,15 @@ func TestAddressOptionsUseResolver(t *testing.T) {
 	if network != "tcp" || address != "example.org:9090" {
 		t.Fatalf("resolver target = %s %s", network, address)
 	}
+
+	addr, err = BuildInetSocketAddress("127.0.0.1:8081", 9090)
+	if err != nil || addr.Port != 8081 {
+		t.Fatalf("BuildInetSocketAddress host:port = %#v, %v", addr, err)
+	}
+	addr = CreateAddress("127.0.0.1", 8082)
+	if addr == nil || addr.Port != 8082 {
+		t.Fatalf("CreateAddress = %#v", addr)
+	}
 }
 
 func TestInterfaceOptions(t *testing.T) {
@@ -88,4 +97,77 @@ func TestInterfaceOptions(t *testing.T) {
 	if got := GetLocalMACAddressWithOptions(opts, "-"); got != "aa-bb-cc-dd-ee-ff" {
 		t.Fatalf("GetLocalMACAddressWithOptions = %q", got)
 	}
+	if got, err := GetNetworkInterface("eth-test"); err == nil || got != nil {
+		t.Fatalf("GetNetworkInterface real lookup unexpectedly returned %#v, %v", got, err)
+	}
 }
+
+func TestInterfaceWrapperAndFallbackHelpers(t *testing.T) {
+	iface := stdnet.Interface{Name: "lo-test", Flags: stdnet.FlagLoopback}
+	_, ipNet, err := stdnet.ParseCIDR("2001:db8::1/64")
+	if err != nil {
+		t.Fatal(err)
+	}
+	ipNet.IP = stdnet.ParseIP("2001:db8::1")
+	opts := []InterfaceOption{
+		WithInterfacesFunc(func() ([]stdnet.Interface, error) { return []stdnet.Interface{iface}, nil }),
+		WithInterfaceAddrsFunc(func(stdnet.Interface) ([]stdnet.Addr, error) {
+			return []stdnet.Addr{ipNet, &stdnet.IPAddr{IP: stdnet.ParseIP("127.0.0.1")}, fakeAddr("bad")}, nil
+		}),
+		WithReverseLookupFunc(func(string) ([]string, error) { return nil, errors.New("no ptr") }),
+		WithNetHostnameFunc(func() (string, error) { return "fallback-host", nil }),
+	}
+	if got := LocalIPv6sWithOptions(opts...); !reflect.DeepEqual(got, []string{"2001:db8::1"}) {
+		t.Fatalf("LocalIPv6sWithOptions = %#v", got)
+	}
+	if got := LocalIPsWithOptions(opts...); !reflect.DeepEqual(got, []string{"2001:db8::1", "127.0.0.1"}) {
+		t.Fatalf("LocalIPsWithOptions = %#v", got)
+	}
+	if got := LocalAddressListByInterfaceWithOptions(func(stdnet.Interface) bool { return false }, nil, opts...); len(got) != 0 {
+		t.Fatalf("filtered LocalAddressListByInterfaceWithOptions = %#v", got)
+	}
+	if got := GetLocalhostStrWithOptions(opts...); got != LocalIP {
+		t.Fatalf("GetLocalhostStrWithOptions fallback = %q", got)
+	}
+	if got := GetLocalhostWithOptions(opts...); !got.Equal(stdnet.ParseIP(LocalIP)) {
+		t.Fatalf("GetLocalhostWithOptions = %v", got)
+	}
+	if got := GetLocalHostNameWithOptions(opts...); got != "fallback-host" {
+		t.Fatalf("GetLocalHostNameWithOptions fallback = %q", got)
+	}
+	if got := GetLocalMACAddressWithOptions(opts); got != "" {
+		t.Fatalf("GetLocalMACAddressWithOptions loopback = %q", got)
+	}
+	if got := GetMACAddressWithOptions(stdnet.ParseIP("192.0.2.1"), opts); got != "" {
+		t.Fatalf("GetMACAddressWithOptions missing = %q", got)
+	}
+	if got := GetHardwareAddress(stdnet.ParseIP("192.0.2.1")); got != nil {
+		t.Fatalf("GetHardwareAddress real lookup unexpectedly returned %v", got)
+	}
+}
+
+func TestInterfaceProviderErrors(t *testing.T) {
+	opts := []InterfaceOption{WithInterfacesFunc(func() ([]stdnet.Interface, error) { return nil, errors.New("interfaces") })}
+	if got := LocalAddressListWithOptions(nil, opts...); got != nil {
+		t.Fatalf("LocalAddressListWithOptions error = %#v", got)
+	}
+	if got := GetHardwareAddressWithOptions(stdnet.ParseIP("127.0.0.1"), opts...); got != nil {
+		t.Fatalf("GetHardwareAddressWithOptions interfaces error = %v", got)
+	}
+	if got := GetLocalHardwareAddressWithOptions(opts...); got != nil {
+		t.Fatalf("GetLocalHardwareAddressWithOptions interfaces error = %v", got)
+	}
+	iface := stdnet.Interface{Name: "broken"}
+	opts = []InterfaceOption{
+		WithInterfacesFunc(func() ([]stdnet.Interface, error) { return []stdnet.Interface{iface}, nil }),
+		WithInterfaceAddrsFunc(func(stdnet.Interface) ([]stdnet.Addr, error) { return nil, errors.New("addrs") }),
+	}
+	if got := LocalAddressListWithOptions(nil, opts...); len(got) != 0 {
+		t.Fatalf("LocalAddressListWithOptions addrs error = %#v", got)
+	}
+}
+
+type fakeAddr string
+
+func (a fakeAddr) Network() string { return "fake" }
+func (a fakeAddr) String() string  { return string(a) }

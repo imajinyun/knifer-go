@@ -1,6 +1,7 @@
 package net
 
 import (
+	"errors"
 	stdnet "net"
 	"testing"
 	"time"
@@ -40,5 +41,33 @@ func TestConnectHelpersWithOptionsUseDialerNetworkAndTimeout(t *testing.T) {
 	}
 	if dialer.network != "tcp4" || dialer.address != addr.String() {
 		t.Fatalf("is-open dial target = %s %s", dialer.network, dialer.address)
+	}
+}
+
+func TestConnectWrapperBoundaries(t *testing.T) {
+	dialer := &recordingDialer{data: make(chan []byte, 1)}
+	addr := &stdnet.TCPAddr{IP: stdnet.ParseIP("127.0.0.1"), Port: 4321}
+	if !IsOpenWithOptions(addr, WithConnectDialer(dialer)) || dialer.address == "" {
+		t.Fatalf("IsOpenWithOptions did not use injected dialer")
+	}
+	if IsOpenWithOptions(nil, WithConnectDialer(dialer)) {
+		t.Fatalf("IsOpenWithOptions(nil) = true")
+	}
+
+	wantErr := errors.New("dial failed")
+	dialer = &recordingDialer{err: wantErr, data: make(chan []byte, 1)}
+	if err := NetCatWithOptions("127.0.0.1", 1234, []byte("hello"), WithConnectDialer(dialer)); !errors.Is(err, wantErr) {
+		t.Fatalf("NetCatWithOptions dial error = %v", err)
+	}
+	if GetRemoteAddress(nil) != "" || IsConnected(nil) {
+		t.Fatalf("nil connection helpers should be empty/false")
+	}
+	conn, err := ConnectWithOptions("127.0.0.1", 1234, WithConnectDialer(&recordingDialer{data: make(chan []byte, 1)}))
+	if err != nil {
+		t.Fatalf("ConnectWithOptions pipe: %v", err)
+	}
+	defer func() { _ = conn.Close() }()
+	if GetRemoteAddress(conn) == "" || !IsConnected(conn) {
+		t.Fatalf("connection helpers remote=%q connected=%v", GetRemoteAddress(conn), IsConnected(conn))
 	}
 }

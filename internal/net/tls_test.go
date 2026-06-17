@@ -2,6 +2,8 @@ package net
 
 import (
 	"crypto/tls"
+	"crypto/x509"
+	"errors"
 	"io"
 	"strings"
 	"testing"
@@ -30,12 +32,33 @@ func TestTLSReaderWithOptionsUsesReadAll(t *testing.T) {
 }
 
 func TestTLSHelpers(t *testing.T) {
-	cfg := NewTLSConfigBuilder().SetMinVersion(tls.VersionTLS12).SetServerName("example.com").Build()
-	if cfg.MinVersion != tls.VersionTLS12 || cfg.ServerName != "example.com" {
+	pool := x509.NewCertPool()
+	certs := []tls.Certificate{{Certificate: [][]byte{[]byte("cert")}}}
+	cfg := NewTLSConfigBuilder().
+		SetMinVersion(tls.VersionTLS12).
+		SetMaxVersion(tls.VersionTLS13).
+		SetServerName("example.com").
+		SetRootCAs(pool).
+		SetCertificates(certs).
+		Build()
+	if cfg.MinVersion != tls.VersionTLS12 || cfg.MaxVersion != tls.VersionTLS13 || cfg.ServerName != "example.com" || cfg.RootCAs != pool || len(cfg.Certificates) != 1 {
 		t.Fatalf("TLS builder failed: %#v", cfg)
 	}
-	if TLSVersion(TLSv13) != tls.VersionTLS13 {
-		t.Fatal("TLSVersion failed")
+	created := CreateTLSConfig()
+	if created.MinVersion != tls.VersionTLS12 {
+		t.Fatalf("CreateTLSConfig MinVersion = %x", created.MinVersion)
+	}
+	tests := map[string]uint16{
+		TLSv1:  tls.VersionTLS10,
+		TLSv11: tls.VersionTLS11,
+		TLSv12: tls.VersionTLS12,
+		TLSv13: tls.VersionTLS13,
+		SSL:    tls.VersionTLS12,
+	}
+	for protocol, want := range tests {
+		if got := TLSVersion(protocol); got != want {
+			t.Fatalf("TLSVersion(%q) = %x, want %x", protocol, got, want)
+		}
 	}
 }
 
@@ -68,5 +91,16 @@ LA6wKo8yoCnW36b+nvxlhHvzrIxwWCgwCWM=
 	}
 	if b.Build().RootCAs == nil {
 		t.Fatal("AddRootCAReader should initialize RootCAs")
+	}
+
+	wantErr := errors.New("read failed")
+	if err := NewTLSConfigBuilder().AddRootCAFileWithOptions("missing.pem", WithTLSReadFile(func(string) ([]byte, error) { return nil, wantErr })); !errors.Is(err, wantErr) {
+		t.Fatalf("AddRootCAFileWithOptions error = %v", err)
+	}
+	if err := NewTLSConfigBuilder().AddRootCAReaderWithOptions(strings.NewReader("ignored"), WithTLSReadAll(func(io.Reader) ([]byte, error) { return nil, wantErr })); !errors.Is(err, wantErr) {
+		t.Fatalf("AddRootCAReaderWithOptions error = %v", err)
+	}
+	if err := NewTLSConfigBuilder().AddRootCAFileWithOptions("ca.pem", WithTLSReadFile(nil)); err == nil {
+		t.Fatalf("AddRootCAFileWithOptions nil reader should use default and fail missing file")
 	}
 }
