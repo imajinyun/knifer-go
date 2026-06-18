@@ -5,86 +5,140 @@ import (
 	"time"
 )
 
-func TestNoCache(t *testing.T) {
-	c := NewNo[string, int]()
-	c.Put("a", 1)
-	if c.Size() != 0 || !c.IsEmpty() {
-		t.Fatalf("nocache size/empty wrong")
-	}
-	if _, ok := c.Get("a"); ok {
-		t.Fatalf("nocache get hit?")
-	}
-	v, err := c.GetOrLoad("k", func() (int, error) { return 7, nil })
-	if err != nil || v != 7 {
-		t.Fatalf("nocache loader: %v %v", v, err)
+func TestNewNoCache(t *testing.T) {
+	c := NewNoCache[string, int]()
+	if c == nil {
+		t.Fatal("NewNoCache returned nil")
 	}
 }
 
-func TestNoCacheExtraMethods(t *testing.T) {
-	c := NewNo[string, int]()
-	if c.HitCount() != 0 || c.MissCount() != 0 {
-		t.Fatalf("nocache stats: hit=%d miss=%d", c.HitCount(), c.MissCount())
-	}
-	c.SetListener(nil)
-	c.Clear()
-	if c.Keys() != nil || c.Values() != nil || c.ContainsKey("x") {
-		t.Fatalf("nocache unexpected returns")
-	}
-}
+func TestNoCacheBasic(t *testing.T) {
+	c := NewNoCache[string, int]()
 
-func TestNoCacheCapacityAndTimeout(t *testing.T) {
-	c := NewNo[string, int]()
 	if c.Capacity() != 0 {
 		t.Fatalf("Capacity = %d, want 0", c.Capacity())
 	}
 	if c.Timeout() != 0 {
 		t.Fatalf("Timeout = %v, want 0", c.Timeout())
 	}
-}
-
-func TestNoCachePutWithTimeout(t *testing.T) {
-	c := NewNo[string, int]()
-	c.PutWithTimeout("a", 1, time.Second) // should be no-op
 	if c.Size() != 0 {
-		t.Fatal("PutWithTimeout should not change size")
+		t.Fatalf("Size = %d, want 0", c.Size())
 	}
-}
-
-func TestNoCacheGetWithUpdate(t *testing.T) {
-	c := NewNo[string, int]()
-	c.Put("a", 1)
-	v, ok := c.GetWithUpdate("a", true)
-	if ok || v != 0 {
-		t.Fatalf("GetWithUpdate = (%d, %v), want (0, false)", v, ok)
+	if !c.IsEmpty() {
+		t.Fatal("IsEmpty should be true")
 	}
-}
-
-func TestNoCacheGetOrLoadNilSupplier(t *testing.T) {
-	c := NewNo[string, int]()
-	v, err := c.GetOrLoad("x", nil)
-	if err != nil || v != 0 {
-		t.Fatalf("GetOrLoad nil supplier = (%d, %v), want (0, nil)", v, err)
-	}
-}
-
-func TestNoCacheGetOrLoadWith(t *testing.T) {
-	c := NewNo[string, int]()
-	v, err := c.GetOrLoadWith("x", false, 0, func() (int, error) { return 42, nil })
-	if err != nil || v != 42 {
-		t.Fatalf("GetOrLoadWith = (%d, %v), want (42, nil)", v, err)
-	}
-}
-
-func TestNoCacheRemoveIsFullPrune(t *testing.T) {
-	c := NewNo[string, int]()
-	c.Remove("a") // no-op
 	if c.IsFull() {
 		t.Fatal("IsFull should be false")
 	}
 	if c.Prune() != 0 {
 		t.Fatal("Prune should return 0")
 	}
-	if !c.IsEmpty() {
-		t.Fatal("IsEmpty should be true (always empty for NoCache)")
+}
+
+func TestNoCachePutAndGet(t *testing.T) {
+	c := NewNoCache[string, int]()
+	c.Put("a", 1)
+	v, ok := c.Get("a")
+	if ok || v != 0 {
+		t.Fatalf("Get = (%d, %t), want (0, false)", v, ok)
+	}
+}
+
+func TestNoCachePutWithTimeout(t *testing.T) {
+	c := NewNoCache[string, int]()
+	c.PutWithTimeout("a", 1, time.Minute)
+	v, ok := c.Get("a")
+	if ok || v != 0 {
+		t.Fatalf("Get after PutWithTimeout = (%d, %t), want (0, false)", v, ok)
+	}
+}
+
+func TestNoCacheGetWithUpdate(t *testing.T) {
+	c := NewNoCache[string, int]()
+	v, ok := c.GetWithUpdate("a", true)
+	if ok || v != 0 {
+		t.Fatalf("GetWithUpdate = (%d, %t), want (0, false)", v, ok)
+	}
+}
+
+func TestNoCacheGetOrLoad(t *testing.T) {
+	c := NewNoCache[string, int]()
+	v, err := c.GetOrLoad("a", func() (int, error) { return 42, nil })
+	if err != nil {
+		t.Fatalf("GetOrLoad error = %v", err)
+	}
+	if v != 42 {
+		t.Fatalf("GetOrLoad = %d, want 42", v)
+	}
+}
+
+func TestNoCacheGetOrLoadWith(t *testing.T) {
+	c := NewNoCache[string, int]()
+	v, err := c.GetOrLoadWith("a", true, time.Minute, func() (int, error) { return 42, nil })
+	if err != nil {
+		t.Fatalf("GetOrLoadWith error = %v", err)
+	}
+	if v != 42 {
+		t.Fatalf("GetOrLoadWith = %d, want 42", v)
+	}
+}
+
+func TestNoCacheGetOrLoadNilSupplier(t *testing.T) {
+	c := NewNoCache[string, int]()
+	v, err := c.GetOrLoad("a", nil)
+	if err != nil {
+		t.Fatalf("GetOrLoad with nil supplier error = %v", err)
+	}
+	if v != 0 {
+		t.Fatalf("GetOrLoad with nil supplier = %d, want 0", v)
+	}
+}
+
+func TestNoCacheRemove(t *testing.T) {
+	c := NewNoCache[string, int]()
+	c.Remove("a")
+}
+
+func TestNoCacheContainsKey(t *testing.T) {
+	c := NewNoCache[string, int]()
+	if c.ContainsKey("a") {
+		t.Fatal("ContainsKey should be false")
+	}
+}
+
+func TestNoCacheClear(t *testing.T) {
+	c := NewNoCache[string, int]()
+	c.Clear()
+}
+
+func TestNoCacheKeysAndValues(t *testing.T) {
+	c := NewNoCache[string, int]()
+	if k := c.Keys(); k != nil {
+		t.Fatalf("Keys = %v, want nil", k)
+	}
+	if v := c.Values(); v != nil {
+		t.Fatalf("Values = %v, want nil", v)
+	}
+}
+
+func TestNoCacheSetListener(t *testing.T) {
+	c := NewNoCache[string, int]()
+	c2 := c.SetListener(nil)
+	if c2 == nil {
+		t.Fatal("SetListener should not return nil")
+	}
+	// Verify returned value is actually a NoCache
+	if _, ok := c2.(NoCache[string, int]); !ok {
+		t.Fatal("SetListener should return NoCache")
+	}
+}
+
+func TestNoCacheHitMissCount(t *testing.T) {
+	c := NewNoCache[string, int]()
+	if c.HitCount() != 0 {
+		t.Fatalf("HitCount = %d, want 0", c.HitCount())
+	}
+	if c.MissCount() != 0 {
+		t.Fatalf("MissCount = %d, want 0", c.MissCount())
 	}
 }

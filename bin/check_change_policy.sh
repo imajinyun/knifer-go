@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 AI_CONTEXT="${ROOT_DIR}/ai-context.json"
+DIFF_FILTER="ACDMRTUXB"
 
 changed_files_from_base() {
 	local base_ref="${AGENT_CHANGE_BASE_REF:-}"
@@ -10,13 +11,13 @@ changed_files_from_base() {
 		base_ref="origin/${GITHUB_BASE_REF}"
 	fi
 	if [ -n "${base_ref}" ] && git -C "${ROOT_DIR}" rev-parse --verify --quiet "${base_ref}^{commit}" >/dev/null; then
-		git -C "${ROOT_DIR}" diff --name-only --diff-filter=ACMRTUXB "${base_ref}...HEAD" --
+		git -C "${ROOT_DIR}" diff --name-only --diff-filter="${DIFF_FILTER}" "${base_ref}...HEAD" --
 	fi
 }
 
 changed_files_from_worktree() {
-	git -C "${ROOT_DIR}" diff --name-only --diff-filter=ACMRTUXB HEAD --
-	git -C "${ROOT_DIR}" diff --name-only --cached --diff-filter=ACMRTUXB --
+	git -C "${ROOT_DIR}" diff --name-only --diff-filter="${DIFF_FILTER}" HEAD --
+	git -C "${ROOT_DIR}" diff --name-only --cached --diff-filter="${DIFF_FILTER}" --
 	git -C "${ROOT_DIR}" ls-files --others --exclude-standard --
 }
 

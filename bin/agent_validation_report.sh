@@ -13,6 +13,7 @@ import sys
 from datetime import datetime, timezone
 
 root_dir, ai_context, output_file = sys.argv[1], sys.argv[2], sys.argv[3]
+DIFF_FILTER = "ACDMRTUXB"
 
 
 def git(args):
@@ -43,11 +44,16 @@ def run(args):
     }
 
 
-def changed_files():
-    files = set()
+def change_base_ref():
     base_ref = os.environ.get("AGENT_CHANGE_BASE_REF")
     if not base_ref and os.environ.get("GITHUB_BASE_REF"):
         base_ref = "origin/" + os.environ["GITHUB_BASE_REF"]
+    return base_ref or ""
+
+
+def changed_files():
+    files = set()
+    base_ref = change_base_ref()
     if base_ref:
         result = subprocess.run(
             ["git", "-C", root_dir, "rev-parse", "--verify", "--quiet", base_ref + "^{commit}"],
@@ -56,14 +62,14 @@ def changed_files():
             stderr=subprocess.PIPE,
         )
         if result.returncode == 0:
-            output = git(["diff", "--name-only", "--diff-filter=ACMRTUXB", base_ref + "...HEAD", "--"])
+            output = git(["diff", "--name-only", "--diff-filter=" + DIFF_FILTER, base_ref + "...HEAD", "--"])
             for line in output.splitlines():
                 line = line.strip().strip("/")
                 if line:
                     files.add(line)
     for args in (
-        ["diff", "--name-only", "--diff-filter=ACMRTUXB", "HEAD", "--"],
-        ["diff", "--name-only", "--cached", "--diff-filter=ACMRTUXB", "--"],
+        ["diff", "--name-only", "--diff-filter=" + DIFF_FILTER, "HEAD", "--"],
+        ["diff", "--name-only", "--cached", "--diff-filter=" + DIFF_FILTER, "--"],
         ["ls-files", "--others", "--exclude-standard", "--"],
     ):
         output = git(args)
@@ -136,6 +142,8 @@ report = {
     "module": data["project"]["module"],
     "branch": git(["branch", "--show-current"]),
     "commit": git(["rev-parse", "HEAD"]),
+    "change_base_ref": change_base_ref(),
+    "diff_filter": DIFF_FILTER,
     "changed_files": files,
     "detected_change_policies": sorted(detected_policies),
     "required_commands": required_commands,

@@ -12,6 +12,7 @@ import sys
 
 root_dir, ai_context, evidence_file = sys.argv[1], sys.argv[2], sys.argv[3]
 errors = []
+DIFF_FILTER = "ACDMRTUXB"
 
 
 def add_error(message):
@@ -28,6 +29,15 @@ def require_mapping(value, path):
 def require_string(value, path):
     if not isinstance(value, str) or not value.strip():
         add_error(f"{path} must be a non-empty string")
+        return ""
+    return value
+
+
+def require_optional_string(value, path):
+    if value is None:
+        return ""
+    if not isinstance(value, str):
+        add_error(f"{path} must be a string")
         return ""
     return value
 
@@ -75,6 +85,10 @@ if require_string(evidence.get("module"), "module") != project.get("module"):
 for key in ("generated_at", "branch", "commit"):
     require_string(evidence.get(key), key)
 
+require_optional_string(evidence.get("change_base_ref"), "change_base_ref")
+if require_string(evidence.get("diff_filter"), "diff_filter") != DIFF_FILTER:
+    add_error(f"diff_filter must be {DIFF_FILTER}")
+
 changed_files = require_string_list(evidence.get("changed_files"), "changed_files")
 detected_policies = require_string_list(evidence.get("detected_change_policies"), "detected_change_policies")
 required_commands = require_string_list(evidence.get("required_commands"), "required_commands")
@@ -114,7 +128,7 @@ if require_string(evidence.get("highest_required_command_risk"), "highest_requir
     add_error(f"highest_required_command_risk must be {highest_risk}")
 
 checks = require_mapping(evidence.get("checks"), "checks")
-for check_name in ("ai_context_check", "change_policy_check", "security_sensitive_diff"):
+for check_name in ("ai_context_check", "change_policy_check"):
     check = require_mapping(checks.get(check_name), f"checks.{check_name}")
     if require_string(check.get("status"), f"checks.{check_name}.status") != "passed":
         add_error(f"checks.{check_name}.status must be passed")
@@ -147,6 +161,36 @@ if sorted(security_sensitive_paths) != expected_security_sensitive_paths:
         "security_sensitive_paths must match changed security-sensitive paths; "
         f"got {sorted(security_sensitive_paths)}, want {expected_security_sensitive_paths}"
     )
+
+security_sensitive_check = require_mapping(checks.get("security_sensitive_diff"), "checks.security_sensitive_diff")
+security_sensitive_status = require_string(
+    security_sensitive_check.get("status"),
+    "checks.security_sensitive_diff.status",
+)
+security_sensitive_exit_code = security_sensitive_check.get("exit_code")
+if not isinstance(security_sensitive_exit_code, int) or isinstance(security_sensitive_exit_code, bool):
+    add_error("checks.security_sensitive_diff.exit_code must be an integer")
+require_string(security_sensitive_check.get("cmd"), "checks.security_sensitive_diff.cmd")
+security_sensitive_stdout = security_sensitive_check.get("stdout", "")
+security_sensitive_stderr = security_sensitive_check.get("stderr", "")
+if not expected_security_sensitive_paths:
+    if security_sensitive_status != "passed":
+        add_error("checks.security_sensitive_diff.status must be passed when no security-sensitive paths changed")
+    if isinstance(security_sensitive_exit_code, int) and security_sensitive_exit_code != 0:
+        add_error("checks.security_sensitive_diff.exit_code must be 0 when no security-sensitive paths changed")
+else:
+    if security_sensitive_status != "failed":
+        add_error("checks.security_sensitive_diff.status must be failed when security-sensitive paths changed")
+    if isinstance(security_sensitive_exit_code, int) and security_sensitive_exit_code == 0:
+        add_error("checks.security_sensitive_diff.exit_code must be non-zero when security-sensitive paths changed")
+    combined_security_output = "\n".join(
+        value for value in (security_sensitive_stdout, security_sensitive_stderr) if isinstance(value, str)
+    )
+    if "no changed files" in combined_security_output:
+        add_error("checks.security_sensitive_diff output conflicts with security_sensitive_paths")
+    for path in expected_security_sensitive_paths:
+        if path not in combined_security_output:
+            add_error(f"checks.security_sensitive_diff output must mention changed security-sensitive path {path!r}")
 
 if not isinstance(evidence.get("worktree_status"), str):
     add_error("worktree_status must be a string")
