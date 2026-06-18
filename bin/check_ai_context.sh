@@ -184,6 +184,8 @@ for name, policy in sorted(change_type_policies.items()):
         add_error(f"change_type_policies.{name} must require change_policy_check")
     if "agent_evidence" not in required_commands:
         add_error(f"change_type_policies.{name} must require agent_evidence")
+    if "agent_evidence_check" not in required_commands:
+        add_error(f"change_type_policies.{name} must require agent_evidence_check")
 
 git_hooks = require_mapping(data.get("git_hooks"), "git_hooks")
 require_bool(git_hooks.get("optional"), "git_hooks.optional")

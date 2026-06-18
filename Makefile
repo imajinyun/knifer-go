@@ -1,4 +1,4 @@
-.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence test test-race coverage-profile coverage-report coverage-check api-check ai-context-check ci-workflow-check generate mod-verify tidy-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke check ci-test
+.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check test test-race coverage-profile coverage-report coverage-check api-check ai-context-check ci-workflow-check generate mod-verify tidy-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -29,6 +29,7 @@ help:
 	@echo "  change-policy-check Detect change policies from local diff"
 	@echo "  security-sensitive-diff Detect changes to security-sensitive packages"
 	@echo "  agent-evidence  Emit machine-readable Agent validation evidence"
+	@echo "  agent-evidence-check Validate machine-readable Agent validation evidence"
 	@echo "  quick-check     Run fast local governance gates"
 	@echo "  security-check  Run lint and govulncheck"
 	@echo "  full-check      Run full local gates with race coverage"
@@ -91,6 +92,9 @@ security-sensitive-diff:
 
 agent-evidence:
 	bash bin/agent_validation_report.sh
+
+agent-evidence-check:
+	bash bin/check_agent_evidence.sh
 
 test:
 	$(GO) test $(PKGS)
@@ -156,7 +160,7 @@ agent-full-check: full-check
 
 agent-security-check: security-check
 
-ci-agent-governance: change-policy-check ci-workflow-check agent-evidence
+ci-agent-governance: change-policy-check ci-workflow-check agent-evidence agent-evidence-check
 
 bench:
 	$(GO) test -bench=$(BENCH) -benchmem -benchtime=$(BENCHTIME) -count=$(BENCHCOUNT) -run=^$$ $(BENCH_PKGS)

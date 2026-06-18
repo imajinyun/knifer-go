@@ -94,6 +94,7 @@
 - `make change-policy-check`: detect applicable change policies from staged, unstaged, and untracked local diff.
 - `make security-sensitive-diff`: detect changes under security-sensitive public facades and their internal implementations.
 - `make agent-evidence`: write `/tmp/go-knifer-agent-validation.json` with detected policies, required commands, and governance check evidence.
+- `make agent-evidence-check`: validate Agent evidence schema, policy references, command references, risk calculation, and embedded check statuses.
 - `make security-check`: lint and govulncheck vulnerability scan.
 - `make agent-security-check`: AI/Agent security validation gate.
 - `make ci-agent-governance`: CI Agent governance gate that detects change policies from the PR/push base and emits validation evidence.
@@ -116,6 +117,7 @@
 - Keep `ai-context.json` synchronized with Makefile targets, facade inventory, command side effects, command `risk_level`, coverage gates, and security-sensitive package lists.
 - Keep `ai-context.json.change_type_policies` synchronized with PR template change types and required Agent validation commands.
 - Use `make change-policy-check` before choosing validation scope and `make agent-evidence` before reporting Agent validation.
+- Use `make agent-evidence-check` after generating Agent evidence; policies must require evidence validation, not just evidence generation.
 - CI runs `make ci-agent-governance` with `AGENT_CHANGE_BASE_REF` and uploads the Agent validation evidence JSON artifact.
 - Keep `ai-context.json.ci_workflows` synchronized with required GitHub Actions jobs, Agent governance commands, environment variables, and artifacts.
 - Use `make security-sensitive-diff` to detect whether changed paths require the `security_sensitive` validation policy.
