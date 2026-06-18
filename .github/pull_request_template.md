@@ -19,7 +19,9 @@
 - [ ] I added or updated tests for changed behavior.
 - [ ] I ran `make agent-check` or documented why it is not applicable.
 - [ ] I ran `make worktree-check` or documented unrelated untracked files below.
+- [ ] I ran `make change-policy-check` and applied the detected policy below.
 - [ ] I ran `make security-sensitive-diff` or documented why it is not applicable.
+- [ ] I ran `make agent-evidence` and reviewed `/tmp/go-knifer-agent-validation.json`.
 - [ ] I ran `go test -race -shuffle=on -coverprofile=/tmp/go-knifer-coverage.out ./...` when the change is non-trivial.
 - [ ] I ran `bash bin/check_coverage.sh /tmp/go-knifer-coverage.out` when a fresh coverage profile was generated.
 - [ ] I ran `bash bin/check_arch.sh`.
@@ -32,6 +34,10 @@
   -
 - Commands intentionally skipped and reason:
   -
+- Agent evidence:
+  - `/tmp/go-knifer-agent-validation.json` generated: yes / no
+  - Detected change policies:
+  - Required commands:
 
 ## API and coverage impact
 

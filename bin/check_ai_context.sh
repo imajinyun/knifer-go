@@ -180,6 +180,10 @@ for name, policy in sorted(change_type_policies.items()):
         add_error("change_type_policies.public_api must require api_check")
     if name == "security_sensitive" and not security_review_required:
         add_error("change_type_policies.security_sensitive must require security review")
+    if "change_policy_check" not in required_commands:
+        add_error(f"change_type_policies.{name} must require change_policy_check")
+    if "agent_evidence" not in required_commands:
+        add_error(f"change_type_policies.{name} must require agent_evidence")
 
 git_hooks = require_mapping(data.get("git_hooks"), "git_hooks")
 require_bool(git_hooks.get("optional"), "git_hooks.optional")

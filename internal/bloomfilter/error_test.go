@@ -18,6 +18,17 @@ func TestBitSetBloomFilterErrorContract(t *testing.T) {
 	}
 }
 
+func TestBloomFilterErrorString(t *testing.T) {
+	err := &BloomFilterError{Code: knifer.ErrCodeInternal, Msg: "test error", Cause: nil}
+	if got := err.Error(); got != "test error" {
+		t.Fatalf("BloomFilterError.Error() = %q, want %q", got, "test error")
+	}
+	errWithCause := &BloomFilterError{Code: knifer.ErrCodeInternal, Msg: "test", Cause: os.ErrNotExist}
+	if got := errWithCause.Error(); got != "test: file does not exist" {
+		t.Fatalf("BloomFilterError with cause = %q", got)
+	}
+}
+
 func assertBloomFilterCode(t *testing.T, err error, code knifer.ErrCode) {
 	t.Helper()
 	if err == nil {

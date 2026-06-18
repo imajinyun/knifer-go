@@ -68,6 +68,17 @@ func TestCodecErrorContract(t *testing.T) {
 	}
 }
 
+func TestCodecErrorString(t *testing.T) {
+	err := &CodecError{Code: knifer.ErrCodeInternal, Msg: "test error", Cause: nil}
+	if got := err.Error(); got != "test error" {
+		t.Fatalf("CodecError.Error() = %q, want %q", got, "test error")
+	}
+	errWithCause := &CodecError{Code: knifer.ErrCodeInternal, Msg: "test", Cause: errors.New("wrapped")}
+	if got := errWithCause.Error(); got != "test: wrapped" {
+		t.Fatalf("CodecError with cause = %q", got)
+	}
+}
+
 func assertCodecInvalidInput(t *testing.T, err error) {
 	t.Helper()
 	const code = knifer.ErrCodeInvalidInput

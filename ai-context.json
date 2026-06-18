@@ -62,6 +62,25 @@
       "risk_level": "low",
       "notes": "Detects changed files under security-sensitive public facades and their internal implementations."
     },
+    "change_policy_check": {
+      "cmd": "make change-policy-check",
+      "safe_for_agent_auto_run": true,
+      "writes_workspace": false,
+      "writes_git_config": false,
+      "network_required": false,
+      "risk_level": "low",
+      "notes": "Detects changed file categories and maps them to change_type_policies."
+    },
+    "agent_evidence": {
+      "cmd": "make agent-evidence",
+      "safe_for_agent_auto_run": true,
+      "writes_workspace": false,
+      "writes_git_config": false,
+      "network_required": false,
+      "risk_level": "low",
+      "creates_artifacts": ["/tmp/go-knifer-agent-validation.json"],
+      "notes": "Writes machine-readable Agent validation evidence outside the repository root."
+    },
     "agent_full_check": {
       "cmd": "make agent-full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out",
       "safe_for_agent_auto_run": true,
@@ -220,44 +239,44 @@
   },
   "change_type_policies": {
     "bug_fix": {
-      "required_commands": ["agent_check"],
+      "required_commands": ["change_policy_check", "agent_check", "agent_evidence"],
       "coverage_required": false,
       "security_review_required": false,
       "notes": "Default policy for localized behavior fixes. Add coverage_profile and coverage_check when the fix is non-trivial."
     },
     "public_api": {
-      "required_commands": ["agent_full_check", "api_check", "coverage_check"],
+      "required_commands": ["change_policy_check", "agent_full_check", "api_check", "coverage_check", "agent_evidence"],
       "requires_user_consent_commands": ["api_update"],
       "coverage_required": true,
       "security_review_required": false,
       "notes": "Public API additions or breaking changes must keep the API snapshot and coverage evidence current."
     },
     "internal_refactor": {
-      "required_commands": ["agent_check", "coverage_profile", "coverage_check"],
+      "required_commands": ["change_policy_check", "agent_check", "coverage_profile", "coverage_check", "agent_evidence"],
       "coverage_required": true,
       "security_review_required": false,
       "notes": "Internal refactors should preserve behavior and coverage while passing architecture gates."
     },
     "documentation": {
-      "required_commands": ["agent_check"],
+      "required_commands": ["change_policy_check", "agent_check", "agent_evidence"],
       "coverage_required": false,
       "security_review_required": false,
       "notes": "Documentation-only changes should still pass metadata, API snapshot, and whitespace checks."
     },
     "ci_governance": {
-      "required_commands": ["agent_check", "ai_context_check"],
+      "required_commands": ["change_policy_check", "agent_check", "ai_context_check", "agent_evidence"],
       "coverage_required": false,
       "security_review_required": false,
       "notes": "CI and governance changes must keep Makefile targets and AI metadata synchronized."
     },
     "security_sensitive": {
-      "required_commands": ["security_sensitive_diff", "agent_full_check", "agent_security_check"],
+      "required_commands": ["change_policy_check", "security_sensitive_diff", "agent_full_check", "agent_security_check", "agent_evidence"],
       "coverage_required": true,
       "security_review_required": true,
       "notes": "Changes touching security-sensitive packages must include regression coverage and security validation."
     },
     "dependency_change": {
-      "required_commands": ["agent_check", "agent_security_check"],
+      "required_commands": ["change_policy_check", "agent_check", "agent_security_check", "agent_evidence"],
       "coverage_required": false,
       "security_review_required": true,
       "notes": "Dependency changes must verify module integrity and vulnerability exposure."

@@ -67,3 +67,15 @@ func TestBloomFilterInterface(t *testing.T) {
 	var _ BloomFilter = (*BitMapBloomFilter)(nil)
 	var _ BloomFilter = (*FuncFilter)(nil)
 }
+
+func TestNamedHashFilterConstructors(t *testing.T) {
+	if f := NewHfFilter(1024); f == nil || !f.Add("x") || !f.Contains("x") {
+		t.Fatal("NewHfFilter failed")
+	}
+	if f := NewHfIpFilter(1024); f == nil || !f.Add("x") || !f.Contains("x") {
+		t.Fatal("NewHfIpFilter failed")
+	}
+	if f := NewTianlFilter(1024); f == nil || !f.Add("x") || !f.Contains("x") {
+		t.Fatal("NewTianlFilter failed")
+	}
+}

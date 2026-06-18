@@ -30,4 +30,10 @@ func TestToInt64AndFloat(t *testing.T) {
 	if ToFloat64Default("x", 1.5) != 1.5 {
 		t.Fatalf("ToFloat64 default")
 	}
+	if ToInt64Default("abc", 42) != 42 {
+		t.Fatalf("ToInt64Default")
+	}
+	if ToInt64Default("123", 0) != 123 {
+		t.Fatalf("ToInt64Default valid")
+	}
 }
