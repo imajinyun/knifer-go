@@ -10,7 +10,7 @@ import (
 )
 
 func TestWithSentryDSN(t *testing.T) {
-	cfg := applyInitOptions("", []InitOption{WithSentryDSN("https://public@example.com/1")})
+	cfg := applyInitOptions([]InitOption{WithSentryDSN("https://public@example.com/1")})
 	if cfg.dsn != "https://public@example.com/1" {
 		t.Fatalf("dsn = %q, want %q", cfg.dsn, "https://public@example.com/1")
 	}
@@ -18,7 +18,7 @@ func TestWithSentryDSN(t *testing.T) {
 
 func TestWithLogFormatter(t *testing.T) {
 	f := &emptyFormatter{}
-	cfg := applyInitOptions("", []InitOption{WithLogFormatter(f)})
+	cfg := applyInitOptions([]InitOption{WithLogFormatter(f)})
 	if cfg.formatter != f {
 		t.Fatal("WithLogFormatter did not set formatter")
 	}
@@ -26,7 +26,7 @@ func TestWithLogFormatter(t *testing.T) {
 
 func TestWithSentryClientOptions(t *testing.T) {
 	opts := sentry.ClientOptions{AttachStacktrace: false, Dsn: "https://public@example.com/1"}
-	cfg := applyInitOptions("", []InitOption{WithSentryClientOptions(opts)})
+	cfg := applyInitOptions([]InitOption{WithSentryClientOptions(opts)})
 	if cfg.sentryOptions.Dsn != "https://public@example.com/1" {
 		t.Fatalf("sentryOptions.Dsn = %q", cfg.sentryOptions.Dsn)
 	}
@@ -40,7 +40,7 @@ func TestWithSentryClient(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	cfg := applyInitOptions("", []InitOption{WithSentryClient(client)})
+	cfg := applyInitOptions([]InitOption{WithSentryClient(client)})
 	if cfg.sentryClient != client {
 		t.Fatal("WithSentryClient did not set client")
 	}
@@ -58,7 +58,7 @@ func TestWithSentryClient(t *testing.T) {
 func TestWithInitErrorLogger(t *testing.T) {
 	var loggedErr error
 	var loggedMsg string
-	cfg := applyInitOptions("", []InitOption{
+	cfg := applyInitOptions([]InitOption{
 		WithInitErrorLogger(func(err error, msg string) {
 			loggedErr = err
 			loggedMsg = msg
@@ -73,7 +73,7 @@ func TestWithInitErrorLogger(t *testing.T) {
 	}
 
 	// nil option should keep the default
-	cfg2 := applyInitOptions("", []InitOption{WithInitErrorLogger(nil)})
+	cfg2 := applyInitOptions([]InitOption{WithInitErrorLogger(nil)})
 	if cfg2.logError == nil {
 		t.Fatal("nil WithInitErrorLogger should not overwrite default")
 	}
@@ -152,7 +152,7 @@ func TestSentryLogrusHookFire(t *testing.T) {
 }
 
 func TestApplyInitOptionsNilGuards(t *testing.T) {
-	cfg := applyInitOptions("", []InitOption{
+	cfg := applyInitOptions([]InitOption{
 		WithLogOutput(nil),
 		WithLogFormatter(nil),
 		WithSentryLevels(),

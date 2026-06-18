@@ -251,8 +251,11 @@ func TestLastDayOfMonth(t *testing.T) {
 		leap  bool
 		want  int
 	}{
-		{1, false, 31}, {2, false, 28}, {2, true, 29},
-		{4, false, 30}, {12, false, 31},
+		{1, false, 31},
+		{2, false, 28},
+		{2, true, 29},
+		{4, false, 30},
+		{12, false, 31},
 	}
 	for _, tc := range tests {
 		if got := lastDayOfMonth(tc.month, tc.leap); got != tc.want {

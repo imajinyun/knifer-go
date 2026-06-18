@@ -28,10 +28,9 @@ func TestApplyOptionsWithCapacityAndTimeout(t *testing.T) {
 
 func TestApplyOptionsWithListenerAndClock(t *testing.T) {
 	listener := CacheListenerFunc[string, int](func(string, int) {})
-	clock := func() time.Time { return time.Now() }
 	cfg := applyOptions[string, int]([]Option[string, int]{
 		WithListener[string, int](listener),
-		WithClock[string, int](clock),
+		WithClock[string, int](time.Now),
 	})
 	if cfg.listener == nil {
 		t.Fatal("listener should be set")
@@ -57,7 +56,7 @@ func TestWithTickerFactoryAndRunner(t *testing.T) {
 }
 
 func TestWithWeakFinalizerFunc(t *testing.T) {
-	type obj struct{ n int }
+	type obj struct{}
 	finalizer := func(v *obj, fn func(*obj)) {
 		runtime.SetFinalizer(v, fn)
 	}
@@ -99,7 +98,6 @@ func TestApplyListenerClockTickerRunner(t *testing.T) {
 	c := &abstractCache[string, int]{}
 	c.init(0, 0, nil)
 	listener := CacheListenerFunc[string, int](func(string, int) {})
-	clock := func() time.Time { return time.Now() }
 	factory := TickerFactory(func(time.Duration) (<-chan time.Time, Ticker) { return nil, nil })
 	runner := func(fn func()) { fn() }
 
@@ -108,7 +106,7 @@ func TestApplyListenerClockTickerRunner(t *testing.T) {
 		t.Fatal("applyListener failed")
 	}
 
-	applyClock(c, clock)
+	applyClock(c, time.Now)
 	if c.clock == nil {
 		t.Fatal("applyClock failed")
 	}

@@ -25,3 +25,21 @@ func TestNoSheetMatchesErrCode(t *testing.T) {
 		t.Fatalf("ErrNoSheet should match ErrCodeNotFound")
 	}
 }
+
+func TestSentinelErrorCode(t *testing.T) {
+	if got := ErrNoSheet.(*sentinel).ErrorCode(); got != knifer.ErrCodeNotFound {
+		t.Fatalf("ErrNoSheet.ErrorCode = %v, want %v", got, knifer.ErrCodeNotFound)
+	}
+	if got := ErrEmptySheetName.(*sentinel).ErrorCode(); got != knifer.ErrCodeInvalidInput {
+		t.Fatalf("ErrEmptySheetName.ErrorCode = %v, want %v", got, knifer.ErrCodeInvalidInput)
+	}
+}
+
+func TestSentinelError(t *testing.T) {
+	if got := ErrNoSheet.Error(); got == "" {
+		t.Fatal("ErrNoSheet.Error() should not be empty")
+	}
+	if got := ErrEmptySheetName.Error(); got == "" {
+		t.Fatal("ErrEmptySheetName.Error() should not be empty")
+	}
+}

@@ -240,9 +240,8 @@ func buildSentryClient(cfg initConfig) (*sentry.Client, error) {
 	return cfg.newSentryClient(sentryClientOptionsWithDSN(cfg))
 }
 
-func applyInitOptions(dsn string, opts []InitOption) initConfig {
+func applyInitOptions(opts []InitOption) initConfig {
 	cfg := initConfig{
-		dsn:          dsn,
 		envKey:       SentryDSN,
 		output:       io.Discard,
 		formatter:    EmptyFormatter,
@@ -309,7 +308,7 @@ func Init(sentryDSN string) {
 
 // InitWithOptions configures logrus output and optional Sentry forwarding with custom options.
 func InitWithOptions(opts ...InitOption) {
-	cfg := applyInitOptions("", opts)
+	cfg := applyInitOptions(opts)
 	cfg.setReportCaller(cfg.reportCaller)
 	cfg.setOutput(cfg.output)
 	cfg.setFormatter(cfg.formatter)
@@ -339,7 +338,7 @@ func InitWithOptions(opts ...InitOption) {
 // package-level Sentry state. When a DSN is configured, the returned logger receives
 // a Sentry hook backed by an isolated sentry-go client unless WithSentryClient supplies one.
 func NewIsolatedLogrusWithOptions(opts ...InitOption) *logrus.Logger {
-	cfg := applyInitOptions("", opts)
+	cfg := applyInitOptions(opts)
 	logger := logrus.New()
 	logger.SetReportCaller(cfg.reportCaller)
 	logger.SetOutput(cfg.output)

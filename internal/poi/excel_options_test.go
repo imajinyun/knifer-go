@@ -2,11 +2,14 @@ package poi
 
 import (
 	"errors"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
+
+	"github.com/xuri/excelize/v2"
 )
 
 func TestReadWriteOptions(t *testing.T) {
@@ -57,5 +60,72 @@ func TestWriteProviderOptions(t *testing.T) {
 	}))
 	if !errors.Is(err, statErr) {
 		t.Fatalf("WriteRows should return custom stat error, got %v", err)
+	}
+}
+
+func TestWithOpenFileFunc(t *testing.T) {
+	cfg := defaultReadConfig()
+	fn := func(path string, opts ...excelize.Options) (*excelize.File, error) { return nil, nil }
+	WithOpenFileFunc(fn)(&cfg)
+	if cfg.openFile == nil {
+		t.Fatal("WithOpenFileFunc did not set openFile")
+	}
+	// nil should not replace
+	WithOpenFileFunc(nil)(&cfg)
+	if cfg.openFile == nil {
+		t.Fatal("nil WithOpenFileFunc should not clear openFile")
+	}
+}
+
+func TestWithOpenReaderFunc(t *testing.T) {
+	cfg := defaultReadConfig()
+	fn := func(r io.Reader, opts ...excelize.Options) (*excelize.File, error) { return nil, nil }
+	WithOpenReaderFunc(fn)(&cfg)
+	if cfg.openReader == nil {
+		t.Fatal("WithOpenReaderFunc did not set openReader")
+	}
+	// nil should not replace
+	WithOpenReaderFunc(nil)(&cfg)
+	if cfg.openReader == nil {
+		t.Fatal("nil WithOpenReaderFunc should not clear openReader")
+	}
+}
+
+func TestWithCreateParents(t *testing.T) {
+	cfg := writeConfig{}
+	WithCreateParents(false)(&cfg)
+	if cfg.createParents {
+		t.Fatal("WithCreateParents(false) did not set createParents")
+	}
+}
+
+func TestWithSaveOptions(t *testing.T) {
+	cfg := writeConfig{}
+	WithSaveOptions(excelize.Options{RawCellValue: true})(&cfg)
+	if len(cfg.saveOptions) == 0 || !cfg.saveOptions[0].RawCellValue {
+		t.Fatal("WithSaveOptions did not set saveOptions")
+	}
+}
+
+func TestWithNewFileFunc(t *testing.T) {
+	cfg := writeConfig{}
+	fn := func() *excelize.File { return nil }
+	WithNewFileFunc(fn)(&cfg)
+	if cfg.newFile == nil {
+		t.Fatal("WithNewFileFunc did not set newFile")
+	}
+	// nil should not replace
+	WithNewFileFunc(nil)(&cfg)
+	if cfg.newFile == nil {
+		t.Fatal("nil WithNewFileFunc should not clear newFile")
+	}
+}
+
+func TestWithSaveAsFunc(t *testing.T) {
+	cfg := writeConfig{}
+	fn := func(f *excelize.File, path string, opts ...excelize.Options) error { return nil }
+	WithSaveAsFunc(fn)(&cfg)
+	if cfg.saveAs == nil {
+		t.Fatal("WithSaveAsFunc did not set saveAs")
 	}
 }
