@@ -17,6 +17,13 @@ func TestFacadePID(t *testing.T) {
 	}
 }
 
+func TestFacadeGetPIDWithOptions(t *testing.T) {
+	pid := vsys.GetCurrentPIDWithOptions(vsys.WithPIDFunc(func() int { return 77 }))
+	if pid != 77 {
+		t.Fatalf("GetCurrentPIDWithOptions = %d", pid)
+	}
+}
+
 func TestFacadeMemory(t *testing.T) {
 	total := vsys.TotalMemory()
 	free := vsys.FreeMemory()
@@ -34,6 +41,26 @@ func TestFacadeMemory(t *testing.T) {
 	}
 }
 
+func TestFacadeGetMemoryScalars(t *testing.T) {
+	if got := vsys.GetTotalMemory(); got > 0 {
+		t.Logf("GetTotalMemory = %d", got)
+	}
+	if got := vsys.GetFreeMemory(); got > 0 {
+		t.Logf("GetFreeMemory = %d", got)
+	}
+	if got := vsys.GetMaxMemory(); got > 0 {
+		t.Logf("GetMaxMemory = %d", got)
+	}
+	opt := vsys.WithReadMemStatsFunc(func(stats *runtime.MemStats) {
+		stats.Sys = 111
+		stats.HeapSys = 222
+		stats.HeapIdle = 333
+	})
+	if vsys.GetTotalMemoryWithOptions(opt) != 222 || vsys.GetFreeMemoryWithOptions(opt) != 333 || vsys.GetMaxMemoryWithOptions(opt) != 111 {
+		t.Fatal("expected Get*MemoryWithOptions to use providers")
+	}
+}
+
 func TestFacadeGoroutineCount(t *testing.T) {
 	count := vsys.TotalGoroutineCount()
 	if count < 1 {
@@ -41,5 +68,24 @@ func TestFacadeGoroutineCount(t *testing.T) {
 	}
 	if got := vsys.TotalGoroutineCountWithOptions(vsys.WithProcessNumGoroutineFunc(func() int { return 12 })); got != 12 {
 		t.Fatalf("TotalGoroutineCountWithOptions = %d", got)
+	}
+}
+
+func TestFacadeGetThreadCount(t *testing.T) {
+	count := vsys.GetTotalThreadCount()
+	if count < 1 {
+		t.Fatalf("expected at least 1 thread, got %d", count)
+	}
+	countWithOpts := vsys.GetTotalThreadCountWithOptions(vsys.WithProcessNumGoroutineFunc(func() int { return 25 }))
+	if countWithOpts != 25 {
+		t.Fatalf("GetTotalThreadCountWithOptions = %d", countWithOpts)
+	}
+}
+
+func TestFacadeResetInfoCache(t *testing.T) {
+	vsys.ResetInfoCache()
+	info := vsys.SystemHostInfo()
+	if info == nil {
+		t.Fatal("expected non-nil host info after reset")
 	}
 }

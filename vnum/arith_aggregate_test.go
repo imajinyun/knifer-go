@@ -3,7 +3,7 @@ package vnum
 import "testing"
 
 func TestNumFacade(t *testing.T) {
-	if Add(1.2, 2.3) != 3.5 || Sub(5, 2) != 3 || Mul(2, 3) != 6 || Div(10, 4, 1) != 2.5 {
+	if Add(1.2, 2.3) != 3.5 || Sub(5, 2) != 3 || Mul(2, 3) != 6 || Div(10, 4, 1) != 2.5 || Div(10, 4) != 2.5 {
 		t.Fatal("arithmetic helpers failed")
 	}
 	if Round(1.234, 2) != 1.23 || !IsNumber("3.14") || !IsInteger("42") || !IsDigits("123") {

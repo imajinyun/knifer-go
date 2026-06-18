@@ -48,6 +48,13 @@ def require_string_list(value, path):
     return value
 
 
+def require_number(value, path):
+    if not isinstance(value, (int, float)) or isinstance(value, bool):
+        add_error(f"{path} must be a number")
+        return 0.0
+    return float(value)
+
+
 try:
     with open(ai_context, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -122,6 +129,58 @@ for key in ("install", "uninstall", "pre_commit", "pre_push"):
 architecture_rules = require_string_list(data.get("architecture_rules"), "architecture_rules")
 if len(architecture_rules) < 5:
     add_error("architecture_rules should document the enforced architecture policy")
+
+coverage_gates = require_mapping(data.get("coverage_gates"), "coverage_gates")
+repository_threshold = require_number(coverage_gates.get("repository_threshold"), "coverage_gates.repository_threshold")
+package_thresholds = require_mapping(coverage_gates.get("package_thresholds"), "coverage_gates.package_thresholds")
+
+for package_path, threshold in sorted(package_thresholds.items()):
+    require_string(package_path, f"coverage_gates.package_thresholds.{package_path}")
+    require_number(threshold, f"coverage_gates.package_thresholds.{package_path}")
+
+coverage_script = os.path.join(root_dir, "bin", "check_coverage.sh")
+with open(coverage_script, "r", encoding="utf-8") as f:
+    coverage_script_text = f.read()
+
+script_threshold_match = re.search(r'threshold="\$\{COVERAGE_THRESHOLD:-([0-9.]+)\}"', coverage_script_text)
+if not script_threshold_match:
+    add_error("bin/check_coverage.sh repository threshold could not be parsed")
+else:
+    script_repository_threshold = float(script_threshold_match.group(1))
+    if repository_threshold != script_repository_threshold:
+        add_error(
+            "coverage_gates.repository_threshold does not match bin/check_coverage.sh "
+            f"({repository_threshold} != {script_repository_threshold})"
+        )
+
+script_package_match = re.search(
+    r'package_thresholds="\$\{PACKAGE_COVERAGE_THRESHOLDS:-(.*?)\}"',
+    coverage_script_text,
+)
+if not script_package_match:
+    add_error("bin/check_coverage.sh package thresholds could not be parsed")
+else:
+    script_package_thresholds = {}
+    for gate in script_package_match.group(1).split():
+        if "=" not in gate:
+            add_error(f"bin/check_coverage.sh has invalid package coverage gate {gate!r}")
+            continue
+        package_path, threshold = gate.split("=", 1)
+        script_package_thresholds[package_path] = float(threshold)
+
+    metadata_package_thresholds = {package_path: float(threshold) for package_path, threshold in package_thresholds.items()}
+    missing_thresholds = sorted(set(script_package_thresholds) - set(metadata_package_thresholds))
+    stale_thresholds = sorted(set(metadata_package_thresholds) - set(script_package_thresholds))
+    if missing_thresholds:
+        add_error("coverage_gates.package_thresholds is missing package(s): " + ", ".join(missing_thresholds))
+    if stale_thresholds:
+        add_error("coverage_gates.package_thresholds contains stale package(s): " + ", ".join(stale_thresholds))
+    for package_path in sorted(set(script_package_thresholds) & set(metadata_package_thresholds)):
+        if script_package_thresholds[package_path] != metadata_package_thresholds[package_path]:
+            add_error(
+                f"coverage_gates.package_thresholds.{package_path} does not match bin/check_coverage.sh "
+                f"({metadata_package_thresholds[package_path]} != {script_package_thresholds[package_path]})"
+            )
 
 public_facades = data.get("public_facades")
 if not isinstance(public_facades, list):

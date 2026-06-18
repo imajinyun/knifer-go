@@ -15,6 +15,21 @@ func TestIDCardFacade(t *testing.T) {
 	if !vident.IsValidIDCard("11010519491231002X") {
 		t.Fatal("expected valid ID card")
 	}
+	if !vident.IsValidIDCard18("11010519491231002X") {
+		t.Fatal("expected valid 18-digit ID card")
+	}
+	if !vident.IsValidIDCard18WithIgnoreCase("11010519491231002x", true) {
+		t.Fatal("expected valid 18-digit card with ignore case")
+	}
+	if vident.IsValidIDCard18WithIgnoreCase("11010519491231002x", false) {
+		t.Fatal("expected invalid 18-digit card without ignore case")
+	}
+	if !vident.IsValidIDCard15("130503670401001") {
+		t.Fatal("expected valid 15-digit ID card")
+	}
+	if age, ok := vident.Age("11010519491231002X"); !ok || age < 0 {
+		t.Fatalf("Age() = %d, %v", age, ok)
+	}
 	birth, ok := vident.BirthDate("11010519491231002X")
 	if !ok || birth.Format("2006-01-02") != "1949-12-31" {
 		t.Fatalf("BirthDate() = %v, %v", birth, ok)

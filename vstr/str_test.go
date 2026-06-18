@@ -48,6 +48,12 @@ func TestStringFacade(t *testing.T) {
 	if !ContainsEmoji("hello😀") || RemoveEmoji("hello😀") != "hello" {
 		t.Fatal("emoji helpers failed")
 	}
+	if !ContainsEmojiWithOptions("hello😀") || RemoveEmojiWithOptions("hello😀") != "hello" {
+		t.Fatal("emoji options helpers failed")
+	}
+	if WithEmojiMatcher(nil) == nil || WithEmojiReplacer(nil) == nil {
+		t.Fatal("emoji option setters returned nil")
+	}
 	if DefaultIfEmpty("", "x") != "x" || DefaultIfBlank(" ", "x") != "x" {
 		t.Fatal("default helpers failed")
 	}

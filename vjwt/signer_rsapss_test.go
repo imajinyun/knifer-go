@@ -32,3 +32,36 @@ func TestRSAPSSSignerFactories(t *testing.T) {
 		t.Fatalf("PS512WithOptions alg = %q", got)
 	}
 }
+
+func TestFacadePS256(t *testing.T) {
+	rsaKey, err := rsa.GenerateKey(rand.Reader, 1024)
+	if err != nil {
+		t.Fatalf("rsa.GenerateKey: %v", err)
+	}
+	s := vjwt.PS256(rsaKey, &rsaKey.PublicKey)
+	if s.Algorithm() != vjwt.JWTAlgPS256 {
+		t.Fatalf("PS256 alg = %q", s.Algorithm())
+	}
+}
+
+func TestFacadePS384WithOptions(t *testing.T) {
+	rsaKey, err := rsa.GenerateKey(rand.Reader, 1024)
+	if err != nil {
+		t.Fatalf("rsa.GenerateKey: %v", err)
+	}
+	s := vjwt.PS384WithOptions(rsaKey, &rsaKey.PublicKey)
+	if s.Algorithm() != vjwt.JWTAlgPS384 {
+		t.Fatalf("PS384WithOptions alg = %q", s.Algorithm())
+	}
+}
+
+func TestFacadePS512(t *testing.T) {
+	rsaKey, err := rsa.GenerateKey(rand.Reader, 1024)
+	if err != nil {
+		t.Fatalf("rsa.GenerateKey: %v", err)
+	}
+	s := vjwt.PS512(rsaKey, &rsaKey.PublicKey)
+	if s.Algorithm() != vjwt.JWTAlgPS512 {
+		t.Fatalf("PS512 alg = %q", s.Algorithm())
+	}
+}

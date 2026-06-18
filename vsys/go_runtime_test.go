@@ -34,6 +34,60 @@ func TestFacadeGoInfo(t *testing.T) {
 	}
 }
 
+func TestFacadeNewGoInfo(t *testing.T) {
+	info := vsys.NewGoInfo()
+	if info == nil {
+		t.Fatal("expected non-nil go info from NewGoInfo")
+	}
+	if info.GetVersion() == "" {
+		t.Fatal("expected non-empty Go version")
+	}
+}
+
+func TestFacadeGetGoInfo(t *testing.T) {
+	info := vsys.GetGoInfo()
+	if info == nil {
+		t.Fatal("expected non-nil go info from GetGoInfo")
+	}
+	infoWithOpts := vsys.GetGoInfoWithOptions(vsys.WithGoVersionFunc(func() string { return "get-go" }))
+	if infoWithOpts.GetVersion() != "get-go" {
+		t.Fatalf("GetGoInfoWithOptions version = %q", infoWithOpts.GetVersion())
+	}
+}
+
+func TestFacadeNewRuntimeInfo(t *testing.T) {
+	info := vsys.NewRuntimeInfo()
+	if info == nil {
+		t.Fatal("expected non-nil runtime info from NewRuntimeInfo")
+	}
+}
+
+func TestFacadeGetRuntimeInfo(t *testing.T) {
+	info := vsys.GetRuntimeInfo()
+	if info == nil {
+		t.Fatal("expected non-nil runtime info from GetRuntimeInfo")
+	}
+	infoWithOpts := vsys.GetRuntimeInfoWithOptions(vsys.WithReadMemStatsFunc(func(stats *runtime.MemStats) { stats.Sys = 999 }))
+	if infoWithOpts.GetMaxMemory() != 999 {
+		t.Fatalf("GetRuntimeInfoWithOptions max = %d", infoWithOpts.GetMaxMemory())
+	}
+}
+
+func TestFacadeGetGoRuntimeOptions(t *testing.T) {
+	opt1 := vsys.WithGoEnvOutputFunc(func(app string, args ...string) ([]byte, error) { return []byte("/custom/goroot"), nil })
+	if opt1 == nil {
+		t.Fatal("WithGoEnvOutputFunc returned nil")
+	}
+	opt2 := vsys.WithGoRootEnvLookupFunc(func(key string) string { return "/lookup/goroot" })
+	if opt2 == nil {
+		t.Fatal("WithGoRootEnvLookupFunc returned nil")
+	}
+	opt3 := vsys.WithOSEnvLookupFunc(func(key string) string { return "custom-os" })
+	if opt3 == nil {
+		t.Fatal("WithOSEnvLookupFunc returned nil")
+	}
+}
+
 func TestFacadeRuntimeInfo(t *testing.T) {
 	info := vsys.SystemRuntimeInfo()
 	if info == nil {

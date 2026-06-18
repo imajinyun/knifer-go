@@ -1,6 +1,7 @@
 package vurl_test
 
 import (
+	"context"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -35,5 +36,12 @@ func TestFacadeResourceOptions(t *testing.T) {
 	}
 	if size, err := vurl.SizeWithOptions(server.URL, vurl.WithHeader("X-Test", "facade")); err != nil || size != 5 {
 		t.Fatalf("SizeWithOptions = %d, %v; want 5, nil", size, err)
+	}
+}
+
+func TestFacadeWithContextOption(t *testing.T) {
+	opt := vurl.WithContext(context.TODO())
+	if opt == nil {
+		t.Fatal("WithContext returned nil")
 	}
 }

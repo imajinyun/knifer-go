@@ -70,3 +70,42 @@ func TestFacadeDefaultSchedulerDelegates(t *testing.T) {
 		t.Fatalf("remove delegates failed, size=%d", s.Size())
 	}
 }
+
+func TestFacadeCronScheduleWithOptions(t *testing.T) {
+	s := vcron.ConfigureDefaultScheduler(
+		vcron.WithMatchSecond(true),
+		vcron.WithIDGenerator(func() string { return "sched-id" }),
+	)
+	t.Cleanup(func() { vcron.ConfigureDefaultScheduler() })
+
+	id, err := vcron.CronScheduleWithOptions("* * * * * *", vcron.TaskFunc(func() {}), vcron.WithDefaultScheduler(s))
+	if err != nil || id != "sched-id" || s.Size() != 1 {
+		t.Fatalf("CronScheduleWithOptions id=%q err=%v", id, err)
+	}
+	vcron.CronRemoveWithOptions(id, vcron.WithDefaultScheduler(s))
+}
+
+func TestFacadeCronScheduleWithIDWithOptions(t *testing.T) {
+	s := vcron.ConfigureDefaultScheduler(
+		vcron.WithMatchSecond(true),
+	)
+	t.Cleanup(func() { vcron.ConfigureDefaultScheduler() })
+
+	err := vcron.CronScheduleWithIDWithOptions("my-id", "* * * * * *", vcron.TaskFunc(func() {}), vcron.WithDefaultScheduler(s))
+	if err != nil || s.Size() != 1 {
+		t.Fatalf("CronScheduleWithIDWithOptions err=%v", err)
+	}
+	if !vcron.CronRemoveWithOptions("my-id", vcron.WithDefaultScheduler(s)) {
+		t.Fatal("CronRemoveWithOptions should succeed")
+	}
+}
+
+func TestFacadeCronSetMatchSecondWithOptions(t *testing.T) {
+	s := vcron.ConfigureDefaultScheduler(vcron.WithMatchSecond(false))
+	t.Cleanup(func() { vcron.ConfigureDefaultScheduler() })
+
+	vcron.CronSetMatchSecondWithOptions(true, vcron.WithDefaultScheduler(s))
+	if !s.IsMatchSecond() {
+		t.Fatal("CronSetMatchSecondWithOptions should set match second on target scheduler")
+	}
+}

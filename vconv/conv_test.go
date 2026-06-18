@@ -20,6 +20,21 @@ func TestConvFacade(t *testing.T) {
 	}
 }
 
+func TestConvFacadeDefaultValues(t *testing.T) {
+	if got := ToInt64Default("bad", 42); got != 42 {
+		t.Fatalf("ToInt64Default = %d, want 42", got)
+	}
+	if got := ToInt64Default("123", 42); got != 123 {
+		t.Fatalf("ToInt64Default = %d, want 123", got)
+	}
+	if got := ToFloat64Default("bad", 3.14); got != 3.14 {
+		t.Fatalf("ToFloat64Default = %v, want 3.14", got)
+	}
+	if got := ToFloat64Default("2.5", 1.0); got != 2.5 {
+		t.Fatalf("ToFloat64Default = %v, want 2.5", got)
+	}
+}
+
 func TestConvFacadeWithOptions(t *testing.T) {
 	if ToStringWithOptions(true, WithFormatBoolFunc(func(bool) string { return "BOOL" })) != "BOOL" {
 		t.Fatal("ToStringWithOptions bool formatter failed")

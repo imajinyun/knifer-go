@@ -23,3 +23,27 @@ func TestFacadeBitMap(t *testing.T) {
 		t.Fatal("expected bitmap to contain 42")
 	}
 }
+
+func TestFacadeNewBitMapBloomFilter(t *testing.T) {
+	bf := vblf.NewBitMapBloomFilter(5)
+	if bf == nil {
+		t.Fatal("NewBitMapBloomFilter returned nil")
+	}
+	bf.Add("test")
+	if !bf.Contains("test") {
+		t.Fatal("expected NewBitMapBloomFilter to contain 'test'")
+	}
+}
+
+func TestFacadeNewBitMapBloomFilterWithFilters(t *testing.T) {
+	f1 := vblf.NewDefaultBloomFilter(1 << 20)
+	f2 := vblf.NewDefaultBloomFilter(1 << 20)
+	bf := vblf.NewBitMapBloomFilterWithFilters(5, f1, f2)
+	if bf == nil {
+		t.Fatal("NewBitMapBloomFilterWithFilters returned nil")
+	}
+	bf.Add("test")
+	if !bf.Contains("test") {
+		t.Fatal("expected filter to contain 'test'")
+	}
+}

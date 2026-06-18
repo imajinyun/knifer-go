@@ -1,10 +1,22 @@
 package vhash
 
-import "testing"
+import (
+	"hash/fnv"
+	"testing"
+)
 
 func TestHashFacade(t *testing.T) {
 	if FnvHash("abc") == 0 || AdditiveHash("abc", 31) < 0 {
 		t.Fatal("hash helpers failed")
+	}
+}
+
+func TestHash32Facade(t *testing.T) {
+	if h := Hash32("abc", nil); h == 0 {
+		t.Fatal("Hash32 with nil newHash returned 0")
+	}
+	if h := Hash32("abc", fnv.New32a); h == 0 {
+		t.Fatal("Hash32 with fnv.New32a returned 0")
 	}
 }
 

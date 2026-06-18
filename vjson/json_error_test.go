@@ -27,3 +27,25 @@ func TestFacadeErrorNameWithoutJSONPrefix(t *testing.T) {
 		t.Fatalf("XMLToJSON malformed XML code = %v, want invalid input", err)
 	}
 }
+
+func TestFacadeNewJSONError(t *testing.T) {
+	err := vjson.NewJSONError("code %d", 42)
+	if err == nil || err.Error() != "code 42" {
+		t.Fatalf("NewJSONError = %v", err)
+	}
+	var jsonErr *vjson.Error
+	if !errors.As(err, &jsonErr) {
+		t.Fatal("NewJSONError should produce *vjson.Error")
+	}
+}
+
+func TestFacadeWrapJSONError(t *testing.T) {
+	cause := errors.New("root cause")
+	err := vjson.WrapJSONError(cause, "wrapped")
+	if err == nil || !errors.Is(err, cause) {
+		t.Fatalf("WrapJSONError = %v", err)
+	}
+	if err.Error() != "wrapped: root cause" {
+		t.Fatalf("WrapJSONError message = %q", err.Error())
+	}
+}

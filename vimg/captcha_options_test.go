@@ -45,3 +45,39 @@ func TestFacadeCaptchaOptions(t *testing.T) {
 		t.Fatalf("gif options not applied: repeat=%d delay=%d", gif.Repeat, gif.Delay)
 	}
 }
+
+func TestFacadeCaptchaFontSizeOption(t *testing.T) {
+	opt := vimg.WithFontSize(1.5)
+	if opt == nil {
+		t.Fatal("WithFontSize returned nil")
+	}
+	line := vimg.NewLineCaptchaWithOptions(100, 40, vimg.WithGenerator(fixedGenerator{code: "ABCD"}), vimg.WithFontSize(0.8))
+	if line == nil {
+		t.Fatal("captcha with fontSize should be non-nil")
+	}
+	line.CreateCode()
+	if len(line.Code()) == 0 {
+		t.Fatal("captcha with fontSize should have code")
+	}
+}
+
+func TestFacadeGeneratorIntParserOption(t *testing.T) {
+	g := vimg.NewMathGenerator()
+	opt := vimg.WithGeneratorIntParser(func(s string) (int, error) {
+		switch s {
+		case "1":
+			return 1, nil
+		case "2":
+			return 2, nil
+		default:
+			return 0, nil
+		}
+	})
+	if opt == nil {
+		t.Fatal("WithGeneratorIntParser returned nil")
+	}
+	code := vimg.GenMathGeneratorWithOptions(g, opt, vimg.WithGeneratorRandomInt(func(max int) int { return 1 % max }))
+	if len(code) > 0 {
+		t.Logf("math code with int parser: %s", code)
+	}
+}

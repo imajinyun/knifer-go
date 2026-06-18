@@ -51,6 +51,21 @@ func TestVSetGenericFacade(t *testing.T) {
 	}
 }
 
+func TestVSetGenericContainsUnionIntersect(t *testing.T) {
+	s := vset.New(1, 2, 3)
+	if !s.Contains(2) || s.Contains(4) {
+		t.Fatal("Set.Contains failed")
+	}
+	u := s.Union(vset.New(3, 4, 5))
+	if !u.Contains(4) || !u.Contains(1) || u.Contains(6) {
+		t.Fatal("Set.Union failed")
+	}
+	i := s.Intersect(vset.New(2, 3, 4))
+	if !i.Contains(2) || i.Contains(1) || !i.Contains(3) {
+		t.Fatal("Set.Intersect failed")
+	}
+}
+
 func TestVSetFacadeJSONRoundTrip(t *testing.T) {
 	original := vset.NewString("go", "knifer")
 	b, err := json.Marshal(original)

@@ -11,3 +11,10 @@ func TestAlgorithmName(t *testing.T) {
 		t.Fatalf("AlgorithmName(PS256) = %q", got)
 	}
 }
+
+func TestFacadeJWTErrorf(t *testing.T) {
+	err := vjwt.JWTErrorf("code %d: %s", 400, "bad request")
+	if err == nil || err.Error() != "code 400: bad request" {
+		t.Fatalf("JWTErrorf = %v", err)
+	}
+}

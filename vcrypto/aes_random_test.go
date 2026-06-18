@@ -102,6 +102,22 @@ func TestAdditionalAESGCMAndRandomErrors(t *testing.T) {
 	}
 }
 
+func TestFacadeAESSealGCM(t *testing.T) {
+	key := bytes.Repeat([]byte{0x11}, 16)
+	plain := []byte("seal plain")
+	nonce, ct, err := vcrypto.AESSealGCM(plain, key, []byte("aad"))
+	if err != nil {
+		t.Fatalf("AESSealGCM: %v", err)
+	}
+	if len(nonce) == 0 || len(ct) == 0 {
+		t.Fatal("AESSealGCM returned empty nonce or ciphertext")
+	}
+	out, err := vcrypto.AESOpenGCM(ct, key, nonce, []byte("aad"))
+	if err != nil || !bytes.Equal(out, plain) {
+		t.Fatalf("AESOpenGCM = %q, %v", out, err)
+	}
+}
+
 func TestFacadeAESGCMValidationErrorClassification(t *testing.T) {
 	key := bytes.Repeat([]byte{0x11}, 16)
 	nonce := bytes.Repeat([]byte{0x22}, 12)

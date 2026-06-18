@@ -52,3 +52,22 @@ func TestFacadeBloomFilterFileOptions(t *testing.T) {
 		t.Fatalf("InitFromReader contains=%v err=%v", bf.Contains("reader"), err)
 	}
 }
+
+func TestFacadeInitFromFileWithOptionsStandalone(t *testing.T) {
+	bf := vblf.NewBitSetBloomFilter(1000, 5, 3)
+	var opened bool
+	err := vblf.InitFromFileWithOptions(bf, "virtual.data", vblf.WithOpenFile(func(path string) (io.ReadCloser, error) {
+		opened = true
+		return io.NopCloser(strings.NewReader("standalone\n")), nil
+	}))
+	if err != nil || !opened || !bf.Contains("standalone") {
+		t.Fatalf("InitFromFileWithOptions standalone err=%v opened=%v", err, opened)
+	}
+}
+
+func TestFacadeInitFromReaderStandalone(t *testing.T) {
+	bf := vblf.NewBitSetBloomFilter(1000, 5, 3)
+	if err := vblf.InitFromReader(bf, strings.NewReader("standalone\n")); err != nil || !bf.Contains("standalone") {
+		t.Fatalf("InitFromReader standalone err=%v", err)
+	}
+}

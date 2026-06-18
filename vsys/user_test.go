@@ -15,6 +15,26 @@ func TestFacadeUserInfo(t *testing.T) {
 	}
 }
 
+func TestFacadeNewUserInfo(t *testing.T) {
+	info := vsys.NewUserInfo()
+	if info == nil {
+		t.Fatal("expected non-nil user info from NewUserInfo")
+	}
+}
+
+func TestFacadeGetUserInfo(t *testing.T) {
+	info := vsys.GetUserInfo()
+	if info == nil {
+		t.Fatal("expected non-nil user info from GetUserInfo")
+	}
+	infoWithOpts := vsys.GetUserInfoWithOptions(vsys.WithCurrentUserFunc(func() (*user.User, error) {
+		return &user.User{Username: "get-user"}, nil
+	}))
+	if infoWithOpts.GetName() != "get-user" {
+		t.Fatalf("GetUserInfoWithOptions name = %q", infoWithOpts.GetName())
+	}
+}
+
 func TestFacadeUserInfoOptions(t *testing.T) {
 	info := vsys.SysUserInfoWithOptions(
 		vsys.WithCurrentUserFunc(func() (*user.User, error) {

@@ -91,3 +91,12 @@ func TestFacadeRequestOptionWrappers(t *testing.T) {
 		t.Fatalf("allowed host request error = %v", resp.Err())
 	}
 }
+
+func TestFacadeWithMaxRedirects(t *testing.T) {
+	if vhttp.WithMaxRedirects(5) == nil {
+		t.Fatal("WithMaxRedirects returned nil")
+	}
+	if vhttp.WithFollowRedirects(false) == nil {
+		t.Fatal("WithFollowRedirects returned nil")
+	}
+}

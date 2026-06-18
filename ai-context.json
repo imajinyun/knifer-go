@@ -178,6 +178,36 @@
     "Production panic is allowed only for explicit MustXxx/PanicXxx APIs or documented compatibility cases.",
     "Intentional public API changes must update docs/api/exports.txt with UPDATE_API=1 make api-check."
   ],
+  "coverage_gates": {
+    "repository_threshold": 75.2,
+    "package_thresholds": {
+      "github.com/imajinyun/go-knifer/vbean": 90.0,
+      "github.com/imajinyun/go-knifer/vcache": 90.0,
+      "github.com/imajinyun/go-knifer/vconf": 75.0,
+      "github.com/imajinyun/go-knifer/vcrypto": 70.0,
+      "github.com/imajinyun/go-knifer/vdate": 85.0,
+      "github.com/imajinyun/go-knifer/vfile": 85.0,
+      "github.com/imajinyun/go-knifer/vform": 90.0,
+      "github.com/imajinyun/go-knifer/vhttp": 75.0,
+      "github.com/imajinyun/go-knifer/vimg": 90.0,
+      "github.com/imajinyun/go-knifer/vresty": 65.0,
+      "github.com/imajinyun/go-knifer/vset": 80.0,
+      "github.com/imajinyun/go-knifer/vsys": 90.0,
+      "github.com/imajinyun/go-knifer/vurl": 80.0,
+      "github.com/imajinyun/go-knifer/vzip": 80.0,
+      "github.com/imajinyun/go-knifer/internal/bean": 75.0,
+      "github.com/imajinyun/go-knifer/internal/db": 60.0,
+      "github.com/imajinyun/go-knifer/internal/httpx/http": 75.0,
+      "github.com/imajinyun/go-knifer/internal/httpx/internal/shared": 80.0,
+      "github.com/imajinyun/go-knifer/internal/httpx/resty": 75.0,
+      "github.com/imajinyun/go-knifer/internal/mask": 95.0,
+      "github.com/imajinyun/go-knifer/internal/net": 80.0,
+      "github.com/imajinyun/go-knifer/internal/obj": 90.0,
+      "github.com/imajinyun/go-knifer/internal/template": 95.0,
+      "github.com/imajinyun/go-knifer/internal/url": 80.0,
+      "github.com/imajinyun/go-knifer/internal/validator": 100.0
+    }
+  },
   "public_facades": [
     { "package": "vbean", "domain": "struct/map mapping", "internal": "internal/bean" },
     { "package": "vblf", "domain": "bloom filter", "internal": "internal/bloomfilter" },

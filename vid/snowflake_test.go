@@ -1,6 +1,9 @@
 package vid
 
-import "testing"
+import (
+	"net"
+	"testing"
+)
 
 func TestSnowflakeFacade(t *testing.T) {
 	sf := CreateSnowflake(1, 2)
@@ -72,5 +75,20 @@ func TestSnowflakeFacadeRuntimeOptionsBypassCache(t *testing.T) {
 	isolated := NewIsolatedSnowflake(WithSnowflakeWorkerID(4), WithSnowflakeDatacenterID(5))
 	if isolated.WorkerID() != 4 || isolated.DatacenterID() != 5 {
 		t.Fatalf("isolated snowflake ids: worker=%d datacenter=%d", isolated.WorkerID(), isolated.DatacenterID())
+	}
+}
+
+func TestSnowflakeFacadeOptionSetters(t *testing.T) {
+	if WithSnowflakeWaitFunc(func(last int64, now func() int64) int64 { return now() }) == nil {
+		t.Fatal("WithSnowflakeWaitFunc returned nil")
+	}
+	if WithSnowflakeCache(false) == nil {
+		t.Fatal("WithSnowflakeCache returned nil")
+	}
+	if WithSnowflakeInterfacesFunc(func() ([]net.Interface, error) { return nil, nil }) == nil {
+		t.Fatal("WithSnowflakeInterfacesFunc returned nil")
+	}
+	if WithSnowflakePIDFunc(func() int { return 99 }) == nil {
+		t.Fatal("WithSnowflakePIDFunc returned nil")
 	}
 }

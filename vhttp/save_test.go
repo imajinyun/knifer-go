@@ -44,6 +44,18 @@ func TestFacadeSaveProviderOptions(t *testing.T) {
 	}
 }
 
+func TestFacadeSaveOptions(t *testing.T) {
+	if vhttp.WithSaveCreateParents(true) == nil {
+		t.Fatal("WithSaveCreateParents returned nil")
+	}
+	if vhttp.WithSaveStat(func(s string) (os.FileInfo, error) { return nil, nil }) == nil {
+		t.Fatal("WithSaveStat returned nil")
+	}
+	if vhttp.WithSaveOverwrite(true) == nil {
+		t.Fatal("WithSaveOverwrite returned nil")
+	}
+}
+
 func TestFacadeDownloadFileSafe(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("X-Mode") != "safe" {

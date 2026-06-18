@@ -57,3 +57,30 @@ func TestAdditionalDigestAndHMAC(t *testing.T) {
 }
 
 func sha512New384() hash.Hash { return sha512.New384() }
+
+func TestFacadeSHA224(t *testing.T) {
+	payload := []byte("hello")
+	d := vcrypto.SHA224(payload)
+	if len(d) != 28 {
+		t.Fatalf("SHA224 len = %d, want 28", len(d))
+	}
+	if vcrypto.SHA224Hex(payload) != "ea09ae9cc6768c50fcee903ed054556e5bfc8347907f12598aa24193" {
+		t.Fatal("SHA224Hex mismatch")
+	}
+}
+
+func TestFacadeSHA256(t *testing.T) {
+	payload := []byte("hello")
+	d := vcrypto.SHA256(payload)
+	if len(d) != 32 {
+		t.Fatalf("SHA256 len = %d, want 32", len(d))
+	}
+}
+
+func TestFacadeSHA512(t *testing.T) {
+	payload := []byte("hello")
+	d := vcrypto.SHA512(payload)
+	if len(d) != 64 {
+		t.Fatalf("SHA512 len = %d, want 64", len(d))
+	}
+}

@@ -44,3 +44,14 @@ func TestECDSASignerFactories(t *testing.T) {
 		t.Fatalf("ES512WithOptions alg = %q", got)
 	}
 }
+
+func TestFacadeNewECDSASignerWithOptions(t *testing.T) {
+	ecdsaKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		t.Fatalf("ecdsa.GenerateKey: %v", err)
+	}
+	s, err := vjwt.NewECDSASignerWithOptions(vjwt.JWTAlgES256, ecdsaKey, &ecdsaKey.PublicKey)
+	if err != nil || s.Algorithm() != vjwt.JWTAlgES256 {
+		t.Fatalf("NewECDSASignerWithOptions alg=%q err=%v", s.Algorithm(), err)
+	}
+}

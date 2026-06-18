@@ -123,3 +123,22 @@ func TestRSAOptionsAndErrorPaths(t *testing.T) {
 		t.Fatal("VerifyWithRSAOptions tampered data error = nil")
 	}
 }
+
+func TestFacadeRSAOptionSetters(t *testing.T) {
+	if vcrypto.WithRSARandomReader(nil) == nil {
+		t.Fatal("WithRSARandomReader returned nil")
+	}
+	if vcrypto.WithRSADigestPSS(nil) == nil {
+		t.Fatal("WithRSADigestPSS returned nil")
+	}
+}
+
+func TestFacadeGenRSAKeyWithOptions(t *testing.T) {
+	priv, err := vcrypto.GenRSAKeyWithOptions(1024)
+	if err != nil {
+		t.Fatalf("GenRSAKeyWithOptions: %v", err)
+	}
+	if priv == nil {
+		t.Fatal("GenRSAKeyWithOptions returned nil key")
+	}
+}

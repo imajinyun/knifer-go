@@ -32,6 +32,45 @@ func TestFacadeHostInfo(t *testing.T) {
 	}
 }
 
+func TestFacadeNewHostInfo(t *testing.T) {
+	info := vsys.NewHostInfo()
+	if info == nil {
+		t.Fatal("expected non-nil host info from NewHostInfo")
+	}
+	if info.GetName() == "" {
+		t.Log("host name is empty (expected in some environments)")
+	}
+}
+
+func TestFacadeGetHostInfo(t *testing.T) {
+	info := vsys.GetHostInfo()
+	if info == nil {
+		t.Fatal("expected non-nil host info from GetHostInfo")
+	}
+	infoWithOpts := vsys.GetHostInfoWithOptions(vsys.WithHostNameFunc(func() (string, error) { return "get-host", nil }))
+	if infoWithOpts.GetName() != "get-host" {
+		t.Fatalf("GetHostInfoWithOptions name = %q", infoWithOpts.GetName())
+	}
+}
+
+func TestFacadeNewOsInfo(t *testing.T) {
+	info := vsys.NewOsInfo()
+	if info == nil {
+		t.Fatal("expected non-nil os info from NewOsInfo")
+	}
+}
+
+func TestFacadeGetOsInfo(t *testing.T) {
+	info := vsys.GetOsInfo()
+	if info == nil {
+		t.Fatal("expected non-nil os info from GetOsInfo")
+	}
+	infoWithOpts := vsys.GetOsInfoWithOptions(vsys.WithOSNameFunc(func() string { return "get-os" }))
+	if infoWithOpts.GetName() != "get-os" {
+		t.Fatalf("GetOsInfoWithOptions name = %q", infoWithOpts.GetName())
+	}
+}
+
 func TestFacadeOsInfo(t *testing.T) {
 	info := vsys.SystemOsInfo()
 	if info == nil {

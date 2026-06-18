@@ -159,3 +159,42 @@ func TestFacadeSendAndClientOptions(t *testing.T) {
 		t.Fatal("NewClient() returned nil client")
 	}
 }
+
+func TestFacadeSendAccountText(t *testing.T) {
+	account := Account{
+		Host:           "smtp.example.com",
+		Port:           587,
+		Username:       "user@example.com",
+		Password:       "secret",
+		From:           "from@example.com",
+		FromName:       "Facade Sender",
+		TLSPolicy:      TLSNone,
+		AllowPlainAuth: true,
+		Timeout:        time.Second,
+	}
+
+	var got *Message
+	provider := func(config Config) (Sender, error) {
+		return SenderFunc(func(ctx context.Context, message *Message) error {
+			got = message
+			return nil
+		}), nil
+	}
+
+	if err := SendAccountText(
+		context.Background(),
+		account,
+		[]string{"to@example.com"},
+		"subject",
+		"body",
+		WithQuickClientOptions(WithSenderProvider(provider)),
+	); err != nil {
+		t.Fatalf("SendAccountText() error = %v", err)
+	}
+	if got == nil || got.Subject != "subject" || got.Text != "body" {
+		t.Fatalf("sent message = %#v", got)
+	}
+	if got.From.Name != "Facade Sender" || got.From.Email != "from@example.com" {
+		t.Fatalf("from = %#v", got.From)
+	}
+}

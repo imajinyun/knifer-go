@@ -120,3 +120,21 @@ func TestRandFacadeDefaultSourceProvider(t *testing.T) {
 		t.Fatalf("Int after provider reset = %d, want %d", got, first)
 	}
 }
+
+func TestFacadeSetSeed(t *testing.T) {
+	ResetDefaultRandomSource()
+	t.Cleanup(ResetDefaultRandomSource)
+
+	// Deterministic sequence after seeding
+	SetSeed(42)
+	a1 := Int(10000)
+	b1 := Int(10000)
+
+	SetSeed(42)
+	a2 := Int(10000)
+	b2 := Int(10000)
+
+	if a1 != a2 || b1 != b2 {
+		t.Fatalf("SetSeed(42) not deterministic: (%d,%d) vs (%d,%d)", a1, b1, a2, b2)
+	}
+}

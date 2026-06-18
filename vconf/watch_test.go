@@ -97,3 +97,23 @@ func TestWatchWithOptionsFacade(t *testing.T) {
 		t.Fatal("watch did not report change")
 	}
 }
+
+func TestWatchFacadeSimpleDelegate(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "simple.setting")
+	if err := os.WriteFile(path, []byte("key=val"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	// Test the Watch function (delegates to WatchWithOptions with Interval)
+	stop, err := vconf.Watch(path, time.Hour, func(c *vconf.Conf, err error) {
+		// no-op callback
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer stop()
+
+	// We can't easily tick the internal timer, but verify Watch returns a valid stop function
+	if stop == nil {
+		t.Fatal("Watch returned nil stop function")
+	}
+}

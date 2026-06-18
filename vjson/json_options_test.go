@@ -253,3 +253,38 @@ func TestFacadeJSONXMLConversionOptions(t *testing.T) {
 		t.Fatalf("ToXMLWithOptions = %q", xmlStr)
 	}
 }
+
+func TestFacadeJSONOptionSetters(t *testing.T) {
+	if vjson.WithIndent(2) == nil {
+		t.Fatal("WithIndent returned nil")
+	}
+	if vjson.WithFormatIndent("  ") == nil {
+		t.Fatal("WithFormatIndent returned nil")
+	}
+	if vjson.WithParseDecoderFactory(stdjson.NewDecoder) == nil {
+		t.Fatal("WithParseDecoderFactory returned nil")
+	}
+	if vjson.WithBeanConfig(vjson.NewConfig()) == nil {
+		t.Fatal("WithBeanConfig returned nil")
+	}
+}
+
+func TestFacadeParseWithOptions(t *testing.T) {
+	parsed, err := vjson.ParseWithOptions(`{"a":1,"b":2}`)
+	if err != nil {
+		t.Fatalf("ParseWithOptions: %v", err)
+	}
+	if parsed == nil {
+		t.Fatal("ParseWithOptions returned nil")
+	}
+}
+
+func TestFacadeToPrettyStr(t *testing.T) {
+	s, err := vjson.ToPrettyStr(map[string]any{"name": "go"})
+	if err != nil {
+		t.Fatalf("ToPrettyStr: %v", err)
+	}
+	if !strings.Contains(s, "\n    \"name\":") {
+		t.Fatalf("ToPrettyStr = %q", s)
+	}
+}

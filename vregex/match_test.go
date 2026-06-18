@@ -39,3 +39,15 @@ func TestRegexMatchFacadeWithOptions(t *testing.T) {
 		t.Fatal("IsMatchWithOptions failed")
 	}
 }
+
+func TestFacadeRegexOptionSetters(t *testing.T) {
+	if WithDotAll(true) == nil {
+		t.Fatal("WithDotAll returned nil")
+	}
+	if WithNamedGroupRegexp(regexp.MustCompile(`\(`)) == nil {
+		t.Fatal("WithNamedGroupRegexp returned nil")
+	}
+	if WithNamedGroupNormalizer(strings.ToUpper) == nil {
+		t.Fatal("WithNamedGroupNormalizer returned nil")
+	}
+}

@@ -23,6 +23,24 @@ func TestFacadeTimedCache(t *testing.T) {
 	}
 }
 
+func TestFacadeNewTimedScheduled(t *testing.T) {
+	c := vcache.NewTimedScheduled[string, int](time.Hour, 10*time.Minute)
+	c.Put("a", 1)
+	if v, ok := c.Get("a"); !ok || v != 1 {
+		t.Fatalf("expected a=1, got %v, ok=%v", v, ok)
+	}
+	c.CancelPruneSchedule()
+}
+
+func TestFacadeNewWeak(t *testing.T) {
+	v := 42
+	c := vcache.NewWeak[string, int](time.Hour)
+	c.Put("a", &v)
+	if got, ok := c.Get("a"); !ok || *got != 42 {
+		t.Fatalf("expected a=&42, got %v, ok=%v", got, ok)
+	}
+}
+
 func TestFacadeCacheWithClock(t *testing.T) {
 	base := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
 	now := base

@@ -72,3 +72,18 @@ func TestFacadeFieldHelpers(t *testing.T) {
 		t.Fatal("IsOuterClassField = true, want false")
 	}
 }
+
+func TestFacadeGetFieldsValue(t *testing.T) {
+	s := &facadeSample{Name: "alice"}
+	vals := GetFieldsValue(s)
+	if len(vals) == 0 || vals[0] != "alice" {
+		t.Fatalf("GetFieldsValue = %#v", vals)
+	}
+}
+
+func TestFacadeGetMethods(t *testing.T) {
+	methods := GetMethods(&facadeSample{})
+	if len(methods) == 0 {
+		t.Fatal("GetMethods returned empty")
+	}
+}

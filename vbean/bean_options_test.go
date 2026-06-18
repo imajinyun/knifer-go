@@ -49,3 +49,78 @@ func TestFacadeBeanOptions(t *testing.T) {
 		t.Fatal("CopyProperties() WithWeaklyTyped(false) error = nil, want strict assignment error")
 	}
 }
+
+func TestFacadeBeanNewOptions(t *testing.T) {
+	opts := vbean.NewOptions()
+	_ = opts
+}
+
+func TestFacadeBeanParserOptions(t *testing.T) {
+	parser1 := func(s string) (bool, error) { return s == "yes", nil }
+	opt1 := vbean.WithBoolParser(parser1)
+	if opt1 == nil {
+		t.Fatal("WithBoolParser returned nil")
+	}
+
+	parser2 := func(s string, base, bits int) (int64, error) { return 0, nil }
+	opt2 := vbean.WithIntParser(parser2)
+	if opt2 == nil {
+		t.Fatal("WithIntParser returned nil")
+	}
+
+	parser3 := func(s string, base, bits int) (uint64, error) { return 0, nil }
+	opt3 := vbean.WithUintParser(parser3)
+	if opt3 == nil {
+		t.Fatal("WithUintParser returned nil")
+	}
+
+	parser4 := func(s string, bits int) (float64, error) { return 0, nil }
+	opt4 := vbean.WithFloatParser(parser4)
+	if opt4 == nil {
+		t.Fatal("WithFloatParser returned nil")
+	}
+}
+
+func TestFacadeBeanParseParserApplied(t *testing.T) {
+	type P struct {
+		Active bool
+		Number int64
+		UVal   uint64
+		FVal   float64
+	}
+
+	var dst P
+	src := map[string]any{
+		"active": "true",
+		"number": "42",
+		"uval":   "100",
+		"fval":   "3.14",
+	}
+	err := vbean.CopyProperties(src, &dst,
+		vbean.WithWeaklyTyped(true),
+	)
+	if err != nil {
+		t.Fatalf("CopyProperties with weak types: %v", err)
+	}
+	if dst.Active != true || dst.Number != 42 || dst.UVal != 100 {
+		t.Fatalf("parsed values: %+v", dst)
+	}
+	if dst.FVal < 3.13 || dst.FVal > 3.15 {
+		t.Fatalf("float parsed = %v", dst.FVal)
+	}
+}
+
+func TestFacadeBeanFillMap(t *testing.T) {
+	type S struct {
+		Name string
+		Age  int
+	}
+	src := S{Name: "test", Age: 25}
+	dst := make(map[string]any)
+	if err := vbean.FillMap(src, dst); err != nil {
+		t.Fatalf("FillMap error = %v", err)
+	}
+	if dst["Name"] != "test" || dst["Age"] != 25 {
+		t.Fatalf("FillMap dst = %#v", dst)
+	}
+}

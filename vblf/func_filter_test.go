@@ -31,3 +31,14 @@ func TestFacadeFuncFilterWithOptions(t *testing.T) {
 		t.Fatal("expected NewFuncFilterWithOptions filter to contain value")
 	}
 }
+
+func TestFacadeNewFuncFilter(t *testing.T) {
+	fn := vblf.NewFuncFilter(1000, func(s string) int64 { return int64(len(s)) })
+	if fn == nil {
+		t.Fatal("NewFuncFilter returned nil")
+	}
+	fn.Add("hello")
+	if !fn.Contains("hello") {
+		t.Fatal("expected NewFuncFilter to contain 'hello'")
+	}
+}

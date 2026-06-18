@@ -1,6 +1,7 @@
 package vcodec
 
 import (
+	"encoding/base64"
 	"errors"
 	"testing"
 
@@ -34,6 +35,26 @@ func TestCodecFacadeErrorContract(t *testing.T) {
 
 	_, err = HexDecode("xyz")
 	assertFacadeCodecCode(t, err, knifer.ErrCodeInvalidInput)
+}
+
+func TestCodecFacadeWithEncoding(t *testing.T) {
+	data := []byte("facade")
+	enc := Base64EncodeWithEncoding(data, base64.StdEncoding)
+	if enc != "ZmFjYWRl" {
+		t.Fatalf("Base64EncodeWithEncoding = %q", enc)
+	}
+	dec, err := Base64DecodeWithEncoding(enc, base64.StdEncoding)
+	if err != nil || string(dec) != "facade" {
+		t.Fatalf("Base64DecodeWithEncoding = %q, %v", dec, err)
+	}
+	raw := Base64RawURLEncode(data)
+	if raw != "ZmFjYWRl" {
+		t.Fatalf("Base64RawURLEncode = %q", raw)
+	}
+	rawDec, err := Base64RawURLDecode(raw)
+	if err != nil || string(rawDec) != "facade" {
+		t.Fatalf("Base64RawURLDecode = %q, %v", rawDec, err)
+	}
 }
 
 func assertFacadeCodecCode(t *testing.T, err error, code knifer.ErrCode) {

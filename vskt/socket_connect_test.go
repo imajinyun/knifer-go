@@ -1,6 +1,7 @@
 package vskt_test
 
 import (
+	"context"
 	"net"
 	"testing"
 	"time"
@@ -61,4 +62,60 @@ func TestFacadeSocketConnectOptionVariants(t *testing.T) {
 	}
 	_ = client.Close()
 	_ = dialer.server.Close()
+}
+
+func TestFacadeSocketConnectAndChannelDial(t *testing.T) {
+	dialer := &facadeFakeDialer{}
+	addr := &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 9999}
+
+	// SocketConnect delegates to SocketConnectWithOptions
+	_, err := vskt.SocketConnect("127.0.0.1", 9999, 0)
+	if err == nil {
+		t.Fatal("SocketConnect expected error")
+	}
+
+	// SocketConnectAddr delegates to ConnectAddr
+	_, err = vskt.SocketConnectAddr(addr, 0)
+	if err == nil {
+		t.Fatal("SocketConnectAddr expected error")
+	}
+
+	// SocketConnectAddrWithOptions
+	conn, err := vskt.SocketConnectAddrWithOptions(addr, vskt.WithConnectDialer(dialer))
+	if err != nil {
+		t.Fatalf("SocketConnectAddrWithOptions failed: %v", err)
+	}
+	_ = conn.Close()
+	_ = dialer.server.Close()
+
+	// ChannelDial delegates to ChannelDialWithOptions
+	dialer2 := &facadeFakeDialer{}
+	conn2, err := vskt.ChannelDial(addr, 0)
+	if err == nil {
+		t.Fatal("ChannelDial expected error")
+	}
+	_ = conn2
+	_ = dialer2
+}
+
+func TestFacadeWithConnectContext(t *testing.T) {
+	opt := vskt.WithConnectContext(context.TODO())
+	if opt == nil {
+		t.Fatal("WithConnectContext returned nil")
+	}
+}
+
+func TestFacadeNewNioClientAndAddr(t *testing.T) {
+	// NewNioClient
+	_, err := vskt.NewNioClient("127.0.0.1", 9999)
+	if err == nil {
+		t.Fatal("NewNioClient expected error")
+	}
+
+	// NewNioClientAddr
+	addr := &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 9999}
+	_, err = vskt.NewNioClientAddr(addr)
+	if err == nil {
+		t.Fatal("NewNioClientAddr expected error")
+	}
 }

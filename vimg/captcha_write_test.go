@@ -57,3 +57,29 @@ func TestFacadeCaptchaWriteProviderOptions(t *testing.T) {
 		t.Fatalf("providers mkdir=%q/%v open=%q flag=%#x perm=%v bytes=%d", mkdirPath, mkdirPerm, openPath, openFlag, openPerm, written.Len())
 	}
 }
+
+func TestFacadeCaptchaWriteWithCreateParents(t *testing.T) {
+	c := vimg.NewLineCaptchaWithOptions(100, 40, vimg.WithGenerator(fixedGenerator{code: "ABCD"}))
+	c.CreateCode()
+
+	opt := vimg.WithCreateParents(true)
+	if opt == nil {
+		t.Fatal("WithCreateParents returned nil")
+	}
+
+	var written bytes.Buffer
+	if err := c.WriteToFileWithOptions("/virtual/nested/imgx.png",
+		vimg.WithCreateParents(true),
+		vimg.WithMkdirAll(func(path string, perm fs.FileMode) error {
+			return nil
+		}),
+		vimg.WithOpenFile(func(path string, flag int, perm fs.FileMode) (io.WriteCloser, error) {
+			return nopWriteCloser{Writer: &written}, nil
+		}),
+	); err != nil {
+		t.Fatalf("WriteToFileWithOptions with createParents: %v", err)
+	}
+	if written.Len() == 0 {
+		t.Fatal("expected written content with createParents")
+	}
+}

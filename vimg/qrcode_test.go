@@ -2,6 +2,7 @@ package vimg
 
 import (
 	"bytes"
+	"image"
 	"image/color"
 	"image/png"
 	"strings"
@@ -94,4 +95,180 @@ func TestFacadeBarcodeCapabilities(t *testing.T) {
 	if len(SupportedEncodeBarcodeFormats()) == 0 || len(SupportedDecodeBarcodeFormats()) == 0 {
 		t.Fatal("supported format lists must not be empty")
 	}
+}
+
+func TestFacadeBarcodeOptionSetters(t *testing.T) {
+	// BarcodeOption setters
+	if opt := WithBarcodeMargin(4); opt == nil {
+		t.Fatal("WithBarcodeMargin nil")
+	}
+	if opt := WithBarcodeForeground(color.Black); opt == nil {
+		t.Fatal("WithBarcodeForeground nil")
+	}
+	if opt := WithBarcodeBackground(color.White); opt == nil {
+		t.Fatal("WithBarcodeBackground nil")
+	}
+	if opt := WithBarcodeTransparentBackground(); opt == nil {
+		t.Fatal("WithBarcodeTransparentBackground nil")
+	}
+	if opt := WithBarcodeColors(color.Black, color.White); opt == nil {
+		t.Fatal("WithBarcodeColors nil")
+	}
+	if opt := WithBarcodeCharacterSet("ISO-8859-1"); opt == nil {
+		t.Fatal("WithBarcodeCharacterSet nil")
+	}
+	if opt := WithBarcodeForceCodeSet("B"); opt == nil {
+		t.Fatal("WithBarcodeForceCodeSet nil")
+	}
+	if opt := WithBarcodeGS1Format(true); opt == nil {
+		t.Fatal("WithBarcodeGS1Format nil")
+	}
+	logo := image.NewRGBA(image.Rect(0, 0, 10, 10))
+	if opt := WithBarcodeLogo(logo); opt == nil {
+		t.Fatal("WithBarcodeLogo nil")
+	}
+	if opt := WithBarcodeLogoSize(20, 20); opt == nil {
+		t.Fatal("WithBarcodeLogoSize nil")
+	}
+	// QRCodeOption setters
+	if opt := WithQRCodeBackground(color.White); opt == nil {
+		t.Fatal("WithQRCodeBackground nil")
+	}
+	if opt := WithQRCodeColors(color.Black, color.White); opt == nil {
+		t.Fatal("WithQRCodeColors nil")
+	}
+	if opt := WithQRCodeVersion(5); opt == nil {
+		t.Fatal("WithQRCodeVersion nil")
+	}
+	if opt := WithQRCodeMaskPattern(2); opt == nil {
+		t.Fatal("WithQRCodeMaskPattern nil")
+	}
+	if opt := WithQRCodeLogo(logo); opt == nil {
+		t.Fatal("WithQRCodeLogo nil")
+	}
+	if opt := WithQRCodeLogoSize(15, 15); opt == nil {
+		t.Fatal("WithQRCodeLogoSize nil")
+	}
+	if opt := WithQRCodeLogoRatio(4); opt == nil {
+		t.Fatal("WithQRCodeLogoRatio nil")
+	}
+	// DecodeOption setters
+	if opt := WithDecodeFormats(BarcodeFormatQRCode); opt == nil {
+		t.Fatal("WithDecodeFormats nil")
+	}
+	if opt := WithDecodePureBarcode(true); opt == nil {
+		t.Fatal("WithDecodePureBarcode nil")
+	}
+	if opt := WithDecodeAlsoInverted(true); opt == nil {
+		t.Fatal("WithDecodeAlsoInverted nil")
+	}
+	if opt := WithDecodeCharacterSet("UTF-8"); opt == nil {
+		t.Fatal("WithDecodeCharacterSet nil")
+	}
+}
+
+func TestFacadeBarcodeImageAndWrite(t *testing.T) {
+	img, err := BarcodeImage("123456789012", BarcodeFormatEAN13, WithBarcodeSize(220, 90))
+	if err != nil {
+		t.Fatalf("BarcodeImage: %v", err)
+	}
+	if img.Bounds().Dx() != 220 || img.Bounds().Dy() != 90 {
+		t.Fatalf("BarcodeImage size = %dx%d", img.Bounds().Dx(), img.Bounds().Dy())
+	}
+	qImg, err := QRCodeImage("facade image")
+	if err != nil {
+		t.Fatalf("QRCodeImage: %v", err)
+	}
+	if qImg.Bounds().Dx() <= 0 || qImg.Bounds().Dy() <= 0 {
+		t.Fatal("QRCodeImage has invalid bounds")
+	}
+	var buf bytes.Buffer
+	if err := WriteBarcode(&buf, "987654321098", BarcodeFormatEAN13); err != nil {
+		t.Fatalf("WriteBarcode: %v", err)
+	}
+	if buf.Len() == 0 {
+		t.Fatal("WriteBarcode empty")
+	}
+	buf.Reset()
+	if err := WriteQRCode(&buf, "write qr"); err != nil {
+		t.Fatalf("WriteQRCode: %v", err)
+	}
+	if buf.Len() == 0 {
+		t.Fatal("WriteQRCode empty")
+	}
+
+	// BarcodeBytes and QRCodeBase64Data
+	bmpBytes, err := BarcodeBytes("test", BarcodeFormatQRCode, BarcodeOutputFormatPNG)
+	if err != nil {
+		t.Fatalf("BarcodeBytes: %v", err)
+	}
+	if len(bmpBytes) == 0 {
+		t.Fatal("BarcodeBytes empty")
+	}
+	qrData, err := QRCodeBase64Data("base64 data")
+	if err != nil {
+		t.Fatalf("QRCodeBase64Data: %v", err)
+	}
+	if !strings.HasPrefix(qrData, "data:image/png;base64,") {
+		t.Fatalf("QRCodeBase64Data prefix = %q", qrData[:30])
+	}
+
+	// BarcodeSVG
+	svg, err := BarcodeSVG("svg content", BarcodeFormatQRCode)
+	if err != nil {
+		t.Fatalf("BarcodeSVG: %v", err)
+	}
+	if !strings.Contains(svg, "<svg") {
+		t.Fatal("BarcodeSVG missing <svg>")
+	}
+
+	// BarcodeASCII and BarcodeASCIIWithChars
+	ascii, err := BarcodeASCII("ascii content", BarcodeFormatQRCode)
+	if err != nil {
+		t.Fatalf("BarcodeASCII: %v", err)
+	}
+	if len(ascii) == 0 {
+		t.Fatal("BarcodeASCII empty")
+	}
+	customASCII, err := BarcodeASCIIWithChars("custom", BarcodeFormatQRCode, "##", "..")
+	if err != nil {
+		t.Fatalf("BarcodeASCIIWithChars: %v", err)
+	}
+	if !strings.Contains(customASCII, "##") || !strings.Contains(customASCII, "..") {
+		t.Fatalf("BarcodeASCIIWithChars missing custom chars")
+	}
+
+	// DecodeBarcodeImage
+	decoded, err := DecodeBarcodeImage(img, WithDecodeFormats(BarcodeFormatEAN13))
+	if err != nil {
+		t.Fatalf("DecodeBarcodeImage: %v", err)
+	}
+	if decoded.Format != BarcodeFormatEAN13 {
+		t.Fatalf("DecodeBarcodeImage format = %v, want EAN_13", decoded.Format)
+	}
+	if len(decoded.Text) == 0 {
+		t.Fatal("DecodeBarcodeImage text is empty")
+	}
+	qDecoded, err := DecodeQRCodeImage(qImg)
+	if err != nil {
+		t.Fatalf("DecodeQRCodeImage: %v", err)
+	}
+	if qDecoded.Format != BarcodeFormatQRCode {
+		t.Fatalf("DecodeQRCodeImage format = %v", qDecoded.Format)
+	}
+
+	// DecodeBarcode
+	decodedFromReader, err := DecodeBarcode(bytes.NewReader(imgToPNG(img)), WithDecodeFormats(BarcodeFormatEAN13))
+	if err != nil {
+		t.Fatalf("DecodeBarcode: %v", err)
+	}
+	if decodedFromReader.Format != BarcodeFormatEAN13 {
+		t.Fatalf("DecodeBarcode format = %v", decodedFromReader.Format)
+	}
+}
+
+func imgToPNG(img image.Image) []byte {
+	var buf bytes.Buffer
+	_ = png.Encode(&buf, img)
+	return buf.Bytes()
 }
