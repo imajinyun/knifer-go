@@ -84,6 +84,7 @@ for key in ("name", "module", "language", "go_version", "layout"):
 commands = require_mapping(data.get("commands"), "commands")
 command_name_pattern = re.compile(r"^[a-z][a-z0-9_]*$")
 allowed_risk_levels = {"low", "medium", "high", "forbidden_for_agent"}
+command_names = set(commands)
 for name, spec in sorted(commands.items()):
     if not command_name_pattern.match(name):
         add_error(f"commands.{name} must use snake_case")
@@ -140,6 +141,45 @@ for name, spec in sorted(commands.items()):
             makefile_text = f.read()
         if not re.search(rf"^{re.escape(target)}:(?:\s|$)", makefile_text, flags=re.MULTILINE):
             add_error(f"commands.{name}.cmd references missing Makefile target {target!r}")
+
+change_type_policies = require_mapping(data.get("change_type_policies"), "change_type_policies")
+for name, policy in sorted(change_type_policies.items()):
+    if not command_name_pattern.match(name):
+        add_error(f"change_type_policies.{name} must use snake_case")
+    policy = require_mapping(policy, f"change_type_policies.{name}")
+    required_commands = require_string_list(
+        policy.get("required_commands"),
+        f"change_type_policies.{name}.required_commands",
+    )
+    requires_user_consent_commands = require_string_list(
+        policy.get("requires_user_consent_commands", []),
+        f"change_type_policies.{name}.requires_user_consent_commands",
+    )
+    coverage_required = require_bool(
+        policy.get("coverage_required"),
+        f"change_type_policies.{name}.coverage_required",
+    )
+    security_review_required = require_bool(
+        policy.get("security_review_required"),
+        f"change_type_policies.{name}.security_review_required",
+    )
+    require_string(policy.get("notes"), f"change_type_policies.{name}.notes")
+
+    for command_name in required_commands + requires_user_consent_commands:
+        if command_name not in command_names:
+            add_error(f"change_type_policies.{name} references unknown command {command_name!r}")
+    for command_name in requires_user_consent_commands:
+        command = commands.get(command_name, {})
+        if not command.get("requires_user_consent", False):
+            add_error(f"change_type_policies.{name} consent command {command_name!r} must require user consent")
+    if coverage_required and "coverage_check" not in required_commands and "agent_full_check" not in required_commands:
+        add_error(f"change_type_policies.{name} requires coverage but does not require coverage_check or agent_full_check")
+    if security_review_required and "agent_security_check" not in required_commands and "security_check" not in required_commands:
+        add_error(f"change_type_policies.{name} requires security review but does not require a security check command")
+    if name == "public_api" and "api_check" not in required_commands:
+        add_error("change_type_policies.public_api must require api_check")
+    if name == "security_sensitive" and not security_review_required:
+        add_error("change_type_policies.security_sensitive must require security review")
 
 git_hooks = require_mapping(data.get("git_hooks"), "git_hooks")
 require_bool(git_hooks.get("optional"), "git_hooks.optional")

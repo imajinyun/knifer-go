@@ -91,6 +91,7 @@
 - `make quick-check`: fast local gate with module verification, vet, architecture check, unit tests, API snapshot check, and whitespace diff check.
 - `make doctor`: diagnose the local Go/tooling/Git environment without modifying repository files.
 - `make worktree-check`: fail when unrelated untracked Go files may pollute tests or commits.
+- `make security-sensitive-diff`: detect changes under security-sensitive public facades and their internal implementations.
 - `make security-check`: lint and govulncheck vulnerability scan.
 - `make agent-security-check`: AI/Agent security validation gate.
 - `make full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out`: full local pre-push gate with module verification, vet, architecture check, race/shuffle coverage, coverage gate, API snapshot check, lint, vulnerability scan, and whitespace diff check.
@@ -109,6 +110,8 @@
 - Keep package tests split by source-file responsibility.
 - Do not stage, edit, delete, or rely on unrelated untracked Go files unless the user explicitly includes them in scope.
 - Keep `ai-context.json` synchronized with Makefile targets, facade inventory, command side effects, command `risk_level`, coverage gates, and security-sensitive package lists.
+- Keep `ai-context.json.change_type_policies` synchronized with PR template change types and required Agent validation commands.
+- Use `make security-sensitive-diff` to detect whether changed paths require the `security_sensitive` validation policy.
 - Keep production code free of forbidden panic patterns checked by `bin/check_arch.sh`.
 - Keep total coverage above the threshold defined in `ai-context.json`; `bin/check_coverage.sh` reads AI metadata as the default source of truth.
 - API compatibility is CI-enforced via `docs/api/exports.txt` snapshot.

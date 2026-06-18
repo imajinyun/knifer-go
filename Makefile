@@ -1,4 +1,4 @@
-.PHONY: help doctor install-hooks uninstall-hooks worktree-check test test-race coverage-profile coverage-report coverage-check api-check ai-context-check generate mod-verify tidy-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check agent-check agent-full-check agent-security-check bench bench-core bench-facade bench-codec bench-smoke check ci-test
+.PHONY: help doctor install-hooks uninstall-hooks worktree-check security-sensitive-diff test test-race coverage-profile coverage-report coverage-check api-check ai-context-check generate mod-verify tidy-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check agent-check agent-full-check agent-security-check bench bench-core bench-facade bench-codec bench-smoke check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -26,6 +26,7 @@ help:
 	@echo "  install-hooks   Enable optional local Git validation hooks"
 	@echo "  uninstall-hooks Disable optional local Git validation hooks"
 	@echo "  worktree-check  Block unrelated untracked Go files in agent workflows"
+	@echo "  security-sensitive-diff Detect changes to security-sensitive packages"
 	@echo "  quick-check     Run fast local governance gates"
 	@echo "  security-check  Run lint and govulncheck"
 	@echo "  full-check      Run full local gates with race coverage"
@@ -71,12 +72,15 @@ worktree-check:
 		untracked_go="$$(git ls-files --others --exclude-standard -- '*.go')"; \
 		if [ -n "$${untracked_go}" ]; then \
 			echo "WORKTREE CHECK ERROR: untracked Go files can pollute local tests or commits:" >&2; \
-			printf '%s\n' "$${untracked_go}" | while IFS= read -r path; do echo "?? $${path}" >&2; done; \
+		printf '%s\n' "$${untracked_go}" | while IFS= read -r path; do echo "?? $${path}" >&2; done; \
 			echo "Commit/stash/remove them, or set SKIP_WORKTREE_CHECK=1 only when they are intentionally excluded." >&2; \
 			exit 1; \
 		fi; \
 		echo "worktree has no untracked Go files"; \
 	fi
+
+security-sensitive-diff:
+	bash bin/check_security_sensitive_diff.sh
 
 test:
 	$(GO) test $(PKGS)
@@ -134,7 +138,7 @@ security-check: lint govulncheck
 
 full-check: worktree-check mod-verify vet arch test-race coverage-check api-check ai-context-check lint govulncheck diff-whitespace
 
-agent-check: quick-check
+agent-check: quick-check security-sensitive-diff
 
 agent-full-check: full-check
 

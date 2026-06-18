@@ -9,6 +9,8 @@
 - [ ] Internal refactor
 - [ ] Documentation
 - [ ] CI / governance
+- [ ] Security-sensitive code
+- [ ] Dependency change
 
 ## Checklist
 
@@ -17,6 +19,7 @@
 - [ ] I added or updated tests for changed behavior.
 - [ ] I ran `make agent-check` or documented why it is not applicable.
 - [ ] I ran `make worktree-check` or documented unrelated untracked files below.
+- [ ] I ran `make security-sensitive-diff` or documented why it is not applicable.
 - [ ] I ran `go test -race -shuffle=on -coverprofile=/tmp/go-knifer-coverage.out ./...` when the change is non-trivial.
 - [ ] I ran `bash bin/check_coverage.sh /tmp/go-knifer-coverage.out` when a fresh coverage profile was generated.
 - [ ] I ran `bash bin/check_arch.sh`.
@@ -34,6 +37,7 @@
 
 - Public API changed: yes / no
 - `docs/api/exports.txt` updated: yes / no / not applicable
+- Change policy applied: bug_fix / public_api / internal_refactor / documentation / ci_governance / security_sensitive / dependency_change
 - Coverage impact:
   -
 
@@ -65,5 +69,5 @@
 ## Security review
 
 - [ ] This change does not touch security-sensitive code.
-- [ ] This change touches security-sensitive code and includes regression tests.
+- [ ] This change touches security-sensitive code and includes regression tests plus `make agent-security-check` evidence.
 - [ ] Any security linter suppression is narrow and documented.

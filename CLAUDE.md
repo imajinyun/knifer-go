@@ -92,6 +92,7 @@
 | `make coverage-check COVERAGE_FILE=<file>` | Enforce coverage gates |
 | `make doctor` | Diagnose local Go/tooling/Git environment without modifying files |
 | `make worktree-check` | Fail when unrelated untracked Go files may pollute tests or commits |
+| `make security-sensitive-diff` | Detect changes under security-sensitive public facades and their internal implementations |
 | `make quick-check` | Fast local: mod-verify → vet → arch → test → api-check → diff-whitespace |
 | `make security-check` | Lint + govulncheck |
 | `make full-check COVERAGE_FILE=/tmp/coverage.out` | Full pre-push: quick-check + race coverage + coverage gate + lint + vuln |
@@ -125,6 +126,8 @@
 - **Architecture**: 8 rules enforced by `bin/check_arch.sh` — doc.go existence, no v*-to-v* imports, per-file internal/ imports, no internal→v* imports, package comments, panic policy, facade boundary policy, dependency allowlist.
 - **API snapshot**: `docs/api/exports.txt` is CI-enforced. Run `UPDATE_API=1 make api-check` after intentional public API changes.
 - **AI metadata**: `ai-context.json` is CI-enforced by `make ai-context-check`; update command side-effect metadata, `risk_level`, facades, security-sensitive package lists, or coverage gates when governance inputs change.
+- **Change policies**: `ai-context.json.change_type_policies` maps PR change types to required Agent validation commands; keep PR template change types aligned with those policy keys.
+- **Security-sensitive diff**: `make security-sensitive-diff` checks staged, unstaged, and untracked paths against `ai-context.json.security_sensitive_packages` and their mapped `internal/*` implementations.
 - **Panic**: Production code must not introduce new `panic()` calls unless in a `MustXxx`/`PanicXxx` function.
 
 ---
@@ -148,11 +151,12 @@ When the user asks to implement, rename, refactor, document, or otherwise modify
    - `go test -v -gcflags="all=-l -N" ./...` for repository-wide regressions.
    - `go vet ./...` after code or public API changes.
    - `bash bin/check_arch.sh` after production code changes.
+   - `make security-sensitive-diff` after production changes to identify whether security validation is required.
    - `bash bin/check_api_compat.sh`; if the public API change is intentional, run `UPDATE_API=1 bash bin/check_api_compat.sh` and re-run the check. Public facade additions must update `docs/api/exports.txt` in the same logical change.
    - `golangci-lint run ./...` after non-trivial Go code or test changes when the tool is available.
    - For coverage gates, first generate a fresh profile, then pass that exact file to the checker, e.g. `go test -race -shuffle=on -coverprofile=/tmp/go-knifer-coverage.out ./...` followed by `bash bin/check_coverage.sh /tmp/go-knifer-coverage.out`. Do not rely on an implicit or stale `coverage.out`.
    - `git diff --check` before committing.
-   - Prefer the named workflow targets when they match the change scope: `make agent-check` for the default AI/Agent-safe gate, `make agent-security-check` for lint/vulnerability gates, `make agent-full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out` for the full AI/Agent gate, and `make ci-test` for the CI test-job gate.
+   - Prefer the named workflow targets when they match the change scope: `make agent-check` for the default AI/Agent-safe gate, `make agent-security-check` for lint/vulnerability gates, `make agent-full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out` for the full AI/Agent gate, and `make ci-test` for the CI test-job gate. For security-sensitive changes, use the `security_sensitive` policy in `ai-context.json.change_type_policies`.
 
 5. If validation fails, **fix the cause** and re-run the failing command before reporting completion.
 
