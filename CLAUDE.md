@@ -104,6 +104,7 @@
 | `make ci-agent-governance` | CI Agent governance gate; detects change policies and emits validation evidence |
 | `make install-hooks` / `make uninstall-hooks` | Enable or disable optional local Git hooks for pre-commit/pre-push validation |
 | `make ai-context-check` | Validate machine-readable AI metadata, command side effects, facade inventory, and coverage gates |
+| `make ci-workflow-check` | Validate GitHub Actions workflow invariants declared in `ai-context.json` |
 | `make generate` | Run repository go:generate directives; ask first because generated files may change |
 | `make ci-test` | CI test-job gate (mod-verify + vet + tidy-check + diff-check + arch + test-race + coverage-check + api-check) |
 | `make check` | Alias for `full-check` |
@@ -132,6 +133,7 @@
 - **Change policies**: `ai-context.json.change_type_policies` maps PR change types to required Agent validation commands; keep PR template change types aligned with those policy keys.
 - **Agent evidence**: `make agent-evidence` writes `/tmp/go-knifer-agent-validation.json`; use it to summarize detected policies, required commands, security-sensitive paths, and governance check results.
 - **CI Agent governance**: GitHub Actions runs `make ci-agent-governance` with `AGENT_CHANGE_BASE_REF` so policy detection is based on the PR or push diff, then uploads the Agent evidence JSON artifact.
+- **CI workflow invariants**: `ai-context.json.ci_workflows` declares required GitHub Actions jobs, Agent governance commands, environment variables, and artifacts; `make ci-workflow-check` validates them.
 - **Security-sensitive diff**: `make security-sensitive-diff` checks staged, unstaged, and untracked paths against `ai-context.json.security_sensitive_packages` and their mapped `internal/*` implementations.
 - **Panic**: Production code must not introduce new `panic()` calls unless in a `MustXxx`/`PanicXxx` function.
 

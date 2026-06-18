@@ -29,6 +29,26 @@ func TestToBeanWithOptionsUsesDecoderFactory(t *testing.T) {
 	}
 }
 
+func TestToList(t *testing.T) {
+	var out []int
+	if err := ToList(`[1, 2, 3]`, &out); err != nil {
+		t.Fatalf("ToList error = %v", err)
+	}
+	if len(out) != 3 || out[0] != 1 {
+		t.Fatalf("ToList = %v", out)
+	}
+}
+
+func TestToListWithOptions(t *testing.T) {
+	var out []int
+	if err := ToListWithOptions(`[1, 2, 3]`, &out); err != nil {
+		t.Fatalf("ToListWithOptions error = %v", err)
+	}
+	if len(out) != 3 {
+		t.Fatalf("ToListWithOptions = %v", out)
+	}
+}
+
 func TestToBean(t *testing.T) {
 	src := `{"name":"alice","age":30}`
 	type user struct {

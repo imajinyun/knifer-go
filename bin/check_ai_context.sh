@@ -190,6 +190,49 @@ require_bool(git_hooks.get("optional"), "git_hooks.optional")
 for key in ("install", "uninstall", "pre_commit", "pre_push"):
     require_string(git_hooks.get(key), f"git_hooks.{key}")
 
+ci_workflows = require_mapping(data.get("ci_workflows"), "ci_workflows")
+github_actions = require_mapping(ci_workflows.get("github_actions"), "ci_workflows.github_actions")
+for name, workflow in sorted(github_actions.items()):
+    if not command_name_pattern.match(name):
+        add_error(f"ci_workflows.github_actions.{name} must use snake_case")
+    workflow = require_mapping(workflow, f"ci_workflows.github_actions.{name}")
+    workflow_path = require_string(workflow.get("path"), f"ci_workflows.github_actions.{name}.path")
+    required_jobs = require_string_list(
+        workflow.get("required_jobs"),
+        f"ci_workflows.github_actions.{name}.required_jobs",
+    )
+    workflow_text = ""
+    if workflow_path:
+        absolute_workflow_path = os.path.join(root_dir, workflow_path)
+        if not os.path.exists(absolute_workflow_path):
+            add_error(f"ci_workflows.github_actions.{name}.path references missing workflow {workflow_path!r}")
+        else:
+            with open(absolute_workflow_path, "r", encoding="utf-8") as f:
+                workflow_text = f.read()
+    for job in required_jobs:
+        if workflow_text and not re.search(rf"^  {re.escape(job)}:\s*$", workflow_text, flags=re.MULTILINE):
+            add_error(f"ci_workflows.github_actions.{name} is missing required job {job!r}")
+
+    agent_governance = require_mapping(
+        workflow.get("agent_governance"),
+        f"ci_workflows.github_actions.{name}.agent_governance",
+    )
+    required_commands = require_string_list(
+        agent_governance.get("required_commands"),
+        f"ci_workflows.github_actions.{name}.agent_governance.required_commands",
+    )
+    required_env = require_string_list(
+        agent_governance.get("required_env"),
+        f"ci_workflows.github_actions.{name}.agent_governance.required_env",
+    )
+    required_artifacts = require_string_list(
+        agent_governance.get("required_artifacts"),
+        f"ci_workflows.github_actions.{name}.agent_governance.required_artifacts",
+    )
+    for required_text in required_commands + required_env + required_artifacts:
+        if workflow_text and required_text not in workflow_text:
+            add_error(f"ci_workflows.github_actions.{name} workflow must contain {required_text!r}")
+
 architecture_rules = require_string_list(data.get("architecture_rules"), "architecture_rules")
 if len(architecture_rules) < 5:
     add_error("architecture_rules should document the enforced architecture policy")

@@ -101,6 +101,7 @@
 - `make agent-full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out`: full AI/Agent validation gate with coverage, lint, and vulnerability scan.
 - `make install-hooks`: enable optional Git hooks that run `make quick-check` before commit and `make full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out` before push.
 - `make ai-context-check`: validate machine-readable AI metadata, command side effects, facade inventory, coverage gates, and security-sensitive package references.
+- `make ci-workflow-check`: validate GitHub Actions workflow invariants declared in `ai-context.json`.
 - `make ci-test`: GitHub Actions test-job gate.
 - `make check`: alias for `make full-check`.
 - `make generate`: run repository go:generate directives; ask first because generated files may change.
@@ -116,6 +117,7 @@
 - Keep `ai-context.json.change_type_policies` synchronized with PR template change types and required Agent validation commands.
 - Use `make change-policy-check` before choosing validation scope and `make agent-evidence` before reporting Agent validation.
 - CI runs `make ci-agent-governance` with `AGENT_CHANGE_BASE_REF` and uploads the Agent validation evidence JSON artifact.
+- Keep `ai-context.json.ci_workflows` synchronized with required GitHub Actions jobs, Agent governance commands, environment variables, and artifacts.
 - Use `make security-sensitive-diff` to detect whether changed paths require the `security_sensitive` validation policy.
 - Keep production code free of forbidden panic patterns checked by `bin/check_arch.sh`.
 - Keep total coverage above the threshold defined in `ai-context.json`; `bin/check_coverage.sh` reads AI metadata as the default source of truth.

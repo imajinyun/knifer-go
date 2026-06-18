@@ -5,6 +5,15 @@ import (
 	"testing"
 )
 
+func TestHMACSHA384AndSHA512(t *testing.T) {
+	if got := HMACSHA384Hex([]byte("key"), []byte("hello")); got == "" {
+		t.Fatal("HMACSHA384Hex() is empty")
+	}
+	if got := HMACSHA512Hex([]byte("key"), []byte("hello")); got == "" {
+		t.Fatal("HMACSHA512Hex() is empty")
+	}
+}
+
 func TestHMAC(t *testing.T) {
 	if got := HMACSHA256Hex([]byte("key"), []byte("hello")); got == "" {
 		t.Fatal("HMACSHA256Hex() is empty")

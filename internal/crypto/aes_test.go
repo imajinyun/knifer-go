@@ -5,6 +5,34 @@ import (
 	"testing"
 )
 
+func TestAESGCMOptions(t *testing.T) {
+	if WithGCMTagSize(16) == nil {
+		t.Fatal("WithGCMTagSize() = nil")
+	}
+	if WithGCMBlockFactory(nil) == nil {
+		t.Fatal("WithGCMBlockFactory() = nil")
+	}
+}
+
+func TestAESSealGCM(t *testing.T) {
+	key := []byte("1234567890123456")
+	plain := []byte("hello")
+	nonce, sealed, err := AESSealGCM(plain, key, []byte("aad"))
+	if err != nil {
+		t.Fatalf("AESSealGCM() error = %v", err)
+	}
+	if len(nonce) == 0 || len(sealed) == 0 {
+		t.Fatal("AESSealGCM() returned empty data")
+	}
+	opened, err := AESOpenGCMWithOptions(sealed, key, nonce, []byte("aad"))
+	if err != nil {
+		t.Fatalf("AESOpenGCMWithOptions() error = %v", err)
+	}
+	if string(opened) != "hello" {
+		t.Fatalf("AESOpenGCMWithOptions() = %q", opened)
+	}
+}
+
 func TestAESGCM(t *testing.T) {
 	key := []byte("1234567890123456")
 	plain := []byte("hello crypto")

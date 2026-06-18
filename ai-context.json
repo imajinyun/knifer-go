@@ -177,6 +177,15 @@
       "risk_level": "low",
       "notes": "Validates ai-context.json schema, command side-effect metadata, facade inventory, and security-sensitive package references."
     },
+    "ci_workflow_check": {
+      "cmd": "make ci-workflow-check",
+      "safe_for_agent_auto_run": true,
+      "writes_workspace": false,
+      "writes_git_config": false,
+      "network_required": false,
+      "risk_level": "low",
+      "notes": "Validates GitHub Actions workflow governance invariants declared in ai-context.json."
+    },
     "generate": {
       "cmd": "make generate",
       "safe_for_agent_auto_run": false,
@@ -298,6 +307,19 @@
     "uninstall": "make uninstall-hooks",
     "pre_commit": "make quick-check",
     "pre_push": "make full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out"
+  },
+  "ci_workflows": {
+    "github_actions": {
+      "go": {
+        "path": ".github/workflows/go.yml",
+        "required_jobs": ["agent-governance", "test", "lint", "govulncheck", "codeql"],
+        "agent_governance": {
+          "required_commands": ["make ci-agent-governance"],
+          "required_env": ["AGENT_CHANGE_BASE_REF", "AGENT_EVIDENCE_FILE"],
+          "required_artifacts": ["agent-validation-evidence"]
+        }
+      }
+    }
   },
   "architecture_rules": [
     "Public v* packages are thin facades over internal/* implementations.",

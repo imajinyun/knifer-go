@@ -11,6 +11,20 @@ import (
 	"time"
 )
 
+func TestPublicKeyToPEM(t *testing.T) {
+	priv, err := GenRSAKey(1024)
+	if err != nil {
+		t.Fatal(err)
+	}
+	pubPEM, err := PublicKeyToPEM(&priv.PublicKey)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(pubPEM) == 0 {
+		t.Fatal("PublicKeyToPEM() is empty")
+	}
+}
+
 func TestPEMKeys(t *testing.T) {
 	priv, err := GenRSAKey(1024)
 	if err != nil {

@@ -177,6 +177,27 @@ func TestStructsToRecordsPointersAndScalarKinds(t *testing.T) {
 	}
 }
 
+func TestWriteMaps(t *testing.T) {
+	var b strings.Builder
+	err := WriteMaps(&b, []string{"name", "age"}, []map[string]string{{"name": "alice", "age": "30"}})
+	if err != nil {
+		t.Fatalf("WriteMaps() error = %v", err)
+	}
+	if b.String() != "name,age\nalice,30\n" {
+		t.Fatalf("WriteMaps() = %q", b.String())
+	}
+}
+
+func TestWriteStringStructs(t *testing.T) {
+	out, err := WriteStringStructs([]csvPerson{{Name: "bob", Age: 40}})
+	if err != nil {
+		t.Fatalf("WriteStringStructs() error = %v", err)
+	}
+	if out != "name,age\nbob,40\n" {
+		t.Fatalf("WriteStringStructs() = %q", out)
+	}
+}
+
 func TestErrorWrappingAndParseErrors(t *testing.T) {
 	_, err := ReadString("\"unterminated\n")
 	if !errors.Is(err, knifer.ErrCodeInvalidInput) {

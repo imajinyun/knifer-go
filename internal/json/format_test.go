@@ -14,6 +14,14 @@ func TestPretty(t *testing.T) {
 	}
 }
 
+func TestWithFormatIndent(t *testing.T) {
+	in := `{"a":1}`
+	out := FormatJSONStrWithOptions(in, WithFormatIndent("  "))
+	if !strings.Contains(out, "\n  \"a\": 1") {
+		t.Fatalf("WithFormatIndent = %q", out)
+	}
+}
+
 func TestFormatJSONStr(t *testing.T) {
 	in := `{"a":1,"b":[1,2],"c":"x"}`
 	out := FormatJSONStr(in)
