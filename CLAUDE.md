@@ -96,10 +96,12 @@
 | `make security-check` | Lint + govulncheck |
 | `make full-check COVERAGE_FILE=/tmp/coverage.out` | Full pre-push: quick-check + race coverage + coverage gate + lint + vuln |
 | `make install-hooks` / `make uninstall-hooks` | Enable or disable optional local Git hooks for pre-commit/pre-push validation |
+| `make ai-context-check` | Validate machine-readable AI metadata, command side effects, and facade inventory |
+| `make generate` | Run repository go:generate directives; ask first because generated files may change |
 | `make ci-test` | CI test-job gate (mod-verify + vet + tidy-check + diff-check + arch + test-race + coverage-check + api-check) |
 | `make check` | Alias for `full-check` |
 | `UPDATE_API=1 make api-check` | Refresh API snapshot after intentional public API changes |
-| `go generate ./...` | Refresh API snapshot via `//go:generate` in `doc.go` |
+| `go generate ./...` | Lower-level equivalent of `make generate` |
 | `make govulncheck` | Vulnerability scan |
 | `make bench-core` | Core benchmark baselines (`internal/slice`, `internal/maps`, `internal/str`, `internal/num`) |
 | `make bench-facade` | Facade benchmark baselines (`vslice`, `vmap`, `vstr`, `vnum`) |
@@ -119,6 +121,7 @@
 - **Coverage**: Keep total coverage above the threshold in `bin/check_coverage.sh`.
 - **Architecture**: 8 rules enforced by `bin/check_arch.sh` — doc.go existence, no v*-to-v* imports, per-file internal/ imports, no internal→v* imports, package comments, panic policy, facade boundary policy, dependency allowlist.
 - **API snapshot**: `docs/api/exports.txt` is CI-enforced. Run `UPDATE_API=1 make api-check` after intentional public API changes.
+- **AI metadata**: `ai-context.json` is CI-enforced by `make ai-context-check`; update command side-effect metadata when Makefile targets, facades, or security-sensitive package lists change.
 - **Panic**: Production code must not introduce new `panic()` calls unless in a `MustXxx`/`PanicXxx` function.
 
 ---

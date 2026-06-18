@@ -151,9 +151,11 @@ make doctor
 make worktree-check
 make quick-check
 make security-check
+make ai-context-check
 make install-hooks
 make bench-core
 make bench-facade
+make generate
 UPDATE_API=1 make api-check
 ```
 

@@ -221,6 +221,12 @@ Run the CI test-job gates locally. This verifies modules, vet, tidy/diff cleanli
 make ci-test
 ```
 
+Validate the machine-readable AI metadata used by agents and CLI automation:
+
+```bash
+make ai-context-check
+```
+
 Run the same local safety checks used by CI before opening a PR:
 
 ```bash
@@ -243,6 +249,12 @@ Refresh the API snapshot after an intentional exported API change:
 UPDATE_API=1 make api-check
 ```
 
+Run repository `go:generate` directives after confirming generated output is expected:
+
+```bash
+make generate
+```
+
 GitHub Actions reuses the Makefile targets for module verification, vet, tidy checks, diff cleanliness, architecture checks, race/shuffle tests, coverage gates, and API compatibility checks. It also runs `golangci-lint`, `govulncheck`, and CodeQL. Dependabot is configured for Go modules and GitHub Actions updates.
 
 Format code:
@@ -259,6 +271,7 @@ gofmt -w .
 - Release notes: see [`../../CHANGELOG.md`](../../CHANGELOG.md). User-visible changes should be recorded before tagging a release.
 - Coverage gate: CI enforces the repository baseline with `bash bin/check_coverage.sh coverage.out`. Raise `COVERAGE_THRESHOLD` or `PACKAGE_COVERAGE_THRESHOLDS` only after adding tests that support the new gate.
 - API gate: `make api-check` compares root-package and top-level `v*` API signatures, exported fields, interface methods, and method sets against [`../api/exports.txt`](../api/exports.txt). Commit the refreshed snapshot only for intentional public API changes.
+- AI metadata gate: `make ai-context-check` validates [`../../ai-context.json`](../../ai-context.json), including command side effects, facade inventory, and security-sensitive package references.
 - Workflow gates: use `make doctor` for environment diagnostics, `make worktree-check` to block unrelated untracked Go files, `make quick-check` for fast local validation, `make security-check` for lint and vulnerability scanning, `make full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out` for the full pre-push gate, and `make ci-test` for the GitHub Actions test-job gate. Optional Git hooks can be enabled with `make install-hooks` and disabled with `make uninstall-hooks`.
 - Security suppressions: keep `.golangci.yml`, `#nosec`, and `//nolint:gosec` exceptions narrow and justified at the call site; prefer a regression test before broadening an exclusion.
 - Benchmark baseline: use `make bench-core` for hot-path benchmark suites or `make bench-facade` for matching public facade packages. Treat the output as a baseline unless a separate `benchstat` comparison proves a performance change.

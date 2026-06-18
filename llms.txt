@@ -93,16 +93,19 @@
 - `make security-check`: lint and govulncheck vulnerability scan.
 - `make full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out`: full local pre-push gate with module verification, vet, architecture check, race/shuffle coverage, coverage gate, API snapshot check, lint, vulnerability scan, and whitespace diff check.
 - `make install-hooks`: enable optional Git hooks that run `make quick-check` before commit and `make full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out` before push.
+- `make ai-context-check`: validate machine-readable AI metadata, command side effects, facade inventory, and security-sensitive package references.
 - `make ci-test`: GitHub Actions test-job gate.
 - `make check`: alias for `make full-check`.
+- `make generate`: run repository go:generate directives; ask first because generated files may change.
 - `UPDATE_API=1 make api-check`: refresh the API snapshot after intentional public API changes.
-- `go generate ./...`: refresh the API snapshot (via `//go:generate` in `doc.go`).
-- `go test -race -shuffle=on -coverprofile=coverage.out ./... && bash bin/check_coverage.sh coverage.out`: full coverage check.
+- `go generate ./...`: lower-level equivalent of `make generate`.
+- `go test -race -shuffle=on -coverprofile=/tmp/go-knifer-coverage.out ./... && bash bin/check_coverage.sh /tmp/go-knifer-coverage.out`: full coverage check.
 
 ## Governance notes
 
 - Keep package tests split by source-file responsibility.
 - Do not stage, edit, delete, or rely on unrelated untracked Go files unless the user explicitly includes them in scope.
+- Keep `ai-context.json` synchronized with Makefile targets, facade inventory, command side effects, and security-sensitive package lists.
 - Keep production code free of forbidden panic patterns checked by `bin/check_arch.sh`.
 - Keep total coverage above the threshold enforced by `bin/check_coverage.sh`.
 - API compatibility is CI-enforced via `docs/api/exports.txt` snapshot.

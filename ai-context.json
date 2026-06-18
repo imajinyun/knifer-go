@@ -92,6 +92,24 @@
       "network_required": false,
       "notes": "Checks that docs/api/exports.txt is current."
     },
+    "ai_context_check": {
+      "cmd": "make ai-context-check",
+      "safe_for_agent_auto_run": true,
+      "writes_workspace": false,
+      "writes_git_config": false,
+      "network_required": false,
+      "notes": "Validates ai-context.json schema, command side-effect metadata, facade inventory, and security-sensitive package references."
+    },
+    "generate": {
+      "cmd": "make generate",
+      "safe_for_agent_auto_run": false,
+      "requires_user_consent": true,
+      "writes_workspace": true,
+      "writes_git_config": false,
+      "network_required": false,
+      "writes_files": ["docs/api/exports.txt"],
+      "notes": "Runs repository go:generate directives. Only run after confirming generated output is expected."
+    },
     "api_update": {
       "cmd": "UPDATE_API=1 make api-check",
       "safe_for_agent_auto_run": false,

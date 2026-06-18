@@ -1,4 +1,4 @@
-.PHONY: help doctor install-hooks uninstall-hooks worktree-check test test-race coverage-profile coverage-report coverage-check api-check mod-verify tidy-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check bench bench-core bench-facade bench-codec bench-smoke check ci-test
+.PHONY: help doctor install-hooks uninstall-hooks worktree-check test test-race coverage-profile coverage-report coverage-check api-check ai-context-check generate mod-verify tidy-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check bench bench-core bench-facade bench-codec bench-smoke check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -31,6 +31,7 @@ help:
 	@echo "  full-check      Run full local gates with race coverage"
 	@echo "  generate        Run go:generate directives (API snapshot, code gen)"
 	@echo "  api-check       Verify exported API snapshot is current"
+	@echo "  ai-context-check Verify machine-readable AI context metadata"
 	@echo "  check           Run local stability gates"
 	@echo "  ci-test         Run CI test-job gates"
 
@@ -64,10 +65,10 @@ worktree-check:
 	@if [ "$${SKIP_WORKTREE_CHECK:-}" = "1" ]; then \
 		echo "worktree-check skipped because SKIP_WORKTREE_CHECK=1"; \
 	else \
-		untracked_go="$$(git status --porcelain=v1 --untracked-files=all -- '*.go')"; \
+		untracked_go="$$(git ls-files --others --exclude-standard -- '*.go')"; \
 		if [ -n "$${untracked_go}" ]; then \
 			echo "WORKTREE CHECK ERROR: untracked Go files can pollute local tests or commits:" >&2; \
-			echo "$${untracked_go}" >&2; \
+			printf '%s\n' "$${untracked_go}" | while IFS= read -r path; do echo "?? $${path}" >&2; done; \
 			echo "Commit/stash/remove them, or set SKIP_WORKTREE_CHECK=1 only when they are intentionally excluded." >&2; \
 			exit 1; \
 		fi; \
@@ -90,6 +91,9 @@ coverage-check:
 
 api-check:
 	bash bin/check_api_compat.sh
+
+ai-context-check:
+	bash bin/check_ai_context.sh
 
 generate:
 	$(GO) generate ./...
@@ -121,11 +125,11 @@ lint:
 govulncheck:
 	$(GO) tool govulncheck $(PKGS)
 
-quick-check: worktree-check mod-verify vet arch test api-check diff-whitespace
+quick-check: worktree-check mod-verify vet arch test api-check ai-context-check diff-whitespace
 
 security-check: lint govulncheck
 
-full-check: worktree-check mod-verify vet arch test-race coverage-check api-check lint govulncheck diff-whitespace
+full-check: worktree-check mod-verify vet arch test-race coverage-check api-check ai-context-check lint govulncheck diff-whitespace
 
 bench:
 	$(GO) test -bench=$(BENCH) -benchmem -benchtime=$(BENCHTIME) -count=$(BENCHCOUNT) -run=^$$ $(BENCH_PKGS)
@@ -143,4 +147,4 @@ bench-smoke:
 
 check: full-check
 
-ci-test: mod-verify vet tidy-check diff-check arch test-race coverage-check api-check
+ci-test: mod-verify vet tidy-check diff-check arch test-race coverage-check api-check ai-context-check
