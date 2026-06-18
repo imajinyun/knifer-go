@@ -6,6 +6,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestAssign(t *testing.T) {
+	a := map[string]int{"a": 1, "b": 2}
+	b := map[string]int{"b": 20, "c": 3}
+	got := Assign(a, b)
+	assert.Equal(t, map[string]int{"a": 1, "b": 20, "c": 3}, got)
+
+	// Assign with no inputs
+	assert.Empty(t, Assign[string, int]())
+
+	// Assign with single input
+	assert.Equal(t, a, Assign(a))
+}
+
 func TestClear(t *testing.T) {
 	m := map[string]int{"a": 1, "b": 2}
 	Clear(m)

@@ -17,6 +17,28 @@ func TestMap(t *testing.T) {
 	assert.Equal(t, map[string]string{"A": "1", "B": "2"}, out)
 }
 
+func TestFromEntries(t *testing.T) {
+	got := FromEntries([]Pair[string, int]{{"a", 1}, {"b", 2}})
+	assert.Equal(t, map[string]int{"a": 1, "b": 2}, got)
+
+	// duplicate keys — last wins
+	got2 := FromEntries([]Pair[string, int]{{"a", 1}, {"a", 99}})
+	assert.Equal(t, map[string]int{"a": 99}, got2)
+
+	// empty
+	assert.Empty(t, FromEntries[string, int](nil))
+}
+
+func TestInverseAndInvert(t *testing.T) {
+	in := map[string]int{"a": 1, "b": 2}
+	got := Inverse(in)
+	assert.Equal(t, map[int]string{1: "a", 2: "b"}, got)
+
+	// Invert is alias of Inverse
+	got2 := Invert(in)
+	assert.Equal(t, got, got2)
+}
+
 func TestMapKeysAndMapValues(t *testing.T) {
 	in := map[string]int{"a": 1, "b": 2}
 

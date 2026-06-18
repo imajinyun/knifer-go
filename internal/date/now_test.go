@@ -5,6 +5,22 @@ import (
 	"time"
 )
 
+func TestNowAndTodayDefaults(t *testing.T) {
+	// Now() and Today() should return non-zero time (within reasonable window)
+	now := Now()
+	if now.IsZero() {
+		t.Fatal("Now() returned zero time")
+	}
+	today := Today()
+	if today.IsZero() {
+		t.Fatal("Today() returned zero time")
+	}
+	// Today should be at the start of the day
+	if today.Hour() != 0 || today.Minute() != 0 || today.Second() != 0 {
+		t.Fatalf("Today() = %v, should be start of day", today)
+	}
+}
+
 func TestNowWithOptionsClock(t *testing.T) {
 	fixed := time.Date(2026, 6, 6, 12, 34, 56, 0, time.FixedZone("fixed", 8*60*60))
 	if got := NowWithOptions(WithClock(func() time.Time { return fixed })); !got.Equal(fixed) {
