@@ -19,7 +19,6 @@ profile.cov
 
 # Dependency directories (remove the comment below to include it)
 vendor/
-AGENTS.md
 report.html
 
 # Go workspace file
