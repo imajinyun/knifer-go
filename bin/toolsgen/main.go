@@ -75,11 +75,18 @@ type Param struct {
 func main() {
 	outPath := flag.String("out", "", "write generated catalog to this file instead of stdout")
 	markdownPath := flag.String("markdown", "", "write a human-readable Markdown catalog to this file")
+	quality := flag.Bool("quality", false, "write a Markdown quality report to stdout and exit")
 	flag.Parse()
 
 	doc, err := generateToolsDoc(".")
 	if err != nil {
 		fatal(err)
+	}
+	if *quality {
+		if _, err := os.Stdout.Write(renderToolsQualityReport(doc)); err != nil {
+			fatal(err)
+		}
+		return
 	}
 	if err := writeToolsDoc(doc, *outPath); err != nil {
 		fatal(err)
@@ -96,6 +103,8 @@ func writeToolsDoc(doc ToolsDoc, outPath string) error {
 	}
 	out = append(out, '\n')
 	if outPath != "" {
+		// Generated repository docs should be readable like normal source files.
+		//nolint:gosec
 		return os.WriteFile(outPath, out, 0o644)
 	}
 	if _, err := os.Stdout.Write(out); err != nil {
@@ -108,6 +117,8 @@ func writeMarkdownDoc(doc ToolsDoc, outPath string) error {
 	if outPath == "" {
 		return nil
 	}
+	// Generated repository docs should be readable like normal source files.
+	//nolint:gosec
 	return os.WriteFile(outPath, renderToolsMarkdown(doc), 0o644)
 }
 
@@ -163,6 +174,82 @@ func renderToolsMarkdown(doc ToolsDoc) []byte {
 		b.WriteString("\n")
 	}
 	return []byte(b.String())
+}
+
+type packageQualityRow struct {
+	Name                  string
+	FunctionCount         int
+	EmptySynopses         int
+	FunctionsWithDocs     int
+	FunctionsWithExamples int
+	EmptyFunctionNames    []string
+}
+
+func buildPackageQualityRows(doc ToolsDoc) []packageQualityRow {
+	rows := make([]packageQualityRow, 0, len(doc.Packages))
+	for _, pkg := range doc.Packages {
+		row := packageQualityRow{Name: pkg.Name, FunctionCount: len(pkg.Functions)}
+		for _, fn := range pkg.Functions {
+			if len(fn.Examples) > 0 {
+				row.FunctionsWithExamples++
+			}
+			if strings.TrimSpace(fn.Synopsis) == "" {
+				row.EmptySynopses++
+				row.EmptyFunctionNames = append(row.EmptyFunctionNames, fn.Name)
+				continue
+			}
+			row.FunctionsWithDocs++
+		}
+		rows = append(rows, row)
+	}
+	sort.Slice(rows, func(i, j int) bool {
+		if rows[i].EmptySynopses != rows[j].EmptySynopses {
+			return rows[i].EmptySynopses > rows[j].EmptySynopses
+		}
+		return rows[i].Name < rows[j].Name
+	})
+	return rows
+}
+
+func renderToolsQualityReport(doc ToolsDoc) []byte {
+	var b strings.Builder
+	b.WriteString("# go-knifer Tool Catalog Quality Report\n\n")
+	b.WriteString("Generated from public facade source comments and examples. Use `make tools-report` to refresh this diagnostic view.\n\n")
+	b.WriteString("## Summary\n\n")
+	b.WriteString("| Metric | Value |\n")
+	b.WriteString("| --- | ---: |\n")
+	writeMetric(&b, "Packages", doc.Summary.PackageCount)
+	writeMetric(&b, "Functions", doc.Summary.FunctionCount)
+	writeMetric(&b, "Empty synopses", doc.Summary.SynopsisSources["empty"])
+	writeMetric(&b, "Functions with examples", doc.Summary.FunctionsWithExamples)
+
+	b.WriteString("\n## Package ranking\n\n")
+	b.WriteString("| Package | Functions | Empty synopses | With docs | With examples | Empty functions |\n")
+	b.WriteString("| --- | ---: | ---: | ---: | ---: | --- |\n")
+	for _, row := range buildPackageQualityRows(doc) {
+		fmt.Fprintf(
+			&b,
+			"| `%s` | %d | %d | %d | %d | %s |\n",
+			markdownEscape(row.Name),
+			row.FunctionCount,
+			row.EmptySynopses,
+			row.FunctionsWithDocs,
+			row.FunctionsWithExamples,
+			markdownFunctionList(row.EmptyFunctionNames),
+		)
+	}
+	return []byte(b.String())
+}
+
+func markdownFunctionList(names []string) string {
+	if len(names) == 0 {
+		return "—"
+	}
+	parts := make([]string, 0, len(names))
+	for _, name := range names {
+		parts = append(parts, "`"+markdownEscape(name)+"`")
+	}
+	return strings.Join(parts, ", ")
 }
 
 func writeMetric(b *strings.Builder, name string, value any) {

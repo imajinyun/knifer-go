@@ -16,9 +16,9 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Context-aware functions | 20 |
 | Functions returning error | 564 |
 | Variadic functions | 754 |
-| Synopsis source: facade | 1834 |
+| Synopsis source: facade | 1857 |
 | Synopsis source: internal | 625 |
-| Synopsis source: empty | 69 |
+| Synopsis source: empty | 46 |
 
 ## Packages
 
@@ -1568,7 +1568,7 @@ Package vnet provides public APIs for network, IP, URL-encoding, TLS, and multip
 | `BeginIPLongWithOptions` | `func BeginIPLongWithOptions(ip string, maskBit int, opts ...IPOption) (uint32, error)` | BeginIPLongWithOptions returns the first IPv4 value in an ip/maskBit block using custom providers. | internal | — |
 | `BeginIPWithOptions` | `func BeginIPWithOptions(ip string, maskBit int, opts ...IPOption) (string, error)` | BeginIPWithOptions returns the first IPv4 address in an ip/maskBit block using custom providers. | internal | — |
 | `BigIntToIPv6` | `func BigIntToIPv6(n *big.Int) (string, error)` | BigIntToIPv6 converts a big integer in the IPv6 address range to a string. | internal | — |
-| `BuildInetSocketAddress` | `func BuildInetSocketAddress(host string, defaultPort int) (*net.TCPAddr, error)` | — | empty | — |
+| `BuildInetSocketAddress` | `func BuildInetSocketAddress(host string, defaultPort int) (*net.TCPAddr, error)` | BuildInetSocketAddress resolves host into a TCP address using defaultPort when the host omits a port. | facade | — |
 | `BuildInetSocketAddressWithOptions` | `func BuildInetSocketAddressWithOptions(host string, defaultPort int, opts ...AddressOption) (*net.TCPAddr, error)` | BuildInetSocketAddressWithOptions builds a TCP address with custom address resolution options. | internal | — |
 | `Connect` | `func Connect(hostname string, port int, timeout time.Duration) (net.Conn, error)` | Connect opens a TCP connection to host:port. | facade | — |
 | `ConnectWithOptions` | `func ConnectWithOptions(hostname string, port int, opts ...ConnectOption) (net.Conn, error)` | ConnectWithOptions opens a connection to host:port using custom connection options. | facade | — |
@@ -1584,37 +1584,37 @@ Package vnet provides public APIs for network, IP, URL-encoding, TLS, and multip
 | `EndIPWithOptions` | `func EndIPWithOptions(ip string, maskBit int, opts ...IPOption) (string, error)` | EndIPWithOptions returns the last IPv4 address in an ip/maskBit block using custom providers. | internal | — |
 | `FormatIPBlock` | `func FormatIPBlock(ip string, mask string) (string, error)` | FormatIPBlock formats ip and mask as ip/maskBit. | internal | — |
 | `FormatIPBlockWithOptions` | `func FormatIPBlockWithOptions(ip string, mask string, opts ...IPOption) (string, error)` | FormatIPBlockWithOptions formats ip and mask as ip/maskBit using custom providers. | internal | — |
-| `GetDNSInfo` | `func GetDNSInfo(hostName string, attrNames ...string) ([]string, error)` | — | empty | — |
+| `GetDNSInfo` | `func GetDNSInfo(hostName string, attrNames ...string) ([]string, error)` | GetDNSInfo returns DNS records for hostName, optionally limited to attrNames record types. | facade | — |
 | `GetDNSInfoWithOptions` | `func GetDNSInfoWithOptions(hostName string, opts ...ResolveOption) ([]string, error)` | GetDNSInfoWithOptions looks up DNS records with custom resolver options. | internal | — |
-| `GetHardwareAddress` | `func GetHardwareAddress(inetAddress net.IP) net.HardwareAddr` | — | empty | — |
+| `GetHardwareAddress` | `func GetHardwareAddress(inetAddress net.IP) net.HardwareAddr` | GetHardwareAddress returns the hardware address associated with inetAddress. | facade | — |
 | `GetHardwareAddressWithOptions` | `func GetHardwareAddressWithOptions(inetAddress net.IP, opts ...InterfaceOption) net.HardwareAddr` | GetHardwareAddressWithOptions returns the hardware address of the interface owning inetAddress using custom providers. | internal | — |
 | `GetIPByHost` | `func GetIPByHost(hostName string) string` | GetIPByHost resolves hostName to the first IP string. | internal | — |
 | `GetIPByHostWithOptions` | `func GetIPByHostWithOptions(hostName string, opts ...ResolveOption) ([]string, error)` | GetIPByHostWithOptions resolves hostName to IP strings with custom resolver options. | internal | — |
-| `GetLocalHardwareAddress` | `func GetLocalHardwareAddress() net.HardwareAddr` | — | empty | — |
+| `GetLocalHardwareAddress` | `func GetLocalHardwareAddress() net.HardwareAddr` | GetLocalHardwareAddress returns the hardware address for the preferred local network interface. | facade | — |
 | `GetLocalHardwareAddressWithOptions` | `func GetLocalHardwareAddressWithOptions(opts ...InterfaceOption) net.HardwareAddr` | GetLocalHardwareAddressWithOptions returns the first non-empty local hardware address using custom providers. | internal | — |
-| `GetLocalHostName` | `func GetLocalHostName() string` | — | empty | — |
+| `GetLocalHostName` | `func GetLocalHostName() string` | GetLocalHostName returns the local host name reported by the operating system. | facade | — |
 | `GetLocalHostNameWithOptions` | `func GetLocalHostNameWithOptions(opts ...InterfaceOption) string` | GetLocalHostNameWithOptions returns the OS host name using custom providers. | internal | — |
-| `GetLocalMACAddress` | `func GetLocalMACAddress(separator ...string) string` | — | empty | — |
+| `GetLocalMACAddress` | `func GetLocalMACAddress(separator ...string) string` | GetLocalMACAddress returns the local hardware address formatted with an optional separator. | facade | — |
 | `GetLocalMACAddressWithOptions` | `func GetLocalMACAddressWithOptions(opts []InterfaceOption, separator ...string) string` | GetLocalMACAddressWithOptions returns the first non-empty local hardware address using custom providers. | internal | — |
-| `GetLocalhost` | `func GetLocalhost() net.IP` | — | empty | — |
-| `GetLocalhostStr` | `func GetLocalhostStr() string` | — | empty | — |
+| `GetLocalhost` | `func GetLocalhost() net.IP` | GetLocalhost returns the preferred local host IP address. | facade | — |
+| `GetLocalhostStr` | `func GetLocalhostStr() string` | GetLocalhostStr returns the preferred local host IP address as a string. | facade | — |
 | `GetLocalhostStrWithOptions` | `func GetLocalhostStrWithOptions(opts ...InterfaceOption) string` | GetLocalhostStrWithOptions returns a preferred local host IP string using custom providers. | internal | — |
 | `GetLocalhostWithOptions` | `func GetLocalhostWithOptions(opts ...InterfaceOption) net.IP` | GetLocalhostWithOptions returns a preferred local host IP using custom providers. | internal | — |
-| `GetMACAddress` | `func GetMACAddress(inetAddress net.IP, separator ...string) string` | — | empty | — |
+| `GetMACAddress` | `func GetMACAddress(inetAddress net.IP, separator ...string) string` | GetMACAddress returns the hardware address for inetAddress formatted with an optional separator. | facade | — |
 | `GetMACAddressWithOptions` | `func GetMACAddressWithOptions(inetAddress net.IP, opts []InterfaceOption, separator ...string) string` | GetMACAddressWithOptions returns the hardware address of the interface owning inetAddress using custom providers. | internal | — |
 | `GetMultistageReverseProxyIP` | `func GetMultistageReverseProxyIP(ip string) string` | GetMultistageReverseProxyIP returns the first non-unknown IP in a comma-separated proxy header. | internal | — |
-| `GetNetworkInterface` | `func GetNetworkInterface(name string) (*net.Interface, error)` | — | empty | — |
+| `GetNetworkInterface` | `func GetNetworkInterface(name string) (*net.Interface, error)` | GetNetworkInterface returns the network interface with the given name. | facade | — |
 | `GetNetworkInterfaceWithOptions` | `func GetNetworkInterfaceWithOptions(name string, opts ...InterfaceOption) (*net.Interface, error)` | GetNetworkInterfaceWithOptions returns a network interface by name using custom providers. | internal | — |
-| `GetNetworkInterfaces` | `func GetNetworkInterfaces() ([]net.Interface, error)` | — | empty | — |
+| `GetNetworkInterfaces` | `func GetNetworkInterfaces() ([]net.Interface, error)` | GetNetworkInterfaces returns all network interfaces visible to the local host. | facade | — |
 | `GetNetworkInterfacesWithOptions` | `func GetNetworkInterfacesWithOptions(opts ...InterfaceOption) ([]net.Interface, error)` | GetNetworkInterfacesWithOptions returns all network interfaces using custom providers. | internal | — |
 | `GetRemoteAddress` | `func GetRemoteAddress(conn net.Conn) string` | GetRemoteAddress returns conn's remote address string. | internal | — |
-| `GetUsableLocalPort` | `func GetUsableLocalPort() (int, error)` | — | empty | — |
-| `GetUsableLocalPortFrom` | `func GetUsableLocalPortFrom(minPort int) (int, error)` | — | empty | — |
+| `GetUsableLocalPort` | `func GetUsableLocalPort() (int, error)` | GetUsableLocalPort returns an available local port. | facade | — |
+| `GetUsableLocalPortFrom` | `func GetUsableLocalPortFrom(minPort int) (int, error)` | GetUsableLocalPortFrom returns an available local port greater than or equal to minPort. | facade | — |
 | `GetUsableLocalPortFromWithOptions` | `func GetUsableLocalPortFromWithOptions(minPort int, opts ...PortOption) (int, error)` | GetUsableLocalPortFromWithOptions returns an available local port from minPort to max with custom probe options. | internal | — |
-| `GetUsableLocalPortInRange` | `func GetUsableLocalPortInRange(minPort int, maxPort int) (int, error)` | — | empty | — |
+| `GetUsableLocalPortInRange` | `func GetUsableLocalPortInRange(minPort int, maxPort int) (int, error)` | GetUsableLocalPortInRange returns an available local port within the inclusive range. | facade | — |
 | `GetUsableLocalPortInRangeWithOptions` | `func GetUsableLocalPortInRangeWithOptions(minPort int, maxPort int, opts ...PortOption) (int, error)` | GetUsableLocalPortInRangeWithOptions returns an available local port in [minPort, maxPort] with custom probe options. | internal | — |
 | `GetUsableLocalPortWithOptions` | `func GetUsableLocalPortWithOptions(opts ...PortOption) (int, error)` | GetUsableLocalPortWithOptions returns an available local port in the default range with custom probe options. | internal | — |
-| `GetUsableLocalPorts` | `func GetUsableLocalPorts(numRequested int, minPort int, maxPort int) ([]int, error)` | — | empty | — |
+| `GetUsableLocalPorts` | `func GetUsableLocalPorts(numRequested int, minPort int, maxPort int) ([]int, error)` | GetUsableLocalPorts returns up to numRequested available local ports within the inclusive range. | facade | — |
 | `GetUsableLocalPortsWithOptions` | `func GetUsableLocalPortsWithOptions(numRequested int, minPort int, maxPort int, opts ...PortOption) ([]int, error)` | GetUsableLocalPortsWithOptions returns up to numRequested available ports in [minPort, maxPort] with custom probe options. | internal | — |
 | `HideIPPart` | `func HideIPPart(ip string) string` | HideIPPart hides the last IPv4 segment. | internal | — |
 | `HideIPPartLong` | `func HideIPPartLong(ip uint32) string` | HideIPPartLong hides the last segment of an IPv4 integer. | internal | — |
@@ -1642,7 +1642,7 @@ Package vnet provides public APIs for network, IP, URL-encoding, TLS, and multip
 | `IsOpen` | `func IsOpen(address *net.TCPAddr, timeout time.Duration) bool` | IsOpen reports whether address can be opened within timeout. | facade | — |
 | `IsOpenWithOptions` | `func IsOpenWithOptions(address *net.TCPAddr, opts ...ConnectOption) bool` | IsOpenWithOptions reports whether address can be opened with custom connection options. | facade | — |
 | `IsUnknown` | `func IsUnknown(checkString string) bool` | IsUnknown reports whether checkString is empty or equals unknown case-insensitively. | internal | — |
-| `IsUsableLocalPort` | `func IsUsableLocalPort(port int) bool` | — | empty | — |
+| `IsUsableLocalPort` | `func IsUsableLocalPort(port int) bool` | IsUsableLocalPort reports whether port can be listened on locally. | facade | — |
 | `IsUsableLocalPortWithOptions` | `func IsUsableLocalPortWithOptions(port int, opts ...PortOption) bool` | IsUsableLocalPortWithOptions reports whether port can be bound locally with custom probe options. | internal | — |
 | `IsValidPort` | `func IsValidPort(port int) bool` | IsValidPort reports whether port is a valid TCP/UDP port number. | internal | — |
 | `ListIPCIDR` | `func ListIPCIDR(ip string, maskBit int, isAll bool) ([]string, error)` | ListIPCIDR expands an ip/maskBit block into IPv4 strings. | internal | — |
@@ -1651,15 +1651,15 @@ Package vnet provides public APIs for network, IP, URL-encoding, TLS, and multip
 | `ListIPRangeWithOptions` | `func ListIPRangeWithOptions(fromIP string, toIP string, opts ...IPOption) ([]string, error)` | ListIPRangeWithOptions expands an inclusive IPv4 range into strings using custom providers. | internal | — |
 | `ListIPs` | `func ListIPs(ipRange string, isAll bool) ([]string, error)` | ListIPs expands an IPv4 range expression: single IP, from-to, or ip/maskBit. | internal | — |
 | `ListIPsWithOptions` | `func ListIPsWithOptions(ipRange string, isAll bool, opts ...IPOption) ([]string, error)` | ListIPsWithOptions expands an IPv4 range expression using custom providers: single IP, from-to, or ip/maskBit. | internal | — |
-| `LocalAddressList` | `func LocalAddressList(addressFilter func(net.IP) bool) []net.IP` | — | empty | — |
-| `LocalAddressListByInterface` | `func LocalAddressListByInterface(interfaceFilter func(net.Interface) bool, addressFilter func(net.IP) bool) []net.IP` | — | empty | — |
+| `LocalAddressList` | `func LocalAddressList(addressFilter func(net.IP) bool) []net.IP` | LocalAddressList returns local IP addresses accepted by addressFilter. | facade | — |
+| `LocalAddressListByInterface` | `func LocalAddressListByInterface(interfaceFilter func(net.Interface) bool, addressFilter func(net.IP) bool) []net.IP` | LocalAddressListByInterface returns local IP addresses whose interface and address pass the provided filters. | facade | — |
 | `LocalAddressListByInterfaceWithOptions` | `func LocalAddressListByInterfaceWithOptions(interfaceFilter func(net.Interface) bool, addressFilter func(net.IP) bool, opts ...InterfaceOption) []net.IP` | LocalAddressListByInterfaceWithOptions returns local IP addresses matching interface and address filters using custom providers. | internal | — |
 | `LocalAddressListWithOptions` | `func LocalAddressListWithOptions(addressFilter func(net.IP) bool, opts ...InterfaceOption) []net.IP` | LocalAddressListWithOptions returns local IP addresses matching addressFilter using custom providers. | internal | — |
-| `LocalIPs` | `func LocalIPs() []string` | — | empty | — |
+| `LocalIPs` | `func LocalIPs() []string` | LocalIPs returns local IP addresses as strings. | facade | — |
 | `LocalIPsWithOptions` | `func LocalIPsWithOptions(opts ...InterfaceOption) []string` | LocalIPsWithOptions returns all local IP addresses using custom providers. | internal | — |
-| `LocalIPv4s` | `func LocalIPv4s() []string` | — | empty | — |
+| `LocalIPv4s` | `func LocalIPv4s() []string` | LocalIPv4s returns local IPv4 addresses as strings. | facade | — |
 | `LocalIPv4sWithOptions` | `func LocalIPv4sWithOptions(opts ...InterfaceOption) []string` | LocalIPv4sWithOptions returns local IPv4 addresses using custom providers. | internal | — |
-| `LocalIPv6s` | `func LocalIPv6s() []string` | — | empty | — |
+| `LocalIPv6s` | `func LocalIPv6s() []string` | LocalIPv6s returns local IPv6 addresses as strings. | facade | — |
 | `LocalIPv6sWithOptions` | `func LocalIPv6sWithOptions(opts ...InterfaceOption) []string` | LocalIPv6sWithOptions returns local IPv6 addresses using custom providers. | internal | — |
 | `LongToIPv4` | `func LongToIPv4(longIP uint32) string` | LongToIPv4 converts a uint32 IPv4 value to dotted string form. | internal | — |
 | `MaskBitByMask` | `func MaskBitByMask(mask string) (int, error)` | MaskBitByMask converts a dotted IPv4 mask to mask bits. | internal | — |
@@ -1671,8 +1671,8 @@ Package vnet provides public APIs for network, IP, URL-encoding, TLS, and multip
 | `MatchesWildcardWithOptions` | `func MatchesWildcardWithOptions(wildcard string, ipAddress string, opts ...WildcardOption) bool` | MatchesWildcardWithOptions reports whether ipAddress matches a wildcard with options. | internal | — |
 | `NetCat` | `func NetCat(host string, port int, data []byte, timeout time.Duration) error` | NetCat sends data to host:port over TCP. | facade | — |
 | `NetCatWithOptions` | `func NetCatWithOptions(host string, port int, data []byte, opts ...ConnectOption) error` | NetCatWithOptions sends data to host:port using custom connection options. | facade | — |
-| `NewCertPool` | `func NewCertPool() *x509.CertPool` | — | empty | — |
-| `NewLocalPortGenerator` | `func NewLocalPortGenerator(beginPort int) *LocalPortGenerator` | — | empty | — |
+| `NewCertPool` | `func NewCertPool() *x509.CertPool` | NewCertPool returns a new empty certificate pool. | facade | — |
+| `NewLocalPortGenerator` | `func NewLocalPortGenerator(beginPort int) *LocalPortGenerator` | NewLocalPortGenerator returns a generator that scans local ports starting at beginPort. | facade | — |
 | `NewLocalPortGeneratorWithOptions` | `func NewLocalPortGeneratorWithOptions(beginPort int, opts ...PortOption) *LocalPortGenerator` | NewLocalPortGeneratorWithOptions creates a local port generator with custom probe options. | internal | — |
 | `NewTLSConfigBuilder` | `func NewTLSConfigBuilder() *TLSConfigBuilder` | NewTLSConfigBuilder creates a TLS config builder. | internal | — |
 | `NewUploadSetting` | `func NewUploadSetting() UploadSetting` | NewUploadSetting returns a default upload setting. | facade | — |

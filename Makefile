@@ -1,4 +1,4 @@
-.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check test test-race coverage-profile coverage-report coverage-check api-check tools-check tools-gen ai-context-check ci-workflow-check docs-gen docs-check generate mod-verify tidy-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke check ci-test
+.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check test test-race coverage-profile coverage-report coverage-check api-check tools-check tools-gen tools-report ai-context-check ci-workflow-check docs-gen docs-check generate mod-verify tidy-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -41,6 +41,7 @@ help:
 	@echo "  api-check       Verify exported API snapshot is current"
 	@echo "  tools-check     Verify machine-readable tools catalog is current"
 	@echo "  tools-gen       Regenerate machine-readable tools catalog"
+	@echo "  tools-report    Print tools catalog quality report"
 	@echo "  docs-gen        Regenerate documentation artifacts"
 	@echo "  docs-check      Verify generated documentation artifacts are current"
 	@echo "  ai-context-check Verify machine-readable AI context metadata"
@@ -122,6 +123,9 @@ tools-check:
 
 tools-gen:
 	$(GO) run ./bin/toolsgen -out docs/api/tools.json -markdown docs/api/tools.md
+
+tools-report:
+	$(GO) run ./bin/toolsgen -quality
 
 docs-gen: tools-gen
 

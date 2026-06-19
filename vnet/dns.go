@@ -33,6 +33,7 @@ func IsUnknown(checkString string) bool { return netimpl.IsUnknown(checkString) 
 
 func ParseCookies(cookieStr string) []*http.Cookie { return netimpl.ParseCookies(cookieStr) }
 
+// GetDNSInfo returns DNS records for hostName, optionally limited to attrNames record types.
 func GetDNSInfo(hostName string, attrNames ...string) ([]string, error) {
 	return GetDNSInfoWithOptions(hostName, WithDNSTypes(attrNames...))
 }

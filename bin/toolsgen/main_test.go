@@ -190,6 +190,19 @@ func TestToolsMarkdownSnapshotIsCurrent(t *testing.T) {
 	}
 }
 
+func TestToolsCatalogSynopsisCoverageBudget(t *testing.T) {
+	root := repositoryRoot(t)
+	doc, err := generateToolsDoc(root)
+	if err != nil {
+		t.Fatalf("generateToolsDoc(%q) error = %v", root, err)
+	}
+	const maxEmptySynopses = 50
+	got := doc.Summary.SynopsisSources["empty"]
+	if got > maxEmptySynopses {
+		t.Fatalf("empty synopsis count = %d, want <= %d\n%s", got, maxEmptySynopses, renderToolsQualityReport(doc))
+	}
+}
+
 func TestWriteToolsDocWritesIndentedFile(t *testing.T) {
 	outPath := filepath.Join(t.TempDir(), "tools.json")
 	doc := ToolsDoc{
@@ -268,6 +281,51 @@ func TestRenderToolsMarkdownIncludesSummaryAndPackages(t *testing.T) {
 		if !strings.Contains(got, want) {
 			t.Fatalf("rendered markdown missing %q:\n%s", want, got)
 		}
+	}
+}
+
+func TestRenderToolsQualityReportRanksEmptySynopsisPackages(t *testing.T) {
+	doc := ToolsDoc{
+		Summary: SummaryDoc{
+			PackageCount:          2,
+			FunctionCount:         5,
+			FunctionsWithExamples: 1,
+			SynopsisSources:       map[string]int{"empty": 3, "facade": 2, "internal": 0},
+		},
+		Packages: []PackageDoc{
+			{
+				Name: "vid",
+				Functions: []FuncDoc{
+					{Name: "Create", Synopsis: "Create returns an ID."},
+					{Name: "FastUUID"},
+				},
+			},
+			{
+				Name: "vnet",
+				Functions: []FuncDoc{
+					{Name: "GetLocalHostName", Examples: []string{"ExampleGetLocalHostName"}},
+					{Name: "GetLocalhost"},
+					{Name: "ParseIP", Synopsis: "ParseIP parses an IP address."},
+				},
+			},
+		},
+	}
+
+	got := string(renderToolsQualityReport(doc))
+	wants := []string{
+		"# go-knifer Tool Catalog Quality Report\n",
+		"| Empty synopses | 3 |",
+		"| Package | Functions | Empty synopses | With docs | With examples | Empty functions |",
+		"| `vnet` | 3 | 2 | 1 | 1 | `GetLocalHostName`, `GetLocalhost` |",
+		"| `vid` | 2 | 1 | 1 | 0 | `FastUUID` |",
+	}
+	for _, want := range wants {
+		if !strings.Contains(got, want) {
+			t.Fatalf("quality report missing %q:\n%s", want, got)
+		}
+	}
+	if strings.Index(got, "| `vnet` |") > strings.Index(got, "| `vid` |") {
+		t.Fatalf("quality report did not rank packages by empty synopsis count:\n%s", got)
 	}
 }
 

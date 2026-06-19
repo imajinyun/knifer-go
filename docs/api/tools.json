@@ -9,8 +9,8 @@
     "returns_error_functions": 564,
     "variadic_functions": 754,
     "synopsis_sources": {
-      "empty": 69,
-      "facade": 1834,
+      "empty": 46,
+      "facade": 1857,
       "internal": 625
     }
   },
@@ -26304,7 +26304,8 @@
         {
           "name": "BuildInetSocketAddress",
           "signature": "func BuildInetSocketAddress(host string, defaultPort int) (*net.TCPAddr, error)",
-          "synopsis": "",
+          "synopsis": "BuildInetSocketAddress resolves host into a TCP address using defaultPort when the host omits a port.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "host",
@@ -26694,7 +26695,8 @@
         {
           "name": "GetDNSInfo",
           "signature": "func GetDNSInfo(hostName string, attrNames ...string) ([]string, error)",
-          "synopsis": "",
+          "synopsis": "GetDNSInfo returns DNS records for hostName, optionally limited to attrNames record types.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "hostName",
@@ -26739,7 +26741,8 @@
         {
           "name": "GetHardwareAddress",
           "signature": "func GetHardwareAddress(inetAddress net.IP) net.HardwareAddr",
-          "synopsis": "",
+          "synopsis": "GetHardwareAddress returns the hardware address associated with inetAddress.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "inetAddress",
@@ -26819,7 +26822,8 @@
         {
           "name": "GetLocalHardwareAddress",
           "signature": "func GetLocalHardwareAddress() net.HardwareAddr",
-          "synopsis": "",
+          "synopsis": "GetLocalHardwareAddress returns the hardware address for the preferred local network interface.",
+          "synopsis_source": "facade",
           "results": [
             "net.HardwareAddr"
           ],
@@ -26848,7 +26852,8 @@
         {
           "name": "GetLocalHostName",
           "signature": "func GetLocalHostName() string",
-          "synopsis": "",
+          "synopsis": "GetLocalHostName returns the local host name reported by the operating system.",
+          "synopsis_source": "facade",
           "results": [
             "string"
           ],
@@ -26877,7 +26882,8 @@
         {
           "name": "GetLocalMACAddress",
           "signature": "func GetLocalMACAddress(separator ...string) string",
-          "synopsis": "",
+          "synopsis": "GetLocalMACAddress returns the local hardware address formatted with an optional separator.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "separator",
@@ -26916,7 +26922,8 @@
         {
           "name": "GetLocalhost",
           "signature": "func GetLocalhost() net.IP",
-          "synopsis": "",
+          "synopsis": "GetLocalhost returns the preferred local host IP address.",
+          "synopsis_source": "facade",
           "results": [
             "net.IP"
           ],
@@ -26927,7 +26934,8 @@
         {
           "name": "GetLocalhostStr",
           "signature": "func GetLocalhostStr() string",
-          "synopsis": "",
+          "synopsis": "GetLocalhostStr returns the preferred local host IP address as a string.",
+          "synopsis_source": "facade",
           "results": [
             "string"
           ],
@@ -26974,7 +26982,8 @@
         {
           "name": "GetMACAddress",
           "signature": "func GetMACAddress(inetAddress net.IP, separator ...string) string",
-          "synopsis": "",
+          "synopsis": "GetMACAddress returns the hardware address for inetAddress formatted with an optional separator.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "inetAddress",
@@ -27039,7 +27048,8 @@
         {
           "name": "GetNetworkInterface",
           "signature": "func GetNetworkInterface(name string) (*net.Interface, error)",
-          "synopsis": "",
+          "synopsis": "GetNetworkInterface returns the network interface with the given name.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "name",
@@ -27080,7 +27090,8 @@
         {
           "name": "GetNetworkInterfaces",
           "signature": "func GetNetworkInterfaces() ([]net.Interface, error)",
-          "synopsis": "",
+          "synopsis": "GetNetworkInterfaces returns all network interfaces visible to the local host.",
+          "synopsis_source": "facade",
           "results": [
             "[]net.Interface",
             "error"
@@ -27129,7 +27140,8 @@
         {
           "name": "GetUsableLocalPort",
           "signature": "func GetUsableLocalPort() (int, error)",
-          "synopsis": "",
+          "synopsis": "GetUsableLocalPort returns an available local port.",
+          "synopsis_source": "facade",
           "results": [
             "int",
             "error"
@@ -27141,7 +27153,8 @@
         {
           "name": "GetUsableLocalPortFrom",
           "signature": "func GetUsableLocalPortFrom(minPort int) (int, error)",
-          "synopsis": "",
+          "synopsis": "GetUsableLocalPortFrom returns an available local port greater than or equal to minPort.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "minPort",
@@ -27182,7 +27195,8 @@
         {
           "name": "GetUsableLocalPortInRange",
           "signature": "func GetUsableLocalPortInRange(minPort int, maxPort int) (int, error)",
-          "synopsis": "",
+          "synopsis": "GetUsableLocalPortInRange returns an available local port within the inclusive range.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "minPort",
@@ -27250,7 +27264,8 @@
         {
           "name": "GetUsableLocalPorts",
           "signature": "func GetUsableLocalPorts(numRequested int, minPort int, maxPort int) ([]int, error)",
-          "synopsis": "",
+          "synopsis": "GetUsableLocalPorts returns up to numRequested available local ports within the inclusive range.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "numRequested",
@@ -27840,7 +27855,8 @@
         {
           "name": "IsUsableLocalPort",
           "signature": "func IsUsableLocalPort(port int) bool",
-          "synopsis": "",
+          "synopsis": "IsUsableLocalPort reports whether port can be listened on locally.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "port",
@@ -28055,7 +28071,8 @@
         {
           "name": "LocalAddressList",
           "signature": "func LocalAddressList(addressFilter func(net.IP) bool) []net.IP",
-          "synopsis": "",
+          "synopsis": "LocalAddressList returns local IP addresses accepted by addressFilter.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "addressFilter",
@@ -28072,7 +28089,8 @@
         {
           "name": "LocalAddressListByInterface",
           "signature": "func LocalAddressListByInterface(interfaceFilter func(net.Interface) bool, addressFilter func(net.IP) bool) []net.IP",
-          "synopsis": "",
+          "synopsis": "LocalAddressListByInterface returns local IP addresses whose interface and address pass the provided filters.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "interfaceFilter",
@@ -28141,7 +28159,8 @@
         {
           "name": "LocalIPs",
           "signature": "func LocalIPs() []string",
-          "synopsis": "",
+          "synopsis": "LocalIPs returns local IP addresses as strings.",
+          "synopsis_source": "facade",
           "results": [
             "[]string"
           ],
@@ -28170,7 +28189,8 @@
         {
           "name": "LocalIPv4s",
           "signature": "func LocalIPv4s() []string",
-          "synopsis": "",
+          "synopsis": "LocalIPv4s returns local IPv4 addresses as strings.",
+          "synopsis_source": "facade",
           "results": [
             "[]string"
           ],
@@ -28199,7 +28219,8 @@
         {
           "name": "LocalIPv6s",
           "signature": "func LocalIPv6s() []string",
-          "synopsis": "",
+          "synopsis": "LocalIPv6s returns local IPv6 addresses as strings.",
+          "synopsis_source": "facade",
           "results": [
             "[]string"
           ],
@@ -28465,7 +28486,8 @@
         {
           "name": "NewCertPool",
           "signature": "func NewCertPool() *x509.CertPool",
-          "synopsis": "",
+          "synopsis": "NewCertPool returns a new empty certificate pool.",
+          "synopsis_source": "facade",
           "results": [
             "*x509.CertPool"
           ],
@@ -28476,7 +28498,8 @@
         {
           "name": "NewLocalPortGenerator",
           "signature": "func NewLocalPortGenerator(beginPort int) *LocalPortGenerator",
-          "synopsis": "",
+          "synopsis": "NewLocalPortGenerator returns a generator that scans local ports starting at beginPort.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "beginPort",

@@ -34,4 +34,5 @@ func CreateTLSConfig() *tls.Config { return netimpl.CreateTLSConfig() }
 
 func TLSVersion(protocol string) uint16 { return netimpl.TLSVersion(protocol) }
 
+// NewCertPool returns a new empty certificate pool.
 func NewCertPool() *x509.CertPool { return x509.NewCertPool() }
