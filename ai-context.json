@@ -222,7 +222,7 @@
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "high",
-      "writes_files": ["docs/api/exports.txt", "docs/api/tools.json"],
+      "writes_files": ["docs/api/exports.txt", "docs/api/tools.json", "docs/api/tools.md"],
       "notes": "Runs repository go:generate directives and documentation generation targets. Only run after confirming generated output is expected."
     },
     "docs_update": {
@@ -233,7 +233,7 @@
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "high",
-      "writes_files": ["docs/api/tools.json"],
+      "writes_files": ["docs/api/tools.json", "docs/api/tools.md"],
       "notes": "Regenerates documentation artifacts that are derived from source code. Only run after confirming generated output is expected."
     },
     "api_update": {
@@ -255,7 +255,7 @@
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "high",
-      "writes_files": ["docs/api/tools.json"],
+      "writes_files": ["docs/api/tools.json", "docs/api/tools.md"],
       "notes": "Only run after confirming intentional facade, doc comment, or Example changes."
     },
     "install_hooks": {
@@ -381,6 +381,23 @@
     "Intentional public API changes must update docs/api/exports.txt with UPDATE_API=1 make api-check.",
     "Intentional facade, doc comment, or Example changes must update docs/api/tools.json with make tools-gen."
   ],
+  "generated_artifacts": {
+    "api_snapshot": {
+      "path": "docs/api/exports.txt",
+      "generator_command": "api_update",
+      "check_command": "api_check"
+    },
+    "tools_catalog_json": {
+      "path": "docs/api/tools.json",
+      "generator_command": "tools_update",
+      "check_command": "tools_check"
+    },
+    "tools_catalog_markdown": {
+      "path": "docs/api/tools.md",
+      "generator_command": "docs_update",
+      "check_command": "docs_check"
+    }
+  },
   "coverage_gates": {
     "repository_threshold": 75.2,
     "package_thresholds": {

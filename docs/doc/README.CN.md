@@ -21,6 +21,8 @@
 - 🏠 English root README: [`../../README.md`](../../README.md)
 - 🌐 在线 Go 文档：[pkg.go.dev/github.com/imajinyun/go-knifer](https://pkg.go.dev/github.com/imajinyun/go-knifer)
 - 🧾 公共 API 快照：[`../api/exports.txt`](../api/exports.txt)
+- 🤖 机读工具目录：[`../api/tools.json`](../api/tools.json)
+- 📋 可读工具目录：[`../api/tools.md`](../api/tools.md)
 - 🗺️ AI 项目地图：[`../../llms.txt`](../../llms.txt)
 - 🤖 机器可读 AI/CLI 元数据：[`../../ai-context.json`](../../ai-context.json)
 - 🧯 安全策略：[`../../SECURITY.md`](../../SECURITY.md)
@@ -279,7 +281,7 @@ gofmt -w .
 - 发布说明：参见 [`../../CHANGELOG.md`](../../CHANGELOG.md)。面向用户的变更应在打发布标签前记录。
 - 覆盖率门禁：CI 使用 `bash bin/check_coverage.sh coverage.out` 执行仓库基线。只有新增测试支撑后，才提升 `COVERAGE_THRESHOLD` 或 `PACKAGE_COVERAGE_THRESHOLDS`。
 - API 门禁：`make api-check` 会将根包和顶层 `v*` 包的 API 签名、导出字段、接口方法和方法集与 [`../api/exports.txt`](../api/exports.txt) 对比。仅在有意修改公共 API 时提交刷新后的快照。
-- 生成文档门禁：`make docs-check` 校验生成文档产物，包括 [`../api/tools.json`](../api/tools.json) 里的机读工具目录。仅当源码文档、facade 函数或 Example 有意变化时，才使用 `make docs-gen` 重新生成。
+- 生成文档门禁：`make docs-check` 校验生成文档产物，包括 [`../api/tools.json`](../api/tools.json) 里的机读工具目录和 [`../api/tools.md`](../api/tools.md) 里的可读工具目录。仅当源码文档、facade 函数或 Example 有意变化时，才使用 `make docs-gen` 重新生成。
 - AI 元数据门禁：`make ai-context-check` 校验 [`../../ai-context.json`](../../ai-context.json)，包括命令副作用、facade 清单、覆盖率门禁和安全敏感包引用。
 - 工作流门禁：使用 `make doctor` 做环境诊断，使用 `make worktree-check` 阻止无关未跟踪 Go 文件污染测试或提交，使用 `make quick-check` 做快速本地验证，使用 `make security-check` 做 lint 与漏洞扫描，使用 `make full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out` 做完整 pre-push 门禁，使用 `make ci-test` 对齐 GitHub Actions test-job。可选 Git hooks 可通过 `make install-hooks` 启用，并通过 `make uninstall-hooks` 关闭。
 - 安全抑制：保持 `.golangci.yml`、`#nosec` 和 `//nolint:gosec` 例外范围足够窄，并在调用点说明原因；扩大排除前优先补充回归测试。

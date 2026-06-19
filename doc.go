@@ -1,5 +1,5 @@
 //go:generate go run ./bin/api_snapshot.go
-//go:generate go run ./bin/toolsgen -out docs/api/tools.json
+//go:generate go run ./bin/toolsgen -out docs/api/tools.json -markdown docs/api/tools.md
 
 // Package knifer is the root package of the go-knifer utility toolkit.
 //

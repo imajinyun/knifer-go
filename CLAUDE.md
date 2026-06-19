@@ -21,6 +21,7 @@
 ├── docs/
 │   ├── api/exports.txt # exported API snapshot (19k+ lines, CI-enforced)
 │   ├── api/tools.json  # machine-readable facade function catalog for AI/tooling
+│   ├── api/tools.md    # generated human-readable facade function catalog
 │   └── doc/            # 48 per-package quickstart docs (01-vbean.md .. 48-vzip.md)
 ├── AGENTS.md           # cross-agent workflow, validation, and generated-doc rules
 └── .github/workflows/  # CI (go.yml) + release (release.yml) automation
@@ -139,7 +140,7 @@
 - **Coverage**: Keep total coverage above the threshold in `ai-context.json`; `bin/check_coverage.sh` reads `ai-context.json` as the default source of truth.
 - **Architecture**: 8 rules enforced by `bin/check_arch.sh` — doc.go existence, no v*-to-v* imports, per-file internal/ imports, no internal→v* imports, package comments, panic policy, facade boundary policy, dependency allowlist.
 - **API snapshot**: `docs/api/exports.txt` is CI-enforced. Run `UPDATE_API=1 make api-check` after intentional public API changes.
-- **Tools catalog**: `docs/api/tools.json` is CI-enforced by `make tools-check`. Run `make tools-gen` after intentional facade, doc comment, or Example changes.
+- **Tools catalog**: `docs/api/tools.json` and `docs/api/tools.md` are CI-enforced by `make tools-check`. Run `make tools-gen` after intentional facade, doc comment, or Example changes.
 - **Generated docs**: `make docs-check` guards generated documentation artifacts. Run `make docs-gen` after intentional generated-doc changes, then re-run `make docs-check`.
 - **AI metadata**: `ai-context.json` is CI-enforced by `make ai-context-check`; update command side-effect metadata, `risk_level`, facades, security-sensitive package lists, or coverage gates when governance inputs change.
 - **Change policies**: `ai-context.json.change_type_policies` maps PR change types to required Agent validation commands; keep PR template change types aligned with those policy keys.
@@ -174,7 +175,7 @@ When the user asks to implement, rename, refactor, document, or otherwise modify
    - `make change-policy-check` to detect which `ai-context.json.change_type_policies` apply to the local diff.
    - `make security-sensitive-diff` after production changes to identify whether security validation is required.
    - `bash bin/check_api_compat.sh`; if the public API change is intentional, run `UPDATE_API=1 bash bin/check_api_compat.sh` and re-run the check. Public facade additions must update `docs/api/exports.txt` in the same logical change.
-   - `make tools-check`; if facade functions, doc comments, or Example tests changed intentionally, run `make tools-gen` and re-run `make tools-check`. Keep `docs/api/tools.json` in the same logical change.
+   - `make tools-check`; if facade functions, doc comments, or Example tests changed intentionally, run `make tools-gen` and re-run `make tools-check`. Keep `docs/api/tools.json` and `docs/api/tools.md` in the same logical change.
    - `make docs-check`; if generated documentation artifacts changed intentionally, run `make docs-gen` and re-run `make docs-check`. Keep generated artifacts in the same logical change.
    - `golangci-lint run ./...` after non-trivial Go code or test changes when the tool is available. Because lint analyzes untracked Go files too, either include intentional untracked Go files in the logical change and format/fix them, or exclude/stash unrelated ones before broad lint.
    - For coverage gates, first generate a fresh profile, then pass that exact file to the checker, e.g. `go test -race -shuffle=on -coverprofile=/tmp/go-knifer-coverage.out ./...` followed by `bash bin/check_coverage.sh /tmp/go-knifer-coverage.out`. Do not rely on an implicit or stale `coverage.out`.
@@ -190,7 +191,7 @@ When the user asks to implement, rename, refactor, document, or otherwise modify
    - Ensure the latest validation was run after the final edit/API snapshot update, not before it. If lint required formatting or simplification fixes, re-run lint after those final edits.
    - For non-trivial Go changes, the pre-commit validation set should include: focused package tests, `go test -v -gcflags="all=-l -N" ./...`, `go vet ./...`, `bash bin/check_arch.sh`, `bash bin/check_api_compat.sh`, `make tools-check`, `golangci-lint run ./...`, `go test -race -shuffle=on -coverprofile=/tmp/go-knifer-coverage.out ./...`, `bash bin/check_coverage.sh /tmp/go-knifer-coverage.out`, and `git diff --check`. `make agent-full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out` is the preferred AI/Agent aggregate target when a full local gate is feasible.
    - If a public API snapshot was intentionally refreshed, run the API check once to observe the stale snapshot, then `UPDATE_API=1 bash bin/check_api_compat.sh`, then re-run `bash bin/check_api_compat.sh` and include `docs/api/exports.txt` in the same logical commit.
-   - If the tools catalog was intentionally refreshed, run `make tools-check` once to observe drift, then `make tools-gen`, then re-run `make tools-check` and include `docs/api/tools.json` in the same logical commit.
+   - If the tools catalog was intentionally refreshed, run `make tools-check` once to observe drift, then `make tools-gen`, then re-run `make tools-check` and include `docs/api/tools.json` and `docs/api/tools.md` in the same logical commit.
    - If generated docs were intentionally refreshed, run `make docs-check` once to observe drift, then `make docs-gen`, then re-run `make docs-check` and include generated artifacts in the same logical commit.
 
 7. **Commit**: Generate a conventional commit message from the actual diff, preferring concise messages such as `feat: ...`, `fix: ...`, `docs: ...`, `refactor: ...`, or `test: ...`. Stage only files belonging to the requested logical change, commit them.
@@ -218,7 +219,7 @@ When changing `internal/slice`, `vslice`, `internal/maps`, or `vmap`, keep the p
 
 4. Preserve existing nil/empty return contracts. If a public helper historically returns a non-nil empty slice or map, wrap standard-library results as needed so callers do not observe a regression.
 
-5. Any new public facade function in `vslice` or `vmap` must update `docs/api/exports.txt` via the API compatibility workflow, update `docs/api/tools.json`, and include focused tests in both the internal package and facade package.
+5. Any new public facade function in `vslice` or `vmap` must update `docs/api/exports.txt` via the API compatibility workflow, update `docs/api/tools.json` and `docs/api/tools.md`, and include focused tests in both the internal package and facade package.
 
 6. Validate collection changes with focused tests first (`./internal/slice ./vslice` or `./internal/maps ./vmap`), then run the normal repository gates from the general workflow before reporting completion.
 
@@ -235,7 +236,7 @@ When the user asks to continue general governance, generate next governance task
    - Keep `math/rand` confined to non-security helpers, deterministic tests, or documented compatibility fallbacks. Security-sensitive bytes must use fail-closed crypto-random helpers.
 
 3. Audit public facade usability after internal improvements:
-   - Compare recent internal or facade changes with `docs/api/exports.txt`, `docs/api/tools.json`, and quickstart/example coverage.
+   - Compare recent internal or facade changes with `docs/api/exports.txt`, `docs/api/tools.json`, `docs/api/tools.md`, and quickstart/example coverage.
    - Add executable `ExampleXxx` tests for reader-facing behavior, especially iterator adapters in `vslice`/`vmap` and security-sensitive examples in `vrand`, `vid`, and `verr`.
    - Keep examples deterministic; sort map-derived output before printing.
 

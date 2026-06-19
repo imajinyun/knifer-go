@@ -121,7 +121,7 @@ tools-check:
 	$(GO) test ./bin/toolsgen
 
 tools-gen:
-	$(GO) run ./bin/toolsgen -out docs/api/tools.json
+	$(GO) run ./bin/toolsgen -out docs/api/tools.json -markdown docs/api/tools.md
 
 docs-gen: tools-gen
 

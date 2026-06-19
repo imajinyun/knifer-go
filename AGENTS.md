@@ -15,7 +15,7 @@ AI agents working in this repository must follow the same project boundary and v
 - Do not add `v*` to `v*` imports. Shared implementation belongs in `internal/*`.
 - Every public facade package must keep `doc.go`, useful exported doc comments, and focused facade tests current.
 - Public API changes must update `docs/api/exports.txt` with `UPDATE_API=1 make api-check`.
-- Facade, doc comment, or Example changes must update `docs/api/tools.json` with `make tools-gen` or `make docs-gen`.
+- Facade, doc comment, or Example changes must update `docs/api/tools.json` and `docs/api/tools.md` with `make tools-gen` or `make docs-gen`.
 - Generated documentation artifacts are guarded by `make docs-check` and `make tools-check`.
 
 ## Required Go skills
@@ -41,7 +41,7 @@ For Go changes, load `golang-how-to` first, then use the relevant Go skills it s
 ## Validation shortcuts
 
 - `make quick-check`: fast local gate for normal changes.
-- `make docs-check`: verifies generated documentation artifacts, including `docs/api/tools.json`.
+- `make docs-check`: verifies generated documentation artifacts, including `docs/api/tools.json` and `docs/api/tools.md`.
 - `make tools-gen`: regenerates the machine-readable facade tool catalog.
 - `make docs-gen`: regenerates generated documentation artifacts.
 - `make ai-context-check`: validates AI metadata and command side-effect declarations.
@@ -52,4 +52,5 @@ For Go changes, load `golang-how-to` first, then use the relevant Go skills it s
 
 - `docs/api/exports.txt` is the public API snapshot.
 - `docs/api/tools.json` is the machine-readable tool catalog for public facade functions.
-- Do not hand-edit generated JSON or snapshots except to resolve generator bugs; update the generator instead.
+- `docs/api/tools.md` is the human-readable catalog generated from the same source as `tools.json`.
+- Do not hand-edit generated JSON, Markdown, or snapshots except to resolve generator bugs; update the generator instead.

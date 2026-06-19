@@ -239,6 +239,32 @@ architecture_rules = require_string_list(data.get("architecture_rules"), "archit
 if len(architecture_rules) < 5:
     add_error("architecture_rules should document the enforced architecture policy")
 
+generated_artifacts = require_mapping(data.get("generated_artifacts"), "generated_artifacts")
+for name, artifact in sorted(generated_artifacts.items()):
+    if not command_name_pattern.match(name):
+        add_error(f"generated_artifacts.{name} must use snake_case")
+    artifact = require_mapping(artifact, f"generated_artifacts.{name}")
+    path = require_string(artifact.get("path"), f"generated_artifacts.{name}.path")
+    generator_command = require_string(
+        artifact.get("generator_command"),
+        f"generated_artifacts.{name}.generator_command",
+    )
+    check_command = require_string(artifact.get("check_command"), f"generated_artifacts.{name}.check_command")
+    if path and not os.path.exists(os.path.join(root_dir, path)):
+        add_error(f"generated_artifacts.{name}.path references missing file {path!r}")
+    if generator_command and generator_command not in command_names:
+        add_error(f"generated_artifacts.{name}.generator_command references unknown command {generator_command!r}")
+    if check_command and check_command not in command_names:
+        add_error(f"generated_artifacts.{name}.check_command references unknown command {check_command!r}")
+    generator = commands.get(generator_command, {})
+    if generator and not generator.get("requires_user_consent", False):
+        add_error(f"generated_artifacts.{name}.generator_command must require user consent")
+    if path and generator and path not in generator.get("writes_files", []):
+        add_error(f"generated_artifacts.{name}.path must be declared in commands.{generator_command}.writes_files")
+    checker = commands.get(check_command, {})
+    if checker and checker.get("writes_workspace", False):
+        add_error(f"generated_artifacts.{name}.check_command must not write workspace files")
+
 coverage_gates = require_mapping(data.get("coverage_gates"), "coverage_gates")
 repository_threshold = require_number(coverage_gates.get("repository_threshold"), "coverage_gates.repository_threshold")
 package_thresholds = require_mapping(coverage_gates.get("package_thresholds"), "coverage_gates.package_thresholds")

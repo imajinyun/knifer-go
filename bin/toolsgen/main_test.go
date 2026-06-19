@@ -172,6 +172,24 @@ func TestToolsCatalogSnapshotIsCurrent(t *testing.T) {
 	}
 }
 
+func TestToolsMarkdownSnapshotIsCurrent(t *testing.T) {
+	root := repositoryRoot(t)
+	doc, err := generateToolsDoc(root)
+	if err != nil {
+		t.Fatalf("generateToolsDoc(%q) error = %v", root, err)
+	}
+	current := renderToolsMarkdown(doc)
+
+	snapshotPath := filepath.Join(root, "docs", "api", "tools.md")
+	snapshot, err := os.ReadFile(snapshotPath)
+	if err != nil {
+		t.Fatalf("ReadFile(%q) error = %v", snapshotPath, err)
+	}
+	if string(snapshot) != string(current) {
+		t.Fatalf("docs/api/tools.md is stale; run make docs-gen after intentional facade/doc/example changes")
+	}
+}
+
 func TestWriteToolsDocWritesIndentedFile(t *testing.T) {
 	outPath := filepath.Join(t.TempDir(), "tools.json")
 	doc := ToolsDoc{
@@ -195,6 +213,79 @@ func TestWriteToolsDocWritesIndentedFile(t *testing.T) {
 	}
 	if !strings.Contains(string(got), `"summary": {`) {
 		t.Fatalf("generated file missing summary object: %s", got)
+	}
+}
+
+func TestRenderToolsMarkdownIncludesSummaryAndPackages(t *testing.T) {
+	doc := ToolsDoc{
+		Schema: schemaVersion,
+		Module: modulePath,
+		Summary: SummaryDoc{
+			PackageCount:          1,
+			FunctionCount:         2,
+			FunctionsWithExamples: 1,
+			ContextAwareFunctions: 1,
+			ReturnsErrorFunctions: 1,
+			VariadicFunctions:     1,
+			SynopsisSources:       map[string]int{"empty": 1, "facade": 1, "internal": 0},
+		},
+		Packages: []PackageDoc{
+			{
+				ImportPath: modulePath + "/vtool",
+				Name:       "vtool",
+				Synopsis:   "Package vtool exposes | test helpers.",
+				Functions: []FuncDoc{
+					{
+						Name:           "Run",
+						Signature:      "func Run(name string) (string, error)",
+						Synopsis:       "Run executes | the test helper.",
+						SynopsisSource: "facade",
+						ReturnsError:   true,
+						Examples:       []string{"ExampleRun"},
+					},
+					{
+						Name:      "HiddenDoc",
+						Signature: "func HiddenDoc()",
+					},
+				},
+			},
+		},
+	}
+
+	got := string(renderToolsMarkdown(doc))
+	wants := []string{
+		"# go-knifer Machine-readable Tool Catalog\n",
+		"| Schema | " + schemaVersion + " |",
+		"| Module | `" + modulePath + "` |",
+		"| Synopsis source: empty | 1 |",
+		"### vtool",
+		"Import path: `" + modulePath + "/vtool`",
+		"Package vtool exposes | test helpers.",
+		"| `Run` | `func Run(name string) (string, error)` | Run executes \\| the test helper. | facade | `ExampleRun` |",
+		"| `HiddenDoc` | `func HiddenDoc()` | — | empty | — |",
+	}
+	for _, want := range wants {
+		if !strings.Contains(got, want) {
+			t.Fatalf("rendered markdown missing %q:\n%s", want, got)
+		}
+	}
+}
+
+func TestWriteMarkdownDocWritesOnlyWhenPathProvided(t *testing.T) {
+	doc := ToolsDoc{Schema: schemaVersion, Module: modulePath}
+	if err := writeMarkdownDoc(doc, ""); err != nil {
+		t.Fatalf("writeMarkdownDoc empty path error = %v", err)
+	}
+	outPath := filepath.Join(t.TempDir(), "tools.md")
+	if err := writeMarkdownDoc(doc, outPath); err != nil {
+		t.Fatalf("writeMarkdownDoc() error = %v", err)
+	}
+	got, err := os.ReadFile(outPath)
+	if err != nil {
+		t.Fatalf("ReadFile(%q) error = %v", outPath, err)
+	}
+	if !strings.Contains(string(got), "# go-knifer Machine-readable Tool Catalog") {
+		t.Fatalf("generated markdown missing heading: %s", got)
 	}
 }
 
