@@ -1,6 +1,6 @@
 # vbean Quickstart
 
-`vbean` maps, copies, and loosely converts fields between structs and maps, with options for tags, case matching, and skipping empty values.
+`vbean` maps fields between structs and maps. Use `Copy` / `CopyProperties` for trusted Go-to-Go property copy, `Decode` / `DecodeResult` for weak string/numeric/bool input conversion with metadata, and `Merge` / `MergeResult` when multiple sources should update an existing destination from left to right.
 
 ## Convert a struct to a map
 
@@ -84,6 +84,37 @@ func main() {
 }
 ```
 
+## Decode weak input with metadata
+
+Use `DecodeResult` when callers need to know which source fields matched the destination and which inputs were unused.
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/imajinyun/go-knifer/vbean"
+)
+
+type User struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}
+
+func main() {
+	var user User
+	result, err := vbean.DecodeResult(map[string]any{"name": "Kai", "age": "34", "extra": true}, &user)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(user)
+	fmt.Println(result.Matched)
+	fmt.Println(result.Unused)
+}
+```
+
 ## Copy fields while preserving existing non-empty values
 
 ```go
@@ -109,5 +140,33 @@ func main() {
 		panic(err)
 	}
 	fmt.Printf("%+v\n", dst)
+}
+```
+
+## Merge multiple sources into an existing value
+
+Use `Merge` when later sources should override earlier sources while preserving unmatched destination fields.
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/imajinyun/go-knifer/vbean"
+)
+
+type User struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}
+
+func main() {
+	user := User{Name: "existing", Age: 18}
+	if err := vbean.Merge(&user, map[string]any{"name": "new"}, map[string]any{"age": "21"}); err != nil {
+		panic(err)
+	}
+
+	fmt.Println(user)
 }
 ```

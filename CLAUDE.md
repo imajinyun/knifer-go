@@ -227,9 +227,9 @@ When changing `internal/slice`, `vslice`, `internal/maps`, or `vmap`, keep the p
 
 When the user asks to update the workflow, continue the roadmap, or uses equivalent Chinese wording such as "更新工作流", treat it as a roadmap-state synchronization task before starting more feature work:
 
-1. Read `docs/doc/49-roadmap.md`, `docs/api/tools.json`, and the latest commits to determine the current baseline, completed sprint, active sprint, and next sprint.
-2. Update only existing workflow or roadmap files unless the user explicitly asks for a new planning document. Keep Sprint status, baseline metrics, scenario guidance, and validation commands aligned with the actual repository state.
-3. If a sprint was just completed, mark it as completed in the roadmap, record the commit hash when available, and set the next sprint as `Current`. Do not mark a future sprint as completed without committed code or documentation evidence.
+1. Read `docs/api/tools.json`, `docs/doc/README.md`, existing sprint plans under `docs/superpowers/plans/`, and the latest commits to determine the current baseline, completed sprint, active sprint, and next sprint. If `docs/doc/49-roadmap.md` exists, treat it as supplemental state; do not recreate it unless the user explicitly asks for roadmap restoration.
+2. Update only existing workflow, documentation hub, or sprint-plan files unless the user explicitly asks for a new planning document. Keep Sprint status, baseline metrics, scenario guidance, and validation commands aligned with the actual repository state.
+3. If a sprint was just completed, record the commit hash when available in the relevant sprint plan or documentation hub, and set the next sprint as `Current` in the active planning document. Do not mark a future sprint as completed without committed code or documentation evidence.
 4. For the next sprint, add the concrete execution loop: scope, first package/files to inspect, tests/examples/benchmarks/docs expected, and validation gates. Prefer TDD for API behavior and deterministic examples for reader-facing APIs.
 5. If the workflow update changes only Markdown or agent instructions, validate with `git diff --check` and `make docs-check`. If it also changes generated artifacts or Go code, follow the broader validation workflow for those touched areas.
 6. Report the files updated, current sprint pointer, validation commands, and whether a commit was created. Do not create a commit unless the user explicitly requested committing in this turn.

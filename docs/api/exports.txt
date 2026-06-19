@@ -26,7 +26,13 @@ github.com/imajinyun/go-knifer
 github.com/imajinyun/go-knifer/vbean
   func Copy(src any, dst any, opts ...Option) error
   func CopyProperties(src any, dst any, opts ...Option) error
+  func Decode(src any, dst any, opts ...Option) error
+  func DecodeResult(src any, dst any, opts ...Option) (Result, error)
   func FillMap(src any, dst map[string]any, opts ...Option) error
+  func Merge(dst any, sources ...any) error
+  func MergeResult(dst any, sources ...any) (Result, error)
+  func MergeResultWithOptions(dst any, sources []any, opts ...Option) (Result, error)
+  func MergeWithOptions(dst any, sources []any, opts ...Option) error
   func NewOptions() Options
   func ToMap(src any, opts ...Option) (map[string]any, error)
   func ToStruct(src any, dst any, opts ...Option) error
@@ -36,12 +42,14 @@ github.com/imajinyun/go-knifer/vbean
   func WithIgnoreEmpty(enable bool) Option
   func WithIgnoreZero(enable bool) Option
   func WithIntParser(parser func(string, int, int) (int64, error)) Option
+  func WithStrictUnused(enable bool) Option
   func WithTagNames(names ...string) Option
   func WithUintParser(parser func(string, int, int) (uint64, error)) Option
   func WithWeaklyTyped(enable bool) Option
   type Error = github.com/imajinyun/go-knifer/internal/bean.BeanError
   type Option = github.com/imajinyun/go-knifer/internal/bean.Option
   type Options = github.com/imajinyun/go-knifer/internal/bean.Options
+  type Result = github.com/imajinyun/go-knifer/internal/bean.Result
 
 github.com/imajinyun/go-knifer/vblf
   const BloomMachine32 untyped int = 32

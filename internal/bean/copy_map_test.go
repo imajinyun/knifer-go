@@ -1,8 +1,11 @@
 package bean
 
 import (
+	"errors"
 	"strings"
 	"testing"
+
+	knifer "github.com/imajinyun/go-knifer"
 )
 
 func TestCopyPropertiesMapToStruct(t *testing.T) {
@@ -102,5 +105,49 @@ func TestCopyPropertiesMapConversionErrors(t *testing.T) {
 			}
 			assertBeanInvalidInput(t, err)
 		})
+	}
+}
+
+func TestDecodeResultTracksMatchedSkippedUnused(t *testing.T) {
+	type user struct {
+		Name string `json:"name"`
+		Age  int    `json:"age"`
+		Note string `json:"note"`
+	}
+
+	var dst user
+	result, err := DecodeResult(map[string]any{
+		"name":    "alice",
+		"age":     "21",
+		"note":    "",
+		"unknown": true,
+	}, &dst, WithIgnoreEmpty(true))
+	if err != nil {
+		t.Fatalf("DecodeResult() error = %v", err)
+	}
+	if dst != (user{Name: "alice", Age: 21}) {
+		t.Fatalf("DecodeResult() dst = %+v", dst)
+	}
+	assertEqualStrings(t, []string{"age", "name"}, result.Matched)
+	assertEqualStrings(t, []string{"note"}, result.Skipped)
+	assertEqualStrings(t, []string{"unknown"}, result.Unused)
+}
+
+func TestDecodeStrictUnused(t *testing.T) {
+	type user struct {
+		Name string `json:"name"`
+	}
+
+	var dst user
+	err := Decode(map[string]any{"name": "alice", "extra": true}, &dst, WithStrictUnused(true))
+
+	if err == nil {
+		t.Fatal("Decode() strict unused error = nil")
+	}
+	if !strings.Contains(err.Error(), "unused source properties: extra") {
+		t.Fatalf("Decode() error = %v", err)
+	}
+	if !errors.Is(err, knifer.ErrCodeInvalidInput) {
+		t.Fatalf("Decode() code = %v, want invalid input", err)
 	}
 }

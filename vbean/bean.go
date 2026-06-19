@@ -11,6 +11,9 @@ type Options = beanimpl.Options
 // Error is the code-aware error type returned by bean helpers.
 type Error = beanimpl.BeanError
 
+// Result reports which source properties were consumed, skipped, or left unused.
+type Result = beanimpl.Result
+
 // NewOptions returns default mapping options.
 func NewOptions() Options { return beanimpl.NewOptions() }
 
@@ -28,6 +31,9 @@ func WithIgnoreEmpty(enable bool) Option { return beanimpl.WithIgnoreEmpty(enabl
 
 // WithIgnoreZero skips zero source values.
 func WithIgnoreZero(enable bool) Option { return beanimpl.WithIgnoreZero(enable) }
+
+// WithStrictUnused reports unmatched source keys or fields as errors after assignment.
+func WithStrictUnused(enable bool) Option { return beanimpl.WithStrictUnused(enable) }
 
 // WithBoolParser sets the parser used during weak string-to-bool conversion.
 func WithBoolParser(parser func(string) (bool, error)) Option {
@@ -59,6 +65,32 @@ func FillMap(src any, dst map[string]any, opts ...Option) error {
 
 // ToStruct copies properties from src into dst, which must be a pointer to struct.
 func ToStruct(src any, dst any, opts ...Option) error { return beanimpl.ToStruct(src, dst, opts...) }
+
+// Decode converts matching properties from src into dst using the configured weak conversion rules.
+func Decode(src any, dst any, opts ...Option) error { return beanimpl.Decode(src, dst, opts...) }
+
+// DecodeResult converts matching properties from src into dst and reports mapping metadata.
+func DecodeResult(src any, dst any, opts ...Option) (Result, error) {
+	return beanimpl.DecodeResult(src, dst, opts...)
+}
+
+// Merge copies one or more sources into dst from left to right.
+func Merge(dst any, sources ...any) error { return beanimpl.Merge(dst, sources...) }
+
+// MergeResult copies one or more sources into dst and reports aggregate mapping metadata.
+func MergeResult(dst any, sources ...any) (Result, error) {
+	return beanimpl.MergeResult(dst, sources...)
+}
+
+// MergeWithOptions copies sources into dst from left to right using options.
+func MergeWithOptions(dst any, sources []any, opts ...Option) error {
+	return beanimpl.MergeWithOptions(dst, sources, opts...)
+}
+
+// MergeResultWithOptions copies sources into dst from left to right using options and reports metadata.
+func MergeResultWithOptions(dst any, sources []any, opts ...Option) (Result, error) {
+	return beanimpl.MergeResultWithOptions(dst, sources, opts...)
+}
 
 // Copy is an alias of CopyProperties.
 func Copy(src any, dst any, opts ...Option) error { return beanimpl.Copy(src, dst, opts...) }

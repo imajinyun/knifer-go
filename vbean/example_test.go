@@ -102,3 +102,39 @@ func ExampleCopy() {
 	// Eve
 	// <nil>
 }
+
+func ExampleDecodeResult() {
+	type User struct {
+		Name string `json:"name"`
+		Age  int    `json:"age"`
+	}
+
+	var user User
+	result, err := vbean.DecodeResult(map[string]any{"name": "Kai", "age": "34", "extra": true}, &user)
+
+	fmt.Println(user.Name, user.Age)
+	fmt.Println(result.Matched)
+	fmt.Println(result.Unused)
+	fmt.Println(err)
+	// Output:
+	// Kai 34
+	// [age name]
+	// [extra]
+	// <nil>
+}
+
+func ExampleMerge() {
+	type User struct {
+		Name string `json:"name"`
+		Age  int    `json:"age"`
+	}
+
+	user := User{Name: "old", Age: 18}
+	err := vbean.Merge(&user, map[string]any{"name": "new"}, map[string]any{"age": "21"})
+
+	fmt.Println(user.Name, user.Age)
+	fmt.Println(err)
+	// Output:
+	// new 21
+	// <nil>
+}

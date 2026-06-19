@@ -11,12 +11,12 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Schema | 1.4 |
 | Module | `github.com/imajinyun/go-knifer` |
 | Packages | 48 |
-| Functions | 2540 |
-| Functions with examples | 253 |
+| Functions | 2547 |
+| Functions with examples | 255 |
 | Context-aware functions | 20 |
-| Functions returning error | 572 |
-| Variadic functions | 754 |
-| Synopsis source: facade | 1903 |
+| Functions returning error | 578 |
+| Variadic functions | 760 |
+| Synopsis source: facade | 1910 |
 | Synopsis source: internal | 637 |
 | Synopsis source: empty | 0 |
 
@@ -26,15 +26,21 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 
 Import path: `github.com/imajinyun/go-knifer/vbean`
 
-Package vbean provides public APIs for struct/map property mapping.
+Package vbean provides public APIs for struct and map property mapping.
 
-Quality: 15 functions · 5 with examples · 33.3% example coverage · synopsis sources: facade=15, internal=0, empty=0
+Quality: 22 functions · 7 with examples · 31.8% example coverage · synopsis sources: facade=22, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
 | `Copy` | `func Copy(src any, dst any, opts ...Option) error` | Copy is an alias of CopyProperties. | facade | `ExampleCopy` |
 | `CopyProperties` | `func CopyProperties(src any, dst any, opts ...Option) error` | CopyProperties copies matching properties between struct/map values. | facade | `ExampleCopyProperties` |
+| `Decode` | `func Decode(src any, dst any, opts ...Option) error` | Decode converts matching properties from src into dst using the configured weak conversion rules. | facade | — |
+| `DecodeResult` | `func DecodeResult(src any, dst any, opts ...Option) (Result, error)` | DecodeResult converts matching properties from src into dst and reports mapping metadata. | facade | `ExampleDecodeResult` |
 | `FillMap` | `func FillMap(src any, dst map[string]any, opts ...Option) error` | FillMap copies properties from src into dst. | facade | `ExampleFillMap` |
+| `Merge` | `func Merge(dst any, sources ...any) error` | Merge copies one or more sources into dst from left to right. | facade | `ExampleMerge` |
+| `MergeResult` | `func MergeResult(dst any, sources ...any) (Result, error)` | MergeResult copies one or more sources into dst and reports aggregate mapping metadata. | facade | — |
+| `MergeResultWithOptions` | `func MergeResultWithOptions(dst any, sources []any, opts ...Option) (Result, error)` | MergeResultWithOptions copies sources into dst from left to right using options and reports metadata. | facade | — |
+| `MergeWithOptions` | `func MergeWithOptions(dst any, sources []any, opts ...Option) error` | MergeWithOptions copies sources into dst from left to right using options. | facade | — |
 | `NewOptions` | `func NewOptions() Options` | NewOptions returns default mapping options. | facade | — |
 | `ToMap` | `func ToMap(src any, opts ...Option) (map[string]any, error)` | ToMap converts a struct or map to map[string]any using field tags and aliases. | facade | `ExampleToMap` |
 | `ToStruct` | `func ToStruct(src any, dst any, opts ...Option) error` | ToStruct copies properties from src into dst, which must be a pointer to struct. | facade | `ExampleToStruct`, `ExampleToStruct_withOptions` |
@@ -44,6 +50,7 @@ Quality: 15 functions · 5 with examples · 33.3% example coverage · synopsis s
 | `WithIgnoreEmpty` | `func WithIgnoreEmpty(enable bool) Option` | WithIgnoreEmpty skips empty source values. | facade | — |
 | `WithIgnoreZero` | `func WithIgnoreZero(enable bool) Option` | WithIgnoreZero skips zero source values. | facade | — |
 | `WithIntParser` | `func WithIntParser(parser func(string, int, int) (int64, error)) Option` | WithIntParser sets the parser used during weak string-to-signed-integer conversion. | facade | — |
+| `WithStrictUnused` | `func WithStrictUnused(enable bool) Option` | WithStrictUnused reports unmatched source keys or fields as errors after assignment. | facade | — |
 | `WithTagNames` | `func WithTagNames(names ...string) Option` | WithTagNames sets tag names used to resolve field names and aliases. | facade | — |
 | `WithUintParser` | `func WithUintParser(parser func(string, int, int) (uint64, error)) Option` | WithUintParser sets the parser used during weak string-to-unsigned-integer conversion. | facade | — |
 | `WithWeaklyTyped` | `func WithWeaklyTyped(enable bool) Option` | WithWeaklyTyped controls whether weak type conversion is enabled. | facade | — |

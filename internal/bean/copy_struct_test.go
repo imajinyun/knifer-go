@@ -84,3 +84,45 @@ func TestCopyPropertiesEmbeddedPointerAndCaseSensitivity(t *testing.T) {
 		t.Fatalf("case-sensitive dst = %+v", sensitive)
 	}
 }
+
+func TestMergeResultWithOptionsStructLaterSourcesOverride(t *testing.T) {
+	type user struct {
+		Name string `json:"name"`
+		Age  int    `json:"age"`
+		Note string `json:"note"`
+	}
+
+	dst := user{Name: "existing", Age: 10, Note: "keep"}
+	result, err := MergeResultWithOptions(
+		&dst,
+		[]any{
+			map[string]any{"name": "alice", "age": "21", "unused": true},
+			map[string]any{"name": "bob", "note": ""},
+		},
+		WithIgnoreEmpty(true),
+	)
+	if err != nil {
+		t.Fatalf("MergeResultWithOptions() error = %v", err)
+	}
+	if dst != (user{Name: "bob", Age: 21, Note: "keep"}) {
+		t.Fatalf("MergeResultWithOptions() dst = %+v", dst)
+	}
+	assertEqualStrings(t, []string{"age", "name", "name"}, result.Matched)
+	assertEqualStrings(t, []string{"note"}, result.Skipped)
+	assertEqualStrings(t, []string{"unused"}, result.Unused)
+}
+
+func TestMergeMapLaterSourcesOverride(t *testing.T) {
+	dst := map[string]any{"name": "existing", "age": 10}
+	err := Merge(
+		dst,
+		map[string]any{"name": "alice"},
+		map[string]any{"age": 21},
+	)
+	if err != nil {
+		t.Fatalf("Merge() error = %v", err)
+	}
+	if dst["name"] != "alice" || dst["age"] != 21 {
+		t.Fatalf("Merge() dst = %#v", dst)
+	}
+}

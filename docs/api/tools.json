@@ -3,14 +3,14 @@
   "module": "github.com/imajinyun/go-knifer",
   "summary": {
     "package_count": 48,
-    "function_count": 2540,
-    "functions_with_examples": 253,
+    "function_count": 2547,
+    "functions_with_examples": 255,
     "context_aware_functions": 20,
-    "returns_error_functions": 572,
-    "variadic_functions": 754,
+    "returns_error_functions": 578,
+    "variadic_functions": 760,
     "synopsis_sources": {
       "empty": 0,
-      "facade": 1903,
+      "facade": 1910,
       "internal": 637
     }
   },
@@ -18,14 +18,14 @@
     {
       "import_path": "github.com/imajinyun/go-knifer/vbean",
       "name": "vbean",
-      "synopsis": "Package vbean provides public APIs for struct/map property mapping.",
+      "synopsis": "Package vbean provides public APIs for struct and map property mapping.",
       "summary": {
-        "function_count": 15,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 33.3,
+        "function_count": 22,
+        "functions_with_examples": 7,
+        "example_coverage_percent": 31.8,
         "synopsis_sources": {
           "empty": 0,
-          "facade": 15,
+          "facade": 22,
           "internal": 0
         }
       },
@@ -89,6 +89,62 @@
           ]
         },
         {
+          "name": "Decode",
+          "signature": "func Decode(src any, dst any, opts ...Option) error",
+          "synopsis": "Decode converts matching properties from src into dst using the configured weak conversion rules.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "src",
+              "type": "any"
+            },
+            {
+              "name": "dst",
+              "type": "any"
+            },
+            {
+              "name": "opts",
+              "type": "...Option"
+            }
+          ],
+          "results": [
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": true
+        },
+        {
+          "name": "DecodeResult",
+          "signature": "func DecodeResult(src any, dst any, opts ...Option) (Result, error)",
+          "synopsis": "DecodeResult converts matching properties from src into dst and reports mapping metadata.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "src",
+              "type": "any"
+            },
+            {
+              "name": "dst",
+              "type": "any"
+            },
+            {
+              "name": "opts",
+              "type": "...Option"
+            }
+          ],
+          "results": [
+            "Result",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": true,
+          "examples": [
+            "ExampleDecodeResult"
+          ]
+        },
+        {
           "name": "FillMap",
           "signature": "func FillMap(src any, dst map[string]any, opts ...Option) error",
           "synopsis": "FillMap copies properties from src into dst.",
@@ -116,6 +172,107 @@
           "examples": [
             "ExampleFillMap"
           ]
+        },
+        {
+          "name": "Merge",
+          "signature": "func Merge(dst any, sources ...any) error",
+          "synopsis": "Merge copies one or more sources into dst from left to right.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "dst",
+              "type": "any"
+            },
+            {
+              "name": "sources",
+              "type": "...any"
+            }
+          ],
+          "results": [
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": true,
+          "examples": [
+            "ExampleMerge"
+          ]
+        },
+        {
+          "name": "MergeResult",
+          "signature": "func MergeResult(dst any, sources ...any) (Result, error)",
+          "synopsis": "MergeResult copies one or more sources into dst and reports aggregate mapping metadata.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "dst",
+              "type": "any"
+            },
+            {
+              "name": "sources",
+              "type": "...any"
+            }
+          ],
+          "results": [
+            "Result",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": true
+        },
+        {
+          "name": "MergeResultWithOptions",
+          "signature": "func MergeResultWithOptions(dst any, sources []any, opts ...Option) (Result, error)",
+          "synopsis": "MergeResultWithOptions copies sources into dst from left to right using options and reports metadata.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "dst",
+              "type": "any"
+            },
+            {
+              "name": "sources",
+              "type": "[]any"
+            },
+            {
+              "name": "opts",
+              "type": "...Option"
+            }
+          ],
+          "results": [
+            "Result",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": true
+        },
+        {
+          "name": "MergeWithOptions",
+          "signature": "func MergeWithOptions(dst any, sources []any, opts ...Option) error",
+          "synopsis": "MergeWithOptions copies sources into dst from left to right using options.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "dst",
+              "type": "any"
+            },
+            {
+              "name": "sources",
+              "type": "[]any"
+            },
+            {
+              "name": "opts",
+              "type": "...Option"
+            }
+          ],
+          "results": [
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": true
         },
         {
           "name": "NewOptions",
@@ -284,6 +441,24 @@
             {
               "name": "parser",
               "type": "func(string, int, int) (int64, error)"
+            }
+          ],
+          "results": [
+            "Option"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "WithStrictUnused",
+          "signature": "func WithStrictUnused(enable bool) Option",
+          "synopsis": "WithStrictUnused reports unmatched source keys or fields as errors after assignment.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "enable",
+              "type": "bool"
             }
           ],
           "results": [

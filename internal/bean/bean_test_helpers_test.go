@@ -2,6 +2,7 @@ package bean
 
 import (
 	"errors"
+	"slices"
 	"testing"
 
 	knifer "github.com/imajinyun/go-knifer"
@@ -9,6 +10,13 @@ import (
 
 type embeddedProfile struct {
 	Trace string `bean:"trace_id"`
+}
+
+func assertEqualStrings(t *testing.T, want, got []string) {
+	t.Helper()
+	if !slices.Equal(want, got) {
+		t.Fatalf("strings = %#v, want %#v", got, want)
+	}
 }
 
 type sourceProfile struct {

@@ -7,7 +7,7 @@
 - [🧭 Quick navigation](#quick-navigation)
 - [🧩 Package catalog](#package-catalog)
 - [📝 Quickstart documents](#quickstart-documents)
-- [🗺️ Next-phase roadmap](#next-phase-roadmap)
+- [🧭 Sprint direction](#sprint-direction)
 - [🏗️ Architecture and package boundaries](#architecture-and-package-boundaries)
 - [✅ Recommended API entry points](#recommended-api-entry-points)
 - [📦 Build, test, and release workflow](#build-test-and-release-workflow)
@@ -25,7 +25,6 @@
 - 📋 Readable tool catalog: [`../api/tools.md`](../api/tools.md)
 - 🗺️ AI-oriented project map: [`../../llms.txt`](../../llms.txt)
 - 🤖 Machine-readable AI/CLI metadata: [`../../ai-context.json`](../../ai-context.json)
-- 🧭 Next-phase roadmap: [`49-roadmap.md`](49-roadmap.md)
 - 🧯 Security policy: [`../../SECURITY.md`](../../SECURITY.md)
 - 📝 Changelog: [`../../CHANGELOG.md`](../../CHANGELOG.md)
 
@@ -92,13 +91,13 @@ The project follows an “internal implementation + public facade” layout: `in
 
 Per-package quickstart examples live in the linked documents above so examples stay focused and easy to maintain by domain.
 
-<a id="next-phase-roadmap"></a>
+<a id="sprint-direction"></a>
 
-## 🗺️ Next-phase roadmap
+## 🧭 Sprint direction
 
-The next development phase prioritizes scenario mindshare, deeper high-value modules, documentation and benchmark trust, and explicit ecosystem adapter lanes for AI, FTP, SSH/SFTP, pinyin, tokenization, multi-template engines, and CLI utilities.
+The current governance stream prioritizes scenario mindshare, deeper high-value modules, documentation and benchmark trust, and explicit ecosystem adapter lanes for AI, FTP, SSH/SFTP, pinyin, tokenization, multi-template engines, and CLI utilities.
 
-See [`49-roadmap.md`](49-roadmap.md) for the staged capability matrix and sprint order.
+Sprint state is maintained through the generated API snapshots, this documentation hub, local sprint plans under `docs/superpowers/plans/`, and recent commits. The former `49-roadmap.md` page is no longer part of the tracked documentation set; do not recreate it unless roadmap restoration is explicitly requested.
 
 <a id="architecture-and-package-boundaries"></a>
 

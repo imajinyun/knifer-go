@@ -2,6 +2,7 @@ package vbean_test
 
 import (
 	"errors"
+	"slices"
 	"testing"
 
 	knifer "github.com/imajinyun/go-knifer"
@@ -11,6 +12,13 @@ import (
 type userDTO struct {
 	Name string `bean:"name,alias=full_name"`
 	Age  string `bean:"age"`
+}
+
+func assertEqualStrings(t *testing.T, want, got []string) {
+	t.Helper()
+	if !slices.Equal(want, got) {
+		t.Fatalf("strings = %#v, want %#v", got, want)
+	}
 }
 
 type userModel struct {

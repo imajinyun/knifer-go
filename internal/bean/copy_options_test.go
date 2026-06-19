@@ -127,3 +127,28 @@ func TestNilParserOptionsKeepDefaults(t *testing.T) {
 		t.Fatalf("ParseFloat(1.25) = %v, %v", got, err)
 	}
 }
+
+func TestResultSortedMetadata(t *testing.T) {
+	result := Result{
+		Matched: []string{"name", "age"},
+		Skipped: []string{"zero", "empty"},
+		Unused:  []string{"z", "a"},
+	}
+	result.sort()
+
+	assertEqualStrings(t, []string{"age", "name"}, result.Matched)
+	assertEqualStrings(t, []string{"empty", "zero"}, result.Skipped)
+	assertEqualStrings(t, []string{"a", "z"}, result.Unused)
+}
+
+func TestWithStrictUnusedOption(t *testing.T) {
+	cfg := applyOptions(WithStrictUnused(true))
+	if !cfg.StrictUnused {
+		t.Fatal("WithStrictUnused(true) did not enable strict unused handling")
+	}
+
+	cfg = applyOptions(WithStrictUnused(false))
+	if cfg.StrictUnused {
+		t.Fatal("WithStrictUnused(false) did not disable strict unused handling")
+	}
+}

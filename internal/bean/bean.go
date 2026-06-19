@@ -23,6 +23,8 @@ type Options struct {
 	IgnoreEmpty bool
 	// IgnoreZero skips zero source values when copying to maps or structs.
 	IgnoreZero bool
+	// StrictUnused reports unmatched source keys or fields as errors after assignment.
+	StrictUnused bool
 	// ParseBool parses strings during weak bool conversion. nil keeps default semantics.
 	ParseBool func(string) (bool, error)
 	// ParseInt parses strings during weak signed integer conversion. nil means strconv.ParseInt.
@@ -31,6 +33,19 @@ type Options struct {
 	ParseUint func(string, int, int) (uint64, error)
 	// ParseFloat parses strings during weak floating-point conversion. nil means strconv.ParseFloat.
 	ParseFloat func(string, int) (float64, error)
+}
+
+// Result reports which source properties were consumed, skipped, or left unused.
+type Result struct {
+	Matched []string
+	Skipped []string
+	Unused  []string
+}
+
+func (r *Result) sort() {
+	slices.Sort(r.Matched)
+	slices.Sort(r.Skipped)
+	slices.Sort(r.Unused)
 }
 
 // NewOptions returns default mapping options.
@@ -64,6 +79,9 @@ func WithIgnoreEmpty(enable bool) Option { return func(o *Options) { o.IgnoreEmp
 
 // WithIgnoreZero skips zero source values.
 func WithIgnoreZero(enable bool) Option { return func(o *Options) { o.IgnoreZero = enable } }
+
+// WithStrictUnused reports unmatched source keys or fields as errors after assignment.
+func WithStrictUnused(enable bool) Option { return func(o *Options) { o.StrictUnused = enable } }
 
 // WithBoolParser sets the parser used during weak string-to-bool conversion.
 func WithBoolParser(parser func(string) (bool, error)) Option {
@@ -112,65 +130,160 @@ func ToMap(src any, opts ...Option) (map[string]any, error) {
 
 // FillMap copies properties from src into dst.
 func FillMap(src any, dst map[string]any, opts ...Option) error {
-	if dst == nil {
-		return invalidBeanInputf("bean: dst map is nil")
-	}
 	cfg := applyOptions(opts...)
+	_, err := fillMapResult(src, dst, cfg)
+	return err
+}
+
+func fillMapResult(src any, dst map[string]any, cfg Options) (Result, error) {
+	if dst == nil {
+		return Result{}, invalidBeanInputf("bean: dst map is nil")
+	}
 	props, err := collectProperties(src, cfg)
 	if err != nil {
-		return err
+		return Result{}, err
 	}
+	result := Result{}
 	for _, prop := range props {
 		if shouldSkip(prop.value, cfg) {
+			result.Skipped = append(result.Skipped, prop.name)
 			continue
 		}
 		dst[prop.name] = prop.value.Interface()
+		result.Matched = append(result.Matched, prop.name)
 	}
-	return nil
+	result.sort()
+	return result, nil
 }
 
 // ToStruct copies properties from src into dst, which must be a pointer to struct.
 func ToStruct(src any, dst any, opts ...Option) error { return CopyProperties(src, dst, opts...) }
+
+// Decode converts matching properties from src into dst using the configured weak conversion rules.
+func Decode(src any, dst any, opts ...Option) error {
+	_, err := DecodeResult(src, dst, opts...)
+	return err
+}
+
+// DecodeResult converts matching properties from src into dst and reports mapping metadata.
+func DecodeResult(src any, dst any, opts ...Option) (Result, error) {
+	return copyPropertiesResult(src, dst, opts...)
+}
+
+// Merge copies one or more sources into dst from left to right.
+// Later sources override earlier sources.
+func Merge(dst any, sources ...any) error {
+	_, err := MergeResult(dst, sources...)
+	return err
+}
+
+// MergeResult copies one or more sources into dst and reports aggregate mapping metadata.
+func MergeResult(dst any, sources ...any) (Result, error) {
+	return mergeResult(dst, nil, sources...)
+}
+
+// MergeWithOptions copies sources into dst from left to right using options.
+func MergeWithOptions(dst any, sources []any, opts ...Option) error {
+	_, err := MergeResultWithOptions(dst, sources, opts...)
+	return err
+}
+
+// MergeResultWithOptions copies sources into dst from left to right using options and reports metadata.
+func MergeResultWithOptions(dst any, sources []any, opts ...Option) (Result, error) {
+	return mergeResult(dst, opts, sources...)
+}
+
+func mergeResult(dst any, opts []Option, sources ...any) (Result, error) {
+	result := Result{}
+	for _, src := range sources {
+		partial, err := copyPropertiesResult(src, dst, opts...)
+		if err != nil {
+			return result, err
+		}
+		result.Matched = append(result.Matched, partial.Matched...)
+		result.Skipped = append(result.Skipped, partial.Skipped...)
+		result.Unused = append(result.Unused, partial.Unused...)
+	}
+	result.sort()
+	return result, nil
+}
 
 // Copy is an alias of CopyProperties.
 func Copy(src any, dst any, opts ...Option) error { return CopyProperties(src, dst, opts...) }
 
 // CopyProperties copies matching properties between struct/map values.
 func CopyProperties(src any, dst any, opts ...Option) error {
+	_, err := copyPropertiesResult(src, dst, opts...)
+	return err
+}
+
+func copyPropertiesResult(src any, dst any, opts ...Option) (Result, error) {
 	cfg := applyOptions(opts...)
 	if dst == nil {
-		return invalidBeanInputf("bean: dst is nil")
+		return Result{}, invalidBeanInputf("bean: dst is nil")
 	}
 	if m, ok := dst.(map[string]any); ok {
-		return FillMap(src, m, opts...)
+		return fillMapResult(src, m, cfg)
 	}
 	dv := reflect.ValueOf(dst)
 	if dv.Kind() != reflect.Pointer || dv.IsNil() {
-		return invalidBeanInputf("bean: dst must be a non-nil pointer or map[string]any")
+		return Result{}, invalidBeanInputf("bean: dst must be a non-nil pointer or map[string]any")
 	}
 	dv = indirect(dv)
 	if !dv.IsValid() || dv.Kind() != reflect.Struct {
-		return invalidBeanInputf("bean: dst must point to struct")
+		return Result{}, invalidBeanInputf("bean: dst must point to struct")
 	}
 	props, err := collectProperties(src, cfg)
 	if err != nil {
-		return err
+		return Result{}, err
 	}
 	index := propertyIndex(props, cfg)
+	used := map[string]struct{}{}
+	result := Result{}
 	for _, field := range structFields(dv.Type(), cfg) {
 		fv := fieldByIndex(dv, field.index)
 		if !fv.IsValid() || !fv.CanSet() {
 			continue
 		}
 		prop, ok := lookupProperty(index, field.aliases, cfg)
-		if !ok || shouldSkip(prop.value, cfg) {
+		if !ok {
+			continue
+		}
+		name := prop.name
+		used[normalize(name, cfg)] = struct{}{}
+		if shouldSkip(prop.value, cfg) {
+			result.Skipped = append(result.Skipped, name)
 			continue
 		}
 		if err := assignValue(fv, prop.value, cfg); err != nil {
-			return wrapBeanInput("bean: set field "+field.goName, err)
+			return Result{}, wrapBeanInput("bean: set field "+field.goName, err)
 		}
+		result.Matched = append(result.Matched, name)
 	}
-	return nil
+	result.Unused = unusedProperties(props, used, cfg)
+	result.sort()
+	if cfg.StrictUnused && len(result.Unused) > 0 {
+		return result, invalidBeanInputf("bean: unused source properties: %s", strings.Join(result.Unused, ", "))
+	}
+	return result, nil
+}
+
+func unusedProperties(props []property, used map[string]struct{}, cfg Options) []string {
+	out := make([]string, 0)
+	seen := map[string]struct{}{}
+	for _, prop := range props {
+		key := normalize(prop.name, cfg)
+		if _, ok := used[key]; ok {
+			continue
+		}
+		if _, ok := seen[prop.name]; ok {
+			continue
+		}
+		seen[prop.name] = struct{}{}
+		out = append(out, prop.name)
+	}
+	slices.Sort(out)
+	return out
 }
 
 type property struct {
@@ -215,6 +328,7 @@ func optionsFromConfig(cfg Options) []Option {
 		WithCaseInsensitive(cfg.CaseInsensitive),
 		WithIgnoreEmpty(cfg.IgnoreEmpty),
 		WithIgnoreZero(cfg.IgnoreZero),
+		WithStrictUnused(cfg.StrictUnused),
 		WithBoolParser(cfg.ParseBool),
 		WithIntParser(cfg.ParseInt),
 		WithUintParser(cfg.ParseUint),

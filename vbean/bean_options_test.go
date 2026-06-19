@@ -124,3 +124,11 @@ func TestFacadeBeanFillMap(t *testing.T) {
 		t.Fatalf("FillMap dst = %#v", dst)
 	}
 }
+
+func TestFacadeBeanWithStrictUnused(t *testing.T) {
+	cfg := vbean.NewOptions()
+	vbean.WithStrictUnused(true)(&cfg)
+	if !cfg.StrictUnused {
+		t.Fatal("WithStrictUnused(true) did not enable strict unused handling")
+	}
+}
