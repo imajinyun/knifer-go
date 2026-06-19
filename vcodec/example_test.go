@@ -23,3 +23,24 @@ func ExampleHexEncode() {
 	fmt.Println(encoded)
 	// Output: 476f
 }
+
+func ExampleBase64RawURLEncode() {
+	encoded := vcodec.Base64RawURLEncode([]byte("go?"))
+	decoded, _ := vcodec.Base64RawURLDecode(encoded)
+
+	fmt.Println(encoded)
+	fmt.Println(string(decoded))
+	// Output:
+	// Z28_
+	// go?
+}
+
+func ExampleHexDecodeStr() {
+	decoded, err := vcodec.HexDecodeStr("676f")
+
+	fmt.Println(decoded)
+	fmt.Println(err)
+	// Output:
+	// go
+	// <nil>
+}

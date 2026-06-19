@@ -40,3 +40,32 @@ func ExampleNewConfigWithOptions() {
 	// docs
 	// true
 }
+
+func ExampleNewSchedulerWithOptions() {
+	s := vcron.NewSchedulerWithOptions(
+		vcron.WithIDGenerator(func() string { return "job-1" }),
+	)
+
+	id, err := s.ScheduleFunc("* * * * *", func() {})
+
+	fmt.Println(id, s.Size())
+	fmt.Println(err)
+	// Output:
+	// job-1 1
+	// <nil>
+}
+
+func ExamplePart_CheckValue() {
+	fmt.Println(vcron.PartMinute.CheckValue(59) == nil)
+	fmt.Println(vcron.PartMinute.CheckValue(60) != nil)
+	// Output:
+	// true
+	// true
+}
+
+func ExampleNewCronError() {
+	err := vcron.NewCronError("invalid %s", "pattern")
+
+	fmt.Println(err.Error())
+	// Output: invalid pattern
+}

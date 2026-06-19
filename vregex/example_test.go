@@ -24,3 +24,13 @@ func ExampleReplace() {
 	fmt.Println(result)
 	// Output: abcXdef
 }
+
+func ExampleExtractMulti() {
+	fmt.Println(vregex.ExtractMulti(`(\d+)年(\d+)月`, "2026年5月", `$1-$2`))
+	// Output: 2026-5
+}
+
+func ExampleGetByName() {
+	fmt.Println(vregex.GetByName(`(?<word>\w+)-(?<num>\d+)`, "item-42", "num"))
+	// Output: 42
+}

@@ -29,3 +29,30 @@ func ExampleGetFieldValue() {
 	fmt.Println(vref.GetFieldValue(User{Name: "Alice"}, "Name"))
 	// Output: Alice
 }
+
+func ExampleSetFieldValue() {
+	type User struct {
+		Name string
+	}
+	user := User{Name: "Alice"}
+
+	err := vref.SetFieldValue(&user, "Name", "Bob")
+
+	fmt.Println(user.Name)
+	fmt.Println(err)
+	// Output:
+	// Bob
+	// <nil>
+}
+
+func ExampleInvokeFunc() {
+	result, err := vref.InvokeFunc(func(a, b int) int {
+		return a + b
+	}, 2, 3)
+
+	fmt.Println(result)
+	fmt.Println(err)
+	// Output:
+	// 5
+	// <nil>
+}

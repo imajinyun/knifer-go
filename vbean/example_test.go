@@ -47,3 +47,58 @@ func ExampleCopyProperties() {
 	fmt.Println(dst.Name, dst.Age)
 	// Output: Carol 28
 }
+
+func ExampleFillMap() {
+	type User struct {
+		Name string
+		Age  int
+	}
+
+	dst := map[string]any{}
+	err := vbean.FillMap(User{Name: "Dana", Age: 31}, dst)
+
+	fmt.Println(dst["Name"], dst["Age"])
+	fmt.Println(err)
+	// Output:
+	// Dana 31
+	// <nil>
+}
+
+func ExampleToStruct_withOptions() {
+	type User struct {
+		Name string
+		Age  int
+	}
+
+	var u User
+	err := vbean.ToStruct(
+		map[string]any{"NAME": "Drew", "AGE": "21"},
+		&u,
+		vbean.WithCaseInsensitive(true),
+		vbean.WithWeaklyTyped(true),
+	)
+
+	fmt.Println(u.Name, u.Age)
+	fmt.Println(err)
+	// Output:
+	// Drew 21
+	// <nil>
+}
+
+func ExampleCopy() {
+	type Source struct {
+		Name string
+	}
+	type Target struct {
+		Name string
+	}
+
+	var dst Target
+	err := vbean.Copy(Source{Name: "Eve"}, &dst)
+
+	fmt.Println(dst.Name)
+	fmt.Println(err)
+	// Output:
+	// Eve
+	// <nil>
+}

@@ -39,3 +39,39 @@ func ExampleParseAddressList() {
 	// 2 bob@example.com carol@example.com
 	// <nil>
 }
+
+func ExampleNewAttachment() {
+	attachment, err := vmail.NewAttachment("report.txt", []byte("report"), vmail.TypeTextPlain)
+
+	fmt.Println(attachment.Name, attachment.Size, attachment.ContentType)
+	fmt.Println(err)
+	// Output:
+	// report.txt 6 text/plain
+	// <nil>
+}
+
+func ExampleMessage_Sender() {
+	message, err := vmail.NewMessage(
+		vmail.WithFrom("sender@example.com"),
+		vmail.WithEnvelopeFrom("bounce@example.com"),
+		vmail.WithTo("recipient@example.com"),
+		vmail.WithSubject("Hello"),
+		vmail.WithText("World"),
+	)
+
+	fmt.Println(message.Sender())
+	fmt.Println(err)
+	// Output:
+	// bounce@example.com
+	// <nil>
+}
+
+func ExampleParseAddress() {
+	addr, err := vmail.ParseAddress("Carol <carol@example.com>")
+
+	fmt.Println(addr.Name, addr.Email)
+	fmt.Println(err)
+	// Output:
+	// Carol carol@example.com
+	// <nil>
+}

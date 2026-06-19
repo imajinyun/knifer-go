@@ -43,3 +43,19 @@ func ExampleIsIPv4() {
 	// true
 	// false
 }
+
+func ExampleIsMobile() {
+	fmt.Println(vform.IsMobile("13812345678"))
+	fmt.Println(vform.IsMobile("12812345678"))
+	// Output:
+	// true
+	// false
+}
+
+func ExampleIsURL() {
+	fmt.Println(vform.IsURL("https://example.com"))
+	fmt.Println(vform.IsURL("/relative/path"))
+	// Output:
+	// true
+	// false
+}

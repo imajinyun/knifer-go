@@ -29,3 +29,20 @@ func ExampleIsWeak() {
 	// true
 	// false
 }
+
+func ExampleAnalyze() {
+	analysis := vpass.Analyze("password")
+
+	fmt.Println(analysis.Score)
+	fmt.Println(analysis.Strength)
+	fmt.Println(analysis.CommonWeak)
+	// Output:
+	// 10
+	// very weak
+	// true
+}
+
+func ExampleStrengthOf() {
+	fmt.Println(vpass.StrengthOf("Str0ng!Pass"))
+	// Output: strong
+}

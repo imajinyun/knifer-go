@@ -36,3 +36,31 @@ func ExampleNewSocketErrorMsg() {
 	fmt.Println(err.Error())
 	// Output: connection reset
 }
+
+func ExampleFuncDecoder() {
+	decoder := vskt.FuncDecoder[string](func(_ *vskt.AioSession, b *bytes.Buffer) (string, bool) {
+		return b.String(), true
+	})
+
+	value, ok := decoder.Decode(nil, bytes.NewBufferString("payload"))
+
+	fmt.Println(value)
+	fmt.Println(ok)
+	// Output:
+	// payload
+	// true
+}
+
+func ExampleNewSocketConfig() {
+	cfg := vskt.NewSocketConfig()
+
+	fmt.Println(cfg != nil)
+	// Output: true
+}
+
+func ExampleNewSocketError() {
+	err := vskt.NewSocketError(fmt.Errorf("closed"))
+
+	fmt.Println(err.Error())
+	// Output: closed: closed
+}

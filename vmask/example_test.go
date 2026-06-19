@@ -20,3 +20,13 @@ func ExampleIPv4() {
 	fmt.Println(vmask.IPv4("192.0.2.15"))
 	// Output: 192.*.*.*
 }
+
+func ExampleChineseName() {
+	fmt.Println(vmask.ChineseName("张三丰"))
+	// Output: 张**
+}
+
+func ExampleBankCard() {
+	fmt.Println(vmask.BankCard("1234 5678 9012 3456"))
+	// Output: 1234 **** **** 3456
+}

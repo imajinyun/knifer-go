@@ -33,3 +33,25 @@ func ExampleFilterWithOptions() {
 	fmt.Println(result)
 	// Output: this has *** content
 }
+
+func ExampleGetFoundFirstWithOptions() {
+	found, ok := vdfa.GetFoundFirstWithOptions(
+		"this has a secret",
+		vdfa.WithMatcherWords([]string{"secret"}),
+	)
+
+	fmt.Println(found.Word, ok)
+	// Output: secret true
+}
+
+func ExampleContainsAnyWithOptions() {
+	value := struct {
+		Text string `json:"text"`
+	}{Text: "has secret"}
+
+	fmt.Println(vdfa.ContainsAnyWithOptions(
+		value,
+		vdfa.WithMatcherWords([]string{"secret"}),
+	))
+	// Output: true
+}

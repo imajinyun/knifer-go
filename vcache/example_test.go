@@ -2,6 +2,7 @@ package vcache_test
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/imajinyun/go-knifer/vcache"
 )
@@ -34,4 +35,31 @@ func ExampleNewLFU() {
 	v, ok := cache.Get("a")
 	fmt.Println(v, ok)
 	// Output: 1 true
+}
+
+func ExampleNewNoCache() {
+	cache := vcache.NewNoCache[string, int]()
+	cache.Put("a", 1)
+
+	_, ok := cache.Get("a")
+	fmt.Println(ok)
+	// Output: false
+}
+
+func ExampleNewTimedWithOptions() {
+	base := time.Date(2026, 6, 1, 0, 0, 0, 0, time.UTC)
+	now := base
+
+	cache := vcache.NewTimedWithOptions[string, int](
+		vcache.WithTimeout[string, int](time.Second),
+		vcache.WithClock[string, int](func() time.Time { return now }),
+	)
+	cache.Put("a", 1)
+
+	_, before := cache.Get("a")
+	now = base.Add(2 * time.Second)
+	_, after := cache.Get("a")
+
+	fmt.Println(before, after)
+	// Output: true false
 }

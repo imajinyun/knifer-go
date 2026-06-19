@@ -44,3 +44,14 @@ func ExampleNewFuncFilter() {
 	fmt.Println(filter.Contains("hello"))
 	// Output: true
 }
+
+func ExampleNewLongMap() {
+	m := vblf.NewLongMap(100)
+	m.Add(7)
+
+	fmt.Println(m.Contains(7))
+	fmt.Println(m.Contains(99))
+	// Output:
+	// true
+	// false
+}

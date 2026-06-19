@@ -31,3 +31,19 @@ func ExampleIsLessThan() {
 	// true
 	// false
 }
+
+func ExampleAnyMatch() {
+	fmt.Println(vver.AnyMatch("1.2.0", "<1.0.0", "1.2.0-1.3.0"))
+	fmt.Println(vver.AnyMatch("2.0.0", "<1.0.0", "1.2.0-1.3.0"))
+	// Output:
+	// true
+	// false
+}
+
+func ExampleMatchElWithDelimiter() {
+	fmt.Println(vver.MatchElWithDelimiter("2.0.0", "1.0.0|2.0.0", "|"))
+	fmt.Println(vver.MatchElWithDelimiter("3.0.0", "1.0.0|2.0.0", "|"))
+	// Output:
+	// true
+	// false
+}

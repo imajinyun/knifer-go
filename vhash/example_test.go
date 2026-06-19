@@ -21,3 +21,13 @@ func ExampleBkdrHash() {
 	fmt.Println(vhash.BkdrHash("a"))
 	// Output: 97
 }
+
+func ExampleDjbHash() {
+	fmt.Println(vhash.DjbHash("a"))
+	// Output: 177670
+}
+
+func ExampleHfHash() {
+	fmt.Println(vhash.HfHash("abc"))
+	// Output: 888
+}

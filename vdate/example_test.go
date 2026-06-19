@@ -31,3 +31,10 @@ func ExampleBetweenDays() {
 	fmt.Println(vdate.BetweenDays(a, b))
 	// Output: 3
 }
+
+func ExampleEndOfMonth() {
+	t := time.Date(2026, 6, 2, 15, 4, 5, 0, time.UTC)
+
+	fmt.Println(vdate.FormatNorm(vdate.EndOfMonth(t)))
+	// Output: 2026-06-30 23:59:59
+}

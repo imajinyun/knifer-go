@@ -209,7 +209,7 @@ func TestToolsCatalogExamplesCoverageBudget(t *testing.T) {
 	if err != nil {
 		t.Fatalf("generateToolsDoc(%q) error = %v", root, err)
 	}
-	const minFunctionsWithExamples = 180
+	const minFunctionsWithExamples = 240
 	got := doc.Summary.FunctionsWithExamples
 	if got < minFunctionsWithExamples {
 		t.Fatalf("functions with examples = %d, want >= %d\n%s", got, minFunctionsWithExamples, renderToolsQualityReport(doc))
@@ -222,7 +222,7 @@ func TestToolsCatalogPerPackageExamplesBudget(t *testing.T) {
 	if err != nil {
 		t.Fatalf("generateToolsDoc(%q) error = %v", root, err)
 	}
-	const maxMinExamplesPerPackage = 3
+	const maxMinExamplesPerPackage = 5
 	examplesByPackage := toolsExamplesByPackage(doc)
 	missing := []string{}
 	for _, pkg := range doc.Packages {

@@ -31,3 +31,8 @@ func ExampleToString() {
 	fmt.Println(vconv.ToString(3.14))
 	// Output: 3.14
 }
+
+func ExampleToBytes() {
+	fmt.Println(string(vconv.ToBytes("go")))
+	// Output: go
+}

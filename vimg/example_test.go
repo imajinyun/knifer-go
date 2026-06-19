@@ -1,7 +1,10 @@
 package vimg_test
 
 import (
+	"bytes"
 	"fmt"
+	"image"
+	"image/png"
 
 	"github.com/imajinyun/go-knifer/vimg"
 )
@@ -25,4 +28,19 @@ func ExampleCanEncodeBarcodeFormat() {
 	// Output:
 	// true
 	// false
+}
+
+func ExampleInfo() {
+	var buf bytes.Buffer
+	_ = png.Encode(&buf, image.NewRGBA(image.Rect(0, 0, 2, 3)))
+
+	width, height, format, err := vimg.Info(&buf)
+	fmt.Println(width, height, format, err)
+	// Output: 2 3 png <nil>
+}
+
+func ExampleQRCodeImage() {
+	img, err := vimg.QRCodeImage("hello", vimg.WithQRCodeSize(64))
+	fmt.Println(img.Bounds().Dx(), img.Bounds().Dy(), err)
+	// Output: 64 64 <nil>
 }

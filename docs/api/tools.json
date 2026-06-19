@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 48,
     "function_count": 2528,
-    "functions_with_examples": 184,
+    "functions_with_examples": 241,
     "context_aware_functions": 20,
     "returns_error_functions": 564,
     "variadic_functions": 754,
@@ -44,7 +44,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleCopy"
+          ]
         },
         {
           "name": "CopyProperties",
@@ -99,7 +102,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleFillMap"
+          ]
         },
         {
           "name": "NewOptions",
@@ -165,7 +171,8 @@
           "context_aware": false,
           "variadic": true,
           "examples": [
-            "ExampleToStruct"
+            "ExampleToStruct",
+            "ExampleToStruct_withOptions"
           ]
         },
         {
@@ -1189,7 +1196,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewLongMap"
+          ]
         },
         {
           "name": "NewPJWFilter",
@@ -1800,7 +1810,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewNoCache"
+          ]
         },
         {
           "name": "NewTimed",
@@ -1858,7 +1871,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewTimedWithOptions"
+          ]
         },
         {
           "name": "NewWeak",
@@ -2207,7 +2223,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleBase64RawURLEncode"
+          ]
         },
         {
           "name": "Base64URLDecode",
@@ -2282,7 +2301,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleHexDecodeStr"
+          ]
         },
         {
           "name": "HexEncode",
@@ -3228,7 +3250,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleToBytes"
+          ]
         },
         {
           "name": "ToBytesWithOptions",
@@ -4302,7 +4327,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewCronError"
+          ]
         },
         {
           "name": "NewCronTask",
@@ -4380,7 +4408,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewSchedulerWithOptions"
+          ]
         },
         {
           "name": "NewTaskTable",
@@ -6488,7 +6519,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleReadStringMaps"
+          ]
         },
         {
           "name": "RecordsToMaps",
@@ -6823,7 +6857,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWriteStringStructs"
+          ]
         },
         {
           "name": "WriteStructs",
@@ -6974,7 +7011,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleEndOfMonth"
+          ]
         },
         {
           "name": "EndOfYear",
@@ -8549,7 +8589,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleContainsAnyWithOptions"
+          ]
         },
         {
           "name": "ContainsWithOptions",
@@ -8969,7 +9012,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetFoundFirstWithOptions"
+          ]
         },
         {
           "name": "Init",
@@ -9496,7 +9542,10 @@
           ],
           "returns_error": false,
           "context_aware": true,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleMustExitWithOptions"
+          ]
         },
         {
           "name": "NewCollector",
@@ -9599,7 +9648,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleRecoverWithoutError"
+          ]
         },
         {
           "name": "ResetDefaultLogFunc",
@@ -11734,7 +11786,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsMobile"
+          ]
         },
         {
           "name": "IsMobileWithOptions",
@@ -11817,7 +11872,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsURL"
+          ]
         },
         {
           "name": "WithChineseMatcher",
@@ -11996,7 +12054,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleDjbHash"
+          ]
         },
         {
           "name": "ElfHash",
@@ -12090,7 +12151,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleHfHash"
+          ]
         },
         {
           "name": "HfIpHash",
@@ -16462,7 +16526,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleBirthString"
+          ]
         },
         {
           "name": "BirthStringWithOptions",
@@ -16563,7 +16630,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleConvert15To18"
+          ]
         },
         {
           "name": "Convert15To18WithOptions",
@@ -17734,7 +17804,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleInfo"
+          ]
         },
         {
           "name": "NewCircleCaptcha",
@@ -18246,7 +18319,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleQRCodeImage"
+          ]
         },
         {
           "name": "QRCodePNG",
@@ -19373,7 +19449,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewMapKeys"
+          ]
         },
         {
           "name": "NewSlice",
@@ -19420,7 +19499,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewSliceSingle"
+          ]
         },
         {
           "name": "Run",
@@ -22671,7 +22753,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetWithOptions"
+          ]
         },
         {
           "name": "Info",
@@ -23003,7 +23088,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewIsolatedLogger"
+          ]
         },
         {
           "name": "SetColorFactory",
@@ -23453,7 +23541,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewAttachment"
+          ]
         },
         {
           "name": "NewAttachmentFile",
@@ -23660,7 +23751,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseAddress"
+          ]
         },
         {
           "name": "ParseAddressList",
@@ -25878,7 +25972,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleBankCard"
+          ]
         },
         {
           "name": "CarLicense",
@@ -25914,7 +26011,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleChineseName"
+          ]
         },
         {
           "name": "Clear",
@@ -28135,7 +28235,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleListIPRange"
+          ]
         },
         {
           "name": "ListIPRangeWithOptions",
@@ -28427,7 +28530,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleMaskBitByMask"
+          ]
         },
         {
           "name": "MaskBitByMaskWithOptions",
@@ -32992,7 +33098,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleDefaultIfNil"
+          ]
         },
         {
           "name": "DefaultIfNilApply",
@@ -33466,7 +33575,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleLength"
+          ]
         },
         {
           "name": "MustDeserialize",
@@ -33763,7 +33875,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleAnalyze"
+          ]
         },
         {
           "name": "IsStrong",
@@ -33844,7 +33959,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleStrengthOf"
+          ]
         }
       ]
     },
@@ -33899,7 +34017,8 @@
           "context_aware": false,
           "variadic": true,
           "examples": [
-            "ExampleReadRowsFromReader"
+            "ExampleReadRowsFromReader",
+            "ExampleReadRowsFromReader_withReadSheet"
           ]
         },
         {
@@ -34193,7 +34312,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithReadSheet"
+          ]
         },
         {
           "name": "WithSaveAsFunc",
@@ -34287,7 +34409,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithWriteSheet"
+          ]
         },
         {
           "name": "WriteRows",
@@ -34342,7 +34467,8 @@
           "context_aware": false,
           "variadic": true,
           "examples": [
-            "ExampleWriteRowsToBuffer"
+            "ExampleWriteRowsToBuffer",
+            "ExampleWriteRowsToBuffer_emptySheetName"
           ]
         },
         {
@@ -35665,7 +35791,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleInvokeFunc"
+          ]
         },
         {
           "name": "InvokeMethod",
@@ -36250,7 +36379,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSetFieldValue"
+          ]
         },
         {
           "name": "SetFieldValueWithOptions",
@@ -36867,7 +36999,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleExtractMulti"
+          ]
         },
         {
           "name": "ExtractMultiAndDelPre",
@@ -37521,7 +37656,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetByName"
+          ]
         },
         {
           "name": "GetByNameRe",
@@ -41049,7 +41187,8 @@
           "context_aware": false,
           "variadic": true,
           "examples": [
-            "ExampleNew"
+            "ExampleNew",
+            "ExampleNew_addRemove"
           ]
         },
         {
@@ -41089,7 +41228,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewInt32"
+          ]
         },
         {
           "name": "NewInt64",
@@ -41146,7 +41288,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewUint"
+          ]
         },
         {
           "name": "NewUint32",
@@ -41774,7 +41919,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewSocketConfig"
+          ]
         },
         {
           "name": "NewSocketConfigWithOptions",
@@ -41810,7 +41958,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewSocketError"
+          ]
         },
         {
           "name": "NewSocketErrorMsg",
@@ -44803,7 +44954,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetCurrentPIDWithOptions"
+          ]
         },
         {
           "name": "GetFreeMemory",
@@ -45255,7 +45409,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewGoInfoWithOptions"
+          ]
         },
         {
           "name": "NewHostInfo",
@@ -46364,7 +46521,9 @@
           "context_aware": false,
           "variadic": false,
           "examples": [
-            "ExampleRender"
+            "ExampleRender",
+            "ExampleRender_htmlEscaping",
+            "ExampleRender_parseError"
           ]
         },
         {
@@ -46461,7 +46620,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithFuncMap"
+          ]
         },
         {
           "name": "WithTemplateExecutor",
@@ -46515,7 +46677,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithTemplateName"
+          ]
         },
         {
           "name": "WithTemplateParser",
@@ -48199,7 +48364,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleAnyMatch"
+          ]
         },
         {
           "name": "AnyMatchSlice",
@@ -48414,7 +48582,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleMatchElWithDelimiter"
+          ]
         },
         {
           "name": "MatchElWithDelimiterErr",
@@ -48532,7 +48703,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCleanComment"
+          ]
         },
         {
           "name": "CleanCommentWithOptions",
@@ -48974,7 +49148,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleMarshalMap"
+          ]
         },
         {
           "name": "MarshalString",

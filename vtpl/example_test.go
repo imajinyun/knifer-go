@@ -44,3 +44,33 @@ func ExampleRenderWithOptions() {
 	// Hello GOPHER
 	// <nil>
 }
+
+func ExampleRender_htmlEscaping() {
+	result, err := vtpl.Render("<p>{{.}}</p>", "<go-knifer>")
+
+	fmt.Println(result)
+	fmt.Println(err)
+	// Output:
+	// <p>&lt;go-knifer&gt;</p>
+	// <nil>
+}
+
+func ExampleRender_parseError() {
+	result, err := vtpl.Render("Hello, {{.Name", map[string]string{"Name": "Gopher"})
+
+	fmt.Println(result == "")
+	fmt.Println(err != nil)
+	// Output:
+	// true
+	// true
+}
+
+func ExampleWithTemplateName() {
+	fmt.Println(vtpl.WithTemplateName("email") != nil)
+	// Output: true
+}
+
+func ExampleWithFuncMap() {
+	fmt.Println(vtpl.WithFuncMap(template.FuncMap{"upper": strings.ToUpper}) != nil)
+	// Output: true
+}

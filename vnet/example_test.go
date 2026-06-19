@@ -37,3 +37,18 @@ func ExampleBeginIP() {
 	// 192.0.2.255 <nil>
 	// 256 <nil>
 }
+
+func ExampleMaskBitByMask() {
+	maskBit, err := vnet.MaskBitByMask("255.255.255.0")
+	fmt.Println(maskBit, err)
+	// Output: 24 <nil>
+}
+
+func ExampleListIPRange() {
+	ips, err := vnet.ListIPRange("192.0.2.1", "192.0.2.2")
+	fmt.Println(ips)
+	fmt.Println(err)
+	// Output:
+	// [192.0.2.1 192.0.2.2]
+	// <nil>
+}

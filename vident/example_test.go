@@ -23,3 +23,15 @@ func ExampleAgeAt() {
 	fmt.Println(age, ok)
 	// Output: 75 true
 }
+
+func ExampleConvert15To18() {
+	converted, ok := vident.Convert15To18("130503670401001")
+	fmt.Println(converted, ok)
+	// Output: 130503196704010016 true
+}
+
+func ExampleBirthString() {
+	birth, ok := vident.BirthString("11010519491231002X")
+	fmt.Println(birth, ok)
+	// Output: 19491231 true
+}
