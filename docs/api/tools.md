@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/go-knifer` |
 | Packages | 48 |
 | Functions | 2547 |
-| Functions with examples | 255 |
+| Functions with examples | 270 |
 | Context-aware functions | 20 |
 | Functions returning error | 578 |
 | Variadic functions | 760 |
@@ -815,13 +815,13 @@ Import path: `github.com/imajinyun/go-knifer/vhttp`
 
 Package vhttp provides public APIs for HTTP utilities.
 
-Quality: 161 functions · 5 with examples · 3.1% example coverage · synopsis sources: facade=156, internal=5, empty=0
+Quality: 161 functions · 8 with examples · 5.0% example coverage · synopsis sources: facade=156, internal=5, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
 | `AddGlobalHeader` | `func AddGlobalHeader(name string, value string)` | AddGlobalHeader adds a global HTTP header value. | facade | — |
 | `BuildBasicAuth` | `func BuildBasicAuth(user string, pass string) string` | BuildBasicAuth builds a Basic authorization value. | facade | — |
-| `BuildContentType` | `func BuildContentType(contentType string, charset string) string` | BuildContentType delegates to the internal httpx implementation. | facade | — |
+| `BuildContentType` | `func BuildContentType(contentType string, charset string) string` | BuildContentType delegates to the internal httpx implementation. | facade | `ExampleBuildContentType` |
 | `CleanHTML` | `func CleanHTML(s string) string` | CleanHTML delegates to the internal httpx implementation. | facade | — |
 | `CleanHTMLWithOptions` | `func CleanHTMLWithOptions(s string, opts ...HTMLCleanOption) string` | CleanHTMLWithOptions removes HTML tags and keeps plain text with options. | internal | — |
 | `CloneGlobalHeaders` | `func CloneGlobalHeaders() http.Header` | CloneGlobalHeaders returns cloned global headers. | facade | — |
@@ -852,7 +852,7 @@ Quality: 161 functions · 5 with examples · 3.1% example coverage · synopsis s
 | `Get` | `func Get(rawURL string, opts ...RequestOption) *Request` | Get creates a GET request. | facade | — |
 | `GetCharsetFromContentType` | `func GetCharsetFromContentType(ct string) string` | GetCharsetFromContentType delegates to the internal httpx implementation. | facade | — |
 | `GetCharsetFromContentTypeWithOptions` | `func GetCharsetFromContentTypeWithOptions(ct string, opts ...CharsetOption) string` | GetCharsetFromContentTypeWithOptions delegates to the internal httpx implementation. | facade | — |
-| `GetCharsetFromHTML` | `func GetCharsetFromHTML(html string) string` | GetCharsetFromHTML delegates to the internal httpx implementation. | facade | — |
+| `GetCharsetFromHTML` | `func GetCharsetFromHTML(html string) string` | GetCharsetFromHTML delegates to the internal httpx implementation. | facade | `ExampleGetCharsetFromHTML` |
 | `GetCharsetFromHTMLWithOptions` | `func GetCharsetFromHTMLWithOptions(html string, opts ...CharsetOption) string` | GetCharsetFromHTMLWithOptions delegates to the internal httpx implementation. | facade | — |
 | `GetCookieJar` | `func GetCookieJar() http.CookieJar` | GetCookieJar delegates to the internal httpx implementation. | facade | — |
 | `GetGlobalBoundary` | `func GetGlobalBoundary() string` | GetGlobalBoundary delegates to the internal httpx implementation. | facade | — |
@@ -902,7 +902,7 @@ Quality: 161 functions · 5 with examples · 3.1% example coverage · synopsis s
 | `PostFormE` | `func PostFormE(rawURL string, params map[string]any) (string, error)` | PostFormE posts form parameters and returns response body or an error. | facade | — |
 | `PostFormEWithOptions` | `func PostFormEWithOptions(rawURL string, params map[string]any, opts ...RequestOption) (string, error)` | PostFormEWithOptions posts form parameters with options and returns response body or an error. | facade | — |
 | `PostFormSafeE` | `func PostFormSafeE(rawURL string, params map[string]any, opts ...RequestOption) (string, error)` | PostFormSafeE posts form parameters with SSRF-oriented safety checks enabled. | facade | — |
-| `PostJSONE` | `func PostJSONE(rawURL string, jsonStr string) (string, error)` | PostJSONE posts JSON body and returns response body or an error. | facade | — |
+| `PostJSONE` | `func PostJSONE(rawURL string, jsonStr string) (string, error)` | PostJSONE posts JSON body and returns response body or an error. | facade | `ExamplePostJSONE` |
 | `PostJSONEWithOptions` | `func PostJSONEWithOptions(rawURL string, jsonStr string, opts ...RequestOption) (string, error)` | PostJSONEWithOptions posts JSON body with options and returns response body or an error. | facade | — |
 | `PostJSONSafeE` | `func PostJSONSafeE(rawURL string, jsonStr string, opts ...RequestOption) (string, error)` | PostJSONSafeE posts JSON body with SSRF-oriented safety checks enabled. | facade | — |
 | `PostSafe` | `func PostSafe(rawURL string, opts ...RequestOption) *Request` | PostSafe creates a POST request with SSRF-oriented safety checks enabled. | facade | — |
@@ -1625,7 +1625,7 @@ Import path: `github.com/imajinyun/go-knifer/vnet`
 
 Package vnet provides public APIs for network, IP, URL-encoding, TLS, and multipart utilities.
 
-Quality: 166 functions · 5 with examples · 3.0% example coverage · synopsis sources: facade=53, internal=113, empty=0
+Quality: 166 functions · 8 with examples · 4.8% example coverage · synopsis sources: facade=53, internal=113, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -1702,7 +1702,7 @@ Quality: 166 functions · 5 with examples · 3.0% example coverage · synopsis s
 | `IsIPv4WithOptions` | `func IsIPv4WithOptions(s string, opts ...IPOption) bool` | IsIPv4WithOptions reports whether s is an IPv4 address using custom providers. | internal | — |
 | `IsIPv6` | `func IsIPv6(s string) bool` | IsIPv6 reports whether s is an IPv6 address. | internal | — |
 | `IsIPv6WithOptions` | `func IsIPv6WithOptions(s string, opts ...IPOption) bool` | IsIPv6WithOptions reports whether s is an IPv6 address using custom providers. | internal | — |
-| `IsInRange` | `func IsInRange(ip string, cidr string) bool` | IsInRange reports whether ip belongs to cidr. | internal | — |
+| `IsInRange` | `func IsInRange(ip string, cidr string) bool` | IsInRange reports whether ip belongs to cidr. | internal | `ExampleIsInRange` |
 | `IsInRangeWithOptions` | `func IsInRangeWithOptions(ip string, cidr string, opts ...IPOption) bool` | IsInRangeWithOptions reports whether ip belongs to cidr using custom providers. | internal | — |
 | `IsInnerIP` | `func IsInnerIP(ipAddress string) bool` | IsInnerIP reports whether ipAddress belongs to common private IPv4 ranges. | internal | — |
 | `IsInnerIPWithOptions` | `func IsInnerIPWithOptions(ipAddress string, opts ...IPOption) bool` | IsInnerIPWithOptions reports whether ipAddress belongs to common private IPv4 ranges using custom providers. | internal | — |
@@ -1737,7 +1737,7 @@ Quality: 166 functions · 5 with examples · 3.0% example coverage · synopsis s
 | `MaskByIPRange` | `func MaskByIPRange(fromIP string, toIP string) (string, error)` | MaskByIPRange returns the common IPv4 mask for an inclusive range. | internal | — |
 | `MaskByIPRangeWithOptions` | `func MaskByIPRangeWithOptions(fromIP string, toIP string, opts ...IPOption) (string, error)` | MaskByIPRangeWithOptions returns the common IPv4 mask for an inclusive range using custom providers. | internal | — |
 | `MaskByMaskBit` | `func MaskByMaskBit(maskBit int) (string, error)` | MaskByMaskBit converts mask bits to a dotted IPv4 mask. | internal | — |
-| `MatchesWildcard` | `func MatchesWildcard(wildcard string, ipAddress string) bool` | MatchesWildcard reports whether ipAddress matches a wildcard such as 192.168.*.*. | internal | — |
+| `MatchesWildcard` | `func MatchesWildcard(wildcard string, ipAddress string) bool` | MatchesWildcard reports whether ipAddress matches a wildcard such as 192.168.*.*. | internal | `ExampleMatchesWildcard` |
 | `MatchesWildcardWithOptions` | `func MatchesWildcardWithOptions(wildcard string, ipAddress string, opts ...WildcardOption) bool` | MatchesWildcardWithOptions reports whether ipAddress matches a wildcard with options. | internal | — |
 | `NetCat` | `func NetCat(host string, port int, data []byte, timeout time.Duration) error` | NetCat sends data to host:port over TCP. | facade | — |
 | `NetCatWithOptions` | `func NetCatWithOptions(host string, port int, data []byte, opts ...ConnectOption) error` | NetCatWithOptions sends data to host:port using custom connection options. | facade | — |
@@ -1746,7 +1746,7 @@ Quality: 166 functions · 5 with examples · 3.0% example coverage · synopsis s
 | `NewLocalPortGeneratorWithOptions` | `func NewLocalPortGeneratorWithOptions(beginPort int, opts ...PortOption) *LocalPortGenerator` | NewLocalPortGeneratorWithOptions creates a local port generator with custom probe options. | internal | — |
 | `NewTLSConfigBuilder` | `func NewTLSConfigBuilder() *TLSConfigBuilder` | NewTLSConfigBuilder creates a TLS config builder. | internal | — |
 | `NewUploadSetting` | `func NewUploadSetting() UploadSetting` | NewUploadSetting returns a default upload setting. | facade | — |
-| `ParseCookies` | `func ParseCookies(cookieStr string) []*http.Cookie` | ParseCookies parses a Cookie header value. | internal | — |
+| `ParseCookies` | `func ParseCookies(cookieStr string) []*http.Cookie` | ParseCookies parses a Cookie header value. | internal | `ExampleParseCookies` |
 | `ParseMultipartForm` | `func ParseMultipartForm(r *http.Request, setting UploadSetting) (*MultipartFormData, error)` | ParseMultipartForm parses multipart/form-data from an HTTP request. | facade | — |
 | `Ping` | `func Ping(ip string, timeout time.Duration) bool` | Ping checks whether an IP or host is reachable by opening a TCP connection to common ports. | facade | — |
 | `PingWithOptions` | `func PingWithOptions(ip string, opts ...PingOption) bool` | PingWithOptions checks whether an IP or host is reachable with custom probe options. | facade | — |
@@ -1802,7 +1802,7 @@ Import path: `github.com/imajinyun/go-knifer/vnum`
 
 Package vnum provides public APIs for numeric utilities.
 
-Quality: 146 functions · 5 with examples · 3.4% example coverage · synopsis sources: facade=15, internal=131, empty=0
+Quality: 146 functions · 8 with examples · 5.5% example coverage · synopsis sources: facade=15, internal=131, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -1825,7 +1825,7 @@ Quality: 146 functions · 5 with examples · 3.4% example coverage · synopsis s
 | `Compare` | `func Compare[T Ordered](x T, y T) int` | Compare returns -1, 0, or 1 according to x and y ordering. | internal | — |
 | `Count` | `func Count(total int, part int) int` | Count returns how many parts of size part are needed for total. | internal | — |
 | `DecimalFormat` | `func DecimalFormat(format string, v float64) string` | DecimalFormat formats v with common decimal patterns such as "0", "0.00", ",##0.00" and percent patterns. | internal | — |
-| `DecimalFormatMoney` | `func DecimalFormatMoney(v float64) string` | DecimalFormatMoney formats money with comma grouping and two decimal places. | internal | — |
+| `DecimalFormatMoney` | `func DecimalFormatMoney(v float64) string` | DecimalFormatMoney formats money with comma grouping and two decimal places. | internal | `ExampleDecimalFormatMoney` |
 | `DecimalFormatMoneyWithOptions` | `func DecimalFormatMoneyWithOptions(v float64, opts ...FormatOption) string` | DecimalFormatMoneyWithOptions formats money with comma grouping and two decimal places using custom providers. | internal | — |
 | `DecimalFormatWithOptions` | `func DecimalFormatWithOptions(format string, v float64, opts ...FormatOption) string` | DecimalFormatWithOptions formats v with common decimal patterns using custom providers. | internal | — |
 | `Div` | `func Div(a float64, b float64, scale ...int) float64` | Div divides a by b, optionally rounding the result to scale decimal places. | facade | — |
@@ -1848,7 +1848,7 @@ Quality: 146 functions · 5 with examples · 3.4% example coverage · synopsis s
 | `GenBySet` | `func GenBySet(begin int, end int, size int) []int` | GenBySet returns size unique random integers in [begin, end). | internal | — |
 | `GenBySetWithOptions` | `func GenBySetWithOptions(begin int, end int, size int, opts ...RandomNumberOption) []int` | GenBySetWithOptions returns size unique random integers in [begin, end) with per-call options. | internal | — |
 | `GenRandomNumber` | `func GenRandomNumber(begin int, end int, size int) []int` | GenRandomNumber returns size unique random integers in [begin, end). | internal | — |
-| `GenRandomNumberWithOptions` | `func GenRandomNumberWithOptions(begin int, end int, size int, opts ...RandomNumberOption) []int` | GenRandomNumberWithOptions returns size unique random integers in [begin, end) with per-call options. | internal | — |
+| `GenRandomNumberWithOptions` | `func GenRandomNumberWithOptions(begin int, end int, size int, opts ...RandomNumberOption) []int` | GenRandomNumberWithOptions returns size unique random integers in [begin, end) with per-call options. | internal | `ExampleGenRandomNumberWithOptions` |
 | `GenRandomNumberWithSeed` | `func GenRandomNumberWithSeed(begin int, end int, size int, seed []int) []int` | GenRandomNumberWithSeed picks size unique values from seed. | internal | — |
 | `GenRandomNumberWithSeedWithOptions` | `func GenRandomNumberWithSeedWithOptions(begin int, end int, size int, seed []int, opts ...RandomNumberOption) []int` | GenRandomNumberWithSeedWithOptions picks size unique values from seed with per-call options. | internal | — |
 | `GetBinaryStr` | `func GetBinaryStr(number any) string` | GetBinaryStr returns the binary representation of common numeric values. | internal | — |
@@ -1917,7 +1917,7 @@ Quality: 146 functions · 5 with examples · 3.4% example coverage · synopsis s
 | `PowWithMode` | `func PowWithMode(number float64, n int, scale int, mode RoundingMode) float64` | PowWithMode raises number to n and applies scale/mode for negative exponents. | internal | — |
 | `ProcessMultiple` | `func ProcessMultiple(selectNum int, minNum int) int` | ProcessMultiple returns the combination count C(selectNum, minNum). | internal | — |
 | `Range` | `func Range(start int, end int, step int) []int` | Range returns a half-open integer sequence [start, end) using step. | internal | — |
-| `RangeClosed` | `func RangeClosed(start int, stop int, step int) []int` | RangeClosed returns an inclusive integer sequence. | internal | — |
+| `RangeClosed` | `func RangeClosed(start int, stop int, step int) []int` | RangeClosed returns an inclusive integer sequence. | internal | `ExampleRangeClosed` |
 | `Round` | `func Round(v float64, scale int) float64` | Round rounds v to scale decimal places with HALF_UP semantics. | internal | `ExampleRound` |
 | `RoundDownFloat` | `func RoundDownFloat(v float64, scale int) float64` | RoundDownFloat truncates extra decimal places. | internal | — |
 | `RoundHalfEvenFloat` | `func RoundHalfEvenFloat(v float64, scale int) float64` | RoundHalfEvenFloat rounds with banker rounding. | internal | — |
@@ -2290,13 +2290,13 @@ Import path: `github.com/imajinyun/go-knifer/vresty`
 
 Package vresty provides convenient HTTP client wrappers backed by resty.
 
-Quality: 120 functions · 5 with examples · 4.2% example coverage · synopsis sources: facade=120, internal=0, empty=0
+Quality: 120 functions · 8 with examples · 6.7% example coverage · synopsis sources: facade=120, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
 | `AddGlobalHeader` | `func AddGlobalHeader(name string, value string)` | AddGlobalHeader adds a global HTTP header value. | facade | — |
 | `BuildBasicAuth` | `func BuildBasicAuth(user string, pass string) string` | BuildBasicAuth builds a Basic authorization value. | facade | `ExampleBuildBasicAuth` |
-| `BuildContentType` | `func BuildContentType(contentType string, charset string) string` | BuildContentType builds a Content-Type string with charset. | facade | — |
+| `BuildContentType` | `func BuildContentType(contentType string, charset string) string` | BuildContentType builds a Content-Type string with charset. | facade | `ExampleBuildContentType` |
 | `CloneGlobalHeaders` | `func CloneGlobalHeaders() HeaderValues` | CloneGlobalHeaders returns cloned global headers. | facade | — |
 | `CloseCookie` | `func CloseCookie()` | CloseCookie disables global cookie management. | facade | — |
 | `ConfigureDefaultRestyClientProvider` | `func ConfigureDefaultRestyClientProvider(provider func() *resty.Client)` | ConfigureDefaultRestyClientProvider sets the provider used to create resty clients when no per-request client is set. | facade | — |
@@ -2331,7 +2331,7 @@ Quality: 120 functions · 5 with examples · 4.2% example coverage · synopsis s
 | `GetStringE` | `func GetStringE(rawURL string) (string, error)` | GetStringE sends a GET request and returns response body as string or an error. | facade | `ExampleGetStringE` |
 | `GetStringEWithOptions` | `func GetStringEWithOptions(rawURL string, opts ...RequestOption) (string, error)` | GetStringEWithOptions sends a GET request with options and returns response body as string or an error. | facade | — |
 | `GetStringSafeE` | `func GetStringSafeE(rawURL string, opts ...RequestOption) (string, error)` | GetStringSafeE sends a safe GET request and returns response body as string or an error. | facade | `ExampleGetStringSafeE` |
-| `GetWithParamsE` | `func GetWithParamsE(rawURL string, params map[string]any) (string, error)` | GetWithParamsE sends a GET request with form parameters and returns response body or an error. | facade | — |
+| `GetWithParamsE` | `func GetWithParamsE(rawURL string, params map[string]any) (string, error)` | GetWithParamsE sends a GET request with form parameters and returns response body or an error. | facade | `ExampleGetWithParamsE` |
 | `GetWithParamsEWithOptions` | `func GetWithParamsEWithOptions(rawURL string, params map[string]any, opts ...RequestOption) (string, error)` | GetWithParamsEWithOptions sends a GET request with form parameters and custom options, returning body or error. | facade | — |
 | `GetWithTimeoutE` | `func GetWithTimeoutE(rawURL string, timeout time.Duration) (string, error)` | GetWithTimeoutE sends a GET request with a timeout and returns response body or an error. | facade | — |
 | `GetWithTimeoutEWithOptions` | `func GetWithTimeoutEWithOptions(rawURL string, timeout time.Duration, opts ...RequestOption) (string, error)` | GetWithTimeoutEWithOptions sends a GET request with a timeout and custom options, returning body or error. | facade | — |
@@ -2359,7 +2359,7 @@ Quality: 120 functions · 5 with examples · 4.2% example coverage · synopsis s
 | `PostFormE` | `func PostFormE(rawURL string, params map[string]any) (string, error)` | PostFormE posts form parameters and returns response body or an error. | facade | — |
 | `PostFormEWithOptions` | `func PostFormEWithOptions(rawURL string, params map[string]any, opts ...RequestOption) (string, error)` | PostFormEWithOptions posts form parameters with options and returns response body or an error. | facade | — |
 | `PostFormSafeE` | `func PostFormSafeE(rawURL string, params map[string]any, opts ...RequestOption) (string, error)` | PostFormSafeE posts form parameters with SSRF-oriented safety checks enabled. | facade | — |
-| `PostJSONE` | `func PostJSONE(rawURL string, jsonStr string) (string, error)` | PostJSONE posts JSON body and returns response body or an error. | facade | — |
+| `PostJSONE` | `func PostJSONE(rawURL string, jsonStr string) (string, error)` | PostJSONE posts JSON body and returns response body or an error. | facade | `ExamplePostJSONE` |
 | `PostJSONEWithOptions` | `func PostJSONEWithOptions(rawURL string, jsonStr string, opts ...RequestOption) (string, error)` | PostJSONEWithOptions posts JSON body with options and returns response body or an error. | facade | — |
 | `PostJSONSafeE` | `func PostJSONSafeE(rawURL string, jsonStr string, opts ...RequestOption) (string, error)` | PostJSONSafeE posts JSON body with SSRF-oriented safety checks enabled. | facade | — |
 | `PostSafe` | `func PostSafe(rawURL string, opts ...RequestOption) *Request` | PostSafe creates a POST request with SSRF-oriented safety checks enabled. | facade | — |
@@ -3000,7 +3000,7 @@ Import path: `github.com/imajinyun/go-knifer/vzip`
 
 Package vzip provides ZIP, gzip, and zlib utilities.
 
-Quality: 92 functions · 5 with examples · 5.4% example coverage · synopsis sources: facade=92, internal=0, empty=0
+Quality: 92 functions · 8 with examples · 8.7% example coverage · synopsis sources: facade=92, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -3009,10 +3009,10 @@ Quality: 92 functions · 5 with examples · 5.4% example coverage · synopsis so
 | `Get` | `func Get(zipFile string, name string) (io.ReadCloser, error)` | Get returns a reader for the named entry in zipFile. | facade | — |
 | `GetBytes` | `func GetBytes(zipFile string, name string) ([]byte, error)` | GetBytes returns the content of the named entry in zipFile. | facade | — |
 | `GetBytesWithOptions` | `func GetBytesWithOptions(zipFile string, name string, opts ...ArchiveOption) ([]byte, error)` | GetBytesWithOptions returns the content of the named entry in zipFile with per-call options. | facade | — |
-| `GetStream` | `func GetStream(entry *zip.File) (io.ReadCloser, error)` | GetStream returns a reader for entry. | facade | — |
+| `GetStream` | `func GetStream(entry *zip.File) (io.ReadCloser, error)` | GetStream returns a reader for entry. | facade | `ExampleGetStream` |
 | `GetWithOptions` | `func GetWithOptions(zipFile string, name string, opts ...ArchiveOption) (io.ReadCloser, error)` | GetWithOptions returns a reader for the named entry in zipFile with per-call options. | facade | — |
 | `Gunzip` | `func Gunzip(data []byte) ([]byte, error)` | Gunzip decompresses gzip data. | facade | — |
-| `Gzip` | `func Gzip(data []byte) ([]byte, error)` | Gzip compresses data using gzip. | facade | — |
+| `Gzip` | `func Gzip(data []byte) ([]byte, error)` | Gzip compresses data using gzip. | facade | `ExampleGzip_byteSlice` |
 | `GzipFile` | `func GzipFile(path string) ([]byte, error)` | GzipFile compresses a file using gzip and returns compressed bytes. | facade | — |
 | `GzipFileWithOptions` | `func GzipFileWithOptions(path string, opts ...ArchiveOption) ([]byte, error)` | GzipFileWithOptions compresses a file using gzip and per-call options. | facade | — |
 | `GzipReader` | `func GzipReader(r io.Reader, estimatedLength int) ([]byte, error)` | GzipReader compresses all bytes from r using gzip. | facade | — |
@@ -3081,7 +3081,7 @@ Quality: 92 functions · 5 with examples · 5.4% example coverage · synopsis so
 | `ZipFilesUsingOptions` | `func ZipFilesUsingOptions(dest string, srcFiles []string, opts ...ArchiveOption) error` | ZipFilesUsingOptions creates a ZIP archive from source files or directories using only functional options. | facade | — |
 | `ZipFilesWithOptions` | `func ZipFilesWithOptions(dest string, withSrcDir bool, srcFiles []string, opts ...ArchiveOption) error` | ZipFilesWithOptions creates a ZIP archive from source files or directories with per-call options. | facade | — |
 | `ZipStreams` | `func ZipStreams(zipFile string, entries ...StreamEntry) error` | ZipStreams creates or overwrites zipFile and adds stream entries. | facade | — |
-| `ZipStreamsToWriter` | `func ZipStreamsToWriter(out io.Writer, entries ...StreamEntry) error` | ZipStreamsToWriter writes stream entries into out as a ZIP archive. | facade | — |
+| `ZipStreamsToWriter` | `func ZipStreamsToWriter(out io.Writer, entries ...StreamEntry) error` | ZipStreamsToWriter writes stream entries into out as a ZIP archive. | facade | `ExampleZipStreamsToWriter` |
 | `ZipStreamsToWriterWithOptions` | `func ZipStreamsToWriterWithOptions(out io.Writer, entries []StreamEntry, opts ...ArchiveOption) error` | ZipStreamsToWriterWithOptions writes stream entries into out as a ZIP archive with per-call options. | facade | — |
 | `ZipStreamsWithOptions` | `func ZipStreamsWithOptions(zipFile string, entries []StreamEntry, opts ...ArchiveOption) error` | ZipStreamsWithOptions creates or overwrites zipFile and adds stream entries with per-call options. | facade | — |
 | `ZipTo` | `func ZipTo(srcPath string, zipPath string, withSrcDir bool) error` | ZipTo creates an archive at zipPath from srcPath. | facade | — |

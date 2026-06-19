@@ -249,10 +249,14 @@ make check
 Benchmark baselines:
 
 ```bash
+make bench-smoke
 make bench-core
 make bench-facade
+make bench-codec
 make bench-core BENCHCOUNT=10 BENCHTIME=3s
 ```
+
+Use `make bench-smoke` to verify benchmark health quickly after changing hot paths. Use `make bench-core`, `make bench-facade`, and `make bench-codec` for stable package groups. Treat single-run benchmark output as a baseline only; use repeated runs and `benchstat` before documenting an improvement or regression.
 
 Refresh the API snapshot after an intentional exported API change:
 

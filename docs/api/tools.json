@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 48,
     "function_count": 2547,
-    "functions_with_examples": 255,
+    "functions_with_examples": 270,
     "context_aware_functions": 20,
     "returns_error_functions": 578,
     "variadic_functions": 760,
@@ -12638,8 +12638,8 @@
       "synopsis": "Package vhttp provides public APIs for HTTP utilities.",
       "summary": {
         "function_count": 161,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 3.1,
+        "functions_with_examples": 8,
+        "example_coverage_percent": 5,
         "synopsis_sources": {
           "empty": 0,
           "facade": 156,
@@ -12708,7 +12708,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleBuildContentType"
+          ]
         },
         {
           "name": "CleanHTML",
@@ -13397,7 +13400,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetCharsetFromHTML"
+          ]
         },
         {
           "name": "GetCharsetFromHTMLWithOptions",
@@ -14415,7 +14421,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExamplePostJSONE"
+          ]
         },
         {
           "name": "PostJSONEWithOptions",
@@ -26916,8 +26925,8 @@
       "synopsis": "Package vnet provides public APIs for network, IP, URL-encoding, TLS, and multipart utilities.",
       "summary": {
         "function_count": 166,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 3,
+        "functions_with_examples": 8,
+        "example_coverage_percent": 4.8,
         "synopsis_sources": {
           "empty": 0,
           "facade": 53,
@@ -28509,7 +28518,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsInRange"
+          ]
         },
         {
           "name": "IsInRangeWithOptions",
@@ -29246,7 +29258,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleMatchesWildcard"
+          ]
         },
         {
           "name": "MatchesWildcardWithOptions",
@@ -29426,7 +29441,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseCookies"
+          ]
         },
         {
           "name": "ParseMultipartForm",
@@ -30321,8 +30339,8 @@
       "synopsis": "Package vnum provides public APIs for numeric utilities.",
       "summary": {
         "function_count": 146,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 3.4,
+        "functions_with_examples": 8,
+        "example_coverage_percent": 5.5,
         "synopsis_sources": {
           "empty": 0,
           "facade": 15,
@@ -30741,7 +30759,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleDecimalFormatMoney"
+          ]
         },
         {
           "name": "DecimalFormatMoneyWithOptions",
@@ -31289,7 +31310,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGenRandomNumberWithOptions"
+          ]
         },
         {
           "name": "GenRandomNumberWithSeed",
@@ -32752,7 +32776,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleRangeClosed"
+          ]
         },
         {
           "name": "Round",
@@ -39360,8 +39387,8 @@
       "synopsis": "Package vresty provides convenient HTTP client wrappers backed by resty.",
       "summary": {
         "function_count": 120,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 4.2,
+        "functions_with_examples": 8,
+        "example_coverage_percent": 6.7,
         "synopsis_sources": {
           "empty": 0,
           "facade": 120,
@@ -39433,7 +39460,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleBuildContentType"
+          ]
         },
         {
           "name": "CloneGlobalHeaders",
@@ -40162,7 +40192,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetWithParamsE"
+          ]
         },
         {
           "name": "GetWithParamsEWithOptions",
@@ -40793,7 +40826,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExamplePostJSONE"
+          ]
         },
         {
           "name": "PostJSONEWithOptions",
@@ -51376,8 +51412,8 @@
       "synopsis": "Package vzip provides ZIP, gzip, and zlib utilities.",
       "summary": {
         "function_count": 92,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 5.4,
+        "functions_with_examples": 8,
+        "example_coverage_percent": 8.7,
         "synopsis_sources": {
           "empty": 0,
           "facade": 92,
@@ -51523,7 +51559,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetStream"
+          ]
         },
         {
           "name": "GetWithOptions",
@@ -51588,7 +51627,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGzip_byteSlice"
+          ]
         },
         {
           "name": "GzipFile",
@@ -53095,7 +53137,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleZipStreamsToWriter"
+          ]
         },
         {
           "name": "ZipStreamsToWriterWithOptions",

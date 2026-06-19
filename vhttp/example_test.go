@@ -77,3 +77,32 @@ func ExampleDownload() {
 	fmt.Println(n, buf.String())
 	// Output: 8 download
 }
+
+func ExampleBuildContentType() {
+	fmt.Println(vhttp.BuildContentType("application/json", "utf-8"))
+	fmt.Println(vhttp.BuildContentType("text/plain", ""))
+	// Output:
+	// application/json;charset=utf-8
+	// text/plain
+}
+
+func ExampleGetCharsetFromHTML() {
+	html := `<html><head><meta charset="big5"></head></html>`
+	fmt.Println(vhttp.GetCharsetFromHTML(html))
+	// Output: big5
+}
+
+func ExamplePostJSONE() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, _ := io.ReadAll(r.Body)
+		_, _ = fmt.Fprintf(w, "%s:%s:%s", r.Method, r.Header.Get("Content-Type"), body)
+	}))
+	defer server.Close()
+
+	body, err := vhttp.PostJSONE(server.URL, `{"ok":true}`)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(body)
+	// Output: POST:application/json;charset=UTF-8:{"ok":true}
+}

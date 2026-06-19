@@ -52,3 +52,29 @@ func ExampleListIPRange() {
 	// [192.0.2.1 192.0.2.2]
 	// <nil>
 }
+
+func ExampleParseCookies() {
+	cookies := vnet.ParseCookies("sid=abc; theme=dark")
+	for _, cookie := range cookies {
+		fmt.Println(cookie.Name, cookie.Value)
+	}
+	// Output:
+	// sid abc
+	// theme dark
+}
+
+func ExampleMatchesWildcard() {
+	fmt.Println(vnet.MatchesWildcard("192.168.*.*", "192.168.1.2"))
+	fmt.Println(vnet.MatchesWildcard("10.0.*.*", "192.168.1.2"))
+	// Output:
+	// true
+	// false
+}
+
+func ExampleIsInRange() {
+	fmt.Println(vnet.IsInRange("192.0.2.10", "192.0.2.0/24"))
+	fmt.Println(vnet.IsInRange("198.51.100.10", "192.0.2.0/24"))
+	// Output:
+	// true
+	// false
+}
