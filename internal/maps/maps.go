@@ -274,6 +274,20 @@ func Map[K1, K2 comparable, V1, V2 any](m map[K1]V1, transform func(K1, V1) (K2,
 	return out
 }
 
+// MapErr transforms each (k, v) into a new pair and stops on the first error.
+// If transform yields duplicate keys, later successful entries win.
+func MapErr[K1, K2 comparable, V1, V2 any](m map[K1]V1, transform func(K1, V1) (K2, V2, error)) (map[K2]V2, error) {
+	out := make(map[K2]V2, len(m))
+	for k, v := range m {
+		k2, v2, err := transform(k, v)
+		if err != nil {
+			return out, err
+		}
+		out[k2] = v2
+	}
+	return out, nil
+}
+
 // MapKeys transforms each key, preserving values.
 func MapKeys[K1, K2 comparable, V any](m map[K1]V, transform func(K1, V) K2) map[K2]V {
 	out := make(map[K2]V, len(m))
@@ -283,6 +297,19 @@ func MapKeys[K1, K2 comparable, V any](m map[K1]V, transform func(K1, V) K2) map
 	return out
 }
 
+// MapKeysErr transforms each key, preserving values, and stops on the first error.
+func MapKeysErr[K1, K2 comparable, V any](m map[K1]V, transform func(K1, V) (K2, error)) (map[K2]V, error) {
+	out := make(map[K2]V, len(m))
+	for k, v := range m {
+		k2, err := transform(k, v)
+		if err != nil {
+			return out, err
+		}
+		out[k2] = v
+	}
+	return out, nil
+}
+
 // MapValues transforms each value, preserving keys.
 func MapValues[K comparable, V1, V2 any](m map[K]V1, transform func(K, V1) V2) map[K]V2 {
 	out := make(map[K]V2, len(m))
@@ -290,6 +317,19 @@ func MapValues[K comparable, V1, V2 any](m map[K]V1, transform func(K, V1) V2) m
 		out[k] = transform(k, v)
 	}
 	return out
+}
+
+// MapValuesErr transforms each value, preserving keys, and stops on the first error.
+func MapValuesErr[K comparable, V1, V2 any](m map[K]V1, transform func(K, V1) (V2, error)) (map[K]V2, error) {
+	out := make(map[K]V2, len(m))
+	for k, v := range m {
+		v2, err := transform(k, v)
+		if err != nil {
+			return out, err
+		}
+		out[k] = v2
+	}
+	return out, nil
 }
 
 // ToSlice transforms each map entry into a slice element.
@@ -311,6 +351,21 @@ func Filter[K comparable, V any](m map[K]V, pred func(K, V) bool) map[K]V {
 		}
 	}
 	return out
+}
+
+// FilterErr returns entries satisfying the predicate and stops on the first error.
+func FilterErr[K comparable, V any](m map[K]V, pred func(K, V) (bool, error)) (map[K]V, error) {
+	out := make(map[K]V)
+	for k, v := range m {
+		keep, err := pred(k, v)
+		if err != nil {
+			return out, err
+		}
+		if keep {
+			out[k] = v
+		}
+	}
+	return out, nil
 }
 
 // Reject returns entries NOT satisfying the predicate.
@@ -370,6 +425,20 @@ func Reduce[K comparable, V, R any](m map[K]V, initial R, fn func(acc R, k K, v 
 		acc = fn(acc, k, v)
 	}
 	return acc
+}
+
+// ReduceErr folds the map into a single value and stops on the first error.
+// The returned accumulator is the last successful accumulator value.
+func ReduceErr[K comparable, V, R any](m map[K]V, initial R, fn func(acc R, k K, v V) (R, error)) (R, error) {
+	acc := initial
+	for k, v := range m {
+		next, err := fn(acc, k, v)
+		if err != nil {
+			return acc, err
+		}
+		acc = next
+	}
+	return acc, nil
 }
 
 // GroupBy groups slice items into a map keyed by the result of keyFn.

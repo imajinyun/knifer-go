@@ -124,6 +124,20 @@ func Map[T, R any](a []T, fn func(T) R) []R {
 	return out
 }
 
+// MapErr maps each element while preserving order and stops on the first error.
+// The returned slice contains values produced before the failing callback.
+func MapErr[T, R any](a []T, fn func(T) (R, error)) ([]R, error) {
+	out := make([]R, 0, len(a))
+	for _, v := range a {
+		mapped, err := fn(v)
+		if err != nil {
+			return out, err
+		}
+		out = append(out, mapped)
+	}
+	return out, nil
+}
+
 // FlatMap maps each element to zero or more values and flattens one level.
 func FlatMap[T, R any](a []T, fn func(T) []R) []R {
 	out := make([]R, 0, len(a))
@@ -140,6 +154,36 @@ func Reduce[T, R any](a []T, initial R, fn func(R, T) R) R {
 		acc = fn(acc, v)
 	}
 	return acc
+}
+
+// FilterErr returns elements for which pred returns true and stops on the first error.
+// The returned slice contains accepted values produced before the failing callback.
+func FilterErr[T any](a []T, pred func(T) (bool, error)) ([]T, error) {
+	out := make([]T, 0, len(a))
+	for _, v := range a {
+		keep, err := pred(v)
+		if err != nil {
+			return out, err
+		}
+		if keep {
+			out = append(out, v)
+		}
+	}
+	return out, nil
+}
+
+// ReduceErr folds a slice from left to right and stops on the first error.
+// The returned accumulator is the last successful accumulator value.
+func ReduceErr[T, R any](a []T, initial R, fn func(R, T) (R, error)) (R, error) {
+	acc := initial
+	for _, v := range a {
+		next, err := fn(acc, v)
+		if err != nil {
+			return acc, err
+		}
+		acc = next
+	}
+	return acc, nil
 }
 
 // ForEach invokes fn for every element in order.
@@ -227,6 +271,52 @@ func Chunk[T any](a []T, size int) [][]T {
 		out = append(out, slices.Clone(a[start:end]))
 	}
 	return out
+}
+
+// Window returns overlapping fixed-size windows with a step of one.
+// Non-positive size or size greater than len(a) returns an empty slice.
+func Window[T any](a []T, size int) [][]T {
+	return Sliding(a, size, 1)
+}
+
+// Sliding returns fixed-size windows advanced by step elements.
+// Non-positive size or step, or size greater than len(a), returns an empty slice.
+func Sliding[T any](a []T, size, step int) [][]T {
+	if size <= 0 || step <= 0 || size > len(a) {
+		return [][]T{}
+	}
+	out := make([][]T, 0, (len(a)-size)/step+1)
+	for start := 0; start+size <= len(a); start += step {
+		out = append(out, slices.Clone(a[start:start+size]))
+	}
+	return out
+}
+
+// Pair stores two typed values for Zip2 and Unzip2.
+type Pair[A, B any] struct {
+	First  A
+	Second B
+}
+
+// Zip2 pairs elements from two slices up to the shorter length.
+func Zip2[A, B any](a []A, b []B) []Pair[A, B] {
+	n := min(len(a), len(b))
+	out := make([]Pair[A, B], 0, n)
+	for i := 0; i < n; i++ {
+		out = append(out, Pair[A, B]{First: a[i], Second: b[i]})
+	}
+	return out
+}
+
+// Unzip2 splits pairs into two slices while preserving pair order.
+func Unzip2[A, B any](pairs []Pair[A, B]) ([]A, []B) {
+	left := make([]A, 0, len(pairs))
+	right := make([]B, 0, len(pairs))
+	for _, pair := range pairs {
+		left = append(left, pair.First)
+		right = append(right, pair.Second)
+	}
+	return left, right
 }
 
 // Flatten flattens one level of nested slices.

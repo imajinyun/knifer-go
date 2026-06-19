@@ -1,6 +1,7 @@
 package slice
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 )
@@ -148,5 +149,72 @@ func TestSliceIterators(t *testing.T) {
 	}
 	if !reflect.DeepEqual(indexed, map[int]string{0: "go", 1: "js", 2: "rust"}) {
 		t.Fatalf("IterIndexed = %v", indexed)
+	}
+}
+
+func TestSliceErrorAwareTransforms(t *testing.T) {
+	boom := errors.New("boom")
+
+	mapped, err := MapErr([]int{1, 2, 3}, func(v int) (string, error) {
+		if v == 3 {
+			return "", boom
+		}
+		return string(rune('a' + v - 1)), nil
+	})
+	if !errors.Is(err, boom) {
+		t.Fatalf("MapErr err = %v, want boom", err)
+	}
+	if !reflect.DeepEqual(mapped, []string{"a", "b"}) {
+		t.Fatalf("MapErr partial = %v", mapped)
+	}
+
+	kept, err := FilterErr([]int{1, 2, 3, 4}, func(v int) (bool, error) {
+		if v == 4 {
+			return false, boom
+		}
+		return v%2 == 1, nil
+	})
+	if !errors.Is(err, boom) {
+		t.Fatalf("FilterErr err = %v, want boom", err)
+	}
+	if !reflect.DeepEqual(kept, []int{1, 3}) {
+		t.Fatalf("FilterErr partial = %v", kept)
+	}
+
+	sum, err := ReduceErr([]int{1, 2, 3}, 0, func(acc, v int) (int, error) {
+		if v == 3 {
+			return acc, boom
+		}
+		return acc + v, nil
+	})
+	if !errors.Is(err, boom) {
+		t.Fatalf("ReduceErr err = %v, want boom", err)
+	}
+	if sum != 3 {
+		t.Fatalf("ReduceErr partial = %d", sum)
+	}
+}
+
+func TestSliceWindowZipHelpers(t *testing.T) {
+	if got := Window([]int{1, 2, 3, 4}, 3); !reflect.DeepEqual(got, [][]int{{1, 2, 3}, {2, 3, 4}}) {
+		t.Fatalf("Window = %v", got)
+	}
+	if got := Window([]int{1, 2}, 3); !reflect.DeepEqual(got, [][]int{}) {
+		t.Fatalf("Window larger than slice = %v", got)
+	}
+	if got := Sliding([]int{1, 2, 3, 4, 5}, 2, 2); !reflect.DeepEqual(got, [][]int{{1, 2}, {3, 4}}) {
+		t.Fatalf("Sliding = %v", got)
+	}
+	if got := Sliding([]int{1, 2, 3}, 2, 0); !reflect.DeepEqual(got, [][]int{}) {
+		t.Fatalf("Sliding zero step = %v", got)
+	}
+
+	pairs := Zip2([]string{"a", "b", "c"}, []int{1, 2})
+	if !reflect.DeepEqual(pairs, []Pair[string, int]{{First: "a", Second: 1}, {First: "b", Second: 2}}) {
+		t.Fatalf("Zip2 = %v", pairs)
+	}
+	left, right := Unzip2(pairs)
+	if !reflect.DeepEqual(left, []string{"a", "b"}) || !reflect.DeepEqual(right, []int{1, 2}) {
+		t.Fatalf("Unzip2 left=%v right=%v", left, right)
 	}
 }

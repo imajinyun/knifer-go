@@ -78,12 +78,24 @@ func Map[K1, K2 comparable, V1, V2 any](m map[K1]V1, transform func(K1, V1) (K2,
 	return mapsimpl.Map(m, transform)
 }
 
+func MapErr[K1, K2 comparable, V1, V2 any](m map[K1]V1, transform func(K1, V1) (K2, V2, error)) (map[K2]V2, error) {
+	return mapsimpl.MapErr(m, transform)
+}
+
 func MapKeys[K1, K2 comparable, V any](m map[K1]V, transform func(K1, V) K2) map[K2]V {
 	return mapsimpl.MapKeys(m, transform)
 }
 
+func MapKeysErr[K1, K2 comparable, V any](m map[K1]V, transform func(K1, V) (K2, error)) (map[K2]V, error) {
+	return mapsimpl.MapKeysErr(m, transform)
+}
+
 func MapValues[K comparable, V1, V2 any](m map[K]V1, transform func(K, V1) V2) map[K]V2 {
 	return mapsimpl.MapValues(m, transform)
+}
+
+func MapValuesErr[K comparable, V1, V2 any](m map[K]V1, transform func(K, V1) (V2, error)) (map[K]V2, error) {
+	return mapsimpl.MapValuesErr(m, transform)
 }
 
 func ToSlice[K comparable, V, R any](m map[K]V, transform func(K, V) R) []R {
@@ -92,6 +104,10 @@ func ToSlice[K comparable, V, R any](m map[K]V, transform func(K, V) R) []R {
 
 func Filter[K comparable, V any](m map[K]V, pred func(K, V) bool) map[K]V {
 	return mapsimpl.Filter(m, pred)
+}
+
+func FilterErr[K comparable, V any](m map[K]V, pred func(K, V) (bool, error)) (map[K]V, error) {
+	return mapsimpl.FilterErr(m, pred)
 }
 
 func Reject[K comparable, V any](m map[K]V, pred func(K, V) bool) map[K]V {
@@ -120,6 +136,10 @@ func Partition[K comparable, V any](m map[K]V, pred func(K, V) bool) (map[K]V, m
 func ForEach[K comparable, V any](m map[K]V, fn func(K, V)) { mapsimpl.ForEach(m, fn) }
 func Reduce[K comparable, V, R any](m map[K]V, initial R, fn func(R, K, V) R) R {
 	return mapsimpl.Reduce(m, initial, fn)
+}
+
+func ReduceErr[K comparable, V, R any](m map[K]V, initial R, fn func(R, K, V) (R, error)) (R, error) {
+	return mapsimpl.ReduceErr(m, initial, fn)
 }
 
 func GroupBy[T any, K comparable](items []T, keyFn func(T) K) map[K][]T {

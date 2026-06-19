@@ -50,6 +50,47 @@ func BenchmarkMap(b *testing.B) {
 	}
 }
 
+func BenchmarkMapErr(b *testing.B) {
+	for _, tt := range sliceBenchSizes() {
+		values := makeBenchSlice(tt.size)
+		b.Run(tt.name, func(b *testing.B) {
+			b.ReportAllocs()
+			for b.Loop() {
+				result, err := MapErr(values, func(v int) (int, error) { return v * 2, nil })
+				if err != nil {
+					b.Fatal(err)
+				}
+				benchSliceResult = result
+			}
+		})
+	}
+}
+
+func BenchmarkWindow(b *testing.B) {
+	for _, tt := range sliceBenchSizes() {
+		values := makeBenchSlice(tt.size)
+		b.Run(tt.name, func(b *testing.B) {
+			b.ReportAllocs()
+			for b.Loop() {
+				benchSliceResult = Window(values, 8)
+			}
+		})
+	}
+}
+
+func BenchmarkZip2(b *testing.B) {
+	for _, tt := range sliceBenchSizes() {
+		left := makeBenchSlice(tt.size)
+		right := makeBenchSlice(tt.size)
+		b.Run(tt.name, func(b *testing.B) {
+			b.ReportAllocs()
+			for b.Loop() {
+				benchSliceResult = Zip2(left, right)
+			}
+		})
+	}
+}
+
 func BenchmarkUniq(b *testing.B) {
 	for _, tt := range sliceBenchSizes() {
 		values := makeBenchSlice(tt.size)

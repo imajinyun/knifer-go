@@ -1,6 +1,7 @@
 package maps
 
 import (
+	"errors"
 	"slices"
 	"strconv"
 	"strings"
@@ -69,4 +70,60 @@ func TestToSlice(t *testing.T) {
 	})
 	assert.NotNil(t, nilMap)
 	assert.Empty(t, nilMap)
+}
+
+func TestErrorAwareTransforms(t *testing.T) {
+	boom := errors.New("boom")
+	m := map[string]int{"a": 1}
+
+	mapped, err := MapErr(m, func(k string, v int) (string, string, error) {
+		return strings.ToUpper(k), strconv.Itoa(v), nil
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, map[string]string{"A": "1"}, mapped)
+
+	keys, err := MapKeysErr(m, func(k string, v int) (string, error) {
+		return strings.ToUpper(k), nil
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, map[string]int{"A": 1}, keys)
+
+	values, err := MapValuesErr(m, func(k string, v int) (string, error) {
+		return strconv.Itoa(v), nil
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, map[string]string{"a": "1"}, values)
+
+	filtered, err := FilterErr(m, func(k string, v int) (bool, error) {
+		return v%2 == 1, nil
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, map[string]int{"a": 1}, filtered)
+
+	sum, err := ReduceErr(m, 0, func(acc int, k string, v int) (int, error) {
+		return acc + v, nil
+	})
+	assert.NoError(t, err)
+	assert.Equal(t, 1, sum)
+
+	_, err = MapErr(map[string]int{"a": 1}, func(k string, v int) (string, string, error) {
+		return "", "", boom
+	})
+	assert.True(t, errors.Is(err, boom))
+	_, err = MapKeysErr(map[string]int{"a": 1}, func(k string, v int) (string, error) {
+		return "", boom
+	})
+	assert.True(t, errors.Is(err, boom))
+	_, err = MapValuesErr(map[string]int{"a": 1}, func(k string, v int) (string, error) {
+		return "", boom
+	})
+	assert.True(t, errors.Is(err, boom))
+	_, err = FilterErr(map[string]int{"a": 1}, func(k string, v int) (bool, error) {
+		return false, boom
+	})
+	assert.True(t, errors.Is(err, boom))
+	_, err = ReduceErr(map[string]int{"a": 1}, 0, func(acc int, k string, v int) (int, error) {
+		return acc, boom
+	})
+	assert.True(t, errors.Is(err, boom))
 }

@@ -65,6 +65,37 @@ func main() {
 }
 ```
 
+## Error-aware transforms and windows
+
+Use `MapErr`, `FilterErr`, and `ReduceErr` when a callback can fail and the
+caller should stop on the first error. Use `Window` for overlapping windows,
+`Sliding` for stepped windows, and `Zip2` / `Unzip2` for typed pairing without
+reflection.
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/imajinyun/go-knifer/vslice"
+)
+
+func main() {
+	lengths, err := vslice.MapErr([]string{"go", "knifer"}, func(s string) (int, error) {
+		return len(s), nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(lengths)
+	fmt.Println(vslice.Window([]int{1, 2, 3, 4}, 3))
+	fmt.Println(vslice.Sliding([]int{1, 2, 3, 4, 5}, 2, 2))
+	fmt.Println(vslice.Zip2([]string{"a", "b"}, []int{1, 2, 3}))
+}
+```
+
 ## Iterate with Go 1.23 range adapters
 
 `Iter` yields values in slice index order. `IterIndexed` yields index-value pairs

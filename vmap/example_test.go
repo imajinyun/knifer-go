@@ -27,6 +27,46 @@ func ExampleMerge() {
 	// Output: 1 2
 }
 
+func ExampleMapErr() {
+	mapped, err := vmap.MapErr(map[string]int{"a": 1}, func(k string, v int) (string, string, error) {
+		return k + k, fmt.Sprint(v), nil
+	})
+	fmt.Println(mapped["aa"], err)
+	// Output: 1 <nil>
+}
+
+func ExampleMapKeysErr() {
+	mapped, err := vmap.MapKeysErr(map[string]int{"a": 1}, func(k string, v int) (string, error) {
+		return k + "!", nil
+	})
+	fmt.Println(mapped["a!"], err)
+	// Output: 1 <nil>
+}
+
+func ExampleMapValuesErr() {
+	mapped, err := vmap.MapValuesErr(map[string]int{"a": 1}, func(k string, v int) (string, error) {
+		return fmt.Sprintf("%s=%d", k, v), nil
+	})
+	fmt.Println(mapped["a"], err)
+	// Output: a=1 <nil>
+}
+
+func ExampleFilterErr() {
+	filtered, err := vmap.FilterErr(map[string]int{"a": 1, "b": 2}, func(k string, v int) (bool, error) {
+		return v%2 == 1, nil
+	})
+	fmt.Println(filtered["a"], filtered["b"], err)
+	// Output: 1 0 <nil>
+}
+
+func ExampleReduceErr() {
+	sum, err := vmap.ReduceErr(map[string]int{"a": 1}, 0, func(acc int, k string, v int) (int, error) {
+		return acc + v, nil
+	})
+	fmt.Println(sum, err)
+	// Output: 1 <nil>
+}
+
 func ExampleIter() {
 	m := map[string]int{"b": 2, "a": 1}
 	items := make([]string, 0, len(m))

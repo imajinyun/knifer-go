@@ -3,15 +3,15 @@
   "module": "github.com/imajinyun/go-knifer",
   "summary": {
     "package_count": 48,
-    "function_count": 2528,
-    "functions_with_examples": 241,
+    "function_count": 2540,
+    "functions_with_examples": 253,
     "context_aware_functions": 20,
-    "returns_error_functions": 564,
+    "returns_error_functions": 572,
     "variadic_functions": 754,
     "synopsis_sources": {
       "empty": 0,
       "facade": 1903,
-      "internal": 625
+      "internal": 637
     }
   },
   "packages": [
@@ -24945,13 +24945,13 @@
       "name": "vmap",
       "synopsis": "Package vmap provides public APIs for map utilities.",
       "summary": {
-        "function_count": 60,
-        "functions_with_examples": 6,
-        "example_coverage_percent": 10,
+        "function_count": 65,
+        "functions_with_examples": 11,
+        "example_coverage_percent": 16.9,
         "synopsis_sources": {
           "empty": 0,
           "facade": 4,
-          "internal": 56
+          "internal": 61
         }
       },
       "functions": [
@@ -25203,6 +25203,32 @@
           "returns_error": false,
           "context_aware": false,
           "variadic": false
+        },
+        {
+          "name": "FilterErr",
+          "signature": "func FilterErr[K comparable, V any](m map[K]V, pred func(K, V) (bool, error)) (map[K]V, error)",
+          "synopsis": "FilterErr returns entries satisfying the predicate and stops on the first error.",
+          "synopsis_source": "internal",
+          "params": [
+            {
+              "name": "m",
+              "type": "map[K]V"
+            },
+            {
+              "name": "pred",
+              "type": "func(K, V) (bool, error)"
+            }
+          ],
+          "results": [
+            "map[K]V",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleFilterErr"
+          ]
         },
         {
           "name": "FilterKeys",
@@ -25665,6 +25691,32 @@
           "variadic": false
         },
         {
+          "name": "MapErr",
+          "signature": "func MapErr[K1 comparable, K2 comparable, V1 any, V2 any](m map[K1]V1, transform func(K1, V1) (K2, V2, error)) (map[K2]V2, error)",
+          "synopsis": "MapErr transforms each (k, v) into a new pair and stops on the first error.",
+          "synopsis_source": "internal",
+          "params": [
+            {
+              "name": "m",
+              "type": "map[K1]V1"
+            },
+            {
+              "name": "transform",
+              "type": "func(K1, V1) (K2, V2, error)"
+            }
+          ],
+          "results": [
+            "map[K2]V2",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleMapErr"
+          ]
+        },
+        {
           "name": "MapKeys",
           "signature": "func MapKeys[K1 comparable, K2 comparable, V any](m map[K1]V, transform func(K1, V) K2) map[K2]V",
           "synopsis": "MapKeys transforms each key, preserving values.",
@@ -25687,6 +25739,32 @@
           "variadic": false
         },
         {
+          "name": "MapKeysErr",
+          "signature": "func MapKeysErr[K1 comparable, K2 comparable, V any](m map[K1]V, transform func(K1, V) (K2, error)) (map[K2]V, error)",
+          "synopsis": "MapKeysErr transforms each key, preserving values, and stops on the first error.",
+          "synopsis_source": "internal",
+          "params": [
+            {
+              "name": "m",
+              "type": "map[K1]V"
+            },
+            {
+              "name": "transform",
+              "type": "func(K1, V) (K2, error)"
+            }
+          ],
+          "results": [
+            "map[K2]V",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleMapKeysErr"
+          ]
+        },
+        {
           "name": "MapValues",
           "signature": "func MapValues[K comparable, V1 any, V2 any](m map[K]V1, transform func(K, V1) V2) map[K]V2",
           "synopsis": "MapValues transforms each value, preserving keys.",
@@ -25707,6 +25785,32 @@
           "returns_error": false,
           "context_aware": false,
           "variadic": false
+        },
+        {
+          "name": "MapValuesErr",
+          "signature": "func MapValuesErr[K comparable, V1 any, V2 any](m map[K]V1, transform func(K, V1) (V2, error)) (map[K]V2, error)",
+          "synopsis": "MapValuesErr transforms each value, preserving keys, and stops on the first error.",
+          "synopsis_source": "internal",
+          "params": [
+            {
+              "name": "m",
+              "type": "map[K]V1"
+            },
+            {
+              "name": "transform",
+              "type": "func(K, V1) (V2, error)"
+            }
+          ],
+          "results": [
+            "map[K]V2",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleMapValuesErr"
+          ]
         },
         {
           "name": "Merge",
@@ -26010,6 +26114,36 @@
           "returns_error": false,
           "context_aware": false,
           "variadic": false
+        },
+        {
+          "name": "ReduceErr",
+          "signature": "func ReduceErr[K comparable, V any, R any](m map[K]V, initial R, fn func(R, K, V) (R, error)) (R, error)",
+          "synopsis": "ReduceErr folds the map into a single value and stops on the first error.",
+          "synopsis_source": "internal",
+          "params": [
+            {
+              "name": "m",
+              "type": "map[K]V"
+            },
+            {
+              "name": "initial",
+              "type": "R"
+            },
+            {
+              "name": "fn",
+              "type": "func(R, K, V) (R, error)"
+            }
+          ],
+          "results": [
+            "R",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleReduceErr"
+          ]
         },
         {
           "name": "Reject",
@@ -42844,13 +42978,13 @@
       "name": "vslice",
       "synopsis": "Package vslice provides public APIs for slice utilities.",
       "summary": {
-        "function_count": 36,
-        "functions_with_examples": 7,
-        "example_coverage_percent": 19.4,
+        "function_count": 43,
+        "functions_with_examples": 14,
+        "example_coverage_percent": 32.6,
         "synopsis_sources": {
           "empty": 0,
           "facade": 0,
-          "internal": 36
+          "internal": 43
         }
       },
       "functions": [
@@ -43025,6 +43159,32 @@
           "variadic": false,
           "examples": [
             "ExampleFilter"
+          ]
+        },
+        {
+          "name": "FilterErr",
+          "signature": "func FilterErr[T any](a []T, pred func(T) (bool, error)) ([]T, error)",
+          "synopsis": "FilterErr returns elements for which pred returns true and stops on the first error.",
+          "synopsis_source": "internal",
+          "params": [
+            {
+              "name": "a",
+              "type": "[]T"
+            },
+            {
+              "name": "pred",
+              "type": "func(T) (bool, error)"
+            }
+          ],
+          "results": [
+            "[]T",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleFilterErr"
           ]
         },
         {
@@ -43389,6 +43549,32 @@
           ]
         },
         {
+          "name": "MapErr",
+          "signature": "func MapErr[T any, R any](a []T, fn func(T) (R, error)) ([]R, error)",
+          "synopsis": "MapErr maps each element while preserving order and stops on the first error.",
+          "synopsis_source": "internal",
+          "params": [
+            {
+              "name": "a",
+              "type": "[]T"
+            },
+            {
+              "name": "fn",
+              "type": "func(T) (R, error)"
+            }
+          ],
+          "results": [
+            "[]R",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleMapErr"
+          ]
+        },
+        {
           "name": "Page",
           "signature": "func Page[T any](a []T, pageNo int, pageSize int) []T",
           "synopsis": "Page returns one page from a slice.",
@@ -43463,6 +43649,36 @@
           "variadic": false
         },
         {
+          "name": "ReduceErr",
+          "signature": "func ReduceErr[T any, R any](a []T, initial R, fn func(R, T) (R, error)) (R, error)",
+          "synopsis": "ReduceErr folds a slice from left to right and stops on the first error.",
+          "synopsis_source": "internal",
+          "params": [
+            {
+              "name": "a",
+              "type": "[]T"
+            },
+            {
+              "name": "initial",
+              "type": "R"
+            },
+            {
+              "name": "fn",
+              "type": "func(R, T) (R, error)"
+            }
+          ],
+          "results": [
+            "R",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleReduceErr"
+          ]
+        },
+        {
           "name": "Reject",
           "signature": "func Reject[T any](a []T, pred func(T) bool) []T",
           "synopsis": "Reject returns elements for which pred returns false.",
@@ -43523,6 +43739,35 @@
           "returns_error": false,
           "context_aware": false,
           "variadic": false
+        },
+        {
+          "name": "Sliding",
+          "signature": "func Sliding[T any](a []T, size int, step int) [][]T",
+          "synopsis": "Sliding returns fixed-size windows advanced by step elements.",
+          "synopsis_source": "internal",
+          "params": [
+            {
+              "name": "a",
+              "type": "[]T"
+            },
+            {
+              "name": "size",
+              "type": "int"
+            },
+            {
+              "name": "step",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "[][]T"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleSliding"
+          ]
         },
         {
           "name": "Sub",
@@ -43636,6 +43881,78 @@
           "returns_error": false,
           "context_aware": false,
           "variadic": false
+        },
+        {
+          "name": "Unzip2",
+          "signature": "func Unzip2[A any, B any](pairs []Pair[A, B]) ([]A, []B)",
+          "synopsis": "Unzip2 splits pairs into two slices while preserving pair order.",
+          "synopsis_source": "internal",
+          "params": [
+            {
+              "name": "pairs",
+              "type": "[]Pair[A, B]"
+            }
+          ],
+          "results": [
+            "[]A",
+            "[]B"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleUnzip2"
+          ]
+        },
+        {
+          "name": "Window",
+          "signature": "func Window[T any](a []T, size int) [][]T",
+          "synopsis": "Window returns overlapping fixed-size windows with a step of one.",
+          "synopsis_source": "internal",
+          "params": [
+            {
+              "name": "a",
+              "type": "[]T"
+            },
+            {
+              "name": "size",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "[][]T"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleWindow"
+          ]
+        },
+        {
+          "name": "Zip2",
+          "signature": "func Zip2[A any, B any](a []A, b []B) []Pair[A, B]",
+          "synopsis": "Zip2 pairs elements from two slices up to the shorter length.",
+          "synopsis_source": "internal",
+          "params": [
+            {
+              "name": "a",
+              "type": "[]A"
+            },
+            {
+              "name": "b",
+              "type": "[]B"
+            }
+          ],
+          "results": [
+            "[]Pair[A, B]"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleZip2"
+          ]
         }
       ]
     },

@@ -11,13 +11,13 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Schema | 1.4 |
 | Module | `github.com/imajinyun/go-knifer` |
 | Packages | 48 |
-| Functions | 2528 |
-| Functions with examples | 241 |
+| Functions | 2540 |
+| Functions with examples | 253 |
 | Context-aware functions | 20 |
-| Functions returning error | 564 |
+| Functions returning error | 572 |
 | Variadic functions | 754 |
 | Synopsis source: facade | 1903 |
-| Synopsis source: internal | 625 |
+| Synopsis source: internal | 637 |
 | Synopsis source: empty | 0 |
 
 ## Packages
@@ -1511,7 +1511,7 @@ Import path: `github.com/imajinyun/go-knifer/vmap`
 
 Package vmap provides public APIs for map utilities.
 
-Quality: 60 functions · 6 with examples · 10.0% example coverage · synopsis sources: facade=4, internal=56, empty=0
+Quality: 65 functions · 11 with examples · 16.9% example coverage · synopsis sources: facade=4, internal=61, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -1527,6 +1527,7 @@ Quality: 60 functions · 6 with examples · 10.0% example coverage · synopsis s
 | `EqualFunc` | `func EqualFunc[K comparable, V1 any, V2 any](a map[K]V1, b map[K]V2, eq func(V1, V2) bool) bool` | EqualFunc reports whether two maps contain the same keys and pairwise-equivalent values per eq. | internal | — |
 | `Every` | `func Every[K comparable, V any](m map[K]V, pred func(K, V) bool) bool` | Every reports whether every entry satisfies the predicate. | internal | — |
 | `Filter` | `func Filter[K comparable, V any](m map[K]V, pred func(K, V) bool) map[K]V` | Filter returns entries satisfying the predicate. | internal | — |
+| `FilterErr` | `func FilterErr[K comparable, V any](m map[K]V, pred func(K, V) (bool, error)) (map[K]V, error)` | FilterErr returns entries satisfying the predicate and stops on the first error. | internal | `ExampleFilterErr` |
 | `FilterKeys` | `func FilterKeys[K comparable, V any](m map[K]V, pred func(K) bool) map[K]V` | FilterKeys keeps entries whose key satisfies the predicate. | internal | — |
 | `FilterValues` | `func FilterValues[K comparable, V any](m map[K]V, pred func(V) bool) map[K]V` | FilterValues keeps entries whose value satisfies the predicate. | internal | — |
 | `Find` | `func Find[K comparable, V any](m map[K]V, pred func(K, V) bool) (K, V, bool)` | Find returns the first (key, value) satisfying the predicate, plus a found flag. | internal | — |
@@ -1549,8 +1550,11 @@ Quality: 60 functions · 6 with examples · 10.0% example coverage · synopsis s
 | `Keys` | `func Keys[K comparable, V any](m map[K]V) []K` | Keys returns all keys. | internal | — |
 | `KeysOf` | `func KeysOf[K comparable, V comparable](m map[K]V, target V) []K` | KeysOf returns all keys whose value equals target. | internal | — |
 | `Map` | `func Map[K1 comparable, K2 comparable, V1 any, V2 any](m map[K1]V1, transform func(K1, V1) (K2, V2)) map[K2]V2` | Map transforms each (k, v) into a new pair (k2, v2). | internal | — |
+| `MapErr` | `func MapErr[K1 comparable, K2 comparable, V1 any, V2 any](m map[K1]V1, transform func(K1, V1) (K2, V2, error)) (map[K2]V2, error)` | MapErr transforms each (k, v) into a new pair and stops on the first error. | internal | `ExampleMapErr` |
 | `MapKeys` | `func MapKeys[K1 comparable, K2 comparable, V any](m map[K1]V, transform func(K1, V) K2) map[K2]V` | MapKeys transforms each key, preserving values. | internal | — |
+| `MapKeysErr` | `func MapKeysErr[K1 comparable, K2 comparable, V any](m map[K1]V, transform func(K1, V) (K2, error)) (map[K2]V, error)` | MapKeysErr transforms each key, preserving values, and stops on the first error. | internal | `ExampleMapKeysErr` |
 | `MapValues` | `func MapValues[K comparable, V1 any, V2 any](m map[K]V1, transform func(K, V1) V2) map[K]V2` | MapValues transforms each value, preserving keys. | internal | — |
+| `MapValuesErr` | `func MapValuesErr[K comparable, V1 any, V2 any](m map[K]V1, transform func(K, V1) (V2, error)) (map[K]V2, error)` | MapValuesErr transforms each value, preserving keys, and stops on the first error. | internal | `ExampleMapValuesErr` |
 | `Merge` | `func Merge[K comparable, V any](maps ...map[K]V) map[K]V` | Merge returns the union of the given maps. | internal | `ExampleMerge` |
 | `MergeFunc` | `func MergeFunc[K comparable, V any](resolve func(old V, new V) V, maps ...map[K]V) map[K]V` | MergeFunc is like Merge but resolves conflicts via the supplied function. | internal | — |
 | `MergeWithOverwrite` | `func MergeWithOverwrite[K comparable, V any](dstMap map[K]V, srcMaps ...map[K]V)` | MergeWithOverwrite merges srcMaps into dstMap in place. | internal | — |
@@ -1566,6 +1570,7 @@ Quality: 60 functions · 6 with examples · 10.0% example coverage · synopsis s
 | `Pick` | `func Pick[K comparable, V any](m map[K]V, keys ...K) map[K]V` | Pick returns a new map containing only the requested keys. | internal | — |
 | `PickBy` | `func PickBy[K comparable, V any](m map[K]V, pred func(K, V) bool) map[K]V` | PickBy returns entries satisfying the predicate. | internal | — |
 | `Reduce` | `func Reduce[K comparable, V any, R any](m map[K]V, initial R, fn func(R, K, V) R) R` | Reduce folds the map into a single value. | internal | — |
+| `ReduceErr` | `func ReduceErr[K comparable, V any, R any](m map[K]V, initial R, fn func(R, K, V) (R, error)) (R, error)` | ReduceErr folds the map into a single value and stops on the first error. | internal | `ExampleReduceErr` |
 | `Reject` | `func Reject[K comparable, V any](m map[K]V, pred func(K, V) bool) map[K]V` | Reject returns entries NOT satisfying the predicate. | internal | — |
 | `Some` | `func Some[K comparable, V any](m map[K]V, pred func(K, V) bool) bool` | Some reports whether at least one entry satisfies the predicate. | internal | — |
 | `SortedKeys` | `func SortedKeys[K cmp.Ordered, V any](m map[K]V) []K` | SortedKeys returns all keys sorted in ascending order. | internal | — |
@@ -2504,7 +2509,7 @@ Import path: `github.com/imajinyun/go-knifer/vslice`
 
 Package vslice provides public APIs for slice utilities.
 
-Quality: 36 functions · 7 with examples · 19.4% example coverage · synopsis sources: facade=0, internal=36, empty=0
+Quality: 43 functions · 14 with examples · 32.6% example coverage · synopsis sources: facade=0, internal=43, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -2516,6 +2521,7 @@ Quality: 36 functions · 7 with examples · 19.4% example coverage · synopsis s
 | `CountBy` | `func CountBy[T any, K comparable](a []T, keyFn func(T) K) map[K]int` | CountBy counts slice items grouped by keyFn. | internal | — |
 | `Distinct` | `func Distinct[T comparable](a []T) []T` | Distinct removes duplicates while preserving the first occurrence order. | internal | `ExampleDistinct` |
 | `Filter` | `func Filter[T any](a []T, pred func(T) bool) []T` | Filter returns elements for which pred returns true. | internal | `ExampleFilter` |
+| `FilterErr` | `func FilterErr[T any](a []T, pred func(T) (bool, error)) ([]T, error)` | FilterErr returns elements for which pred returns true and stops on the first error. | internal | `ExampleFilterErr` |
 | `FilterMap` | `func FilterMap[T any, R any](a []T, fn func(T) (R, bool)) []R` | FilterMap transforms elements and keeps only values explicitly accepted by fn. | internal | — |
 | `Find` | `func Find[T any](a []T, pred func(T) bool) (T, bool)` | Find returns the first element satisfying pred. | internal | — |
 | `FindIndex` | `func FindIndex[T any](a []T, pred func(T) bool) int` | FindIndex returns the first index satisfying pred, or -1 when absent. | internal | — |
@@ -2533,17 +2539,23 @@ Quality: 36 functions · 7 with examples · 19.4% example coverage · synopsis s
 | `KeyBy` | `func KeyBy[T any, K comparable](a []T, keyFn func(T) K) map[K]T` | KeyBy builds a map from keyFn(item) to item. | internal | — |
 | `LastIndexOf` | `func LastIndexOf[T comparable](a []T, v T) int` | LastIndexOf returns the last index of v, or -1 when v is absent. | internal | — |
 | `Map` | `func Map[T any, R any](a []T, fn func(T) R) []R` | Map maps each element to another value while preserving order. | internal | `ExampleMap` |
+| `MapErr` | `func MapErr[T any, R any](a []T, fn func(T) (R, error)) ([]R, error)` | MapErr maps each element while preserving order and stops on the first error. | internal | `ExampleMapErr` |
 | `Page` | `func Page[T any](a []T, pageNo int, pageSize int) []T` | Page returns one page from a slice. | internal | — |
 | `PartitionBy` | `func PartitionBy[T any, K comparable](a []T, keyFn func(T) K) [][]T` | PartitionBy groups adjacent items that share the same key returned by keyFn. | internal | — |
 | `Reduce` | `func Reduce[T any, R any](a []T, initial R, fn func(R, T) R) R` | Reduce folds a slice from left to right. | internal | — |
+| `ReduceErr` | `func ReduceErr[T any, R any](a []T, initial R, fn func(R, T) (R, error)) (R, error)` | ReduceErr folds a slice from left to right and stops on the first error. | internal | `ExampleReduceErr` |
 | `Reject` | `func Reject[T any](a []T, pred func(T) bool) []T` | Reject returns elements for which pred returns false. | internal | — |
 | `Reverse` | `func Reverse[T any](a []T) []T` | Reverse reverses the input slice in place and returns the same slice. | internal | — |
 | `SliceToMap` | `func SliceToMap[T any, K comparable, V any](a []T, transform func(T) (K, V)) map[K]V` | SliceToMap is an alias of Associate for callers familiar with lo-style naming. | internal | — |
+| `Sliding` | `func Sliding[T any](a []T, size int, step int) [][]T` | Sliding returns fixed-size windows advanced by step elements. | internal | `ExampleSliding` |
 | `Sub` | `func Sub[T any](a []T, fromIndex int, toIndex int) []T` | Sub returns a copied sub-slice and supports negative indexes. | internal | — |
 | `Subtract` | `func Subtract[T comparable](a []T, b []T) []T` | Subtract returns the set difference a - b while preserving the order from a. | internal | — |
 | `Union` | `func Union[T comparable](a []T, b []T) []T` | Union returns the deduplicated union of a and b. | internal | `ExampleUnion` |
 | `Uniq` | `func Uniq[T comparable](a []T) []T` | Uniq removes duplicates while preserving the first occurrence order. | internal | — |
 | `UniqBy` | `func UniqBy[T any, K comparable](a []T, keyFn func(T) K) []T` | UniqBy removes duplicates by key while preserving the first occurrence order. | internal | — |
+| `Unzip2` | `func Unzip2[A any, B any](pairs []Pair[A, B]) ([]A, []B)` | Unzip2 splits pairs into two slices while preserving pair order. | internal | `ExampleUnzip2` |
+| `Window` | `func Window[T any](a []T, size int) [][]T` | Window returns overlapping fixed-size windows with a step of one. | internal | `ExampleWindow` |
+| `Zip2` | `func Zip2[A any, B any](a []A, b []B) []Pair[A, B]` | Zip2 pairs elements from two slices up to the shorter length. | internal | `ExampleZip2` |
 
 ### vstr
 

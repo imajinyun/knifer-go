@@ -38,6 +38,38 @@ func BenchmarkFilter(b *testing.B) {
 	}
 }
 
+func BenchmarkFilterErr(b *testing.B) {
+	for _, tt := range mapBenchSizes() {
+		m := makeBenchMap(tt.size)
+		b.Run(tt.name, func(b *testing.B) {
+			b.ReportAllocs()
+			for b.Loop() {
+				result, err := FilterErr(m, func(_ int, v int) (bool, error) { return v%2 == 0, nil })
+				if err != nil {
+					b.Fatal(err)
+				}
+				benchMapResult = result
+			}
+		})
+	}
+}
+
+func BenchmarkMapValuesErr(b *testing.B) {
+	for _, tt := range mapBenchSizes() {
+		m := makeBenchMap(tt.size)
+		b.Run(tt.name, func(b *testing.B) {
+			b.ReportAllocs()
+			for b.Loop() {
+				result, err := MapValuesErr(m, func(_ int, v int) (int, error) { return v * 2, nil })
+				if err != nil {
+					b.Fatal(err)
+				}
+				benchMapResult = result
+			}
+		})
+	}
+}
+
 func BenchmarkSortedKeys(b *testing.B) {
 	for _, tt := range mapBenchSizes() {
 		m := makeBenchMap(tt.size)

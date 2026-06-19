@@ -2,6 +2,7 @@ package vmap
 
 import (
 	"cmp"
+	"errors"
 	"reflect"
 	"slices"
 	"testing"
@@ -105,6 +106,72 @@ func TestMapLoStyleFacades(t *testing.T) {
 	}
 	if got := Invert(map[string]int{"a": 1, "b": 2}); !reflect.DeepEqual(got, map[int]string{1: "a", 2: "b"}) {
 		t.Fatalf("Invert = %#v", got)
+	}
+}
+
+func TestMapErrorAwareFacades(t *testing.T) {
+	boom := errors.New("boom")
+	m := map[string]int{"a": 1}
+
+	mapped, err := MapErr(m, func(k string, v int) (string, string, error) {
+		return k + k, string(rune('0' + v)), nil
+	})
+	if err != nil || !reflect.DeepEqual(mapped, map[string]string{"aa": "1"}) {
+		t.Fatalf("MapErr = %#v, %v", mapped, err)
+	}
+
+	keys, err := MapKeysErr(m, func(k string, _ int) (string, error) {
+		return k + "!", nil
+	})
+	if err != nil || !reflect.DeepEqual(keys, map[string]int{"a!": 1}) {
+		t.Fatalf("MapKeysErr = %#v, %v", keys, err)
+	}
+
+	values, err := MapValuesErr(m, func(k string, v int) (string, error) {
+		return string(rune('A' + v)), nil
+	})
+	if err != nil || !reflect.DeepEqual(values, map[string]string{"a": "B"}) {
+		t.Fatalf("MapValuesErr = %#v, %v", values, err)
+	}
+
+	filtered, err := FilterErr(m, func(k string, v int) (bool, error) {
+		return v%2 == 1, nil
+	})
+	if err != nil || !reflect.DeepEqual(filtered, map[string]int{"a": 1}) {
+		t.Fatalf("FilterErr = %#v, %v", filtered, err)
+	}
+
+	sum, err := ReduceErr(m, 0, func(acc int, k string, v int) (int, error) {
+		return acc + v, nil
+	})
+	if err != nil || sum != 1 {
+		t.Fatalf("ReduceErr = %d, %v", sum, err)
+	}
+
+	if _, err := MapErr(map[string]int{"a": 1}, func(k string, v int) (string, string, error) {
+		return "", "", boom
+	}); !errors.Is(err, boom) {
+		t.Fatalf("MapErr error = %v", err)
+	}
+	if _, err := MapKeysErr(map[string]int{"a": 1}, func(k string, v int) (string, error) {
+		return "", boom
+	}); !errors.Is(err, boom) {
+		t.Fatalf("MapKeysErr error = %v", err)
+	}
+	if _, err := MapValuesErr(map[string]int{"a": 1}, func(k string, v int) (string, error) {
+		return "", boom
+	}); !errors.Is(err, boom) {
+		t.Fatalf("MapValuesErr error = %v", err)
+	}
+	if _, err := FilterErr(map[string]int{"a": 1}, func(k string, v int) (bool, error) {
+		return false, boom
+	}); !errors.Is(err, boom) {
+		t.Fatalf("FilterErr error = %v", err)
+	}
+	if _, err := ReduceErr(map[string]int{"a": 1}, 0, func(acc int, k string, v int) (int, error) {
+		return acc, boom
+	}); !errors.Is(err, boom) {
+		t.Fatalf("ReduceErr error = %v", err)
 	}
 }
 

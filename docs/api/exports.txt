@@ -1847,6 +1847,7 @@ github.com/imajinyun/go-knifer/vmap
   func EqualFunc[K comparable, V1 any, V2 any](a map[K]V1, b map[K]V2, eq func(V1, V2) bool) bool
   func Equal[K comparable, V comparable](a map[K]V, b map[K]V) bool
   func Every[K comparable, V any](m map[K]V, pred func(K, V) bool) bool
+  func FilterErr[K comparable, V any](m map[K]V, pred func(K, V) (bool, error)) (map[K]V, error)
   func FilterKeys[K comparable, V any](m map[K]V, pred func(K) bool) map[K]V
   func FilterValues[K comparable, V any](m map[K]V, pred func(V) bool) map[K]V
   func Filter[K comparable, V any](m map[K]V, pred func(K, V) bool) map[K]V
@@ -1869,7 +1870,10 @@ github.com/imajinyun/go-knifer/vmap
   func Iter[K comparable, V any](m map[K]V) iter.Seq2[K, V]
   func KeysOf[K comparable, V comparable](m map[K]V, target V) []K
   func Keys[K comparable, V any](m map[K]V) []K
+  func MapErr[K1 comparable, K2 comparable, V1 any, V2 any](m map[K1]V1, transform func(K1, V1) (K2, V2, error)) (map[K2]V2, error)
+  func MapKeysErr[K1 comparable, K2 comparable, V any](m map[K1]V, transform func(K1, V) (K2, error)) (map[K2]V, error)
   func MapKeys[K1 comparable, K2 comparable, V any](m map[K1]V, transform func(K1, V) K2) map[K2]V
+  func MapValuesErr[K comparable, V1 any, V2 any](m map[K]V1, transform func(K, V1) (V2, error)) (map[K]V2, error)
   func MapValues[K comparable, V1 any, V2 any](m map[K]V1, transform func(K, V1) V2) map[K]V2
   func Map[K1 comparable, K2 comparable, V1 any, V2 any](m map[K1]V1, transform func(K1, V1) (K2, V2)) map[K2]V2
   func MergeFunc[K comparable, V any](resolve func(old V, new V) V, maps ...map[K]V) map[K]V
@@ -1886,6 +1890,7 @@ github.com/imajinyun/go-knifer/vmap
   func Partition[K comparable, V any](m map[K]V, pred func(K, V) bool) (map[K]V, map[K]V)
   func PickBy[K comparable, V any](m map[K]V, pred func(K, V) bool) map[K]V
   func Pick[K comparable, V any](m map[K]V, keys ...K) map[K]V
+  func ReduceErr[K comparable, V any, R any](m map[K]V, initial R, fn func(R, K, V) (R, error)) (R, error)
   func Reduce[K comparable, V any, R any](m map[K]V, initial R, fn func(R, K, V) R) R
   func Reject[K comparable, V any](m map[K]V, pred func(K, V) bool) map[K]V
   func Some[K comparable, V any](m map[K]V, pred func(K, V) bool) bool
@@ -2926,6 +2931,7 @@ github.com/imajinyun/go-knifer/vslice
   func Contains[T comparable](a []T, v T) bool
   func CountBy[T any, K comparable](a []T, keyFn func(T) K) map[K]int
   func Distinct[T comparable](a []T) []T
+  func FilterErr[T any](a []T, pred func(T) (bool, error)) ([]T, error)
   func FilterMap[T any, R any](a []T, fn func(T) (R, bool)) []R
   func Filter[T any](a []T, pred func(T) bool) []T
   func FindIndex[T any](a []T, pred func(T) bool) int
@@ -2943,18 +2949,25 @@ github.com/imajinyun/go-knifer/vslice
   func Join[T any](a []T, sep string) string
   func KeyBy[T any, K comparable](a []T, keyFn func(T) K) map[K]T
   func LastIndexOf[T comparable](a []T, v T) int
+  func MapErr[T any, R any](a []T, fn func(T) (R, error)) ([]R, error)
   func Map[T any, R any](a []T, fn func(T) R) []R
   func Page[T any](a []T, pageNo int, pageSize int) []T
   func PartitionBy[T any, K comparable](a []T, keyFn func(T) K) [][]T
+  func ReduceErr[T any, R any](a []T, initial R, fn func(R, T) (R, error)) (R, error)
   func Reduce[T any, R any](a []T, initial R, fn func(R, T) R) R
   func Reject[T any](a []T, pred func(T) bool) []T
   func Reverse[T any](a []T) []T
   func SliceToMap[T any, K comparable, V any](a []T, transform func(T) (K, V)) map[K]V
+  func Sliding[T any](a []T, size int, step int) [][]T
   func Sub[T any](a []T, fromIndex int, toIndex int) []T
   func Subtract[T comparable](a []T, b []T) []T
   func Union[T comparable](a []T, b []T) []T
   func UniqBy[T any, K comparable](a []T, keyFn func(T) K) []T
   func Uniq[T comparable](a []T) []T
+  func Unzip2[A any, B any](pairs []Pair[A, B]) ([]A, []B)
+  func Window[T any](a []T, size int) [][]T
+  func Zip2[A any, B any](a []A, b []B) []Pair[A, B]
+  type Pair[A any, B any] = github.com/imajinyun/go-knifer/internal/slice.Pair[A, B]
 
 github.com/imajinyun/go-knifer/vstr
   func AddPrefixIfNot(s string, prefix string) string

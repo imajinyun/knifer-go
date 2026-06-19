@@ -73,6 +73,34 @@ func main() {
 }
 ```
 
+## Error-aware transforms
+
+Use `MapErr`, `MapKeysErr`, `MapValuesErr`, `FilterErr`, and `ReduceErr` when a
+map callback can fail. Map iteration order follows Go map semantics, so callers
+must not rely on which entry fails first when several entries can return an
+error.
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/imajinyun/go-knifer/vmap"
+)
+
+func main() {
+	labels, err := vmap.MapValuesErr(map[string]int{"a": 1}, func(key string, value int) (string, error) {
+		return fmt.Sprintf("%s=%d", key, value), nil
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(labels["a"])
+}
+```
+
 ## Iterate with Go 1.23 range adapters
 
 `Iter`, `IterKeys`, and `IterValues` expose Go iterator adapters for maps. Map

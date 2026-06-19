@@ -23,10 +23,21 @@ func Reject[T any](a []T, pred func(T) bool) []T { return sliceimpl.Reject(a, pr
 func FilterMap[T, R any](a []T, fn func(T) (R, bool)) []R {
 	return sliceimpl.FilterMap(a, fn)
 }
-func Map[T, R any](a []T, fn func(T) R) []R       { return sliceimpl.Map(a, fn) }
+func Map[T, R any](a []T, fn func(T) R) []R { return sliceimpl.Map(a, fn) }
+func MapErr[T, R any](a []T, fn func(T) (R, error)) ([]R, error) {
+	return sliceimpl.MapErr(a, fn)
+}
 func FlatMap[T, R any](a []T, fn func(T) []R) []R { return sliceimpl.FlatMap(a, fn) }
 func Reduce[T, R any](a []T, initial R, fn func(R, T) R) R {
 	return sliceimpl.Reduce(a, initial, fn)
+}
+
+func FilterErr[T any](a []T, pred func(T) (bool, error)) ([]T, error) {
+	return sliceimpl.FilterErr(a, pred)
+}
+
+func ReduceErr[T, R any](a []T, initial R, fn func(R, T) (R, error)) (R, error) {
+	return sliceimpl.ReduceErr(a, initial, fn)
 }
 func ForEach[T any](a []T, fn func(T)) { sliceimpl.ForEach(a, fn) }
 func Find[T any](a []T, pred func(T) bool) (T, bool) {
@@ -54,9 +65,20 @@ func Associate[T any, K comparable, V any](a []T, transform func(T) (K, V)) map[
 func SliceToMap[T any, K comparable, V any](a []T, transform func(T) (K, V)) map[K]V {
 	return sliceimpl.SliceToMap(a, transform)
 }
-func Chunk[T any](a []T, size int) [][]T { return sliceimpl.Chunk(a, size) }
-func Flatten[T any](a [][]T) []T         { return sliceimpl.Flatten(a) }
-func Compact[T comparable](a []T) []T    { return sliceimpl.Compact(a) }
+func Chunk[T any](a []T, size int) [][]T  { return sliceimpl.Chunk(a, size) }
+func Window[T any](a []T, size int) [][]T { return sliceimpl.Window(a, size) }
+func Sliding[T any](a []T, size, step int) [][]T {
+	return sliceimpl.Sliding(a, size, step)
+}
+
+type Pair[A, B any] = sliceimpl.Pair[A, B]
+
+func Zip2[A, B any](a []A, b []B) []Pair[A, B] { return sliceimpl.Zip2(a, b) }
+func Unzip2[A, B any](pairs []Pair[A, B]) ([]A, []B) {
+	return sliceimpl.Unzip2(pairs)
+}
+func Flatten[T any](a [][]T) []T      { return sliceimpl.Flatten(a) }
+func Compact[T comparable](a []T) []T { return sliceimpl.Compact(a) }
 func PartitionBy[T any, K comparable](a []T, keyFn func(T) K) [][]T {
 	return sliceimpl.PartitionBy(a, keyFn)
 }
