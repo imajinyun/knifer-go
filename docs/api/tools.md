@@ -16,9 +16,9 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Context-aware functions | 20 |
 | Functions returning error | 564 |
 | Variadic functions | 754 |
-| Synopsis source: facade | 1857 |
+| Synopsis source: facade | 1903 |
 | Synopsis source: internal | 625 |
-| Synopsis source: empty | 46 |
+| Synopsis source: empty | 0 |
 
 ## Packages
 
@@ -665,34 +665,34 @@ Package vfile provides public APIs for file and IO utilities.
 | `CopyWithOptions` | `func CopyWithOptions(dst io.Writer, src io.Reader, opts ...ReadOption) (int64, error)` | IoCopyWithOptions copies from src to dst using per-call read options. | internal | — |
 | `Del` | `func Del(path string) error` | Del removes path recursively. | facade | — |
 | `DelWithOptions` | `func DelWithOptions(path string, opts ...DeleteOption) error` | DelWithOptions removes path recursively using per-call delete options. | facade | — |
-| `Exists` | `func Exists(path string) bool` | — | empty | — |
+| `Exists` | `func Exists(path string) bool` | Exists reports whether a file or directory exists at path. | facade | — |
 | `ExistsWithOptions` | `func ExistsWithOptions(path string, opts ...StatOption) bool` | ExistsWithOptions reports whether a file or directory exists using per-call stat options. | facade | — |
 | `Extension` | `func Extension(path string) string` | Extension returns the file extension without the leading dot, or an empty string when absent. | internal | `ExampleExtension` |
-| `IsDirectory` | `func IsDirectory(path string) bool` | — | empty | — |
+| `IsDirectory` | `func IsDirectory(path string) bool` | IsDirectory reports whether path exists and is a directory. | facade | — |
 | `IsDirectoryWithOptions` | `func IsDirectoryWithOptions(path string, opts ...StatOption) bool` | IsDirectoryWithOptions reports whether path exists and is a directory using per-call stat options. | facade | — |
-| `IsFile` | `func IsFile(path string) bool` | — | empty | — |
+| `IsFile` | `func IsFile(path string) bool` | IsFile reports whether path exists and is a regular file. | facade | — |
 | `IsFileWithOptions` | `func IsFileWithOptions(path string, opts ...StatOption) bool` | IsFileWithOptions reports whether path exists and is a regular file using per-call stat options. | facade | — |
 | `MainName` | `func MainName(path string) string` | MainName returns the file name without its extension; parent directories are ignored. | internal | `ExampleMainName` |
 | `Mkdir` | `func Mkdir(dir string, opts ...DirOption) error` | Mkdir creates dir with directory options. | facade | — |
 | `MkdirWithOptions` | `func MkdirWithOptions(dir string, opts ...DirOption) error` | MkdirWithOptions creates dir with per-call directory options. | facade | — |
-| `ReadAll` | `func ReadAll(r io.Reader) ([]byte, error)` | — | empty | — |
+| `ReadAll` | `func ReadAll(r io.Reader) ([]byte, error)` | ReadAll reads all data from r using the default read-size guard. | facade | — |
 | `ReadAllWithOptions` | `func ReadAllWithOptions(r io.Reader, opts ...ReadOption) ([]byte, error)` | ReadAllWithOptions reads data from r with per-call read options. | facade | — |
-| `ReadChunks` | `func ReadChunks(r io.Reader, handle func([]byte) error) error` | — | empty | — |
+| `ReadChunks` | `func ReadChunks(r io.Reader, handle func([]byte) error) error` | ReadChunks reads r in buffered chunks and invokes handle for each chunk. | facade | — |
 | `ReadChunksWithOptions` | `func ReadChunksWithOptions(r io.Reader, handle func([]byte) error, opts ...ReadOption) error` | ReadChunksWithOptions reads r in chunks with per-call read options. | facade | — |
-| `ReadFileBytes` | `func ReadFileBytes(path string) ([]byte, error)` | — | empty | — |
+| `ReadFileBytes` | `func ReadFileBytes(path string) ([]byte, error)` | ReadFileBytes reads all bytes from the file at path. | facade | — |
 | `ReadFileBytesWithOptions` | `func ReadFileBytesWithOptions(path string, opts ...ReadOption) ([]byte, error)` | ReadFileBytesWithOptions reads bytes from a file with per-call read options. | facade | — |
-| `ReadFileChunks` | `func ReadFileChunks(path string, handle func([]byte) error) error` | — | empty | — |
+| `ReadFileChunks` | `func ReadFileChunks(path string, handle func([]byte) error) error` | ReadFileChunks reads the file at path in buffered chunks and invokes handle for each chunk. | facade | — |
 | `ReadFileChunksWithOptions` | `func ReadFileChunksWithOptions(path string, handle func([]byte) error, opts ...ReadOption) error` | ReadFileChunksWithOptions reads a file in chunks with per-call read options. | facade | — |
-| `ReadFileLines` | `func ReadFileLines(path string) ([]string, error)` | — | empty | — |
+| `ReadFileLines` | `func ReadFileLines(path string) ([]string, error)` | ReadFileLines reads all lines from the file at path using the default scanner limits. | facade | — |
 | `ReadFileLinesWithOptions` | `func ReadFileLinesWithOptions(path string, opts ...ReadOption) ([]string, error)` | ReadFileLinesWithOptions reads all lines from a file with per-call read options. | facade | — |
-| `ReadFileString` | `func ReadFileString(path string) (string, error)` | — | empty | — |
+| `ReadFileString` | `func ReadFileString(path string) (string, error)` | ReadFileString reads the whole file at path as a string. | facade | — |
 | `ReadFileStringWithOptions` | `func ReadFileStringWithOptions(path string, opts ...ReadOption) (string, error)` | ReadFileStringWithOptions reads a file as a string with per-call read options. | facade | — |
-| `ReadLines` | `func ReadLines(r io.Reader) ([]string, error)` | — | empty | — |
+| `ReadLines` | `func ReadLines(r io.Reader) ([]string, error)` | ReadLines reads all lines from r using the default scanner limits. | facade | — |
 | `ReadLinesWithOptions` | `func ReadLinesWithOptions(r io.Reader, opts ...ReadOption) ([]string, error)` | ReadLinesWithOptions reads all lines from r with per-call line options. | facade | — |
-| `ReadString` | `func ReadString(r io.Reader) (string, error)` | — | empty | `ExampleReadString` |
+| `ReadString` | `func ReadString(r io.Reader) (string, error)` | ReadString reads all data from r as a string using the default read-size guard. | facade | `ExampleReadString` |
 | `ReadStringWithOptions` | `func ReadStringWithOptions(r io.Reader, opts ...ReadOption) (string, error)` | ReadStringWithOptions reads data from r as a string with per-call read options. | facade | — |
 | `ReaderFromString` | `func ReaderFromString(s string) io.Reader` | ReaderFromString converts a string to an io.Reader. | internal | — |
-| `Size` | `func Size(path string) int64` | — | empty | — |
+| `Size` | `func Size(path string) int64` | Size returns the file size in bytes, or -1 when path is missing or not a regular file. | facade | — |
 | `SizeWithOptions` | `func SizeWithOptions(path string, opts ...StatOption) int64` | SizeWithOptions returns the file size using per-call stat options. | facade | — |
 | `Touch` | `func Touch(path string, opts ...WriteOption) error` | Touch creates path when missing and updates its timestamp. | facade | — |
 | `TouchWithOptions` | `func TouchWithOptions(path string, opts ...WriteOption) error` | TouchWithOptions creates path when missing using per-call write options. | facade | — |
@@ -948,40 +948,40 @@ Package vid provides public APIs for ID generation utilities.
 | --- | --- | --- | --- | --- |
 | `ConfigureDefaultFallbackRandomSourceProvider` | `func ConfigureDefaultFallbackRandomSourceProvider(provider func() *rand.Rand)` | ConfigureDefaultFallbackRandomSourceProvider sets the provider used to lazily create the package-level fallback PRNG. | facade | — |
 | `ConfigureDefaultSnowflake` | `func ConfigureDefaultSnowflake(opts ...SnowflakeOption) *Snowflake` | ConfigureDefaultSnowflake replaces the default singleton Snowflake generator with options. | facade | — |
-| `CreateSnowflake` | `func CreateSnowflake(workerID int64, datacenterID int64) *Snowflake` | — | empty | — |
+| `CreateSnowflake` | `func CreateSnowflake(workerID int64, datacenterID int64) *Snowflake` | CreateSnowflake creates a Snowflake generator for an explicit worker and datacenter pair. | facade | — |
 | `CreateSnowflakeWithOptions` | `func CreateSnowflakeWithOptions(opts ...SnowflakeOption) *Snowflake` | CreateSnowflakeWithOptions creates a Snowflake generator from options. | facade | — |
-| `FastSimpleUUID` | `func FastSimpleUUID() string` | — | empty | — |
+| `FastSimpleUUID` | `func FastSimpleUUID() string` | FastSimpleUUID creates a hyphen-free UUID through the compatibility fast UUID alias. | facade | — |
 | `FastSimpleUUIDWithOptions` | `func FastSimpleUUIDWithOptions(opts ...RandomOption) string` | FastSimpleUUIDWithOptions creates a simple UUID alias with random options. | facade | — |
-| `FastUUID` | `func FastUUID() string` | — | empty | — |
+| `FastUUID` | `func FastUUID() string` | FastUUID creates an RFC 4122 UUID through the compatibility fast UUID alias. | facade | — |
 | `FastUUIDWithOptions` | `func FastUUIDWithOptions(opts ...RandomOption) string` | FastUUIDWithOptions creates a UUID alias with random options. | facade | — |
-| `GetDataCenterID` | `func GetDataCenterID(maxDatacenterID int64) int64` | — | empty | — |
+| `GetDataCenterID` | `func GetDataCenterID(maxDatacenterID int64) int64` | GetDataCenterID derives a datacenter ID within maxDatacenterID from host network interfaces. | facade | — |
 | `GetDataCenterIDWithOptions` | `func GetDataCenterIDWithOptions(maxDatacenterID int64, opts ...SnowflakeOption) int64` | GetDataCenterIDWithOptions derives a datacenter id using custom Snowflake providers. | facade | — |
-| `GetSnowflake` | `func GetSnowflake() *Snowflake` | — | empty | — |
-| `GetSnowflakeNextID` | `func GetSnowflakeNextID() int64` | — | empty | `ExampleGetSnowflakeNextID` |
-| `GetSnowflakeNextIDStr` | `func GetSnowflakeNextIDStr() string` | — | empty | — |
+| `GetSnowflake` | `func GetSnowflake() *Snowflake` | GetSnowflake returns the package-level default Snowflake generator. | facade | — |
+| `GetSnowflakeNextID` | `func GetSnowflakeNextID() int64` | GetSnowflakeNextID returns the next numeric ID from the default Snowflake generator. | facade | `ExampleGetSnowflakeNextID` |
+| `GetSnowflakeNextIDStr` | `func GetSnowflakeNextIDStr() string` | GetSnowflakeNextIDStr returns the next Snowflake ID from the default generator as a string. | facade | — |
 | `GetSnowflakeNextIDStrWithOptions` | `func GetSnowflakeNextIDStrWithOptions(opts ...SnowflakeOption) string` | GetSnowflakeNextIDStrWithOptions returns the next ID string from the default singleton Snowflake generator. | facade | — |
 | `GetSnowflakeNextIDWithOptions` | `func GetSnowflakeNextIDWithOptions(opts ...SnowflakeOption) int64` | GetSnowflakeNextIDWithOptions returns the next ID from the default singleton Snowflake generator. | facade | — |
 | `GetSnowflakeWithOptions` | `func GetSnowflakeWithOptions(opts ...SnowflakeOption) *Snowflake` | GetSnowflakeWithOptions returns the default singleton Snowflake generator, creating it with options if needed. | facade | — |
-| `GetSnowflakeWithWorker` | `func GetSnowflakeWithWorker(workerID int64) *Snowflake` | — | empty | — |
-| `GetSnowflakeWithWorkerDataCenter` | `func GetSnowflakeWithWorkerDataCenter(workerID int64, datacenterID int64) *Snowflake` | — | empty | — |
+| `GetSnowflakeWithWorker` | `func GetSnowflakeWithWorker(workerID int64) *Snowflake` | GetSnowflakeWithWorker returns a cached Snowflake generator for workerID using default datacenter settings. | facade | — |
+| `GetSnowflakeWithWorkerDataCenter` | `func GetSnowflakeWithWorkerDataCenter(workerID int64, datacenterID int64) *Snowflake` | GetSnowflakeWithWorkerDataCenter returns a cached Snowflake generator for an explicit worker/datacenter pair. | facade | — |
 | `GetSnowflakeWithWorkerDataCenterWithOptions` | `func GetSnowflakeWithWorkerDataCenterWithOptions(workerID int64, datacenterID int64, opts ...SnowflakeOption) *Snowflake` | GetSnowflakeWithWorkerDataCenterWithOptions returns a singleton Snowflake generator for worker/datacenter pair using custom clock options. | facade | — |
 | `GetSnowflakeWithWorkerWithOptions` | `func GetSnowflakeWithWorkerWithOptions(workerID int64, opts ...SnowflakeOption) *Snowflake` | GetSnowflakeWithWorkerWithOptions returns a singleton Snowflake generator for workerID using custom defaults. | facade | — |
-| `GetWorkerID` | `func GetWorkerID(datacenterID int64, maxWorkerID int64) int64` | — | empty | — |
+| `GetWorkerID` | `func GetWorkerID(datacenterID int64, maxWorkerID int64) int64` | GetWorkerID derives a worker ID within maxWorkerID from the process ID and datacenter ID. | facade | — |
 | `GetWorkerIDWithOptions` | `func GetWorkerIDWithOptions(datacenterID int64, maxWorkerID int64, opts ...SnowflakeOption) int64` | GetWorkerIDWithOptions derives a worker id using custom Snowflake providers. | facade | — |
-| `NanoId` | `func NanoId() string` | — | empty | — |
-| `NanoIdN` | `func NanoIdN(n int) string` | — | empty | `ExampleNanoIdN` |
+| `NanoId` | `func NanoId() string` | NanoId creates a NanoId using the default alphabet and length. | facade | — |
+| `NanoIdN` | `func NanoIdN(n int) string` | NanoIdN creates a NanoId with an explicit length and the default alphabet. | facade | `ExampleNanoIdN` |
 | `NanoIdNWithOptions` | `func NanoIdNWithOptions(n int, opts ...NanoIDOption) string` | NanoIdNWithOptions creates a NanoId with explicit length and custom options. | facade | — |
 | `NanoIdWithOptions` | `func NanoIdWithOptions(opts ...NanoIDOption) string` | NanoIdWithOptions creates a NanoId with custom generation options. | facade | — |
 | `NewIsolatedSnowflake` | `func NewIsolatedSnowflake(opts ...SnowflakeOption) *Snowflake` | NewIsolatedSnowflake creates a standalone Snowflake generator without singleton/cache lookup. | facade | — |
-| `ObjectId` | `func ObjectId() string` | — | empty | — |
+| `ObjectId` | `func ObjectId() string` | ObjectId creates a MongoDB-style ObjectId using the default timestamp, random bytes, and counter sources. | facade | — |
 | `ObjectIdWithOptions` | `func ObjectIdWithOptions(opts ...ObjectIDOption) string` | ObjectIdWithOptions creates an ObjectId with deterministic/custom generation options. | facade | — |
-| `RandomUUID` | `func RandomUUID() string` | — | empty | `ExampleRandomUUID` |
+| `RandomUUID` | `func RandomUUID() string` | RandomUUID creates an RFC 4122 UUID using the default entropy source. | facade | `ExampleRandomUUID` |
 | `RandomUUIDWithOptions` | `func RandomUUIDWithOptions(opts ...RandomOption) string` | RandomUUIDWithOptions creates an RFC 4122 UUID with random options. | facade | — |
 | `ResetDefaultFallbackRandomSource` | `func ResetDefaultFallbackRandomSource()` | ResetDefaultFallbackRandomSource restores the fallback PRNG provider and clears cached state. | facade | — |
 | `SetFallbackRandomSeed` | `func SetFallbackRandomSeed(seed int64)` | SetFallbackRandomSeed resets the package-level fallback PRNG to a deterministic seed. | facade | — |
-| `SimpleUUID` | `func SimpleUUID() string` | — | empty | `ExampleSimpleUUID` |
+| `SimpleUUID` | `func SimpleUUID() string` | SimpleUUID creates a UUID string without hyphens using the default entropy source. | facade | `ExampleSimpleUUID` |
 | `SimpleUUIDWithOptions` | `func SimpleUUIDWithOptions(opts ...RandomOption) string` | SimpleUUIDWithOptions creates a UUID without hyphens with random options. | facade | — |
-| `UUID` | `func UUID() string` | — | empty | — |
+| `UUID` | `func UUID() string` | UUID creates a hyphen-free UUID string for compatibility with legacy callers. | facade | — |
 | `WithFallbackRandomSource` | `func WithFallbackRandomSource(source *rand.Rand) RandomOption` | WithFallbackRandomSource sets the fallback PRNG used when UUID random reads fail. | facade | — |
 | `WithNanoIDAlphabet` | `func WithNanoIDAlphabet(alphabet string) NanoIDOption` | WithNanoIDAlphabet sets the alphabet used by NanoIdWithOptions. | facade | — |
 | `WithNanoIDFallbackRandomSource` | `func WithNanoIDFallbackRandomSource(source *rand.Rand) NanoIDOption` | WithNanoIDFallbackRandomSource sets the fallback PRNG used when NanoId random reads fail. | facade | — |
@@ -1501,10 +1501,10 @@ Package vmap provides public APIs for map utilities.
 | `MergeFunc` | `func MergeFunc[K comparable, V any](resolve func(old V, new V) V, maps ...map[K]V) map[K]V` | MergeFunc is like Merge but resolves conflicts via the supplied function. | internal | — |
 | `MergeWithOverwrite` | `func MergeWithOverwrite[K comparable, V any](dstMap map[K]V, srcMaps ...map[K]V)` | MergeWithOverwrite merges srcMaps into dstMap in place. | internal | — |
 | `MergeWithoutOverwrite` | `func MergeWithoutOverwrite[K comparable, V any](dstMap map[K]V, srcMaps ...map[K]V)` | MergeWithoutOverwrite merges srcMaps into dstMap in place, keeping the existing value whenever a key already exists in dstMap. | internal | — |
-| `New` | `func New[K comparable, V any]() map[K]V` | — | empty | — |
-| `NewWithCap` | `func NewWithCap[K comparable, V any](hint int) map[K]V` | — | empty | — |
-| `Of` | `func Of[K comparable, V any](kvs ...any) map[K]V` | — | empty | — |
-| `OfE` | `func OfE[K comparable, V any](kvs ...any) (map[K]V, error)` | — | empty | — |
+| `New` | `func New[K comparable, V any]() map[K]V` | New creates an initialized empty map. | facade | — |
+| `NewWithCap` | `func NewWithCap[K comparable, V any](hint int) map[K]V` | NewWithCap creates an initialized empty map with a capacity hint. | facade | — |
+| `Of` | `func Of[K comparable, V any](kvs ...any) map[K]V` | Of creates a map from alternating key and value arguments and drops invalid pairs. | facade | — |
+| `OfE` | `func OfE[K comparable, V any](kvs ...any) (map[K]V, error)` | OfE creates a map from alternating key and value arguments and reports invalid input. | facade | — |
 | `Omit` | `func Omit[K comparable, V any](m map[K]V, keys ...K) map[K]V` | Omit returns a new map without the specified keys. | internal | — |
 | `OmitBy` | `func OmitBy[K comparable, V any](m map[K]V, pred func(K, V) bool) map[K]V` | OmitBy returns entries NOT satisfying the predicate. | internal | — |
 | `OrEmpty` | `func OrEmpty[K comparable, V any](m map[K]V) map[K]V` | OrEmpty returns m if non-nil, otherwise an empty map. | internal | — |
@@ -1756,7 +1756,7 @@ Package vnum provides public APIs for numeric utilities.
 | `DecimalFormatMoney` | `func DecimalFormatMoney(v float64) string` | DecimalFormatMoney formats money with comma grouping and two decimal places. | internal | — |
 | `DecimalFormatMoneyWithOptions` | `func DecimalFormatMoneyWithOptions(v float64, opts ...FormatOption) string` | DecimalFormatMoneyWithOptions formats money with comma grouping and two decimal places using custom providers. | internal | — |
 | `DecimalFormatWithOptions` | `func DecimalFormatWithOptions(format string, v float64, opts ...FormatOption) string` | DecimalFormatWithOptions formats v with common decimal patterns using custom providers. | internal | — |
-| `Div` | `func Div(a float64, b float64, scale ...int) float64` | — | empty | — |
+| `Div` | `func Div(a float64, b float64, scale ...int) float64` | Div divides a by b, optionally rounding the result to scale decimal places. | facade | — |
 | `DivWithMode` | `func DivWithMode(a float64, b float64, scale int, mode RoundingMode) float64` | DivWithMode divides a by b and rounds using the requested mode. | internal | — |
 | `Divisor` | `func Divisor(m int, n int) int` | Divisor returns the greatest common divisor. | internal | — |
 | `Equals` | `func Equals(a float64, b float64) bool` | Equals compares two floats using a fixed 1e-9 tolerance. | internal | — |
@@ -1996,30 +1996,30 @@ Package vrand provides public APIs for random value utilities.
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
-| `Bool` | `func Bool() bool` | — | empty | — |
+| `Bool` | `func Bool() bool` | Bool returns a pseudo-random boolean. | facade | — |
 | `BoolWithOptions` | `func BoolWithOptions(opts ...RandomOption) bool` | RandomBoolWithOptions returns a random boolean with per-call options. | internal | — |
 | `BytesWithOptions` | `func BytesWithOptions(n int, opts ...RandomOption) ([]byte, error)` | RandomBytesWithOptions returns n random bytes with per-call options. | internal | — |
 | `ConfigureDefaultRandomSourceProvider` | `func ConfigureDefaultRandomSourceProvider(provider func() *rand.Rand)` | ConfigureDefaultRandomSourceProvider sets the provider used to lazily create the package-level pseudo-random source. | facade | — |
-| `Ele` | `func Ele[T any](a []T) T` | — | empty | — |
+| `Ele` | `func Ele[T any](a []T) T` | Ele returns a pseudo-random element from a, or the zero value when a is empty. | facade | — |
 | `EleWithOptions` | `func EleWithOptions[T any](a []T, opts ...RandomOption) T` | RandomEleWithOptions returns a random element with per-call options, or the zero value for an empty slice. | internal | — |
-| `Float` | `func Float() float64` | — | empty | — |
+| `Float` | `func Float() float64` | Float returns a pseudo-random float64 in [0.0, 1.0). | facade | — |
 | `FloatWithOptions` | `func FloatWithOptions(opts ...RandomOption) float64` | RandomFloatWithOptions returns a random float64 in [0.0, 1.0) with per-call options. | internal | — |
-| `Int` | `func Int(max int) int` | — | empty | — |
-| `IntRange` | `func IntRange(min int, max int) int` | — | empty | — |
+| `Int` | `func Int(max int) int` | Int returns a pseudo-random integer in [0, max), or 0 when max is non-positive. | facade | — |
+| `IntRange` | `func IntRange(min int, max int) int` | IntRange returns a pseudo-random integer in [min, max), or min when max <= min. | facade | — |
 | `IntRangeWithOptions` | `func IntRangeWithOptions(min int, max int, opts ...RandomOption) int` | RandomIntRangeWithOptions returns a random integer in [min, max) with per-call options. | internal | — |
 | `IntWithOptions` | `func IntWithOptions(max int, opts ...RandomOption) int` | RandomIntWithOptions returns a random integer in [0, max) with per-call options. | internal | — |
-| `Long` | `func Long() int64` | — | empty | — |
+| `Long` | `func Long() int64` | Long returns a non-negative pseudo-random int64. | facade | — |
 | `LongWithOptions` | `func LongWithOptions(opts ...RandomOption) int64` | RandomLongWithOptions returns a non-negative random int64 with per-call options. | internal | — |
-| `Numbers` | `func Numbers(n int) string` | — | empty | — |
+| `Numbers` | `func Numbers(n int) string` | Numbers returns a pseudo-random numeric string of length n. | facade | — |
 | `NumbersWithOptions` | `func NumbersWithOptions(n int, opts ...RandomOption) string` | RandomNumbersWithOptions returns a random numeric string with per-call options. | internal | — |
 | `ResetDefaultRandomSource` | `func ResetDefaultRandomSource()` | ResetDefaultRandomSource restores the time-seeded default source provider and clears cached state. | facade | — |
 | `SecureBytes` | `func SecureBytes(n int) ([]byte, error)` | SecureBytes returns n cryptographically secure random bytes and fails closed on entropy errors. | facade | `ExampleSecureBytes` |
 | `SecureBytesWithOptions` | `func SecureBytesWithOptions(n int, opts ...RandomOption) ([]byte, error)` | SecureBytesWithOptions returns n cryptographically secure random bytes with per-call options. | facade | — |
 | `SetSeed` | `func SetSeed(seed int64)` | SetSeed resets the package-level pseudo-random source seed for reproducible non-security helpers. | facade | — |
-| `String` | `func String(n int) string` | — | empty | — |
-| `StringFrom` | `func StringFrom(charset string, n int) string` | — | empty | — |
+| `String` | `func String(n int) string` | String returns a pseudo-random lowercase alphanumeric string of length n. | facade | — |
+| `StringFrom` | `func StringFrom(charset string, n int) string` | StringFrom builds a pseudo-random string by sampling runes from charset. | facade | — |
 | `StringFromWithOptions` | `func StringFromWithOptions(charset string, n int, opts ...RandomOption) string` | RandomStringFromWithOptions builds a random string by sampling runes from charset with per-call options. | internal | — |
-| `StringUpper` | `func StringUpper(n int) string` | — | empty | — |
+| `StringUpper` | `func StringUpper(n int) string` | StringUpper returns a pseudo-random mixed-case alphanumeric string of length n. | facade | — |
 | `StringUpperWithOptions` | `func StringUpperWithOptions(n int, opts ...RandomOption) string` | RandomStringUpperWithOptions returns a random mixed-case alphanumeric string with per-call options. | internal | — |
 | `StringWithOptions` | `func StringWithOptions(n int, opts ...RandomOption) string` | RandomStringWithOptions returns a random string from BaseCharNumber with per-call options. | internal | — |
 | `WithRandomReader` | `func WithRandomReader(reader io.Reader) RandomOption` | WithRandomReader sets the byte source used by BytesWithOptions and SecureBytesWithOptions. | facade | — |
@@ -2040,11 +2040,11 @@ Package vref provides public APIs for reflection utilities.
 | `GetField` | `func GetField(target any, name string) reflect.StructField` | GetField returns the first field matched by Go name or common tag alias. | internal | — |
 | `GetFieldMap` | `func GetFieldMap(target any) map[string]reflect.StructField` | GetFieldMap returns a field name to StructField map. | internal | — |
 | `GetFieldName` | `func GetFieldName(field reflect.StructField) string` | GetFieldName returns field alias from ref/json/xml tag, or the Go field name. | internal | — |
-| `GetFieldValue` | `func GetFieldValue(obj any, fieldName string) any` | — | empty | — |
+| `GetFieldValue` | `func GetFieldValue(obj any, fieldName string) any` | GetFieldValue returns the value of a named field, or nil when the field cannot be read. | facade | — |
 | `GetFieldValueWithOptions` | `func GetFieldValueWithOptions(obj any, fieldName string, opts ...FieldAccessOption) any` | GetFieldValueWithOptions returns a field value by name using per-call access options. | internal | — |
 | `GetFields` | `func GetFields(target any, filters ...FieldFilter) []reflect.StructField` | GetFields returns all fields from a struct type and embedded anonymous structs. | internal | — |
 | `GetFieldsDirectly` | `func GetFieldsDirectly(target any, withEmbeddedFields bool) []reflect.StructField` | GetFieldsDirectly returns struct fields. | internal | — |
-| `GetFieldsValue` | `func GetFieldsValue(obj any, filters ...FieldFilter) []any` | — | empty | — |
+| `GetFieldsValue` | `func GetFieldsValue(obj any, filters ...FieldFilter) []any` | GetFieldsValue returns readable field values selected by filters. | facade | — |
 | `GetFieldsValueWithOptions` | `func GetFieldsValueWithOptions(obj any, opts []FieldAccessOption, filters ...FieldFilter) []any` | GetFieldsValueWithOptions returns values of all matched fields using per-call access options. | internal | — |
 | `GetMethod` | `func GetMethod(target any, ignoreCase bool, methodName string, paramTypes ...reflect.Type) (reflect.Method, bool)` | GetMethod returns a method by name and optional parameter types. | internal | — |
 | `GetMethodByName` | `func GetMethodByName(target any, methodName string) (reflect.Method, bool)` | GetMethodByName returns the first method with the provided name. | internal | — |
@@ -2095,7 +2095,7 @@ Package vref provides public APIs for reflection utilities.
 | `NewInstanceIfPossible` | `func NewInstanceIfPossible(target any) any` | NewInstanceIfPossible creates a useful zero value when possible. | internal | — |
 | `RemoveFinalModify` | `func RemoveFinalModify(object any)` | RemoveFinalModify is a no-op compatibility hook. | internal | — |
 | `SetAccessible` | `func SetAccessible[T any](object T) T` | SetAccessible returns object unchanged. | internal | — |
-| `SetFieldValue` | `func SetFieldValue(obj any, fieldName string, value any) error` | — | empty | — |
+| `SetFieldValue` | `func SetFieldValue(obj any, fieldName string, value any) error` | SetFieldValue assigns value to a named field when the target field is settable. | facade | — |
 | `SetFieldValueWithOptions` | `func SetFieldValueWithOptions(obj any, fieldName string, value any, opts ...FieldAccessOption) error` | SetFieldValueWithOptions sets a field by Go name or common tag alias using per-call access options. | internal | — |
 | `TypeOf` | `func TypeOf(object any) reflect.Type` | TypeOf returns the non-nil reflection type of object. | internal | `ExampleTypeOf` |
 | `ValueOf` | `func ValueOf(object any) reflect.Value` | ValueOf returns the reflection value of object. | internal | — |

@@ -196,7 +196,7 @@ func TestToolsCatalogSynopsisCoverageBudget(t *testing.T) {
 	if err != nil {
 		t.Fatalf("generateToolsDoc(%q) error = %v", root, err)
 	}
-	const maxEmptySynopses = 50
+	const maxEmptySynopses = 0
 	got := doc.Summary.SynopsisSources["empty"]
 	if got > maxEmptySynopses {
 		t.Fatalf("empty synopsis count = %d, want <= %d\n%s", got, maxEmptySynopses, renderToolsQualityReport(doc))

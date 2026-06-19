@@ -9,8 +9,8 @@
     "returns_error_functions": 564,
     "variadic_functions": 754,
     "synopsis_sources": {
-      "empty": 46,
-      "facade": 1857,
+      "empty": 0,
+      "facade": 1903,
       "internal": 625
     }
   },
@@ -10459,7 +10459,8 @@
         {
           "name": "Exists",
           "signature": "func Exists(path string) bool",
-          "synopsis": "",
+          "synopsis": "Exists reports whether a file or directory exists at path.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "path",
@@ -10519,7 +10520,8 @@
         {
           "name": "IsDirectory",
           "signature": "func IsDirectory(path string) bool",
-          "synopsis": "",
+          "synopsis": "IsDirectory reports whether path exists and is a directory.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "path",
@@ -10558,7 +10560,8 @@
         {
           "name": "IsFile",
           "signature": "func IsFile(path string) bool",
-          "synopsis": "",
+          "synopsis": "IsFile reports whether path exists and is a regular file.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "path",
@@ -10662,7 +10665,8 @@
         {
           "name": "ReadAll",
           "signature": "func ReadAll(r io.Reader) ([]byte, error)",
-          "synopsis": "",
+          "synopsis": "ReadAll reads all data from r using the default read-size guard.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "r",
@@ -10703,7 +10707,8 @@
         {
           "name": "ReadChunks",
           "signature": "func ReadChunks(r io.Reader, handle func([]byte) error) error",
-          "synopsis": "",
+          "synopsis": "ReadChunks reads r in buffered chunks and invokes handle for each chunk.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "r",
@@ -10750,7 +10755,8 @@
         {
           "name": "ReadFileBytes",
           "signature": "func ReadFileBytes(path string) ([]byte, error)",
-          "synopsis": "",
+          "synopsis": "ReadFileBytes reads all bytes from the file at path.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "path",
@@ -10791,7 +10797,8 @@
         {
           "name": "ReadFileChunks",
           "signature": "func ReadFileChunks(path string, handle func([]byte) error) error",
-          "synopsis": "",
+          "synopsis": "ReadFileChunks reads the file at path in buffered chunks and invokes handle for each chunk.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "path",
@@ -10838,7 +10845,8 @@
         {
           "name": "ReadFileLines",
           "signature": "func ReadFileLines(path string) ([]string, error)",
-          "synopsis": "",
+          "synopsis": "ReadFileLines reads all lines from the file at path using the default scanner limits.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "path",
@@ -10879,7 +10887,8 @@
         {
           "name": "ReadFileString",
           "signature": "func ReadFileString(path string) (string, error)",
-          "synopsis": "",
+          "synopsis": "ReadFileString reads the whole file at path as a string.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "path",
@@ -10920,7 +10929,8 @@
         {
           "name": "ReadLines",
           "signature": "func ReadLines(r io.Reader) ([]string, error)",
-          "synopsis": "",
+          "synopsis": "ReadLines reads all lines from r using the default scanner limits.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "r",
@@ -10961,7 +10971,8 @@
         {
           "name": "ReadString",
           "signature": "func ReadString(r io.Reader) (string, error)",
-          "synopsis": "",
+          "synopsis": "ReadString reads all data from r as a string using the default read-size guard.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "r",
@@ -11023,7 +11034,8 @@
         {
           "name": "Size",
           "signature": "func Size(path string) int64",
-          "synopsis": "",
+          "synopsis": "Size returns the file size in bytes, or -1 when path is missing or not a regular file.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "path",
@@ -15343,7 +15355,8 @@
         {
           "name": "CreateSnowflake",
           "signature": "func CreateSnowflake(workerID int64, datacenterID int64) *Snowflake",
-          "synopsis": "",
+          "synopsis": "CreateSnowflake creates a Snowflake generator for an explicit worker and datacenter pair.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "workerID",
@@ -15382,7 +15395,8 @@
         {
           "name": "FastSimpleUUID",
           "signature": "func FastSimpleUUID() string",
-          "synopsis": "",
+          "synopsis": "FastSimpleUUID creates a hyphen-free UUID through the compatibility fast UUID alias.",
+          "synopsis_source": "facade",
           "results": [
             "string"
           ],
@@ -15411,7 +15425,8 @@
         {
           "name": "FastUUID",
           "signature": "func FastUUID() string",
-          "synopsis": "",
+          "synopsis": "FastUUID creates an RFC 4122 UUID through the compatibility fast UUID alias.",
+          "synopsis_source": "facade",
           "results": [
             "string"
           ],
@@ -15440,7 +15455,8 @@
         {
           "name": "GetDataCenterID",
           "signature": "func GetDataCenterID(maxDatacenterID int64) int64",
-          "synopsis": "",
+          "synopsis": "GetDataCenterID derives a datacenter ID within maxDatacenterID from host network interfaces.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "maxDatacenterID",
@@ -15479,7 +15495,8 @@
         {
           "name": "GetSnowflake",
           "signature": "func GetSnowflake() *Snowflake",
-          "synopsis": "",
+          "synopsis": "GetSnowflake returns the package-level default Snowflake generator.",
+          "synopsis_source": "facade",
           "results": [
             "*Snowflake"
           ],
@@ -15490,7 +15507,8 @@
         {
           "name": "GetSnowflakeNextID",
           "signature": "func GetSnowflakeNextID() int64",
-          "synopsis": "",
+          "synopsis": "GetSnowflakeNextID returns the next numeric ID from the default Snowflake generator.",
+          "synopsis_source": "facade",
           "results": [
             "int64"
           ],
@@ -15504,7 +15522,8 @@
         {
           "name": "GetSnowflakeNextIDStr",
           "signature": "func GetSnowflakeNextIDStr() string",
-          "synopsis": "",
+          "synopsis": "GetSnowflakeNextIDStr returns the next Snowflake ID from the default generator as a string.",
+          "synopsis_source": "facade",
           "results": [
             "string"
           ],
@@ -15569,7 +15588,8 @@
         {
           "name": "GetSnowflakeWithWorker",
           "signature": "func GetSnowflakeWithWorker(workerID int64) *Snowflake",
-          "synopsis": "",
+          "synopsis": "GetSnowflakeWithWorker returns a cached Snowflake generator for workerID using default datacenter settings.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "workerID",
@@ -15586,7 +15606,8 @@
         {
           "name": "GetSnowflakeWithWorkerDataCenter",
           "signature": "func GetSnowflakeWithWorkerDataCenter(workerID int64, datacenterID int64) *Snowflake",
-          "synopsis": "",
+          "synopsis": "GetSnowflakeWithWorkerDataCenter returns a cached Snowflake generator for an explicit worker/datacenter pair.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "workerID",
@@ -15655,7 +15676,8 @@
         {
           "name": "GetWorkerID",
           "signature": "func GetWorkerID(datacenterID int64, maxWorkerID int64) int64",
-          "synopsis": "",
+          "synopsis": "GetWorkerID derives a worker ID within maxWorkerID from the process ID and datacenter ID.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "datacenterID",
@@ -15702,7 +15724,8 @@
         {
           "name": "NanoId",
           "signature": "func NanoId() string",
-          "synopsis": "",
+          "synopsis": "NanoId creates a NanoId using the default alphabet and length.",
+          "synopsis_source": "facade",
           "results": [
             "string"
           ],
@@ -15713,7 +15736,8 @@
         {
           "name": "NanoIdN",
           "signature": "func NanoIdN(n int) string",
-          "synopsis": "",
+          "synopsis": "NanoIdN creates a NanoId with an explicit length and the default alphabet.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "n",
@@ -15791,7 +15815,8 @@
         {
           "name": "ObjectId",
           "signature": "func ObjectId() string",
-          "synopsis": "",
+          "synopsis": "ObjectId creates a MongoDB-style ObjectId using the default timestamp, random bytes, and counter sources.",
+          "synopsis_source": "facade",
           "results": [
             "string"
           ],
@@ -15820,7 +15845,8 @@
         {
           "name": "RandomUUID",
           "signature": "func RandomUUID() string",
-          "synopsis": "",
+          "synopsis": "RandomUUID creates an RFC 4122 UUID using the default entropy source.",
+          "synopsis_source": "facade",
           "results": [
             "string"
           ],
@@ -15876,7 +15902,8 @@
         {
           "name": "SimpleUUID",
           "signature": "func SimpleUUID() string",
-          "synopsis": "",
+          "synopsis": "SimpleUUID creates a UUID string without hyphens using the default entropy source.",
+          "synopsis_source": "facade",
           "results": [
             "string"
           ],
@@ -15908,7 +15935,8 @@
         {
           "name": "UUID",
           "signature": "func UUID() string",
-          "synopsis": "",
+          "synopsis": "UUID creates a hyphen-free UUID string for compatibility with legacy callers.",
+          "synopsis_source": "facade",
           "results": [
             "string"
           ],
@@ -25295,7 +25323,8 @@
         {
           "name": "New",
           "signature": "func New[K comparable, V any]() map[K]V",
-          "synopsis": "",
+          "synopsis": "New creates an initialized empty map.",
+          "synopsis_source": "facade",
           "results": [
             "map[K]V"
           ],
@@ -25306,7 +25335,8 @@
         {
           "name": "NewWithCap",
           "signature": "func NewWithCap[K comparable, V any](hint int) map[K]V",
-          "synopsis": "",
+          "synopsis": "NewWithCap creates an initialized empty map with a capacity hint.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "hint",
@@ -25323,7 +25353,8 @@
         {
           "name": "Of",
           "signature": "func Of[K comparable, V any](kvs ...any) map[K]V",
-          "synopsis": "",
+          "synopsis": "Of creates a map from alternating key and value arguments and drops invalid pairs.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "kvs",
@@ -25340,7 +25371,8 @@
         {
           "name": "OfE",
           "signature": "func OfE[K comparable, V any](kvs ...any) (map[K]V, error)",
-          "synopsis": "",
+          "synopsis": "OfE creates a map from alternating key and value arguments and reports invalid input.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "kvs",
@@ -29933,7 +29965,8 @@
         {
           "name": "Div",
           "signature": "func Div(a float64, b float64, scale ...int) float64",
-          "synopsis": "",
+          "synopsis": "Div divides a by b, optionally rounding the result to scale decimal places.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "a",
@@ -34252,7 +34285,8 @@
         {
           "name": "Bool",
           "signature": "func Bool() bool",
-          "synopsis": "",
+          "synopsis": "Bool returns a pseudo-random boolean.",
+          "synopsis_source": "facade",
           "results": [
             "bool"
           ],
@@ -34319,7 +34353,8 @@
         {
           "name": "Ele",
           "signature": "func Ele[T any](a []T) T",
-          "synopsis": "",
+          "synopsis": "Ele returns a pseudo-random element from a, or the zero value when a is empty.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "a",
@@ -34358,7 +34393,8 @@
         {
           "name": "Float",
           "signature": "func Float() float64",
-          "synopsis": "",
+          "synopsis": "Float returns a pseudo-random float64 in [0.0, 1.0).",
+          "synopsis_source": "facade",
           "results": [
             "float64"
           ],
@@ -34387,7 +34423,8 @@
         {
           "name": "Int",
           "signature": "func Int(max int) int",
-          "synopsis": "",
+          "synopsis": "Int returns a pseudo-random integer in [0, max), or 0 when max is non-positive.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "max",
@@ -34404,7 +34441,8 @@
         {
           "name": "IntRange",
           "signature": "func IntRange(min int, max int) int",
-          "synopsis": "",
+          "synopsis": "IntRange returns a pseudo-random integer in [min, max), or min when max \u003c= min.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "min",
@@ -34473,7 +34511,8 @@
         {
           "name": "Long",
           "signature": "func Long() int64",
-          "synopsis": "",
+          "synopsis": "Long returns a non-negative pseudo-random int64.",
+          "synopsis_source": "facade",
           "results": [
             "int64"
           ],
@@ -34502,7 +34541,8 @@
         {
           "name": "Numbers",
           "signature": "func Numbers(n int) string",
-          "synopsis": "",
+          "synopsis": "Numbers returns a pseudo-random numeric string of length n.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "n",
@@ -34610,7 +34650,8 @@
         {
           "name": "String",
           "signature": "func String(n int) string",
-          "synopsis": "",
+          "synopsis": "String returns a pseudo-random lowercase alphanumeric string of length n.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "n",
@@ -34627,7 +34668,8 @@
         {
           "name": "StringFrom",
           "signature": "func StringFrom(charset string, n int) string",
-          "synopsis": "",
+          "synopsis": "StringFrom builds a pseudo-random string by sampling runes from charset.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "charset",
@@ -34674,7 +34716,8 @@
         {
           "name": "StringUpper",
           "signature": "func StringUpper(n int) string",
-          "synopsis": "",
+          "synopsis": "StringUpper returns a pseudo-random mixed-case alphanumeric string of length n.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "n",
@@ -34902,7 +34945,8 @@
         {
           "name": "GetFieldValue",
           "signature": "func GetFieldValue(obj any, fieldName string) any",
-          "synopsis": "",
+          "synopsis": "GetFieldValue returns the value of a named field, or nil when the field cannot be read.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "obj",
@@ -34993,7 +35037,8 @@
         {
           "name": "GetFieldsValue",
           "signature": "func GetFieldsValue(obj any, filters ...FieldFilter) []any",
-          "synopsis": "",
+          "synopsis": "GetFieldsValue returns readable field values selected by filters.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "obj",
@@ -36043,7 +36088,8 @@
         {
           "name": "SetFieldValue",
           "signature": "func SetFieldValue(obj any, fieldName string, value any) error",
-          "synopsis": "",
+          "synopsis": "SetFieldValue assigns value to a named field when the target field is settable.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "obj",

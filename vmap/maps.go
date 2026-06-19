@@ -9,9 +9,16 @@ import (
 
 type Pair[K comparable, V any] = mapsimpl.Pair[K, V]
 
-func New[K comparable, V any]() map[K]V                { return mapsimpl.New[K, V]() }
+// New creates an initialized empty map.
+func New[K comparable, V any]() map[K]V { return mapsimpl.New[K, V]() }
+
+// NewWithCap creates an initialized empty map with a capacity hint.
 func NewWithCap[K comparable, V any](hint int) map[K]V { return mapsimpl.NewWithCap[K, V](hint) }
-func Of[K comparable, V any](kvs ...any) map[K]V       { return mapsimpl.Of[K, V](kvs...) }
+
+// Of creates a map from alternating key and value arguments and drops invalid pairs.
+func Of[K comparable, V any](kvs ...any) map[K]V { return mapsimpl.Of[K, V](kvs...) }
+
+// OfE creates a map from alternating key and value arguments and reports invalid input.
 func OfE[K comparable, V any](kvs ...any) (map[K]V, error) {
 	return mapsimpl.OfE[K, V](kvs...)
 }

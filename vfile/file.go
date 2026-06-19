@@ -80,9 +80,16 @@ func WithMkdirAll(mkdirAll MkdirAllFunc) DirOption { return fileimpl.WithMkdirAl
 // WithRemoveAll sets the function used to remove file trees.
 func WithRemoveAll(removeAll RemoveAllFunc) DeleteOption { return fileimpl.WithRemoveAll(removeAll) }
 
-func ReadAll(r io.Reader) ([]byte, error)     { return ReadAllWithOptions(r) }
-func ReadString(r io.Reader) (string, error)  { return ReadStringWithOptions(r) }
+// ReadAll reads all data from r using the default read-size guard.
+func ReadAll(r io.Reader) ([]byte, error) { return ReadAllWithOptions(r) }
+
+// ReadString reads all data from r as a string using the default read-size guard.
+func ReadString(r io.Reader) (string, error) { return ReadStringWithOptions(r) }
+
+// ReadLines reads all lines from r using the default scanner limits.
 func ReadLines(r io.Reader) ([]string, error) { return ReadLinesWithOptions(r) }
+
+// ReadChunks reads r in buffered chunks and invokes handle for each chunk.
 func ReadChunks(r io.Reader, handle func([]byte) error) error {
 	return ReadChunksWithOptions(r, handle)
 }
@@ -90,13 +97,27 @@ func Copy(dst io.Writer, src io.Reader) (int64, error) { return fileimpl.IoCopy(
 func CopyWithOptions(dst io.Writer, src io.Reader, opts ...ReadOption) (int64, error) {
 	return fileimpl.IoCopyWithOptions(dst, src, opts...)
 }
-func CloseQuietly(c io.Closer)                    { fileimpl.CloseQuietly(c) }
-func Exists(path string) bool                     { return ExistsWithOptions(path) }
-func IsFile(path string) bool                     { return IsFileWithOptions(path) }
-func IsDirectory(path string) bool                { return IsDirectoryWithOptions(path) }
-func ReadFileString(path string) (string, error)  { return ReadFileStringWithOptions(path) }
-func ReadFileBytes(path string) ([]byte, error)   { return ReadFileBytesWithOptions(path) }
+func CloseQuietly(c io.Closer) { fileimpl.CloseQuietly(c) }
+
+// Exists reports whether a file or directory exists at path.
+func Exists(path string) bool { return ExistsWithOptions(path) }
+
+// IsFile reports whether path exists and is a regular file.
+func IsFile(path string) bool { return IsFileWithOptions(path) }
+
+// IsDirectory reports whether path exists and is a directory.
+func IsDirectory(path string) bool { return IsDirectoryWithOptions(path) }
+
+// ReadFileString reads the whole file at path as a string.
+func ReadFileString(path string) (string, error) { return ReadFileStringWithOptions(path) }
+
+// ReadFileBytes reads all bytes from the file at path.
+func ReadFileBytes(path string) ([]byte, error) { return ReadFileBytesWithOptions(path) }
+
+// ReadFileLines reads all lines from the file at path using the default scanner limits.
 func ReadFileLines(path string) ([]string, error) { return ReadFileLinesWithOptions(path) }
+
+// ReadFileChunks reads the file at path in buffered chunks and invokes handle for each chunk.
 func ReadFileChunks(path string, handle func([]byte) error) error {
 	return ReadFileChunksWithOptions(path, handle)
 }
@@ -223,7 +244,9 @@ func CopyFileWithOptions(src, dst string, opts ...WriteOption) error {
 }
 func MainName(path string) string  { return fileimpl.MainName(path) }
 func Extension(path string) string { return fileimpl.Extension(path) }
-func Size(path string) int64       { return SizeWithOptions(path) }
+
+// Size returns the file size in bytes, or -1 when path is missing or not a regular file.
+func Size(path string) int64 { return SizeWithOptions(path) }
 
 // SizeWithOptions returns the file size using per-call stat options.
 func SizeWithOptions(path string, opts ...StatOption) int64 {

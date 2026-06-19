@@ -22,12 +22,23 @@ type (
 	SnowflakeOption = idimpl.SnowflakeOption
 )
 
-func RandomUUID() string     { return RandomUUIDWithOptions() }
-func SimpleUUID() string     { return SimpleUUIDWithOptions() }
-func FastUUID() string       { return FastUUIDWithOptions() }
+// RandomUUID creates an RFC 4122 UUID using the default entropy source.
+func RandomUUID() string { return RandomUUIDWithOptions() }
+
+// SimpleUUID creates a UUID string without hyphens using the default entropy source.
+func SimpleUUID() string { return SimpleUUIDWithOptions() }
+
+// FastUUID creates an RFC 4122 UUID through the compatibility fast UUID alias.
+func FastUUID() string { return FastUUIDWithOptions() }
+
+// FastSimpleUUID creates a hyphen-free UUID through the compatibility fast UUID alias.
 func FastSimpleUUID() string { return FastSimpleUUIDWithOptions() }
-func UUID() string           { return SimpleUUIDWithOptions() }
-func ObjectId() string       { return ObjectIdWithOptions() }
+
+// UUID creates a hyphen-free UUID string for compatibility with legacy callers.
+func UUID() string { return SimpleUUIDWithOptions() }
+
+// ObjectId creates a MongoDB-style ObjectId using the default timestamp, random bytes, and counter sources.
+func ObjectId() string { return ObjectIdWithOptions() }
 
 // WithRandomReader sets the entropy source used by UUID helpers.
 func WithRandomReader(reader io.Reader) RandomOption { return idimpl.WithRandomReader(reader) }
@@ -90,6 +101,7 @@ func WithObjectIDCounter(counter func() uint32) ObjectIDOption {
 // ObjectIdWithOptions creates an ObjectId with deterministic/custom generation options.
 func ObjectIdWithOptions(opts ...ObjectIDOption) string { return idimpl.ObjectIdWithOptions(opts...) }
 
+// CreateSnowflake creates a Snowflake generator for an explicit worker and datacenter pair.
 func CreateSnowflake(workerID, datacenterID int64) *Snowflake {
 	return CreateSnowflakeWithOptions(WithSnowflakeWorkerID(workerID), WithSnowflakeDatacenterID(datacenterID))
 }
@@ -137,6 +149,7 @@ func NewIsolatedSnowflake(opts ...SnowflakeOption) *Snowflake {
 	return idimpl.NewIsolatedSnowflake(opts...)
 }
 
+// GetSnowflake returns the package-level default Snowflake generator.
 func GetSnowflake() *Snowflake { return GetSnowflakeWithOptions() }
 
 // GetSnowflakeWithOptions returns the default singleton Snowflake generator, creating it with options if needed.
@@ -149,6 +162,7 @@ func ConfigureDefaultSnowflake(opts ...SnowflakeOption) *Snowflake {
 	return idimpl.ConfigureDefaultSnowflake(opts...)
 }
 
+// GetSnowflakeWithWorker returns a cached Snowflake generator for workerID using default datacenter settings.
 func GetSnowflakeWithWorker(workerID int64) *Snowflake {
 	return GetSnowflakeWithWorkerWithOptions(workerID)
 }
@@ -158,6 +172,7 @@ func GetSnowflakeWithWorkerWithOptions(workerID int64, opts ...SnowflakeOption) 
 	return idimpl.GetSnowflakeWithWorkerWithOptions(workerID, opts...)
 }
 
+// GetSnowflakeWithWorkerDataCenter returns a cached Snowflake generator for an explicit worker/datacenter pair.
 func GetSnowflakeWithWorkerDataCenter(workerID, datacenterID int64) *Snowflake {
 	return GetSnowflakeWithWorkerDataCenterWithOptions(workerID, datacenterID)
 }
@@ -167,6 +182,7 @@ func GetSnowflakeWithWorkerDataCenterWithOptions(workerID, datacenterID int64, o
 	return idimpl.GetSnowflakeWithWorkerDataCenterWithOptions(workerID, datacenterID, opts...)
 }
 
+// GetDataCenterID derives a datacenter ID within maxDatacenterID from host network interfaces.
 func GetDataCenterID(maxDatacenterID int64) int64 { return GetDataCenterIDWithOptions(maxDatacenterID) }
 
 // GetDataCenterIDWithOptions derives a datacenter id using custom Snowflake providers.
@@ -174,6 +190,7 @@ func GetDataCenterIDWithOptions(maxDatacenterID int64, opts ...SnowflakeOption) 
 	return idimpl.GetDataCenterIDWithOptions(maxDatacenterID, opts...)
 }
 
+// GetWorkerID derives a worker ID within maxWorkerID from the process ID and datacenter ID.
 func GetWorkerID(datacenterID, maxWorkerID int64) int64 {
 	return GetWorkerIDWithOptions(datacenterID, maxWorkerID)
 }
@@ -183,7 +200,10 @@ func GetWorkerIDWithOptions(datacenterID, maxWorkerID int64, opts ...SnowflakeOp
 	return idimpl.GetWorkerIDWithOptions(datacenterID, maxWorkerID, opts...)
 }
 
-func NanoId() string       { return NanoIdWithOptions() }
+// NanoId creates a NanoId using the default alphabet and length.
+func NanoId() string { return NanoIdWithOptions() }
+
+// NanoIdN creates a NanoId with an explicit length and the default alphabet.
 func NanoIdN(n int) string { return NanoIdNWithOptions(n) }
 
 // WithNanoIDRandomReader sets the entropy source used by NanoIdWithOptions.
@@ -210,6 +230,7 @@ func NanoIdNWithOptions(n int, opts ...NanoIDOption) string {
 	return idimpl.NanoIdNWithOptions(n, opts...)
 }
 
+// GetSnowflakeNextID returns the next numeric ID from the default Snowflake generator.
 func GetSnowflakeNextID() int64 { return GetSnowflakeNextIDWithOptions() }
 
 // GetSnowflakeNextIDWithOptions returns the next ID from the default singleton Snowflake generator.
@@ -217,6 +238,7 @@ func GetSnowflakeNextIDWithOptions(opts ...SnowflakeOption) int64 {
 	return idimpl.GetSnowflakeNextIDWithOptions(opts...)
 }
 
+// GetSnowflakeNextIDStr returns the next Snowflake ID from the default generator as a string.
 func GetSnowflakeNextIDStr() string { return GetSnowflakeNextIDStrWithOptions() }
 
 // GetSnowflakeNextIDStrWithOptions returns the next ID string from the default singleton Snowflake generator.

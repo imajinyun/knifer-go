@@ -30,6 +30,7 @@ func Mul(values ...float64) float64 { return numimpl.Mul(values...) }
 
 func MulStr(values ...string) *big.Rat { return numimpl.MulStr(values...) }
 
+// Div divides a by b, optionally rounding the result to scale decimal places.
 func Div(a, b float64, scale ...int) float64 {
 	if len(scale) == 0 {
 		return numimpl.Div(a, b)

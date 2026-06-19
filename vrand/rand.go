@@ -17,17 +17,35 @@ const (
 // RandomOption customizes per-call random helpers.
 type RandomOption = randimpl.RandomOption
 
-func Int(max int) int           { return IntWithOptions(max) }
-func IntRange(min, max int) int { return IntRangeWithOptions(min, max) }
-func Long() int64               { return LongWithOptions() }
-func Float() float64            { return FloatWithOptions() }
-func Bool() bool                { return BoolWithOptions() }
+// Int returns a pseudo-random integer in [0, max), or 0 when max is non-positive.
+func Int(max int) int { return IntWithOptions(max) }
 
-func String(n int) string                     { return StringWithOptions(n) }
-func Numbers(n int) string                    { return NumbersWithOptions(n) }
-func StringUpper(n int) string                { return StringUpperWithOptions(n) }
+// IntRange returns a pseudo-random integer in [min, max), or min when max <= min.
+func IntRange(min, max int) int { return IntRangeWithOptions(min, max) }
+
+// Long returns a non-negative pseudo-random int64.
+func Long() int64 { return LongWithOptions() }
+
+// Float returns a pseudo-random float64 in [0.0, 1.0).
+func Float() float64 { return FloatWithOptions() }
+
+// Bool returns a pseudo-random boolean.
+func Bool() bool { return BoolWithOptions() }
+
+// String returns a pseudo-random lowercase alphanumeric string of length n.
+func String(n int) string { return StringWithOptions(n) }
+
+// Numbers returns a pseudo-random numeric string of length n.
+func Numbers(n int) string { return NumbersWithOptions(n) }
+
+// StringUpper returns a pseudo-random mixed-case alphanumeric string of length n.
+func StringUpper(n int) string { return StringUpperWithOptions(n) }
+
+// StringFrom builds a pseudo-random string by sampling runes from charset.
 func StringFrom(charset string, n int) string { return StringFromWithOptions(charset, n) }
-func Ele[T any](a []T) T                      { return EleWithOptions(a) }
+
+// Ele returns a pseudo-random element from a, or the zero value when a is empty.
+func Ele[T any](a []T) T { return EleWithOptions(a) }
 
 // WithRandomSource sets the pseudo-random source used by numeric, string,
 // element, and compatibility fallback byte helpers. Use SecureBytes for

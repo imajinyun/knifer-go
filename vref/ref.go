@@ -56,6 +56,8 @@ func GetPublicFieldNames(target any) []string { return refimpl.GetPublicFieldNam
 func GetFieldsDirectly(target any, withEmbeddedFields bool) []reflect.StructField {
 	return refimpl.GetFieldsDirectly(target, withEmbeddedFields)
 }
+
+// GetFieldValue returns the value of a named field, or nil when the field cannot be read.
 func GetFieldValue(obj any, fieldName string) any { return GetFieldValueWithOptions(obj, fieldName) }
 
 func GetFieldValueWithOptions(obj any, fieldName string, opts ...FieldAccessOption) any {
@@ -63,6 +65,8 @@ func GetFieldValueWithOptions(obj any, fieldName string, opts ...FieldAccessOpti
 }
 
 func GetStaticFieldValue(value any) any { return refimpl.GetStaticFieldValue(value) }
+
+// GetFieldsValue returns readable field values selected by filters.
 func GetFieldsValue(obj any, filters ...FieldFilter) []any {
 	return GetFieldsValueWithOptions(obj, nil, filters...)
 }
@@ -71,6 +75,7 @@ func GetFieldsValueWithOptions(obj any, opts []FieldAccessOption, filters ...Fie
 	return refimpl.GetFieldsValueWithOptions(obj, opts, filters...)
 }
 
+// SetFieldValue assigns value to a named field when the target field is settable.
 func SetFieldValue(obj any, fieldName string, value any) error {
 	return SetFieldValueWithOptions(obj, fieldName, value)
 }
