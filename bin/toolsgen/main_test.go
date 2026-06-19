@@ -203,6 +203,58 @@ func TestToolsCatalogSynopsisCoverageBudget(t *testing.T) {
 	}
 }
 
+func TestToolsCatalogExamplesCoverageBudget(t *testing.T) {
+	root := repositoryRoot(t)
+	doc, err := generateToolsDoc(root)
+	if err != nil {
+		t.Fatalf("generateToolsDoc(%q) error = %v", root, err)
+	}
+	const minFunctionsWithExamples = 150
+	got := doc.Summary.FunctionsWithExamples
+	if got < minFunctionsWithExamples {
+		t.Fatalf("functions with examples = %d, want >= %d\n%s", got, minFunctionsWithExamples, renderToolsQualityReport(doc))
+	}
+}
+
+func TestToolsCatalogSecuritySensitiveExamplesBudget(t *testing.T) {
+	root := repositoryRoot(t)
+	doc, err := generateToolsDoc(root)
+	if err != nil {
+		t.Fatalf("generateToolsDoc(%q) error = %v", root, err)
+	}
+	const minExamplesPerPackage = 5
+	securitySensitivePackages := []string{
+		"vhttp",
+		"vresty",
+		"vurl",
+		"vconf",
+		"vzip",
+		"vfile",
+		"vcrypto",
+		"vjwt",
+		"vrand",
+		"vid",
+		"vdb",
+	}
+	examplesByPackage := map[string]int{}
+	for _, pkg := range doc.Packages {
+		for _, fn := range pkg.Functions {
+			if len(fn.Examples) > 0 {
+				examplesByPackage[pkg.Name]++
+			}
+		}
+	}
+	missing := []string{}
+	for _, name := range securitySensitivePackages {
+		if got := examplesByPackage[name]; got < minExamplesPerPackage {
+			missing = append(missing, name)
+		}
+	}
+	if len(missing) > 0 {
+		t.Fatalf("security-sensitive packages below example budget %d: %s\n%s", minExamplesPerPackage, strings.Join(missing, ", "), renderToolsQualityReport(doc))
+	}
+}
+
 func TestWriteToolsDocWritesIndentedFile(t *testing.T) {
 	outPath := filepath.Join(t.TempDir(), "tools.json")
 	doc := ToolsDoc{

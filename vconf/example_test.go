@@ -54,6 +54,37 @@ func ExampleLoadRemoteSafeWithOptions() {
 	// Output: true
 }
 
+func ExampleParseBytes() {
+	cfg, err := vconf.ParseBytes([]byte("name=go-knifer\n"))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(cfg.Get("name"))
+	// Output: go-knifer
+}
+
+func ExampleParseYAML() {
+	cfg, err := vconf.ParseYAML("server:\n  port: 8080\n")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(cfg.GetByGroup("server", "port"))
+	// Output: 8080
+}
+
+func ExampleMerge() {
+	base, _ := vconf.Parse("name=base\nport=8080\n")
+	override, _ := vconf.Parse("name=override\n")
+	cfg := vconf.Merge(base, override)
+	fmt.Println(cfg.Get("name"))
+	fmt.Println(cfg.Get("port"))
+	// Output:
+	// override
+	// 8080
+}
+
 type roundTripFunc func(*http.Request) (*http.Response, error)
 
 func (f roundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) { return f(req) }

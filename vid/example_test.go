@@ -32,3 +32,9 @@ func ExampleGetSnowflakeNextID() {
 	fmt.Println(id > 0)
 	// Output: true
 }
+
+func ExampleObjectId() {
+	id := vid.ObjectId()
+	fmt.Println(len(id))
+	// Output: 24
+}

@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/go-knifer` |
 | Packages | 48 |
 | Functions | 2528 |
-| Functions with examples | 117 |
+| Functions with examples | 150 |
 | Context-aware functions | 20 |
 | Functions returning error | 564 |
 | Variadic functions | 754 |
@@ -72,13 +72,13 @@ Package vblf provides public APIs for Bloom filter utilities.
 | `InitFromReader` | `func InitFromReader(b *BitSetBloomFilter, reader io.Reader) error` | InitFromReader initializes a bitset bloom filter from a reader. | facade | — |
 | `JavaDefaultHash` | `func JavaDefaultHash(str string) int32` | JavaDefaultHash delegates to the internal bloomfilter implementation. | facade | — |
 | `JsHash` | `func JsHash(str string) int32` | JsHash delegates to the internal bloomfilter implementation. | facade | — |
-| `NewBitMapBloomFilter` | `func NewBitMapBloomFilter(m int) *BitMapBloomFilter` | NewBitMapBloomFilter creates a bitmap bloom filter. | facade | — |
+| `NewBitMapBloomFilter` | `func NewBitMapBloomFilter(m int) *BitMapBloomFilter` | NewBitMapBloomFilter creates a bitmap bloom filter. | facade | `ExampleNewBitMapBloomFilter` |
 | `NewBitMapBloomFilterE` | `func NewBitMapBloomFilterE(m int) (*BitMapBloomFilter, error)` | NewBitMapBloomFilterE creates a bitmap bloom filter and returns validation errors. | facade | — |
 | `NewBitMapBloomFilterWithFilters` | `func NewBitMapBloomFilterWithFilters(m int, filters ...BloomFilter) *BitMapBloomFilter` | NewBitMapBloomFilterWithFilters creates a bitmap bloom filter with filters. | facade | — |
 | `NewBitMapBloomFilterWithFiltersE` | `func NewBitMapBloomFilterWithFiltersE(m int, filters ...BloomFilter) (*BitMapBloomFilter, error)` | NewBitMapBloomFilterWithFiltersE creates a bitmap bloom filter with filters and returns validation errors. | facade | — |
 | `NewBitMapBloomFilterWithOptions` | `func NewBitMapBloomFilterWithOptions(opts ...BitMapBloomFilterOption) *BitMapBloomFilter` | NewBitMapBloomFilterWithOptions creates a bitmap bloom filter with options. | facade | — |
 | `NewBitMapBloomFilterWithOptionsE` | `func NewBitMapBloomFilterWithOptionsE(opts ...BitMapBloomFilterOption) (*BitMapBloomFilter, error)` | NewBitMapBloomFilterWithOptionsE creates a bitmap bloom filter with options and returns validation errors. | facade | — |
-| `NewBitSetBloomFilter` | `func NewBitSetBloomFilter(c int, n int, k int) *BitSetBloomFilter` | NewBitSetBloomFilter creates a bitset bloom filter. | facade | — |
+| `NewBitSetBloomFilter` | `func NewBitSetBloomFilter(c int, n int, k int) *BitSetBloomFilter` | NewBitSetBloomFilter creates a bitset bloom filter. | facade | `ExampleNewBitSetBloomFilter` |
 | `NewBitSetBloomFilterE` | `func NewBitSetBloomFilterE(c int, n int, k int) (*BitSetBloomFilter, error)` | NewBitSetBloomFilterE creates a bitset bloom filter and returns validation errors. | facade | — |
 | `NewBitSetBloomFilterWithOptions` | `func NewBitSetBloomFilterWithOptions(opts ...BitSetBloomFilterOption) *BitSetBloomFilter` | NewBitSetBloomFilterWithOptions creates a bitset bloom filter with options. | facade | — |
 | `NewBitSetBloomFilterWithOptionsE` | `func NewBitSetBloomFilterWithOptionsE(opts ...BitSetBloomFilterOption) (*BitSetBloomFilter, error)` | NewBitSetBloomFilterWithOptionsE creates a bitset bloom filter with options and returns validation errors. | facade | — |
@@ -86,7 +86,7 @@ Package vblf provides public APIs for Bloom filter utilities.
 | `NewDefaultFilter` | `func NewDefaultFilter(maxValue int64) *FuncFilter` | NewDefaultFilter delegates to the internal bloomfilter implementation. | facade | — |
 | `NewELFFilter` | `func NewELFFilter(maxValue int64) *FuncFilter` | NewELFFilter delegates to the internal bloomfilter implementation. | facade | — |
 | `NewFNVFilter` | `func NewFNVFilter(maxValue int64) *FuncFilter` | NewFNVFilter delegates to the internal bloomfilter implementation. | facade | — |
-| `NewFuncFilter` | `func NewFuncFilter(maxValue int64, hashFunc HashFunc) *FuncFilter` | NewFuncFilter creates a function-backed bloom filter. | facade | — |
+| `NewFuncFilter` | `func NewFuncFilter(maxValue int64, hashFunc HashFunc) *FuncFilter` | NewFuncFilter creates a function-backed bloom filter. | facade | `ExampleNewFuncFilter` |
 | `NewFuncFilterE` | `func NewFuncFilterE(maxValue int64, hashFunc HashFunc) (*FuncFilter, error)` | NewFuncFilterE creates a function-backed bloom filter and returns validation errors. | facade | — |
 | `NewFuncFilterWithMachineNum` | `func NewFuncFilterWithMachineNum(maxValue int64, machineNum int, hashFunc HashFunc) *FuncFilter` | NewFuncFilterWithMachineNum delegates to the internal bloomfilter implementation. | facade | — |
 | `NewFuncFilterWithMachineNumE` | `func NewFuncFilterWithMachineNumE(maxValue int64, machineNum int, hashFunc HashFunc) (*FuncFilter, error)` | NewFuncFilterWithMachineNumE delegates to the internal bloomfilter implementation. | facade | — |
@@ -94,7 +94,7 @@ Package vblf provides public APIs for Bloom filter utilities.
 | `NewFuncFilterWithOptionsE` | `func NewFuncFilterWithOptionsE(opts ...FuncFilterOption) (*FuncFilter, error)` | NewFuncFilterWithOptionsE creates a function-backed bloom filter with options and returns validation errors. | facade | — |
 | `NewHfFilter` | `func NewHfFilter(maxValue int64) *FuncFilter` | NewHfFilter delegates to the internal bloomfilter implementation. | facade | — |
 | `NewHfIpFilter` | `func NewHfIpFilter(maxValue int64) *FuncFilter` | NewHfIpFilter delegates to the internal bloomfilter implementation. | facade | — |
-| `NewIntMap` | `func NewIntMap(size int) *IntMap` | NewIntMap delegates to the internal bloomfilter implementation. | facade | — |
+| `NewIntMap` | `func NewIntMap(size int) *IntMap` | NewIntMap delegates to the internal bloomfilter implementation. | facade | `ExampleNewIntMap` |
 | `NewJSFilter` | `func NewJSFilter(maxValue int64) *FuncFilter` | NewJSFilter delegates to the internal bloomfilter implementation. | facade | — |
 | `NewLongMap` | `func NewLongMap(size int) *LongMap` | NewLongMap delegates to the internal bloomfilter implementation. | facade | — |
 | `NewPJWFilter` | `func NewPJWFilter(maxValue int64) *FuncFilter` | NewPJWFilter delegates to the internal bloomfilter implementation. | facade | — |
@@ -203,15 +203,15 @@ Package vconf provides configuration file reading and grouped configuration util
 | `LoadRemoteSafeWithOptions` | `func LoadRemoteSafeWithOptions(rawURL string, opts LoadOptions) (*Conf, error)` | LoadRemoteSafeWithOptions loads configuration from an HTTP(S) URL with SSRF-oriented safety checks enabled. | facade | `ExampleLoadRemoteSafeWithOptions` |
 | `LoadRemoteWithOptions` | `func LoadRemoteWithOptions(rawURL string, opts LoadOptions) (*Conf, error)` | LoadRemoteWithOptions loads configuration from an HTTP(S) URL with options. | facade | — |
 | `LoadWithOptions` | `func LoadWithOptions(path string, opts LoadOptions) (*Conf, error)` | LoadWithOptions reads and parses a configuration file with advanced options. | facade | — |
-| `Merge` | `func Merge(configs ...*Conf) *Conf` | Merge merges configurations in order. | facade | — |
+| `Merge` | `func Merge(configs ...*Conf) *Conf` | Merge merges configurations in order. | facade | `ExampleMerge` |
 | `New` | `func New() *Conf` | New creates an empty Conf. | facade | — |
 | `Parse` | `func Parse(content string) (*Conf, error)` | Parse 解析 setting/properties 文本内容。Parse parses setting/properties content. | facade | `ExampleParse` |
 | `ParseByExt` | `func ParseByExt(path string, content []byte) (*Conf, error)` | ParseByExt parses content according to path extension. | facade | — |
 | `ParseByExtWithOptions` | `func ParseByExtWithOptions(path string, content []byte, opts ...ParseOption) (*Conf, error)` | ParseByExtWithOptions parses content according to path extension with custom providers. | facade | — |
-| `ParseBytes` | `func ParseBytes(content []byte) (*Conf, error)` | ParseBytes 解析 setting/properties 字节内容。ParseBytes parses setting/properties content. | facade | — |
+| `ParseBytes` | `func ParseBytes(content []byte) (*Conf, error)` | ParseBytes 解析 setting/properties 字节内容。ParseBytes parses setting/properties content. | facade | `ExampleParseBytes` |
 | `ParseTOML` | `func ParseTOML(content string) (*Conf, error)` | ParseTOML parses common TOML key-value and section syntax into grouped configuration. | facade | — |
 | `ParseTOMLWithOptions` | `func ParseTOMLWithOptions(content string, opts ...ParseOption) (*Conf, error)` | ParseTOMLWithOptions parses common TOML syntax into grouped configuration with custom providers. | facade | — |
-| `ParseYAML` | `func ParseYAML(content string) (*Conf, error)` | ParseYAML 将简单 YAML 子集解析为分组配置。ParseYAML parses a small YAML subset into grouped configuration. | facade | — |
+| `ParseYAML` | `func ParseYAML(content string) (*Conf, error)` | ParseYAML 将简单 YAML 子集解析为分组配置。ParseYAML parses a small YAML subset into grouped configuration. | facade | `ExampleParseYAML` |
 | `ParseYAMLFull` | `func ParseYAMLFull(content string) (*Conf, error)` | ParseYAMLFull parses YAML using yaml.v3 and flattens nested objects into grouped keys. | facade | — |
 | `ParseYAMLFullWithOptions` | `func ParseYAMLFullWithOptions(content string, opts ...ParseOption) (*Conf, error)` | ParseYAMLFullWithOptions parses YAML using a configurable unmarshal provider and flattens nested objects into grouped keys. | facade | — |
 | `SchemaFromStruct` | `func SchemaFromStruct(dst any) (Schema, error)` | SchemaFromStruct builds validation schema rules from conf tags on dst. | facade | — |
@@ -337,7 +337,7 @@ Package vcrypto provides public APIs for cryptographic utilities.
 | --- | --- | --- | --- | --- |
 | `AESDecryptGCM` | `func AESDecryptGCM(cipherText []byte, key []byte, nonce []byte, additionalData []byte) ([]byte, error)` | AESDecryptGCM decrypts AES-GCM data. | facade | — |
 | `AESDecryptGCMWithOptions` | `func AESDecryptGCMWithOptions(cipherText []byte, key []byte, nonce []byte, additionalData []byte, opts ...AESGCMOption) ([]byte, error)` | AESDecryptGCMWithOptions decrypts AES-GCM data with options. | facade | — |
-| `AESEncryptGCM` | `func AESEncryptGCM(plain []byte, key []byte, nonce []byte, additionalData []byte) ([]byte, error)` | AESEncryptGCM encrypts plain data using AES-GCM. | facade | — |
+| `AESEncryptGCM` | `func AESEncryptGCM(plain []byte, key []byte, nonce []byte, additionalData []byte) ([]byte, error)` | AESEncryptGCM encrypts plain data using AES-GCM. | facade | `ExampleAESEncryptGCM` |
 | `AESEncryptGCMWithOptions` | `func AESEncryptGCMWithOptions(plain []byte, key []byte, nonce []byte, additionalData []byte, opts ...AESGCMOption) ([]byte, error)` | AESEncryptGCMWithOptions encrypts plain data using AES-GCM with options. | facade | — |
 | `AESOpenGCM` | `func AESOpenGCM(cipherText []byte, key []byte, nonce []byte, additionalData []byte) ([]byte, error)` | AESOpenGCM decrypts data produced by AESSealGCM or AESEncryptGCM. | facade | — |
 | `AESOpenGCMWithOptions` | `func AESOpenGCMWithOptions(cipherText []byte, key []byte, nonce []byte, additionalData []byte, opts ...AESGCMOption) ([]byte, error)` | AESOpenGCMWithOptions decrypts AES-GCM data with options. | facade | — |
@@ -375,7 +375,7 @@ Package vcrypto provides public APIs for cryptographic utilities.
 | `RSAVerifyPSS` | `func RSAVerifyPSS(pub *rsa.PublicKey, hash crypto.Hash, digest []byte, sig []byte) error` | RSAVerifyPSS verifies an RSA-PSS signature. | facade | — |
 | `RSAVerifyPSSWithOptions` | `func RSAVerifyPSSWithOptions(pub *rsa.PublicKey, hash crypto.Hash, digest []byte, sig []byte, opts ...RSAOption) error` | RSAVerifyPSSWithOptions verifies an RSA-PSS signature with options. | facade | — |
 | `RandomBytes` | `func RandomBytes(n int) ([]byte, error)` | RandomBytes returns n cryptographically secure random bytes. | facade | — |
-| `RandomBytesWithOptions` | `func RandomBytesWithOptions(n int, opts ...RandomOption) ([]byte, error)` | RandomBytesWithOptions returns n random bytes using custom random options. | facade | — |
+| `RandomBytesWithOptions` | `func RandomBytesWithOptions(n int, opts ...RandomOption) ([]byte, error)` | RandomBytesWithOptions returns n random bytes using custom random options. | facade | `ExampleRandomBytesWithOptions` |
 | `SHA224` | `func SHA224(data []byte) []byte` | SHA224 returns the SHA224 digest bytes of data. | facade | — |
 | `SHA224Hex` | `func SHA224Hex(data []byte) string` | SHA224Hex returns the SHA224 digest of data in lower-case hex form. | facade | — |
 | `SHA256` | `func SHA256(data []byte) []byte` | SHA256 returns the SHA256 digest bytes of data. | facade | — |
@@ -489,10 +489,10 @@ Package vdb exposes database/sql helper APIs for SQL execution, query building, 
 | `Asc` | `func Asc(field string) Order` | Asc returns ascending order. | internal | — |
 | `AssignEntity` | `func AssignEntity(entity Entity, dst any) error` | AssignEntity copies entity values into dst struct or map. | internal | — |
 | `Between` | `func Between(field string, begin any, end any) Condition` | Between creates a BETWEEN condition. | internal | — |
-| `BuildConditions` | `func BuildConditions(conds ...Condition) (string, []any, error)` | BuildConditions builds a WHERE fragment without the WHERE keyword. | internal | — |
-| `BuildLikeValue` | `func BuildLikeValue(value any, mode string) string` | BuildLikeValue returns a LIKE value according to mode: contains, prefix, suffix, or exact. | internal | — |
+| `BuildConditions` | `func BuildConditions(conds ...Condition) (string, []any, error)` | BuildConditions builds a WHERE fragment without the WHERE keyword. | internal | `ExampleBuildConditions` |
+| `BuildLikeValue` | `func BuildLikeValue(value any, mode string) string` | BuildLikeValue returns a LIKE value according to mode: contains, prefix, suffix, or exact. | internal | `ExampleBuildLikeValue` |
 | `ConditionsFromEntity` | `func ConditionsFromEntity(e Entity) []Condition` | ConditionsFromEntity creates equality conditions from entity values. | internal | — |
-| `Delete` | `func Delete(table string) *SQLBuilder` | Delete builds a DELETE statement for table. | internal | — |
+| `Delete` | `func Delete(table string) *SQLBuilder` | Delete builds a DELETE statement for table. | internal | `ExampleDelete` |
 | `Desc` | `func Desc(field string) Order` | Desc returns descending order. | internal | — |
 | `EntityFromMap` | `func EntityFromMap(table string, values map[string]any) Entity` | EntityFromMap creates an Entity from values. | internal | — |
 | `Eq` | `func Eq(field string, value any) Condition` | Eq creates an equality condition. | internal | — |
@@ -665,7 +665,7 @@ Package vfile provides public APIs for file and IO utilities.
 | `CopyWithOptions` | `func CopyWithOptions(dst io.Writer, src io.Reader, opts ...ReadOption) (int64, error)` | IoCopyWithOptions copies from src to dst using per-call read options. | internal | — |
 | `Del` | `func Del(path string) error` | Del removes path recursively. | facade | — |
 | `DelWithOptions` | `func DelWithOptions(path string, opts ...DeleteOption) error` | DelWithOptions removes path recursively using per-call delete options. | facade | — |
-| `Exists` | `func Exists(path string) bool` | Exists reports whether a file or directory exists at path. | facade | — |
+| `Exists` | `func Exists(path string) bool` | Exists reports whether a file or directory exists at path. | facade | `ExampleExists` |
 | `ExistsWithOptions` | `func ExistsWithOptions(path string, opts ...StatOption) bool` | ExistsWithOptions reports whether a file or directory exists using per-call stat options. | facade | — |
 | `Extension` | `func Extension(path string) string` | Extension returns the file extension without the leading dot, or an empty string when absent. | internal | `ExampleExtension` |
 | `IsDirectory` | `func IsDirectory(path string) bool` | IsDirectory reports whether path exists and is a directory. | facade | — |
@@ -713,7 +713,7 @@ Package vfile provides public APIs for file and IO utilities.
 | `WithUnlimitedRead` | `func WithUnlimitedRead() ReadOption` | WithUnlimitedRead disables the default read-size guard for callers that explicitly need it. | facade | — |
 | `WriteFileBytes` | `func WriteFileBytes(path string, data []byte, opts ...WriteOption) error` | WriteFileBytes writes data to path, creating parent directories by default. | facade | — |
 | `WriteFileBytesWithOptions` | `func WriteFileBytesWithOptions(path string, data []byte, opts ...WriteOption) error` | WriteFileBytesWithOptions writes data to path with per-call write options. | facade | — |
-| `WriteFileString` | `func WriteFileString(path string, content string, opts ...WriteOption) error` | WriteFileString writes content to path, creating parent directories by default. | facade | — |
+| `WriteFileString` | `func WriteFileString(path string, content string, opts ...WriteOption) error` | WriteFileString writes content to path, creating parent directories by default. | facade | `ExampleWriteFileString` |
 | `WriteFileStringWithOptions` | `func WriteFileStringWithOptions(path string, content string, opts ...WriteOption) error` | WriteFileStringWithOptions writes content to path with per-call write options. | facade | — |
 
 ### vform
@@ -789,7 +789,7 @@ Package vhttp provides public APIs for HTTP utilities.
 | `CreateServerWithOptions` | `func CreateServerWithOptions(port int, opts ...ServerOption) *SimpleServer` | CreateServerWithOptions creates a simple HTTP server with options. | facade | — |
 | `Delete` | `func Delete(rawURL string, opts ...RequestOption) *Request` | Delete creates a DELETE request. | facade | — |
 | `DeleteSafe` | `func DeleteSafe(rawURL string, opts ...RequestOption) *Request` | DeleteSafe creates a DELETE request with SSRF-oriented safety checks enabled. | facade | — |
-| `Download` | `func Download(rawURL string, w io.Writer) (int64, error)` | Download downloads rawURL into w. | facade | — |
+| `Download` | `func Download(rawURL string, w io.Writer) (int64, error)` | Download downloads rawURL into w. | facade | `ExampleDownload` |
 | `DownloadBytesE` | `func DownloadBytesE(rawURL string) ([]byte, error)` | DownloadBytesE downloads and returns bytes or an error. | facade | — |
 | `DownloadBytesEWithOptions` | `func DownloadBytesEWithOptions(rawURL string, opts ...RequestOption) ([]byte, error)` | DownloadBytesEWithOptions downloads and returns bytes with per-request options or an error. | facade | — |
 | `DownloadBytesSafeE` | `func DownloadBytesSafeE(rawURL string, opts ...RequestOption) ([]byte, error)` | DownloadBytesSafeE downloads and returns bytes with SSRF-oriented safety checks enabled. | facade | — |
@@ -863,7 +863,7 @@ Package vhttp provides public APIs for HTTP utilities.
 | `PostJSONEWithOptions` | `func PostJSONEWithOptions(rawURL string, jsonStr string, opts ...RequestOption) (string, error)` | PostJSONEWithOptions posts JSON body with options and returns response body or an error. | facade | — |
 | `PostJSONSafeE` | `func PostJSONSafeE(rawURL string, jsonStr string, opts ...RequestOption) (string, error)` | PostJSONSafeE posts JSON body with SSRF-oriented safety checks enabled. | facade | — |
 | `PostSafe` | `func PostSafe(rawURL string, opts ...RequestOption) *Request` | PostSafe creates a POST request with SSRF-oriented safety checks enabled. | facade | — |
-| `PostStringE` | `func PostStringE(rawURL string, body string) (string, error)` | PostStringE posts a string body and returns response body or an error. | facade | — |
+| `PostStringE` | `func PostStringE(rawURL string, body string) (string, error)` | PostStringE posts a string body and returns response body or an error. | facade | `ExamplePostStringE` |
 | `PostStringEWithOptions` | `func PostStringEWithOptions(rawURL string, body string, opts ...RequestOption) (string, error)` | PostStringEWithOptions posts a string body with options and returns response body or an error. | facade | — |
 | `PostStringSafeE` | `func PostStringSafeE(rawURL string, body string, opts ...RequestOption) (string, error)` | PostStringSafeE posts a string body with SSRF-oriented safety checks enabled. | facade | — |
 | `Put` | `func Put(rawURL string, opts ...RequestOption) *Request` | Put creates a PUT request. | facade | — |
@@ -973,7 +973,7 @@ Package vid provides public APIs for ID generation utilities.
 | `NanoIdNWithOptions` | `func NanoIdNWithOptions(n int, opts ...NanoIDOption) string` | NanoIdNWithOptions creates a NanoId with explicit length and custom options. | facade | — |
 | `NanoIdWithOptions` | `func NanoIdWithOptions(opts ...NanoIDOption) string` | NanoIdWithOptions creates a NanoId with custom generation options. | facade | — |
 | `NewIsolatedSnowflake` | `func NewIsolatedSnowflake(opts ...SnowflakeOption) *Snowflake` | NewIsolatedSnowflake creates a standalone Snowflake generator without singleton/cache lookup. | facade | — |
-| `ObjectId` | `func ObjectId() string` | ObjectId creates a MongoDB-style ObjectId using the default timestamp, random bytes, and counter sources. | facade | — |
+| `ObjectId` | `func ObjectId() string` | ObjectId creates a MongoDB-style ObjectId using the default timestamp, random bytes, and counter sources. | facade | `ExampleObjectId` |
 | `ObjectIdWithOptions` | `func ObjectIdWithOptions(opts ...ObjectIDOption) string` | ObjectIdWithOptions creates an ObjectId with deterministic/custom generation options. | facade | — |
 | `RandomUUID` | `func RandomUUID() string` | RandomUUID creates an RFC 4122 UUID using the default entropy source. | facade | `ExampleRandomUUID` |
 | `RandomUUIDWithOptions` | `func RandomUUIDWithOptions(opts ...RandomOption) string` | RandomUUIDWithOptions creates an RFC 4122 UUID with random options. | facade | — |
@@ -1285,13 +1285,13 @@ Package vjwt provides public APIs for JWT utilities.
 | `JWTSignerES256` | `func JWTSignerES256(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) JWTSigner` | JWTSignerES256 creates an ES256 signer. | facade | — |
 | `JWTSignerHMAC` | `func JWTSignerHMAC(algorithm string, key []byte) (JWTSigner, error)` | JWTSignerHMAC creates an HMAC signer. | facade | — |
 | `JWTSignerHS256` | `func JWTSignerHS256(key []byte) JWTSigner` | JWTSignerHS256 creates an HS256 signer. | facade | — |
-| `MinHMACKeyBytes` | `func MinHMACKeyBytes(algorithm string) (int, error)` | MinHMACKeyBytes returns the minimum recommended HMAC key length for an HS* JWT algorithm. | facade | — |
+| `MinHMACKeyBytes` | `func MinHMACKeyBytes(algorithm string) (int, error)` | MinHMACKeyBytes returns the minimum recommended HMAC key length for an HS* JWT algorithm. | facade | `ExampleMinHMACKeyBytes` |
 | `MustHMACSigner` | `func MustHMACSigner(algorithm string, key []byte) JWTSigner` | MustHMACSigner creates an HMAC signer and panics on invalid algorithms. | facade | — |
 | `New` | `func New() *JWT` | New creates a new JWT object. | facade | — |
 | `NewECDSASigner` | `func NewECDSASigner(algorithm string, priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) (JWTSigner, error)` | NewECDSASigner creates an ECDSA signer for ES256, ES384, or ES512. | facade | — |
 | `NewECDSASignerWithOptions` | `func NewECDSASignerWithOptions(algorithm string, priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey, opts ...SignerOption) (JWTSigner, error)` | NewECDSASignerWithOptions creates an ECDSA signer for ES256, ES384, or ES512 with options. | facade | — |
 | `NewHMACSigner` | `func NewHMACSigner(algorithm string, key []byte) (JWTSigner, error)` | NewHMACSigner creates an HMAC signer for HS256, HS384, or HS512. | facade | — |
-| `NewHMACSignerStrict` | `func NewHMACSignerStrict(algorithm string, key []byte) (JWTSigner, error)` | NewHMACSignerStrict creates an HMAC signer and enforces the recommended minimum key length. | facade | — |
+| `NewHMACSignerStrict` | `func NewHMACSignerStrict(algorithm string, key []byte) (JWTSigner, error)` | NewHMACSignerStrict creates an HMAC signer and enforces the recommended minimum key length. | facade | `ExampleNewHMACSignerStrict` |
 | `NewJWT` | `func NewJWT() *JWT` | NewJWT creates a new JWT object. | facade | — |
 | `NewJWTError` | `func NewJWTError(msg string) *JWTError` | NewJWTError creates a JWT module error with invalid-input code. | facade | `ExampleNewJWTError` |
 | `NewRSAPSSSigner` | `func NewRSAPSSSigner(algorithm string, priv *rsa.PrivateKey, pub *rsa.PublicKey) (JWTSigner, error)` | NewRSAPSSSigner creates an RSA-PSS signer for PS256, PS384, or PS512. | facade | — |
@@ -2000,12 +2000,12 @@ Package vrand provides public APIs for random value utilities.
 | `BoolWithOptions` | `func BoolWithOptions(opts ...RandomOption) bool` | RandomBoolWithOptions returns a random boolean with per-call options. | internal | — |
 | `BytesWithOptions` | `func BytesWithOptions(n int, opts ...RandomOption) ([]byte, error)` | RandomBytesWithOptions returns n random bytes with per-call options. | internal | — |
 | `ConfigureDefaultRandomSourceProvider` | `func ConfigureDefaultRandomSourceProvider(provider func() *rand.Rand)` | ConfigureDefaultRandomSourceProvider sets the provider used to lazily create the package-level pseudo-random source. | facade | — |
-| `Ele` | `func Ele[T any](a []T) T` | Ele returns a pseudo-random element from a, or the zero value when a is empty. | facade | — |
+| `Ele` | `func Ele[T any](a []T) T` | Ele returns a pseudo-random element from a, or the zero value when a is empty. | facade | `ExampleEle` |
 | `EleWithOptions` | `func EleWithOptions[T any](a []T, opts ...RandomOption) T` | RandomEleWithOptions returns a random element with per-call options, or the zero value for an empty slice. | internal | — |
 | `Float` | `func Float() float64` | Float returns a pseudo-random float64 in [0.0, 1.0). | facade | — |
 | `FloatWithOptions` | `func FloatWithOptions(opts ...RandomOption) float64` | RandomFloatWithOptions returns a random float64 in [0.0, 1.0) with per-call options. | internal | — |
 | `Int` | `func Int(max int) int` | Int returns a pseudo-random integer in [0, max), or 0 when max is non-positive. | facade | — |
-| `IntRange` | `func IntRange(min int, max int) int` | IntRange returns a pseudo-random integer in [min, max), or min when max <= min. | facade | — |
+| `IntRange` | `func IntRange(min int, max int) int` | IntRange returns a pseudo-random integer in [min, max), or min when max <= min. | facade | `ExampleIntRange` |
 | `IntRangeWithOptions` | `func IntRangeWithOptions(min int, max int, opts ...RandomOption) int` | RandomIntRangeWithOptions returns a random integer in [min, max) with per-call options. | internal | — |
 | `IntWithOptions` | `func IntWithOptions(max int, opts ...RandomOption) int` | RandomIntWithOptions returns a random integer in [0, max) with per-call options. | internal | — |
 | `Long` | `func Long() int64` | Long returns a non-negative pseudo-random int64. | facade | — |
@@ -2016,8 +2016,8 @@ Package vrand provides public APIs for random value utilities.
 | `SecureBytes` | `func SecureBytes(n int) ([]byte, error)` | SecureBytes returns n cryptographically secure random bytes and fails closed on entropy errors. | facade | `ExampleSecureBytes` |
 | `SecureBytesWithOptions` | `func SecureBytesWithOptions(n int, opts ...RandomOption) ([]byte, error)` | SecureBytesWithOptions returns n cryptographically secure random bytes with per-call options. | facade | — |
 | `SetSeed` | `func SetSeed(seed int64)` | SetSeed resets the package-level pseudo-random source seed for reproducible non-security helpers. | facade | — |
-| `String` | `func String(n int) string` | String returns a pseudo-random lowercase alphanumeric string of length n. | facade | — |
-| `StringFrom` | `func StringFrom(charset string, n int) string` | StringFrom builds a pseudo-random string by sampling runes from charset. | facade | — |
+| `String` | `func String(n int) string` | String returns a pseudo-random lowercase alphanumeric string of length n. | facade | `ExampleString` |
+| `StringFrom` | `func StringFrom(charset string, n int) string` | StringFrom builds a pseudo-random string by sampling runes from charset. | facade | `ExampleStringFrom` |
 | `StringFromWithOptions` | `func StringFromWithOptions(charset string, n int, opts ...RandomOption) string` | RandomStringFromWithOptions builds a random string by sampling runes from charset with per-call options. | internal | — |
 | `StringUpper` | `func StringUpper(n int) string` | StringUpper returns a pseudo-random mixed-case alphanumeric string of length n. | facade | — |
 | `StringUpperWithOptions` | `func StringUpperWithOptions(n int, opts ...RandomOption) string` | RandomStringUpperWithOptions returns a random mixed-case alphanumeric string with per-call options. | internal | — |
@@ -2209,7 +2209,7 @@ Package vresty provides convenient HTTP client wrappers backed by resty.
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
 | `AddGlobalHeader` | `func AddGlobalHeader(name string, value string)` | AddGlobalHeader adds a global HTTP header value. | facade | — |
-| `BuildBasicAuth` | `func BuildBasicAuth(user string, pass string) string` | BuildBasicAuth builds a Basic authorization value. | facade | — |
+| `BuildBasicAuth` | `func BuildBasicAuth(user string, pass string) string` | BuildBasicAuth builds a Basic authorization value. | facade | `ExampleBuildBasicAuth` |
 | `BuildContentType` | `func BuildContentType(contentType string, charset string) string` | BuildContentType builds a Content-Type string with charset. | facade | — |
 | `CloneGlobalHeaders` | `func CloneGlobalHeaders() HeaderValues` | CloneGlobalHeaders returns cloned global headers. | facade | — |
 | `CloseCookie` | `func CloseCookie()` | CloseCookie disables global cookie management. | facade | — |
@@ -2217,7 +2217,7 @@ Package vresty provides convenient HTTP client wrappers backed by resty.
 | `ConfigureGlobalConfig` | `func ConfigureGlobalConfig(cfg GlobalConfig)` | ConfigureGlobalConfig replaces package-level resty defaults with cfg. | facade | — |
 | `Delete` | `func Delete(rawURL string, opts ...RequestOption) *Request` | Delete creates a DELETE request. | facade | — |
 | `DeleteSafe` | `func DeleteSafe(rawURL string, opts ...RequestOption) *Request` | DeleteSafe creates a DELETE request with SSRF-oriented safety checks enabled. | facade | — |
-| `Download` | `func Download(rawURL string, w io.Writer) (int64, error)` | Download downloads rawURL into w. | facade | — |
+| `Download` | `func Download(rawURL string, w io.Writer) (int64, error)` | Download downloads rawURL into w. | facade | `ExampleDownload` |
 | `DownloadBytesE` | `func DownloadBytesE(rawURL string) ([]byte, error)` | DownloadBytesE downloads and returns bytes or an error. | facade | — |
 | `DownloadBytesEWithOptions` | `func DownloadBytesEWithOptions(rawURL string, opts ...RequestOption) ([]byte, error)` | DownloadBytesEWithOptions downloads and returns bytes with per-request options or an error. | facade | — |
 | `DownloadBytesSafeE` | `func DownloadBytesSafeE(rawURL string, opts ...RequestOption) ([]byte, error)` | DownloadBytesSafeE downloads and returns bytes with SSRF-oriented safety checks enabled. | facade | — |
@@ -2242,7 +2242,7 @@ Package vresty provides convenient HTTP client wrappers backed by resty.
 | `GetGlobalUserAgent` | `func GetGlobalUserAgent() string` | GetGlobalUserAgent returns the global default User-Agent. | facade | — |
 | `GetMimeType` | `func GetMimeType(filename string) string` | GetMimeType returns the MIME type by file extension. | facade | — |
 | `GetSafe` | `func GetSafe(rawURL string, opts ...RequestOption) *Request` | GetSafe creates a GET request with SSRF-oriented safety checks enabled. | facade | — |
-| `GetStringE` | `func GetStringE(rawURL string) (string, error)` | GetStringE sends a GET request and returns response body as string or an error. | facade | — |
+| `GetStringE` | `func GetStringE(rawURL string) (string, error)` | GetStringE sends a GET request and returns response body as string or an error. | facade | `ExampleGetStringE` |
 | `GetStringEWithOptions` | `func GetStringEWithOptions(rawURL string, opts ...RequestOption) (string, error)` | GetStringEWithOptions sends a GET request with options and returns response body as string or an error. | facade | — |
 | `GetStringSafeE` | `func GetStringSafeE(rawURL string, opts ...RequestOption) (string, error)` | GetStringSafeE sends a safe GET request and returns response body as string or an error. | facade | `ExampleGetStringSafeE` |
 | `GetWithParamsE` | `func GetWithParamsE(rawURL string, params map[string]any) (string, error)` | GetWithParamsE sends a GET request with form parameters and returns response body or an error. | facade | — |
@@ -2277,7 +2277,7 @@ Package vresty provides convenient HTTP client wrappers backed by resty.
 | `PostJSONEWithOptions` | `func PostJSONEWithOptions(rawURL string, jsonStr string, opts ...RequestOption) (string, error)` | PostJSONEWithOptions posts JSON body with options and returns response body or an error. | facade | — |
 | `PostJSONSafeE` | `func PostJSONSafeE(rawURL string, jsonStr string, opts ...RequestOption) (string, error)` | PostJSONSafeE posts JSON body with SSRF-oriented safety checks enabled. | facade | — |
 | `PostSafe` | `func PostSafe(rawURL string, opts ...RequestOption) *Request` | PostSafe creates a POST request with SSRF-oriented safety checks enabled. | facade | — |
-| `PostStringE` | `func PostStringE(rawURL string, body string) (string, error)` | PostStringE posts a string body and returns response body or an error. | facade | — |
+| `PostStringE` | `func PostStringE(rawURL string, body string) (string, error)` | PostStringE posts a string body and returns response body or an error. | facade | `ExamplePostStringE` |
 | `PostStringEWithOptions` | `func PostStringEWithOptions(rawURL string, body string, opts ...RequestOption) (string, error)` | PostStringEWithOptions posts a string body with options and returns response body or an error. | facade | — |
 | `PostStringSafeE` | `func PostStringSafeE(rawURL string, body string, opts ...RequestOption) (string, error)` | PostStringSafeE posts a string body with SSRF-oriented safety checks enabled. | facade | — |
 | `Put` | `func Put(rawURL string, opts ...RequestOption) *Request` | Put creates a PUT request. | facade | — |
@@ -2684,14 +2684,14 @@ Package vurl provides URL and URI utilities.
 | --- | --- | --- | --- | --- |
 | `AppendQuery` | `func AppendQuery(rawURL string, form map[string]any) string` | AppendQuery appends form values to rawURL. | facade | — |
 | `BuildQuery` | `func BuildQuery(paramMap map[string]any) string` | BuildQuery converts a map to a URL query string. | facade | — |
-| `Complete` | `func Complete(baseURL string, relativePath string) (string, error)` | Complete resolves relativePath against baseURL and returns the absolute URL string. | facade | — |
+| `Complete` | `func Complete(baseURL string, relativePath string) (string, error)` | Complete resolves relativePath against baseURL and returns the absolute URL string. | facade | `ExampleComplete` |
 | `ContentLength` | `func ContentLength(raw string) (int64, error)` | ContentLength returns the resource content length. | facade | — |
 | `ContentLengthSafe` | `func ContentLengthSafe(raw string) (int64, error)` | ContentLengthSafe returns an HTTP(S) resource content length with secure defaults for untrusted input. | facade | — |
 | `ContentLengthSafeWithOptions` | `func ContentLengthSafeWithOptions(raw string, opts ...ResourceOption) (int64, error)` | ContentLengthSafeWithOptions returns an HTTP(S) resource content length with secure defaults for untrusted input. | facade | — |
 | `ContentLengthWithOptions` | `func ContentLengthWithOptions(raw string, opts ...ResourceOption) (int64, error)` | ContentLengthWithOptions returns the resource content length with per-call options. | facade | — |
 | `DataURI` | `func DataURI(mimeType string, charset string, encoding string, data string) string` | DataURI builds a Data URI string. | facade | — |
 | `DataURIBase64` | `func DataURIBase64(mimeType string, data string) string` | DataURIBase64 builds a base64 Data URI string. | facade | — |
-| `Decode` | `func Decode(s string) (string, error)` | Decode unescapes a URL query component and converts plus signs to spaces. | facade | — |
+| `Decode` | `func Decode(s string) (string, error)` | Decode unescapes a URL query component and converts plus signs to spaces. | facade | `ExampleDecode` |
 | `DecodeForPath` | `func DecodeForPath(s string) (string, error)` | DecodeForPath unescapes percent-encoded path text without converting plus signs to spaces. | facade | — |
 | `DecodePlus` | `func DecodePlus(s string, plusToSpace bool) (string, error)` | DecodePlus unescapes percent-encoded text and controls whether plus signs become spaces. | facade | — |
 | `DecodeQuery` | `func DecodeQuery(paramsStr string) map[string][]string` | DecodeQuery parses a query string into a multi-value map. | facade | — |
@@ -2902,7 +2902,7 @@ Package vzip provides ZIP, gzip, and zlib utilities.
 | `GzipFileWithOptions` | `func GzipFileWithOptions(path string, opts ...ArchiveOption) ([]byte, error)` | GzipFileWithOptions compresses a file using gzip and per-call options. | facade | — |
 | `GzipReader` | `func GzipReader(r io.Reader, estimatedLength int) ([]byte, error)` | GzipReader compresses all bytes from r using gzip. | facade | — |
 | `GzipReaderWithOptions` | `func GzipReaderWithOptions(r io.Reader, estimatedLength int, opts ...ArchiveOption) ([]byte, error)` | GzipReaderWithOptions compresses all bytes from r using gzip with per-call options. | facade | — |
-| `GzipString` | `func GzipString(content string) ([]byte, error)` | GzipString compresses text using gzip. | facade | — |
+| `GzipString` | `func GzipString(content string) ([]byte, error)` | GzipString compresses text using gzip. | facade | `ExampleGzipString` |
 | `GzipWithOptions` | `func GzipWithOptions(data []byte, opts ...ArchiveOption) ([]byte, error)` | GzipWithOptions compresses data using gzip with per-call options. | facade | — |
 | `ListFileNames` | `func ListFileNames(zipFile string, dir string) ([]string, error)` | ListFileNames returns direct file names under dir inside zipFile. | facade | — |
 | `ListFileNamesWithOptions` | `func ListFileNamesWithOptions(zipFile string, dir string, opts ...ArchiveOption) ([]string, error)` | ListFileNamesWithOptions returns direct file names under dir inside zipFile using per-call options. | facade | — |
@@ -2916,12 +2916,12 @@ Package vzip provides ZIP, gzip, and zlib utilities.
 | `UnGzip` | `func UnGzip(data []byte) ([]byte, error)` | UnGzip decompresses gzip data. | facade | — |
 | `UnGzipReader` | `func UnGzipReader(r io.Reader, estimatedLength int) ([]byte, error)` | UnGzipReader decompresses all gzip bytes from r. | facade | — |
 | `UnGzipReaderWithOptions` | `func UnGzipReaderWithOptions(r io.Reader, estimatedLength int, opts ...ArchiveOption) ([]byte, error)` | UnGzipReaderWithOptions decompresses gzip bytes from r with per-call options. | facade | — |
-| `UnGzipString` | `func UnGzipString(data []byte) (string, error)` | UnGzipString decompresses gzip data and returns text. | facade | — |
+| `UnGzipString` | `func UnGzipString(data []byte) (string, error)` | UnGzipString decompresses gzip data and returns text. | facade | `ExampleUnGzipString` |
 | `UnGzipWithOptions` | `func UnGzipWithOptions(data []byte, opts ...ArchiveOption) ([]byte, error)` | UnGzipWithOptions decompresses gzip data with per-call options. | facade | — |
 | `UnZlib` | `func UnZlib(data []byte) ([]byte, error)` | UnZlib decompresses zlib data. | facade | — |
 | `UnZlibReader` | `func UnZlibReader(r io.Reader, estimatedLength int) ([]byte, error)` | UnZlibReader decompresses all zlib bytes from r. | facade | — |
 | `UnZlibReaderWithOptions` | `func UnZlibReaderWithOptions(r io.Reader, estimatedLength int, opts ...ArchiveOption) ([]byte, error)` | UnZlibReaderWithOptions decompresses zlib bytes from r with per-call options. | facade | — |
-| `UnZlibString` | `func UnZlibString(data []byte) (string, error)` | UnZlibString decompresses zlib data and returns text. | facade | — |
+| `UnZlibString` | `func UnZlibString(data []byte) (string, error)` | UnZlibString decompresses zlib data and returns text. | facade | `ExampleUnZlibString` |
 | `UnZlibWithOptions` | `func UnZlibWithOptions(data []byte, opts ...ArchiveOption) ([]byte, error)` | UnZlibWithOptions decompresses zlib data with per-call options. | facade | — |
 | `Unzip` | `func Unzip(zipFile string) (string, error)` | Unzip extracts zipFile into a sibling directory named after the archive. | facade | — |
 | `UnzipReaderTo` | `func UnzipReaderTo(r *zip.Reader, destDir string) error` | UnzipReaderTo extracts archive reader contents into destDir. | facade | — |
@@ -2980,5 +2980,5 @@ Package vzip provides ZIP, gzip, and zlib utilities.
 | `ZlibLevelWithOptions` | `func ZlibLevelWithOptions(data []byte, level int, opts ...ArchiveOption) ([]byte, error)` | ZlibLevelWithOptions compresses data using zlib with the specified compression level and per-call options. | facade | — |
 | `ZlibReader` | `func ZlibReader(r io.Reader, level int, estimatedLength int) ([]byte, error)` | ZlibReader compresses all bytes from r using zlib with the specified compression level. | facade | — |
 | `ZlibReaderWithOptions` | `func ZlibReaderWithOptions(r io.Reader, level int, estimatedLength int, opts ...ArchiveOption) ([]byte, error)` | ZlibReaderWithOptions compresses all bytes from r using zlib with the specified compression level and per-call options. | facade | — |
-| `ZlibString` | `func ZlibString(content string, level int) ([]byte, error)` | ZlibString compresses text using zlib with the specified compression level. | facade | — |
+| `ZlibString` | `func ZlibString(content string, level int) ([]byte, error)` | ZlibString compresses text using zlib with the specified compression level. | facade | `ExampleZlibString` |
 

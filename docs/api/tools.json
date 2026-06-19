@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 48,
     "function_count": 2528,
-    "functions_with_examples": 117,
+    "functions_with_examples": 150,
     "context_aware_functions": 20,
     "returns_error_functions": 564,
     "variadic_functions": 754,
@@ -686,7 +686,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewBitMapBloomFilter"
+          ]
         },
         {
           "name": "NewBitMapBloomFilterE",
@@ -813,7 +816,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewBitSetBloomFilter"
+          ]
         },
         {
           "name": "NewBitSetBloomFilterE",
@@ -971,7 +977,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewFuncFilter"
+          ]
         },
         {
           "name": "NewFuncFilterE",
@@ -1138,7 +1147,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewIntMap"
+          ]
         },
         {
           "name": "NewJSFilter",
@@ -2568,7 +2580,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleMerge"
+          ]
         },
         {
           "name": "New",
@@ -2671,7 +2686,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseBytes"
+          ]
         },
         {
           "name": "ParseTOML",
@@ -2732,7 +2750,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseYAML"
+          ]
         },
         {
           "name": "ParseYAMLFull",
@@ -4741,7 +4762,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleAESEncryptGCM"
+          ]
         },
         {
           "name": "AESEncryptGCMWithOptions",
@@ -5691,7 +5715,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleRandomBytesWithOptions"
+          ]
         },
         {
           "name": "SHA224",
@@ -7500,7 +7527,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleBuildConditions"
+          ]
         },
         {
           "name": "BuildLikeValue",
@@ -7522,7 +7552,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleBuildLikeValue"
+          ]
         },
         {
           "name": "ConditionsFromEntity",
@@ -7558,7 +7591,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleDelete"
+          ]
         },
         {
           "name": "Desc",
@@ -10472,7 +10508,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleExists"
+          ]
         },
         {
           "name": "ExistsWithOptions",
@@ -11455,7 +11494,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWriteFileString"
+          ]
         },
         {
           "name": "WriteFileStringWithOptions",
@@ -12418,7 +12460,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleDownload"
+          ]
         },
         {
           "name": "DownloadBytesE",
@@ -14023,7 +14068,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExamplePostStringE"
+          ]
         },
         {
           "name": "PostStringEWithOptions",
@@ -15822,7 +15870,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleObjectId"
+          ]
         },
         {
           "name": "ObjectIdWithOptions",
@@ -21377,7 +21428,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleMinHMACKeyBytes"
+          ]
         },
         {
           "name": "MustHMACSigner",
@@ -21515,7 +21569,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewHMACSignerStrict"
+          ]
         },
         {
           "name": "NewJWT",
@@ -34366,7 +34423,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleEle"
+          ]
         },
         {
           "name": "EleWithOptions",
@@ -34458,7 +34518,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIntRange"
+          ]
         },
         {
           "name": "IntRangeWithOptions",
@@ -34663,7 +34726,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleString"
+          ]
         },
         {
           "name": "StringFrom",
@@ -34685,7 +34751,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleStringFrom"
+          ]
         },
         {
           "name": "StringFromWithOptions",
@@ -38450,7 +38519,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleBuildBasicAuth"
+          ]
         },
         {
           "name": "BuildContentType",
@@ -38590,7 +38662,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleDownload"
+          ]
         },
         {
           "name": "DownloadBytesE",
@@ -39123,7 +39198,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetStringE"
+          ]
         },
         {
           "name": "GetStringEWithOptions",
@@ -39925,7 +40003,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExamplePostStringE"
+          ]
         },
         {
           "name": "PostStringEWithOptions",
@@ -46426,7 +46507,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleComplete"
+          ]
         },
         {
           "name": "ContentLength",
@@ -46581,7 +46665,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleDecode"
+          ]
         },
         {
           "name": "DecodeForPath",
@@ -50361,7 +50448,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGzipString"
+          ]
         },
         {
           "name": "GzipWithOptions",
@@ -50672,7 +50762,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleUnGzipString"
+          ]
         },
         {
           "name": "UnGzipWithOptions",
@@ -50783,7 +50876,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleUnZlibString"
+          ]
         },
         {
           "name": "UnZlibWithOptions",
@@ -52116,7 +52212,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleZlibString"
+          ]
         }
       ]
     }

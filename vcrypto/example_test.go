@@ -1,6 +1,7 @@
 package vcrypto_test
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 
@@ -25,4 +26,31 @@ func ExampleValidateAESKey() {
 	// Output:
 	// true
 	// true
+}
+
+func ExampleRandomBytesWithOptions() {
+	b, err := vcrypto.RandomBytesWithOptions(4, vcrypto.WithRandomReader(bytes.NewReader([]byte{1, 2, 3, 4})))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Printf("%v\n", b)
+	// Output: [1 2 3 4]
+}
+
+func ExampleAESEncryptGCM() {
+	key := []byte("0123456789abcdef")
+	nonce := []byte("123456789012")
+	cipherText, err := vcrypto.AESEncryptGCM([]byte("secret"), key, nonce, nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	plain, err := vcrypto.AESDecryptGCM(cipherText, key, nonce, nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(plain))
+	// Output: secret
 }

@@ -44,3 +44,45 @@ func ExampleZipEntriesToWriter() {
 	fmt.Println(names)
 	// Output: [app.setting]
 }
+
+func ExampleGzipString() {
+	compressed, err := vzip.GzipString("hello")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(len(compressed) > 0)
+	// Output: true
+}
+
+func ExampleUnGzipString() {
+	compressed, _ := vzip.GzipString("hello")
+	plain, err := vzip.UnGzipString(compressed)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(plain)
+	// Output: hello
+}
+
+func ExampleZlibString() {
+	compressed, err := vzip.ZlibString("hello", 6)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(len(compressed) > 0)
+	// Output: true
+}
+
+func ExampleUnZlibString() {
+	compressed, _ := vzip.ZlibString("hello", 6)
+	plain, err := vzip.UnZlibString(compressed)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(plain)
+	// Output: hello
+}

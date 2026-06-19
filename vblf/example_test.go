@@ -6,7 +6,7 @@ import (
 	"github.com/imajinyun/go-knifer/vblf"
 )
 
-func ExampleBitSetBloomFilter() {
+func ExampleNewBitSetBloomFilter() {
 	bf := vblf.NewBitSetBloomFilter(1000, 100, 3)
 	bf.Add("hello")
 	bf.Add("world")
@@ -18,7 +18,7 @@ func ExampleBitSetBloomFilter() {
 	// false
 }
 
-func ExampleIntMap() {
+func ExampleNewIntMap() {
 	m := vblf.NewIntMap(1000)
 	m.Add(42)
 
@@ -27,4 +27,20 @@ func ExampleIntMap() {
 	// Output:
 	// true
 	// false
+}
+
+func ExampleNewBitMapBloomFilter() {
+	bf := vblf.NewBitMapBloomFilter(5)
+	bf.Add("hello")
+
+	fmt.Println(bf.Contains("hello"))
+	// Output: true
+}
+
+func ExampleNewFuncFilter() {
+	filter := vblf.NewFuncFilter(1000, func(s string) int64 { return int64(len(s)) })
+	filter.Add("hello")
+
+	fmt.Println(filter.Contains("hello"))
+	// Output: true
 }

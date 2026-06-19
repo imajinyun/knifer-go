@@ -1,6 +1,7 @@
 package vjwt_test
 
 import (
+	"bytes"
 	"crypto/rand"
 	"crypto/rsa"
 	"errors"
@@ -37,4 +38,16 @@ func ExampleNewRSAPSSSignerWithOptions() {
 	)
 	fmt.Println(err == nil, signer.Algorithm())
 	// Output: true PS256
+}
+
+func ExampleMinHMACKeyBytes() {
+	n, err := vjwt.MinHMACKeyBytes(vjwt.JWTAlgHS256)
+	fmt.Println(n, err == nil)
+	// Output: 32 true
+}
+
+func ExampleNewHMACSignerStrict() {
+	signer, err := vjwt.NewHMACSignerStrict(vjwt.JWTAlgHS256, bytes.Repeat([]byte("k"), 32))
+	fmt.Println(err == nil, signer.Algorithm())
+	// Output: true HS256
 }

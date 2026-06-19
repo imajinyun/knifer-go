@@ -1,8 +1,10 @@
 package vhttp_test
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 
@@ -44,4 +46,34 @@ func ExampleGetStringSafeE() {
 	}
 	fmt.Println(body)
 	// Output: safe
+}
+
+func ExamplePostStringE() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, _ := io.ReadAll(r.Body)
+		_, _ = fmt.Fprintf(w, "%s:%s", r.Method, body)
+	}))
+	defer server.Close()
+
+	body, err := vhttp.PostStringE(server.URL, "payload")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(body)
+	// Output: POST:payload
+}
+
+func ExampleDownload() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("download"))
+	}))
+	defer server.Close()
+
+	var buf bytes.Buffer
+	n, err := vhttp.Download(server.URL, &buf)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(n, buf.String())
+	// Output: 8 download
 }

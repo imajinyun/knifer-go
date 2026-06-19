@@ -28,3 +28,34 @@ func ExampleNewEntity() {
 	// INSERT INTO users (age, name) VALUES (?, ?)
 	// [30 Alice]
 }
+
+func ExampleBuildConditions() {
+	sql, args, err := vdb.BuildConditions(
+		vdb.Like("name", vdb.BuildLikeValue("go", "prefix")),
+		vdb.In("role", "admin", "owner"),
+	)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(sql)
+	fmt.Println(args)
+	// Output:
+	// name LIKE ? AND role IN (?, ?)
+	// [go% admin owner]
+}
+
+func ExampleDelete() {
+	b := vdb.Delete("users").Where(vdb.IsNull("deleted_at"))
+	sql, args, _ := b.SQL()
+	fmt.Println(sql)
+	fmt.Println(args)
+	// Output:
+	// DELETE FROM users WHERE deleted_at IS NULL
+	// []
+}
+
+func ExampleBuildLikeValue() {
+	fmt.Println(vdb.BuildLikeValue("go", "contains"))
+	// Output: %go%
+}

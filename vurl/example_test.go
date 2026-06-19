@@ -23,3 +23,23 @@ func ExampleIsHTTPURL() {
 	// true
 	// false
 }
+
+func ExampleDecode() {
+	decoded, err := vurl.Decode("a+b%26c")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(decoded)
+	// Output: a b&c
+}
+
+func ExampleComplete() {
+	full, err := vurl.Complete("https://example.com/docs/", "api/tools.json")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(full)
+	// Output: https://example.com/docs/api/tools.json
+}
