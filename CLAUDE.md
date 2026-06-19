@@ -94,8 +94,8 @@
 | `make worktree-check` | Fail when unrelated untracked Go files may pollute tests or commits |
 | `make change-policy-check` | Detect change policies from staged, unstaged, and untracked local diff |
 | `make security-sensitive-diff` | Detect changes under security-sensitive public facades and their internal implementations |
-| `make agent-evidence` | Emit `/tmp/go-knifer-agent-validation.json` with detected policies and validation evidence |
-| `make agent-evidence-check` | Validate Agent evidence schema, policy references, command references, risk, and embedded check status |
+| `make agent-evidence` | Emit `/tmp/go-knifer-agent-validation.json` with detected policies, required commands, and command attestations |
+| `make agent-evidence-check` | Validate Agent evidence schema, policy references, command references, command attestations, risk, and embedded check status |
 | `make quick-check` | Fast local: mod-verify → vet → arch → test → api-check → diff-whitespace |
 | `make security-check` | Lint + govulncheck |
 | `make full-check COVERAGE_FILE=/tmp/coverage.out` | Full pre-push: quick-check + race coverage + coverage gate + lint + vuln |
@@ -132,8 +132,8 @@
 - **API snapshot**: `docs/api/exports.txt` is CI-enforced. Run `UPDATE_API=1 make api-check` after intentional public API changes.
 - **AI metadata**: `ai-context.json` is CI-enforced by `make ai-context-check`; update command side-effect metadata, `risk_level`, facades, security-sensitive package lists, or coverage gates when governance inputs change.
 - **Change policies**: `ai-context.json.change_type_policies` maps PR change types to required Agent validation commands; keep PR template change types aligned with those policy keys.
-- **Agent evidence**: `make agent-evidence` writes `/tmp/go-knifer-agent-validation.json`; use it to summarize detected policies, required commands, security-sensitive paths, and governance check results.
-- **Agent evidence validation**: `make agent-evidence-check` validates the generated evidence JSON against `ai-context.json`; all change policies must require both evidence generation and evidence validation.
+- **Agent evidence**: `make agent-evidence` writes `/tmp/go-knifer-agent-validation.json`; use it to summarize detected policies, required commands, command attestations, security-sensitive paths, and governance check results.
+- **Agent evidence validation**: `make agent-evidence-check` validates the generated evidence JSON against `ai-context.json`; all change policies must require both evidence generation and evidence validation, and every required command must have an attestation entry.
 - **CI Agent governance**: GitHub Actions runs `make ci-agent-governance` with `AGENT_CHANGE_BASE_REF` so policy detection is based on the PR or push diff, then uploads the Agent evidence JSON artifact.
 - **CI workflow invariants**: `ai-context.json.ci_workflows` declares required GitHub Actions jobs, Agent governance commands, environment variables, and artifacts; `make ci-workflow-check` validates them.
 - **Security-sensitive diff**: `make security-sensitive-diff` checks staged, unstaged, and untracked paths against `ai-context.json.security_sensitive_packages` and their mapped `internal/*` implementations.
@@ -167,7 +167,7 @@ When the user asks to implement, rename, refactor, document, or otherwise modify
    - For coverage gates, first generate a fresh profile, then pass that exact file to the checker, e.g. `go test -race -shuffle=on -coverprofile=/tmp/go-knifer-coverage.out ./...` followed by `bash bin/check_coverage.sh /tmp/go-knifer-coverage.out`. Do not rely on an implicit or stale `coverage.out`.
    - `git diff --check` before committing.
    - `make agent-evidence` after governance checks to generate `/tmp/go-knifer-agent-validation.json` for PR evidence.
-   - `make agent-evidence-check` after generating Agent evidence to verify policy, command, risk, and embedded check consistency.
+   - `make agent-evidence-check` after generating Agent evidence to verify policy, command, attestation, risk, and embedded check consistency.
    - Prefer the named workflow targets when they match the change scope: `make agent-check` for the default AI/Agent-safe gate, `make agent-security-check` for lint/vulnerability gates, `make agent-full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out` for the full AI/Agent gate, and `make ci-test` for the CI test-job gate. For security-sensitive changes, use the `security_sensitive` policy in `ai-context.json.change_type_policies`.
 
 5. If validation fails, **fix the cause** and re-run the failing command before reporting completion.

@@ -127,6 +127,64 @@ for command in required_commands:
 if require_string(evidence.get("highest_required_command_risk"), "highest_required_command_risk") != highest_risk:
     add_error(f"highest_required_command_risk must be {highest_risk}")
 
+allowed_attestation_statuses = {"passed", "failed", "pending", "not_recorded", "skipped", "covered_by_ci"}
+allowed_attestation_sources = {
+    "embedded_check",
+    "current_process",
+    "post_generation",
+    "required_by_policy",
+    "agent_run",
+    "ci_job",
+    "manual_review",
+}
+command_attestations = require_mapping(evidence.get("command_attestations"), "command_attestations")
+for command in required_commands:
+    attestation = require_mapping(command_attestations.get(command), f"command_attestations.{command}")
+    status = require_string(attestation.get("status"), f"command_attestations.{command}.status")
+    if status and status not in allowed_attestation_statuses:
+        add_error(
+            f"command_attestations.{command}.status must be one of: "
+            + ", ".join(sorted(allowed_attestation_statuses))
+        )
+    source = require_string(attestation.get("source"), f"command_attestations.{command}.source")
+    if source and source not in allowed_attestation_sources:
+        add_error(
+            f"command_attestations.{command}.source must be one of: "
+            + ", ".join(sorted(allowed_attestation_sources))
+        )
+    if status in {"pending", "not_recorded", "skipped"}:
+        require_string(attestation.get("reason"), f"command_attestations.{command}.reason")
+    if status in {"passed", "failed"}:
+        require_string(attestation.get("cmd"), f"command_attestations.{command}.cmd")
+        exit_code = attestation.get("exit_code")
+        if not isinstance(exit_code, int) or isinstance(exit_code, bool):
+            add_error(f"command_attestations.{command}.exit_code must be an integer")
+        elif status == "passed" and exit_code != 0:
+            add_error(f"command_attestations.{command}.exit_code must be 0 when status is passed")
+        elif status == "failed" and exit_code == 0:
+            add_error(f"command_attestations.{command}.exit_code must be non-zero when status is failed")
+    if status == "covered_by_ci":
+        require_string(attestation.get("ci_job"), f"command_attestations.{command}.ci_job")
+
+agent_evidence_attestation = require_mapping(
+    command_attestations.get("agent_evidence"),
+    "command_attestations.agent_evidence",
+)
+if require_string(agent_evidence_attestation.get("status"), "command_attestations.agent_evidence.status") != "passed":
+    add_error("command_attestations.agent_evidence.status must be passed")
+if require_string(agent_evidence_attestation.get("source"), "command_attestations.agent_evidence.source") != "current_process":
+    add_error("command_attestations.agent_evidence.source must be current_process")
+
+agent_evidence_check_attestation = require_mapping(
+    command_attestations.get("agent_evidence_check"),
+    "command_attestations.agent_evidence_check",
+)
+if require_string(agent_evidence_check_attestation.get("status"), "command_attestations.agent_evidence_check.status") != "pending":
+    add_error("command_attestations.agent_evidence_check.status must be pending")
+if require_string(agent_evidence_check_attestation.get("source"), "command_attestations.agent_evidence_check.source") != "post_generation":
+    add_error("command_attestations.agent_evidence_check.source must be post_generation")
+require_string(agent_evidence_check_attestation.get("reason"), "command_attestations.agent_evidence_check.reason")
+
 checks = require_mapping(evidence.get("checks"), "checks")
 for check_name in ("ai_context_check", "change_policy_check"):
     check = require_mapping(checks.get(check_name), f"checks.{check_name}")
@@ -137,6 +195,15 @@ for check_name in ("ai_context_check", "change_policy_check"):
     elif check.get("exit_code") != 0:
         add_error(f"checks.{check_name}.exit_code must be 0")
     require_string(check.get("cmd"), f"checks.{check_name}.cmd")
+    attestation = require_mapping(command_attestations.get(check_name), f"command_attestations.{check_name}")
+    if attestation.get("status") != check.get("status"):
+        add_error(f"command_attestations.{check_name}.status must match checks.{check_name}.status")
+    if attestation.get("exit_code") != check.get("exit_code"):
+        add_error(f"command_attestations.{check_name}.exit_code must match checks.{check_name}.exit_code")
+    if attestation.get("cmd") != check.get("cmd"):
+        add_error(f"command_attestations.{check_name}.cmd must match checks.{check_name}.cmd")
+    if attestation.get("source") != "embedded_check":
+        add_error(f"command_attestations.{check_name}.source must be embedded_check")
 
 if security_sensitive_paths and "security_sensitive" not in detected_policies:
     add_error("security_sensitive_paths requires detected security_sensitive policy")
@@ -163,6 +230,10 @@ if sorted(security_sensitive_paths) != expected_security_sensitive_paths:
     )
 
 security_sensitive_check = require_mapping(checks.get("security_sensitive_diff"), "checks.security_sensitive_diff")
+security_sensitive_attestation = require_mapping(
+    command_attestations.get("security_sensitive_diff"),
+    "command_attestations.security_sensitive_diff",
+)
 security_sensitive_status = require_string(
     security_sensitive_check.get("status"),
     "checks.security_sensitive_diff.status",
@@ -171,6 +242,14 @@ security_sensitive_exit_code = security_sensitive_check.get("exit_code")
 if not isinstance(security_sensitive_exit_code, int) or isinstance(security_sensitive_exit_code, bool):
     add_error("checks.security_sensitive_diff.exit_code must be an integer")
 require_string(security_sensitive_check.get("cmd"), "checks.security_sensitive_diff.cmd")
+if security_sensitive_attestation.get("status") != security_sensitive_status:
+    add_error("command_attestations.security_sensitive_diff.status must match checks.security_sensitive_diff.status")
+if security_sensitive_attestation.get("exit_code") != security_sensitive_exit_code:
+    add_error("command_attestations.security_sensitive_diff.exit_code must match checks.security_sensitive_diff.exit_code")
+if security_sensitive_attestation.get("cmd") != security_sensitive_check.get("cmd"):
+    add_error("command_attestations.security_sensitive_diff.cmd must match checks.security_sensitive_diff.cmd")
+if security_sensitive_attestation.get("source") != "embedded_check":
+    add_error("command_attestations.security_sensitive_diff.source must be embedded_check")
 security_sensitive_stdout = security_sensitive_check.get("stdout", "")
 security_sensitive_stderr = security_sensitive_check.get("stderr", "")
 if not expected_security_sensitive_paths:

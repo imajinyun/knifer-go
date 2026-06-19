@@ -44,6 +44,17 @@ def run(args):
     }
 
 
+def command_attestation(result, source):
+    return {
+        "status": result["status"],
+        "source": source,
+        "cmd": result["cmd"],
+        "exit_code": result["exit_code"],
+        "stdout": result.get("stdout", ""),
+        "stderr": result.get("stderr", ""),
+    }
+
+
 def change_base_ref():
     base_ref = os.environ.get("AGENT_CHANGE_BASE_REF")
     if not base_ref and os.environ.get("GITHUB_BASE_REF"):
@@ -135,6 +146,31 @@ checks = {
     "change_policy_check": run(["bash", "bin/check_change_policy.sh"]),
 }
 
+command_attestations = {
+    "ai_context_check": command_attestation(checks["ai_context_check"], "embedded_check"),
+    "change_policy_check": command_attestation(checks["change_policy_check"], "embedded_check"),
+    "security_sensitive_diff": command_attestation(checks["security_sensitive_diff"], "embedded_check"),
+    "agent_evidence": {
+        "status": "passed",
+        "source": "current_process",
+        "cmd": data["commands"]["agent_evidence"]["cmd"],
+        "exit_code": 0,
+    },
+    "agent_evidence_check": {
+        "status": "pending",
+        "source": "post_generation",
+        "cmd": data["commands"]["agent_evidence_check"]["cmd"],
+        "reason": "validated by make agent-evidence-check after evidence generation",
+    },
+}
+for command in required_commands:
+    command_attestations.setdefault(command, {
+        "status": "not_recorded",
+        "source": "required_by_policy",
+        "cmd": data["commands"].get(command, {}).get("cmd", command),
+        "reason": "required command has not been attested in this evidence",
+    })
+
 report = {
     "schema_version": "1.0",
     "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -147,6 +183,7 @@ report = {
     "changed_files": files,
     "detected_change_policies": sorted(detected_policies),
     "required_commands": required_commands,
+    "command_attestations": command_attestations,
     "highest_required_command_risk": highest_risk,
     "security_sensitive_paths": sorted(set(security_sensitive_paths)),
     "checks": checks,

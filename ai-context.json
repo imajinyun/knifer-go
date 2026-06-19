@@ -79,7 +79,7 @@
       "network_required": false,
       "risk_level": "low",
       "creates_artifacts": ["/tmp/go-knifer-agent-validation.json"],
-      "notes": "Writes machine-readable Agent validation evidence outside the repository root, including base ref and deleted-file-aware diff metadata."
+      "notes": "Writes machine-readable Agent validation evidence outside the repository root, including base ref, deleted-file-aware diff metadata, detected policies, required commands, and command attestations."
     },
     "agent_evidence_check": {
       "cmd": "make agent-evidence-check",
@@ -89,7 +89,7 @@
       "network_required": false,
       "risk_level": "low",
       "reads_artifacts": ["/tmp/go-knifer-agent-validation.json"],
-      "notes": "Validates Agent evidence JSON schema, diff metadata, policy references, command references, risk calculation, and embedded check consistency."
+      "notes": "Validates Agent evidence JSON schema, diff metadata, policy references, command references, command attestation coverage, risk calculation, and embedded check consistency."
     },
     "agent_full_check": {
       "cmd": "make agent-full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out",
