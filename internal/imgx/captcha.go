@@ -2,13 +2,15 @@ package imgx
 
 import (
 	"encoding/base64"
-	"fmt"
 	"image/color"
 	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
+
+	knifer "github.com/imajinyun/go-knifer"
 )
 
 // ICaptcha mirrors the ICaptcha interface.
@@ -213,7 +215,9 @@ func (a *AbstractCaptcha) Verify(userInputCode string) bool {
 }
 
 // ImageBytes returns image bytes, or nil if not generated yet.
-func (a *AbstractCaptcha) ImageBytes() []byte { return a.imgBytes }
+func (a *AbstractCaptcha) ImageBytes() []byte { return slices.Clone(a.imgBytes) }
+
+func (a *AbstractCaptcha) imageBytesCopy() []byte { return slices.Clone(a.imgBytes) }
 
 // ImageBase64 returns the Base64-encoded image.
 func (a *AbstractCaptcha) ImageBase64() string {
@@ -227,9 +231,12 @@ func (a *AbstractCaptcha) ImageBase64Data() string {
 
 // Write writes the image to an io.Writer.
 func (a *AbstractCaptcha) Write(w io.Writer) error {
+	if w == nil {
+		return &knifer.Error{Code: knifer.ErrCodeInvalidInput, Message: "gkcaptcha: nil writer"}
+	}
 	b := a.getImageBytes()
 	if len(b) == 0 {
-		return fmt.Errorf("gkcaptcha: empty image, call CreateCode first")
+		return &knifer.Error{Code: knifer.ErrCodeInvalidInput, Message: "gkcaptcha: empty image, call CreateCode first"}
 	}
 	_, err := w.Write(b)
 	return err
@@ -244,7 +251,7 @@ func (a *AbstractCaptcha) WriteToFile(path string) error {
 func (a *AbstractCaptcha) WriteToFileWithOptions(path string, opts ...WriteOption) error {
 	b := a.getImageBytes()
 	if len(b) == 0 {
-		return fmt.Errorf("gkcaptcha: empty image, call CreateCode first")
+		return &knifer.Error{Code: knifer.ErrCodeInvalidInput, Message: "gkcaptcha: empty image, call CreateCode first"}
 	}
 	cfg := applyWriteOptions(opts)
 	if cfg.createParents {
@@ -258,6 +265,9 @@ func (a *AbstractCaptcha) WriteToFileWithOptions(path string, opts ...WriteOptio
 	}
 	f, err := cfg.openFile(path, flag, cfg.filePerm) // #nosec G304 -- caller controls destination path.
 	if err != nil {
+		if os.IsExist(err) {
+			return knifer.WrapError(knifer.ErrCodeInvalidInput, "gkcaptcha: file already exists", fs.ErrExist)
+		}
 		return err
 	}
 	defer func() { _ = f.Close() }()
@@ -295,7 +305,7 @@ func (a *AbstractCaptcha) generateCode() {
 }
 
 func (a *AbstractCaptcha) setImageBytes(b []byte) {
-	a.imgBytes = b
+	a.imgBytes = slices.Clone(b)
 }
 
 func (a *AbstractCaptcha) bg() color.Color {

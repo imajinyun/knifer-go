@@ -101,7 +101,7 @@ func (c *GifCaptcha) ImageBytes() []byte {
 	if c.imgBytes == nil {
 		c.CreateCode()
 	}
-	return c.imgBytes
+	return c.imageBytesCopy()
 }
 
 // Code generates the captcha lazily.

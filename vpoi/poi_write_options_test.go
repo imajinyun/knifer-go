@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	knifer "github.com/imajinyun/go-knifer"
 	"github.com/imajinyun/go-knifer/vpoi"
 )
 
@@ -28,6 +29,13 @@ func TestExcelFacadeWriteOptions(t *testing.T) {
 	}
 	if err := vpoi.WriteRows(path, rows, vpoi.WithOverwrite(false)); err == nil {
 		t.Fatal("WriteRows should reject overwrite=false for existing workbook")
+	} else {
+		if !errors.Is(err, fs.ErrExist) {
+			t.Fatalf("WriteRows overwrite error = %v, want fs.ErrExist", err)
+		}
+		if !errors.Is(err, knifer.ErrCodeInvalidInput) {
+			t.Fatalf("WriteRows overwrite error = %v, want ErrCodeInvalidInput", err)
+		}
 	}
 
 	providerPath := filepath.Join(t.TempDir(), "nested", "provider.xlsx")

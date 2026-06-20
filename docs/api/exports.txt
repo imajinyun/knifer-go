@@ -23,6 +23,33 @@ github.com/imajinyun/go-knifer
   type ErrCode string
   type Error struct{ Cause error; Code ErrCode; Message string }
 
+github.com/imajinyun/go-knifer/vai
+  const RoleAssistant github.com/imajinyun/go-knifer/internal/ai.Role = "assistant"
+  const RoleSystem github.com/imajinyun/go-knifer/internal/ai.Role = "system"
+  const RoleUser github.com/imajinyun/go-knifer/internal/ai.Role = "user"
+  func Chat(ctx context.Context, provider ChatProvider, request ChatRequest) (ChatResponse, error)
+  func Embed(ctx context.Context, provider EmbeddingProvider, request EmbeddingRequest) (EmbeddingResponse, error)
+  func New(opts ...Option) *Client
+  func Redact(text string) string
+  func WithChatProvider(provider ChatProvider) Option
+  func WithEmbeddingProvider(provider EmbeddingProvider) Option
+  type ChatProvider = github.com/imajinyun/go-knifer/internal/ai.ChatProvider
+  type ChatRequest = github.com/imajinyun/go-knifer/internal/ai.ChatRequest
+  type ChatResponse = github.com/imajinyun/go-knifer/internal/ai.ChatResponse
+  type Client = github.com/imajinyun/go-knifer/internal/ai.Client
+  type EmbeddingProvider = github.com/imajinyun/go-knifer/internal/ai.EmbeddingProvider
+  type EmbeddingRequest = github.com/imajinyun/go-knifer/internal/ai.EmbeddingRequest
+  type EmbeddingResponse = github.com/imajinyun/go-knifer/internal/ai.EmbeddingResponse
+  type Message = github.com/imajinyun/go-knifer/internal/ai.Message
+  type Option = github.com/imajinyun/go-knifer/internal/ai.Option
+  type ProviderMetadata = github.com/imajinyun/go-knifer/internal/ai.ProviderMetadata
+  type Role = github.com/imajinyun/go-knifer/internal/ai.Role
+  type Usage = github.com/imajinyun/go-knifer/internal/ai.Usage
+  var ErrInvalidChatRequest error
+  var ErrInvalidEmbeddingRequest error
+  var ErrMissingChatProvider error
+  var ErrMissingEmbeddingProvider error
+
 github.com/imajinyun/go-knifer/vbean
   func Copy(src any, dst any, opts ...Option) error
   func CopyProperties(src any, dst any, opts ...Option) error
@@ -727,6 +754,7 @@ github.com/imajinyun/go-knifer/vdb
   func IsInClause(sql string) bool
   func IsNotNull(field string) Condition
   func IsNull(field string) Condition
+  func IsSafeIdentifier(name string) bool
   func Like(field string, value any) Condition
   func Lt(field string, value any) Condition
   func Lte(field string, value any) Condition
@@ -998,6 +1026,55 @@ github.com/imajinyun/go-knifer/vform
   func WithMobileMatcher(matcher func(string) bool) Option
   func WithNumberMatcher(matcher func(string) bool) Option
   type Option = github.com/imajinyun/go-knifer/internal/validator.Option
+
+github.com/imajinyun/go-knifer/vftp
+  const EntryTypeDirectory github.com/imajinyun/go-knifer/internal/ftp.EntryType = "directory"
+  const EntryTypeFile github.com/imajinyun/go-knifer/internal/ftp.EntryType = "file"
+  const EntryTypeUnknown github.com/imajinyun/go-knifer/internal/ftp.EntryType = "unknown"
+  func Download(ctx context.Context, provider Provider, request DownloadRequest) (DownloadResponse, error)
+  func List(ctx context.Context, provider Provider, request ListRequest) (ListResponse, error)
+  func New(opts ...Option) *Client
+  func Upload(ctx context.Context, provider Provider, request UploadRequest) (UploadResponse, error)
+  func WithProvider(provider Provider) Option
+  type Client = github.com/imajinyun/go-knifer/internal/ftp.Client
+  type DownloadRequest = github.com/imajinyun/go-knifer/internal/ftp.DownloadRequest
+  type DownloadResponse = github.com/imajinyun/go-knifer/internal/ftp.DownloadResponse
+  type Entry = github.com/imajinyun/go-knifer/internal/ftp.Entry
+  type EntryType = github.com/imajinyun/go-knifer/internal/ftp.EntryType
+  type ListRequest = github.com/imajinyun/go-knifer/internal/ftp.ListRequest
+  type ListResponse = github.com/imajinyun/go-knifer/internal/ftp.ListResponse
+  type Option = github.com/imajinyun/go-knifer/internal/ftp.Option
+  type Provider = github.com/imajinyun/go-knifer/internal/ftp.Provider
+  type UploadRequest = github.com/imajinyun/go-knifer/internal/ftp.UploadRequest
+  type UploadResponse = github.com/imajinyun/go-knifer/internal/ftp.UploadResponse
+  var ErrInvalidDownloadRequest error
+  var ErrInvalidListRequest error
+  var ErrInvalidUploadRequest error
+  var ErrMissingProvider error
+  var ErrTransferLimitExceeded error
+
+github.com/imajinyun/go-knifer/vhan
+  const ToneStyleDefault github.com/imajinyun/go-knifer/internal/pinyin.ToneStyle = ""
+  const ToneStyleMark github.com/imajinyun/go-knifer/internal/pinyin.ToneStyle = "mark"
+  const ToneStyleNumber github.com/imajinyun/go-knifer/internal/pinyin.ToneStyle = "number"
+  const ToneStylePlain github.com/imajinyun/go-knifer/internal/pinyin.ToneStyle = "plain"
+  func Convert(ctx context.Context, provider Provider, request ConvertRequest) (ConvertResponse, error)
+  func Initials(ctx context.Context, provider Provider, request InitialsRequest) (InitialsResponse, error)
+  func New(opts ...Option) *Client
+  func WithProvider(provider Provider) Option
+  type Client = github.com/imajinyun/go-knifer/internal/pinyin.Client
+  type ConvertRequest = github.com/imajinyun/go-knifer/internal/pinyin.ConvertRequest
+  type ConvertResponse = github.com/imajinyun/go-knifer/internal/pinyin.ConvertResponse
+  type InitialsRequest = github.com/imajinyun/go-knifer/internal/pinyin.InitialsRequest
+  type InitialsResponse = github.com/imajinyun/go-knifer/internal/pinyin.InitialsResponse
+  type Option = github.com/imajinyun/go-knifer/internal/pinyin.Option
+  type Provider = github.com/imajinyun/go-knifer/internal/pinyin.Provider
+  type Token = github.com/imajinyun/go-knifer/internal/pinyin.Token
+  type ToneStyle = github.com/imajinyun/go-knifer/internal/pinyin.ToneStyle
+  var ErrInputLimitExceeded error
+  var ErrInvalidConvertRequest error
+  var ErrInvalidInitialsRequest error
+  var ErrMissingProvider error
 
 github.com/imajinyun/go-knifer/vhash
   func AdditiveHash(s string, prime int) int
@@ -2422,12 +2499,14 @@ github.com/imajinyun/go-knifer/vpass
 
 github.com/imajinyun/go-knifer/vpoi
   const DefaultSheetName untyped string = "Sheet1"
+  func IsValidSheetName(sheet string) bool
   func ReadRows(path string, opts ...ReadOption) ([][]string, error)
   func ReadRowsFromReader(r io.Reader, opts ...ReadOption) ([][]string, error)
   func ReadSheetRows(path string, sheet string) ([][]string, error)
   func ReadSheetRowsWithOptions(path string, sheet string, opts ...ReadOption) ([][]string, error)
   func SheetNames(path string) ([]string, error)
   func SheetNamesWithOptions(path string, opts ...ReadOption) ([]string, error)
+  func ValidateSheetName(sheet string) error
   func WithChmod(chmod func(string, io/fs.FileMode) error) WriteOption
   func WithCreateParents(create bool) WriteOption
   func WithDirPerm(perm io/fs.FileMode) WriteOption
@@ -2455,6 +2534,7 @@ github.com/imajinyun/go-knifer/vpoi
   type SaveAsFunc = github.com/imajinyun/go-knifer/internal/poi.SaveAsFunc
   type WriteOption = github.com/imajinyun/go-knifer/internal/poi.WriteOption
   var ErrEmptySheetName error
+  var ErrInvalidSheetName error
   var ErrNoSheet error
 
 github.com/imajinyun/go-knifer/vrand
@@ -3020,6 +3100,38 @@ github.com/imajinyun/go-knifer/vslice
   func Zip2[A any, B any](a []A, b []B) []Pair[A, B]
   type Pair[A any, B any] = github.com/imajinyun/go-knifer/internal/slice.Pair[A, B]
 
+github.com/imajinyun/go-knifer/vssh
+  const EntryTypeDirectory github.com/imajinyun/go-knifer/internal/ssh.EntryType = "directory"
+  const EntryTypeFile github.com/imajinyun/go-knifer/internal/ssh.EntryType = "file"
+  const EntryTypeSymlink github.com/imajinyun/go-knifer/internal/ssh.EntryType = "symlink"
+  const EntryTypeUnknown github.com/imajinyun/go-knifer/internal/ssh.EntryType = "unknown"
+  func Download(ctx context.Context, provider Provider, request DownloadRequest) (DownloadResponse, error)
+  func List(ctx context.Context, provider Provider, request ListRequest) (ListResponse, error)
+  func New(opts ...Option) *Client
+  func Run(ctx context.Context, provider Provider, request CommandRequest) (CommandResponse, error)
+  func Upload(ctx context.Context, provider Provider, request UploadRequest) (UploadResponse, error)
+  func WithProvider(provider Provider) Option
+  type Client = github.com/imajinyun/go-knifer/internal/ssh.Client
+  type CommandRequest = github.com/imajinyun/go-knifer/internal/ssh.CommandRequest
+  type CommandResponse = github.com/imajinyun/go-knifer/internal/ssh.CommandResponse
+  type DownloadRequest = github.com/imajinyun/go-knifer/internal/ssh.DownloadRequest
+  type DownloadResponse = github.com/imajinyun/go-knifer/internal/ssh.DownloadResponse
+  type Entry = github.com/imajinyun/go-knifer/internal/ssh.Entry
+  type EntryType = github.com/imajinyun/go-knifer/internal/ssh.EntryType
+  type ListRequest = github.com/imajinyun/go-knifer/internal/ssh.ListRequest
+  type ListResponse = github.com/imajinyun/go-knifer/internal/ssh.ListResponse
+  type Option = github.com/imajinyun/go-knifer/internal/ssh.Option
+  type Provider = github.com/imajinyun/go-knifer/internal/ssh.Provider
+  type UploadRequest = github.com/imajinyun/go-knifer/internal/ssh.UploadRequest
+  type UploadResponse = github.com/imajinyun/go-knifer/internal/ssh.UploadResponse
+  var ErrInvalidCommandRequest error
+  var ErrInvalidDownloadRequest error
+  var ErrInvalidListRequest error
+  var ErrInvalidUploadRequest error
+  var ErrMissingProvider error
+  var ErrOutputLimitExceeded error
+  var ErrTransferLimitExceeded error
+
 github.com/imajinyun/go-knifer/vstr
   func AddPrefixIfNot(s string, prefix string) string
   func AddSuffixIfNot(s string, suffix string) string
@@ -3213,17 +3325,54 @@ github.com/imajinyun/go-knifer/vsys
   type UserInfo = github.com/imajinyun/go-knifer/internal/system.UserInfo
   type UserInfoOption = github.com/imajinyun/go-knifer/internal/system.UserInfoOption
 
+github.com/imajinyun/go-knifer/vtok
+  const ModeDefault github.com/imajinyun/go-knifer/internal/tokenize.Mode = ""
+  const ModeFull github.com/imajinyun/go-knifer/internal/tokenize.Mode = "full"
+  const ModePrecise github.com/imajinyun/go-knifer/internal/tokenize.Mode = "precise"
+  const ModeSearch github.com/imajinyun/go-knifer/internal/tokenize.Mode = "search"
+  func Keywords(ctx context.Context, provider Provider, request KeywordsRequest) (KeywordsResponse, error)
+  func New(opts ...Option) *Client
+  func Tokenize(ctx context.Context, provider Provider, request TokenizeRequest) (TokenizeResponse, error)
+  func WithProvider(provider Provider) Option
+  type Client = github.com/imajinyun/go-knifer/internal/tokenize.Client
+  type Keyword = github.com/imajinyun/go-knifer/internal/tokenize.Keyword
+  type KeywordsRequest = github.com/imajinyun/go-knifer/internal/tokenize.KeywordsRequest
+  type KeywordsResponse = github.com/imajinyun/go-knifer/internal/tokenize.KeywordsResponse
+  type Mode = github.com/imajinyun/go-knifer/internal/tokenize.Mode
+  type Option = github.com/imajinyun/go-knifer/internal/tokenize.Option
+  type Provider = github.com/imajinyun/go-knifer/internal/tokenize.Provider
+  type Token = github.com/imajinyun/go-knifer/internal/tokenize.Token
+  type TokenizeRequest = github.com/imajinyun/go-knifer/internal/tokenize.TokenizeRequest
+  type TokenizeResponse = github.com/imajinyun/go-knifer/internal/tokenize.TokenizeResponse
+  var ErrInputLimitExceeded error
+  var ErrInvalidKeywordsRequest error
+  var ErrInvalidTokenizeRequest error
+  var ErrMissingProvider error
+  var ErrTokenLimitExceeded error
+
 github.com/imajinyun/go-knifer/vtpl
+  func NewHTMLEngine(opts ...EngineOption) Engine
+  func NewTextEngine(opts ...EngineOption) Engine
   func Render(tpl string, data any) (string, error)
   func RenderTemplate(tpl string, data any) (string, error)
+  func RenderWithEngine(ctx context.Context, engine Engine, source string, data any) (string, error)
   func RenderWithOptions(tpl string, data any, opts ...RenderOption) (string, error)
   func WithDelims(left string, right string) RenderOption
+  func WithEngineDelims(left string, right string) EngineOption
+  func WithEngineFuncMap(funcMap map[string]any) EngineOption
+  func WithEngineTemplateName(name string) EngineOption
   func WithFuncMap(funcMap html/template.FuncMap) RenderOption
   func WithTemplateExecutor(executor func(*html/template.Template, io.Writer, any) error) RenderOption
   func WithTemplateFactory(factory func(string) *html/template.Template) RenderOption
   func WithTemplateName(name string) RenderOption
   func WithTemplateParser(parser func(*html/template.Template, string) (*html/template.Template, error)) RenderOption
+  type Engine = github.com/imajinyun/go-knifer/internal/template.Engine
+  type EngineFunc = github.com/imajinyun/go-knifer/internal/template.EngineFunc
+  type EngineOption = github.com/imajinyun/go-knifer/internal/template.EngineOption
   type RenderOption = github.com/imajinyun/go-knifer/internal/template.RenderOption
+  type RenderRequest = github.com/imajinyun/go-knifer/internal/template.RenderRequest
+  var ErrInvalidRenderRequest error
+  var ErrMissingEngine error
 
 github.com/imajinyun/go-knifer/vurl
   const ClasspathURLPrefix untyped string = "classpath:"

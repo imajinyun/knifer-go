@@ -63,18 +63,18 @@ go get github.com/imajinyun/go-knifer
 
 | 我想要… | 使用 |
 | --- | --- |
-| 使用 FIFO/LRU/LFU/TTL 缓存 | [`vcache`](docs/doc/04-vcache.md) |
-| Base64 / Hex 编解码 | [`vcodec`](docs/doc/05-vcodec.md) |
-| 安全加载本地或远程配置 | [`vconf`](docs/doc/06-vconf.md) |
-| SHA/HMAC、AES-GCM/RSA-PSS、参数签名 | [`vcrypto`](docs/doc/09-vcrypto.md) |
-| 使用标准库辅助函数发送 HTTP 请求 | [`vhttp`](docs/doc/18-vhttp.md) |
-| 使用 Resty-based 辅助函数发送 HTTP 请求 | [`vresty`](docs/doc/37-vresty.md) |
-| 生成 UUID / Snowflake / NanoId | [`vid`](docs/doc/19-vid.md) |
-| 敏感数据脱敏 | [`vmask`](docs/doc/28-vmask.md) |
-| 创建、查询、转换、合并、差集或排序 map | [`vmap`](docs/doc/27-vmap.md) |
-| 对 slice 做过滤 / 映射 / 去重 / 分页 | [`vslice`](docs/doc/41-vslice.md) |
-| 裁剪、切分、命名转换、比较文本或判断空白字符串 | [`vstr`](docs/doc/42-vstr.md) |
-| URL 编解码/解析，或安全打开不可信 HTTP(S) 资源 | [`vurl`](docs/doc/45-vurl.md) |
+| 使用 FIFO/LRU/LFU/TTL 缓存 | [`vcache`](docs/doc/05-vcache.md) |
+| Base64 / Hex 编解码 | [`vcodec`](docs/doc/07-vcodec.md) |
+| 安全加载本地或远程配置 | [`vconf`](docs/doc/08-vconf.md) |
+| SHA/HMAC、AES-GCM/RSA-PSS、参数签名 | [`vcrypto`](docs/doc/11-vcrypto.md) |
+| 使用标准库辅助函数发送 HTTP 请求 | [`vhttp`](docs/doc/22-vhttp.md) |
+| 使用 Resty-based 辅助函数发送 HTTP 请求 | [`vresty`](docs/doc/41-vresty.md) |
+| 生成 UUID / Snowflake / NanoId | [`vid`](docs/doc/23-vid.md) |
+| 敏感数据脱敏 | [`vmask`](docs/doc/32-vmask.md) |
+| 创建、查询、转换、合并、差集或排序 map | [`vmap`](docs/doc/31-vmap.md) |
+| 对 slice 做过滤 / 映射 / 去重 / 分页 | [`vslice`](docs/doc/45-vslice.md) |
+| 裁剪、切分、命名转换、比较文本或判断空白字符串 | [`vstr`](docs/doc/47-vstr.md) |
+| URL 编解码/解析，或安全打开不可信 HTTP(S) 资源 | [`vurl`](docs/doc/51-vurl.md) |
 
 👉 每个包的完整清单见 [中文文档中心](./docs/doc/README.CN.md#package-catalog)。
 

@@ -2,6 +2,8 @@
 
 `vimg` provides image processing, QR/barcode, and captcha helpers. It covers image metadata reads, format conversion, thumbnail generation, ZXing-backed QR/barcode generation and decoding, PNG/SVG/ASCII/Base64 data URI output, QR logo embedding, transparent backgrounds, captcha generation/verification, and file writes.
 
+Captcha image bytes are returned as defensive copies, so callers can inspect or transform the returned slice without mutating the captcha's cached image. File overwrite failures from captcha writers preserve `fs.ErrExist` and carry the go-knifer invalid-input error code for consistent error inspection.
+
 ## Read image information
 
 ```go
@@ -257,6 +259,8 @@ func main() {
 	fmt.Println(strings.HasPrefix(captcha.ImageBase64Data(), "data:image/png;base64,"))
 }
 ```
+
+`ImageBytes` returns a copy of the encoded image bytes each time. Mutating that returned slice will not corrupt later `ImageBytes`, `ImageBase64`, `Write`, or file-write calls.
 
 ## Use math captchas and write options
 

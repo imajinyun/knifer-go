@@ -63,18 +63,18 @@ Not sure which package to import? Start from what you want to do:
 
 | I want to… | Use |
 | --- | --- |
-| Cache with FIFO/LRU/LFU/TTL | [`vcache`](docs/doc/04-vcache.md) |
-| Base64 / Hex encode-decode | [`vcodec`](docs/doc/05-vcodec.md) |
-| Load local or remote configuration safely | [`vconf`](docs/doc/06-vconf.md) |
-| SHA/HMAC, AES-GCM/RSA-PSS, sign parameters | [`vcrypto`](docs/doc/09-vcrypto.md) |
-| Send HTTP requests with standard library helpers | [`vhttp`](docs/doc/18-vhttp.md) |
-| Send HTTP requests with Resty-based helpers | [`vresty`](docs/doc/37-vresty.md) |
-| Generate UUID / Snowflake / NanoId | [`vid`](docs/doc/19-vid.md) |
-| Mask sensitive data | [`vmask`](docs/doc/28-vmask.md) |
-| Create, query, transform, merge, diff, or sort maps | [`vmap`](docs/doc/27-vmap.md) |
-| Filter / map / dedup / paginate slices | [`vslice`](docs/doc/41-vslice.md) |
-| Trim, split, case-convert, compare text, or check blank strings | [`vstr`](docs/doc/42-vstr.md) |
-| Encode/parse URLs or open untrusted HTTP(S) resources safely | [`vurl`](docs/doc/45-vurl.md) |
+| Cache with FIFO/LRU/LFU/TTL | [`vcache`](docs/doc/05-vcache.md) |
+| Base64 / Hex encode-decode | [`vcodec`](docs/doc/07-vcodec.md) |
+| Load local or remote configuration safely | [`vconf`](docs/doc/08-vconf.md) |
+| SHA/HMAC, AES-GCM/RSA-PSS, sign parameters | [`vcrypto`](docs/doc/11-vcrypto.md) |
+| Send HTTP requests with standard library helpers | [`vhttp`](docs/doc/22-vhttp.md) |
+| Send HTTP requests with Resty-based helpers | [`vresty`](docs/doc/41-vresty.md) |
+| Generate UUID / Snowflake / NanoId | [`vid`](docs/doc/23-vid.md) |
+| Mask sensitive data | [`vmask`](docs/doc/32-vmask.md) |
+| Create, query, transform, merge, diff, or sort maps | [`vmap`](docs/doc/31-vmap.md) |
+| Filter / map / dedup / paginate slices | [`vslice`](docs/doc/45-vslice.md) |
+| Trim, split, case-convert, compare text, or check blank strings | [`vstr`](docs/doc/47-vstr.md) |
+| Encode/parse URLs or open untrusted HTTP(S) resources safely | [`vurl`](docs/doc/51-vurl.md) |
 
 👉 See the [full documentation index](./docs/doc/README.md#package-catalog) for every package.
 

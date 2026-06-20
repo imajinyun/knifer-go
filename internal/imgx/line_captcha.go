@@ -64,7 +64,7 @@ func (c *LineCaptcha) ImageBytes() []byte {
 	if c.imgBytes == nil {
 		c.CreateCode()
 	}
-	return c.imgBytes
+	return c.imageBytesCopy()
 }
 
 // Code overrides the embedded method to generate lazily.

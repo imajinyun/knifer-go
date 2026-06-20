@@ -10,14 +10,22 @@ import (
 )
 
 // HMACBytes returns HMAC digest bytes using the given hash function.
+// When fn is nil, HMACBytes uses SHA-256 instead of panicking.
 func HMACBytes(fn func() hash.Hash, key, data []byte) []byte {
+	if fn == nil {
+		fn = sha256.New
+	}
 	h := hmac.New(fn, key)
 	_, _ = h.Write(data)
 	return h.Sum(nil)
 }
 
 // HMACHex returns HMAC digest in lower-case hex form using the given hash function.
+// When fn is nil, HMACHex uses SHA-256 instead of panicking.
 func HMACHex(fn func() hash.Hash, key, data []byte) string {
+	if fn == nil {
+		fn = sha256.New
+	}
 	h := hmac.New(fn, key)
 	_, _ = h.Write(data)
 	return hex.EncodeToString(h.Sum(nil))

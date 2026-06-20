@@ -2,6 +2,7 @@ package imgx
 
 import (
 	"bytes"
+	"errors"
 	"image/color"
 	"io"
 	"io/fs"
@@ -9,6 +10,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	knifer "github.com/imajinyun/go-knifer"
 )
 
 type fixedGenerator struct{ code string }
@@ -49,6 +52,13 @@ func TestCaptchaOptionsAndWriteOptions(t *testing.T) {
 	}
 	if err := c.WriteToFileWithOptions(path, WithOverwrite(false)); err == nil {
 		t.Fatal("WriteToFileWithOptions should reject overwrite when disabled")
+	} else {
+		if !errors.Is(err, fs.ErrExist) {
+			t.Fatalf("WriteToFileWithOptions overwrite error = %v, want fs.ErrExist", err)
+		}
+		if !errors.Is(err, knifer.ErrCodeInvalidInput) {
+			t.Fatalf("WriteToFileWithOptions overwrite error = %v, want ErrCodeInvalidInput", err)
+		}
 	}
 
 	g := NewGifCaptchaWithOptions(100, 40, WithGenerator(fixedGenerator{code: "XYZ"}), WithGIFRepeat(1), WithGIFDelay(5))
@@ -102,5 +112,42 @@ func TestImageBase64Data(t *testing.T) {
 	s := c.ImageBase64Data()
 	if !strings.HasPrefix(s, "data:image/png;base64,") {
 		t.Fatalf("unexpected data uri prefix: %q", s[:30])
+	}
+}
+
+func TestCaptchaImageBytesDefensiveCopy(t *testing.T) {
+	captchas := []struct {
+		name string
+		new  func() ICaptcha
+	}{
+		{name: "line", new: func() ICaptcha { return NewLineCaptcha(100, 40) }},
+		{name: "circle", new: func() ICaptcha { return NewCircleCaptcha(100, 40) }},
+		{name: "shear", new: func() ICaptcha { return NewShearCaptcha(100, 40) }},
+		{name: "gif", new: func() ICaptcha { return NewGifCaptcha(100, 40) }},
+	}
+	for _, tc := range captchas {
+		t.Run(tc.name, func(t *testing.T) {
+			c := tc.new()
+			original := c.ImageBytes()
+			if len(original) == 0 {
+				t.Fatal("ImageBytes returned empty data")
+			}
+			wantFirst := original[0]
+			original[0] ^= 0xff
+			got := c.ImageBytes()
+			if got[0] != wantFirst {
+				t.Fatalf("ImageBytes exposed internal backing array: got first byte %d, want %d", got[0], wantFirst)
+			}
+		})
+	}
+}
+
+func TestCaptchaWriteErrorContract(t *testing.T) {
+	c := NewLineCaptchaWithOptions(100, 40, WithGenerator(fixedGenerator{code: "ABCD"}))
+	if err := c.Write(nil); !errors.Is(err, knifer.ErrCodeInvalidInput) {
+		t.Fatalf("Write(nil) error = %v, want ErrCodeInvalidInput", err)
+	}
+	if err := c.Write(io.Discard); !errors.Is(err, knifer.ErrCodeInvalidInput) {
+		t.Fatalf("Write empty image error = %v, want ErrCodeInvalidInput", err)
 	}
 }

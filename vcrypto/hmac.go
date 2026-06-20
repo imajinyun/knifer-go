@@ -7,9 +7,11 @@ import (
 )
 
 // HMACHex returns HMAC digest in lower-case hex form using the given hash function.
+// When fn is nil, HMACHex uses SHA-256 instead of panicking.
 func HMACHex(fn func() hash.Hash, key, data []byte) string { return cryptoimpl.HMACHex(fn, key, data) }
 
 // HMACBytes returns HMAC digest bytes using the given hash function.
+// When fn is nil, HMACBytes uses SHA-256 instead of panicking.
 func HMACBytes(fn func() hash.Hash, key, data []byte) []byte {
 	return cryptoimpl.HMACBytes(fn, key, data)
 }

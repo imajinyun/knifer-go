@@ -1,12 +1,34 @@
 package template
 
 import (
+	"context"
 	"errors"
 	"html/template"
 	"io"
 	"strings"
 	"testing"
+
+	knifer "github.com/imajinyun/go-knifer"
 )
+
+func BenchmarkRenderWithTextEngine(b *testing.B) {
+	engine := NewTextEngine(WithEngineFuncMap(map[string]any{"upper": strings.ToUpper}))
+	req := RenderRequest{
+		Source: "hello {{upper .Name}}",
+		Data:   map[string]string{"Name": "template"},
+	}
+
+	b.ReportAllocs()
+	for b.Loop() {
+		out, err := engine.Render(context.Background(), req)
+		if err != nil {
+			b.Fatal(err)
+		}
+		if out != "hello TEMPLATE" {
+			b.Fatalf("Render = %q", out)
+		}
+	}
+}
 
 func TestRenderTemplate(t *testing.T) {
 	out, err := RenderTemplate("hello {{.Name}}", map[string]string{"Name": "gokit"})
@@ -93,5 +115,141 @@ func TestRenderWithOptionsReturnsParserAndExecutorErrors(t *testing.T) {
 		return executorErr
 	})); !errors.Is(err, executorErr) {
 		t.Fatalf("executor error = %v", err)
+	}
+}
+
+func TestRenderWithEngineUsesInjectedEngine(t *testing.T) {
+	called := false
+	out, err := RenderWithEngine(context.Background(), EngineFunc(func(ctx context.Context, req RenderRequest) (string, error) {
+		called = ctx != nil && req.Source == "{{.Name}}" && req.Data.(map[string]string)["Name"] == "adapter"
+		return "engine-output", nil
+	}), "{{.Name}}", map[string]string{"Name": "adapter"})
+	if err != nil {
+		t.Fatalf("RenderWithEngine: %v", err)
+	}
+	if !called || out != "engine-output" {
+		t.Fatalf("called=%v out=%q", called, out)
+	}
+}
+
+func TestRenderWithEngineRejectsMissingEngine(t *testing.T) {
+	_, err := RenderWithEngine(context.Background(), nil, "{{.}}", "x")
+	if !errors.Is(err, ErrMissingEngine) {
+		t.Fatalf("RenderWithEngine missing engine error = %v", err)
+	}
+	if !errors.Is(err, knifer.ErrCodeInvalidInput) {
+		t.Fatalf("RenderWithEngine missing engine code = %v", err)
+	}
+}
+
+func TestBuiltInEngines(t *testing.T) {
+	tests := []struct {
+		name   string
+		engine Engine
+		want   string
+	}{
+		{
+			name:   "html engine escapes html",
+			engine: NewHTMLEngine(),
+			want:   "&lt;tag&gt;",
+		},
+		{
+			name:   "text engine keeps text raw",
+			engine: NewTextEngine(),
+			want:   "<tag>",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := RenderWithEngine(context.Background(), tt.engine, "{{.}}", "<tag>")
+			if err != nil {
+				t.Fatalf("RenderWithEngine: %v", err)
+			}
+			if got != tt.want {
+				t.Fatalf("RenderWithEngine = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestBuiltInEngineOptionsAndValidation(t *testing.T) {
+	engine := NewTextEngine(
+		WithEngineTemplateName("custom"),
+		WithEngineDelims("[[", "]]"),
+		WithEngineFuncMap(map[string]any{"upper": strings.ToUpper}),
+	)
+	out, err := RenderWithEngine(context.Background(), engine, "[[upper .Name]]", map[string]string{"Name": "tpl"})
+	if err != nil {
+		t.Fatalf("RenderWithEngine options: %v", err)
+	}
+	if out != "TPL" {
+		t.Fatalf("RenderWithEngine options = %q", out)
+	}
+
+	_, err = RenderWithEngine(context.Background(), engine, "", nil)
+	if !errors.Is(err, ErrInvalidRenderRequest) {
+		t.Fatalf("empty source error = %v", err)
+	}
+	if !errors.Is(err, knifer.ErrCodeInvalidInput) {
+		t.Fatalf("empty source code = %v", err)
+	}
+
+	var nilCtx context.Context
+	_, err = RenderWithEngine(nilCtx, engine, "{{.}}", "x")
+	if !errors.Is(err, ErrInvalidRenderRequest) {
+		t.Fatalf("nil context error = %v", err)
+	}
+}
+
+func TestBuiltInEngineErrorBranches(t *testing.T) {
+	canceled, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	for _, tt := range []struct {
+		name   string
+		engine Engine
+	}{
+		{name: "html", engine: NewHTMLEngine(WithEngineTemplateName(""))},
+		{name: "text", engine: NewTextEngine(WithEngineTemplateName(""))},
+	} {
+		t.Run(tt.name+" canceled context", func(t *testing.T) {
+			_, err := tt.engine.Render(canceled, RenderRequest{Source: "{{.}}", Data: "x"})
+			if !errors.Is(err, context.Canceled) {
+				t.Fatalf("canceled error = %v", err)
+			}
+		})
+
+		t.Run(tt.name+" parse error", func(t *testing.T) {
+			_, err := tt.engine.Render(context.Background(), RenderRequest{Source: "{{", Data: nil})
+			if err == nil {
+				t.Fatal("parse error = nil")
+			}
+		})
+
+		t.Run(tt.name+" execute error", func(t *testing.T) {
+			_, err := tt.engine.Render(context.Background(), RenderRequest{Source: "{{call .}}", Data: "not-a-function"})
+			if err == nil {
+				t.Fatal("execute error = nil")
+			}
+		})
+	}
+}
+
+func TestHTMLEngineOptions(t *testing.T) {
+	engine := NewHTMLEngine(
+		WithEngineDelims("[[", "]]"),
+		WithEngineFuncMap(map[string]any{"upper": strings.ToUpper}),
+	)
+
+	out, err := engine.Render(context.Background(), RenderRequest{
+		Source: "[[upper .]]",
+		Data:   "html",
+	})
+	if err != nil {
+		t.Fatalf("html engine options: %v", err)
+	}
+	if out != "HTML" {
+		t.Fatalf("html engine options = %q", out)
 	}
 }

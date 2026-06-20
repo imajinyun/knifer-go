@@ -91,8 +91,8 @@ func TestAdditionalAESGCMAndRandomErrors(t *testing.T) {
 	if _, err := vcrypto.AESDecryptGCM(cipherText, key, []byte("bad"), nil); !errors.Is(err, vcrypto.ErrInvalidIV) {
 		t.Fatalf("AESDecryptGCM invalid nonce error = %v", err)
 	}
-	if _, err := vcrypto.AESDecryptGCM(cipherText, key, nonce, []byte("wrong aad")); err == nil {
-		t.Fatal("AESDecryptGCM wrong aad error = nil")
+	if _, err := vcrypto.AESDecryptGCM(cipherText, key, nonce, []byte("wrong aad")); !errors.Is(err, vcrypto.ErrInvalidCipherText) {
+		t.Fatalf("AESDecryptGCM wrong aad error = %v", err)
 	}
 	if _, err := vcrypto.RandomBytes(-1); !errors.Is(err, vcrypto.ErrInvalidKey) {
 		t.Fatalf("RandomBytes negative error = %v", err)
@@ -133,7 +133,29 @@ func TestFacadeAESGCMValidationErrorClassification(t *testing.T) {
 	if _, err := vcrypto.AESOpenGCM(cipherText, key, []byte("short"), nil); !errors.Is(err, vcrypto.ErrInvalidIV) {
 		t.Fatalf("AESOpenGCM invalid nonce error = %v", err)
 	}
-	if _, err := vcrypto.AESOpenGCM(cipherText[:len(cipherText)-1], key, nonce, nil); err == nil {
-		t.Fatal("AESOpenGCM truncated tag error = nil")
+	if _, err := vcrypto.AESOpenGCM(cipherText[:len(cipherText)-1], key, nonce, nil); !errors.Is(err, vcrypto.ErrInvalidCipherText) {
+		t.Fatalf("AESOpenGCM truncated tag error = %v", err)
 	}
+}
+
+func BenchmarkAESSealGCM(b *testing.B) {
+	key := bytes.Repeat([]byte{0x11}, 16)
+	plain := []byte("authenticated benchmark payload")
+	b.ReportAllocs()
+	for b.Loop() {
+		if _, _, err := vcrypto.AESSealGCMWithOptions(plain, key, nil, vcrypto.WithGCMRandomOptions(vcrypto.WithRandomReader(repeatingByteReader{value: 0x22}))); err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
+type repeatingByteReader struct {
+	value byte
+}
+
+func (r repeatingByteReader) Read(p []byte) (int, error) {
+	for i := range p {
+		p[i] = r.value
+	}
+	return len(p), nil
 }

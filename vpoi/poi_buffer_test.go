@@ -23,3 +23,17 @@ func TestExcelFacadeBufferRoundTrip(t *testing.T) {
 		t.Fatalf("ReadRowsFromReader = %#v, want %#v", got, rows)
 	}
 }
+
+func BenchmarkExcelFacadeWriteRowsToBuffer(b *testing.B) {
+	rows := [][]string{{"id", "name", "score"}, {"1", "alice", "100"}, {"2", "bob", "95"}}
+	b.ReportAllocs()
+	var sink int
+	for b.Loop() {
+		buf, err := vpoi.WriteRowsToBuffer("Scores", rows)
+		if err != nil {
+			b.Fatal(err)
+		}
+		sink = buf.Len()
+	}
+	_ = sink
+}

@@ -1,10 +1,13 @@
 package vpoi_test
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
+	"reflect"
 	"testing"
 
+	knifer "github.com/imajinyun/go-knifer"
 	"github.com/imajinyun/go-knifer/vpoi"
 )
 
@@ -56,5 +59,42 @@ func TestFacadeWriteSheets(t *testing.T) {
 	}
 	if _, err := os.Stat(path); err != nil {
 		t.Fatalf("WriteSheets did not create file: %v", err)
+	}
+}
+
+func TestFacadeSheetNameValidation(t *testing.T) {
+	if !vpoi.IsValidSheetName("Reports") {
+		t.Fatal("IsValidSheetName(Reports) = false, want true")
+	}
+	if vpoi.IsValidSheetName("bad/name") {
+		t.Fatal("IsValidSheetName(bad/name) = true, want false")
+	}
+	if err := vpoi.ValidateSheetName("bad/name"); !errors.Is(err, vpoi.ErrInvalidSheetName) {
+		t.Fatalf("ValidateSheetName invalid error = %v, want ErrInvalidSheetName", err)
+	}
+	if err := vpoi.ValidateSheetName("bad/name"); !errors.Is(err, knifer.ErrCodeInvalidInput) {
+		t.Fatalf("ValidateSheetName invalid error = %v, want ErrCodeInvalidInput", err)
+	}
+	if _, err := vpoi.WriteRowsToBuffer("bad/name", nil); !errors.Is(err, vpoi.ErrInvalidSheetName) {
+		t.Fatalf("WriteRowsToBuffer invalid sheet error = %v, want ErrInvalidSheetName", err)
+	}
+}
+
+func TestFacadeWriteSheetsDeterministicOrder(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "multi.xlsx")
+	if err := vpoi.WriteSheets(path, map[string][][]string{
+		"Users":  {{"id", "name"}},
+		"Orders": {{"id", "total"}},
+		"Audit":  {{"event"}},
+	}); err != nil {
+		t.Fatalf("WriteSheets: %v", err)
+	}
+	got, err := vpoi.SheetNames(path)
+	if err != nil {
+		t.Fatalf("SheetNames: %v", err)
+	}
+	want := []string{"Audit", "Orders", "Users"}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("SheetNames = %#v, want %#v", got, want)
 	}
 }

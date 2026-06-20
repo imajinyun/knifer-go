@@ -10,17 +10,34 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | --- | ---: |
 | Schema | 1.4 |
 | Module | `github.com/imajinyun/go-knifer` |
-| Packages | 49 |
-| Functions | 2562 |
-| Functions with examples | 275 |
-| Context-aware functions | 22 |
-| Functions returning error | 580 |
-| Variadic functions | 765 |
-| Synopsis source: facade | 1925 |
-| Synopsis source: internal | 637 |
+| Packages | 54 |
+| Functions | 2596 |
+| Functions with examples | 306 |
+| Context-aware functions | 36 |
+| Functions returning error | 595 |
+| Variadic functions | 772 |
+| Synopsis source: facade | 1962 |
+| Synopsis source: internal | 634 |
 | Synopsis source: empty | 0 |
 
 ## Packages
+
+### vai
+
+Import path: `github.com/imajinyun/go-knifer/vai`
+
+Package vai provides provider-neutral AI chat and embedding helpers.
+
+Quality: 6 functions · 6 with examples · 100.0% example coverage · synopsis sources: facade=6, internal=0, empty=0
+
+| Function | Signature | Synopsis | Source | Examples |
+| --- | --- | --- | --- | --- |
+| `Chat` | `func Chat(ctx context.Context, provider ChatProvider, request ChatRequest) (ChatResponse, error)` | Chat validates request and delegates to provider through a short-lived Client. | facade | `ExampleChat` |
+| `Embed` | `func Embed(ctx context.Context, provider EmbeddingProvider, request EmbeddingRequest) (EmbeddingResponse, error)` | Embed validates request and delegates to provider through a short-lived Client. | facade | `ExampleEmbed` |
+| `New` | `func New(opts ...Option) *Client` | New returns a provider-neutral AI client. | facade | `ExampleNew` |
+| `Redact` | `func Redact(text string) string` | Redact replaces obvious secret-like tokens for examples and diagnostic text. | facade | `ExampleRedact` |
+| `WithChatProvider` | `func WithChatProvider(provider ChatProvider) Option` | WithChatProvider sets the provider used by Client.Chat. | facade | `ExampleWithChatProvider` |
+| `WithEmbeddingProvider` | `func WithEmbeddingProvider(provider EmbeddingProvider) Option` | WithEmbeddingProvider sets the provider used by Client.Embed. | facade | `ExampleWithEmbeddingProvider` |
 
 ### vbean
 
@@ -382,7 +399,7 @@ Import path: `github.com/imajinyun/go-knifer/vcrypto`
 
 Package vcrypto provides public APIs for cryptographic utilities.
 
-Quality: 71 functions · 5 with examples · 7.0% example coverage · synopsis sources: facade=71, internal=0, empty=0
+Quality: 71 functions · 7 with examples · 9.9% example coverage · synopsis sources: facade=71, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -390,7 +407,7 @@ Quality: 71 functions · 5 with examples · 7.0% example coverage · synopsis so
 | `AESDecryptGCMWithOptions` | `func AESDecryptGCMWithOptions(cipherText []byte, key []byte, nonce []byte, additionalData []byte, opts ...AESGCMOption) ([]byte, error)` | AESDecryptGCMWithOptions decrypts AES-GCM data with options. | facade | — |
 | `AESEncryptGCM` | `func AESEncryptGCM(plain []byte, key []byte, nonce []byte, additionalData []byte) ([]byte, error)` | AESEncryptGCM encrypts plain data using AES-GCM. | facade | `ExampleAESEncryptGCM` |
 | `AESEncryptGCMWithOptions` | `func AESEncryptGCMWithOptions(plain []byte, key []byte, nonce []byte, additionalData []byte, opts ...AESGCMOption) ([]byte, error)` | AESEncryptGCMWithOptions encrypts plain data using AES-GCM with options. | facade | — |
-| `AESOpenGCM` | `func AESOpenGCM(cipherText []byte, key []byte, nonce []byte, additionalData []byte) ([]byte, error)` | AESOpenGCM decrypts data produced by AESSealGCM or AESEncryptGCM. | facade | — |
+| `AESOpenGCM` | `func AESOpenGCM(cipherText []byte, key []byte, nonce []byte, additionalData []byte) ([]byte, error)` | AESOpenGCM decrypts data produced by AESSealGCM or AESEncryptGCM. | facade | `ExampleAESOpenGCM` |
 | `AESOpenGCMWithOptions` | `func AESOpenGCMWithOptions(cipherText []byte, key []byte, nonce []byte, additionalData []byte, opts ...AESGCMOption) ([]byte, error)` | AESOpenGCMWithOptions decrypts AES-GCM data with options. | facade | — |
 | `AESSealGCM` | `func AESSealGCM(plain []byte, key []byte, additionalData []byte) (nonce []byte, cipherText []byte, err error)` | AESSealGCM encrypts plain data using AES-GCM and a freshly generated nonce. | facade | — |
 | `AESSealGCMWithOptions` | `func AESSealGCMWithOptions(plain []byte, key []byte, additionalData []byte, opts ...AESGCMOption) (nonce []byte, cipherText []byte, err error)` | AESSealGCMWithOptions encrypts plain data using AES-GCM and a freshly generated nonce. | facade | — |
@@ -403,7 +420,7 @@ Quality: 71 functions · 5 with examples · 7.0% example coverage · synopsis so
 | `GenRSAKeyWithOptions` | `func GenRSAKeyWithOptions(bits int, opts ...RSAOption) (*rsa.PrivateKey, error)` | GenRSAKeyWithOptions generates an RSA private key with options. | facade | — |
 | `HMACBytes` | `func HMACBytes(fn func() hash.Hash, key []byte, data []byte) []byte` | HMACBytes returns HMAC digest bytes using the given hash function. | facade | — |
 | `HMACEqual` | `func HMACEqual(a []byte, b []byte) bool` | HMACEqual compares two MAC values in constant time. | facade | — |
-| `HMACHex` | `func HMACHex(fn func() hash.Hash, key []byte, data []byte) string` | HMACHex returns HMAC digest in lower-case hex form using the given hash function. | facade | — |
+| `HMACHex` | `func HMACHex(fn func() hash.Hash, key []byte, data []byte) string` | HMACHex returns HMAC digest in lower-case hex form using the given hash function. | facade | `ExampleHMACHex` |
 | `HMACSHA256Hex` | `func HMACSHA256Hex(key []byte, data []byte) string` | HMACSHA256Hex returns HMAC-SHA256 in lower-case hex form. | facade | `ExampleHMACSHA256Hex` |
 | `HMACSHA384Hex` | `func HMACSHA384Hex(key []byte, data []byte) string` | HMACSHA384Hex returns HMAC-SHA384 in lower-case hex form. | facade | — |
 | `HMACSHA512Hex` | `func HMACSHA512Hex(key []byte, data []byte) string` | HMACSHA512Hex returns HMAC-SHA512 in lower-case hex form. | facade | — |
@@ -538,7 +555,7 @@ Import path: `github.com/imajinyun/go-knifer/vdb`
 
 Package vdb exposes database/sql helper APIs for SQL execution, query building, entities, conditions, pagination, transactions, named parameters, and lightweight metadata lookup.
 
-Quality: 50 functions · 5 with examples · 10.0% example coverage · synopsis sources: facade=11, internal=39, empty=0
+Quality: 51 functions · 7 with examples · 13.7% example coverage · synopsis sources: facade=15, internal=36, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -561,6 +578,7 @@ Quality: 50 functions · 5 with examples · 10.0% example coverage · synopsis s
 | `IsInClause` | `func IsInClause(sql string) bool` | IsInClause reports whether sql contains a top-level IN clause token. | internal | — |
 | `IsNotNull` | `func IsNotNull(field string) Condition` | IsNotNull creates an IS NOT NULL condition. | internal | — |
 | `IsNull` | `func IsNull(field string) Condition` | IsNull creates an IS NULL condition. | internal | — |
+| `IsSafeIdentifier` | `func IsSafeIdentifier(name string) bool` | IsSafeIdentifier reports whether name is a plain SQL identifier path. | facade | `ExampleIsSafeIdentifier` |
 | `Like` | `func Like(field string, value any) Condition` | Like creates a LIKE condition. | internal | — |
 | `Lt` | `func Lt(field string, value any) Condition` | Lt creates a less-than condition. | internal | — |
 | `Lte` | `func Lte(field string, value any) Condition` | Lte creates a less-than-or-equal condition. | internal | — |
@@ -568,11 +586,11 @@ Quality: 50 functions · 5 with examples · 10.0% example coverage · synopsis s
 | `NewBuilder` | `func NewBuilder(opts ...Option) *SQLBuilder` | NewBuilder creates a SQL builder. | internal | — |
 | `NewEntity` | `func NewEntity(table string) Entity` | NewEntity creates an Entity for table. | internal | `ExampleNewEntity` |
 | `NewOptions` | `func NewOptions() Options` | NewOptions returns default database helper options. | facade | — |
-| `NewPage` | `func NewPage(number int, size int, orders ...Order) Page` | NewPage creates a page request. | internal | — |
+| `NewPage` | `func NewPage(number int, size int, orders ...Order) Page` | NewPage creates a page request. | internal | `ExampleNewPage` |
 | `NewPageResult` | `func NewPageResult[T any](page Page, total int64, items []T) PageResult[T]` | NewPageResult creates a paged result. | internal | — |
 | `NewQuery` | `func NewQuery(tables ...string) Query` | NewQuery creates a query for tables. | internal | — |
-| `NewWrapper` | `func NewWrapper(prefix string, suffix string) Wrapper` | NewWrapper returns an identifier wrapper. | internal | — |
-| `NormalizeDialect` | `func NormalizeDialect(name string) Dialect` | NormalizeDialect maps common driver names to a Dialect. | internal | — |
+| `NewWrapper` | `func NewWrapper(prefix string, suffix string) Wrapper` | NewWrapper returns an identifier wrapper. | facade | — |
+| `NormalizeDialect` | `func NormalizeDialect(name string) Dialect` | NormalizeDialect maps common driver names to a SQL dialect. | facade | — |
 | `Open` | `func Open(driverName string, dataSourceName string, opts ...Option) (*DB, error)` | Open opens a database using database/sql and applies pool/dialect options. | facade | — |
 | `OrGroup` | `func OrGroup(conds ...Condition) Condition` | OrGroup groups conditions with OR. | internal | — |
 | `OrWith` | `func OrWith(c Condition) Condition` | OrWith marks c as linked by OR. | internal | — |
@@ -591,7 +609,7 @@ Quality: 50 functions · 5 with examples · 10.0% example coverage · synopsis s
 | `WithMaxOpenConns` | `func WithMaxOpenConns(n int) Option` | WithMaxOpenConns sets database/sql max open connections when opening or wrapping a DB. | facade | — |
 | `WithSQLOpenFunc` | `func WithSQLOpenFunc(open SQLOpenFunc) Option` | WithSQLOpenFunc sets the function used to open database/sql DBs. | facade | — |
 | `WithWrapper` | `func WithWrapper(w Wrapper) Option` | WithWrapper sets identifier wrapper behavior and overrides the dialect default wrapper. | facade | — |
-| `WrapperForDialect` | `func WrapperForDialect(d Dialect) Wrapper` | WrapperForDialect returns the conventional identifier wrapper for dialect. | internal | — |
+| `WrapperForDialect` | `func WrapperForDialect(d Dialect) Wrapper` | WrapperForDialect returns the conventional identifier wrapper for dialect. | facade | — |
 
 ### vdfa
 
@@ -807,6 +825,37 @@ Quality: 18 functions · 5 with examples · 27.8% example coverage · synopsis s
 | `WithIDCardMatcher` | `func WithIDCardMatcher(matcher func(string) bool) Option` | WithIDCardMatcher sets the matcher used by IsIDCardWithOptions. | facade | — |
 | `WithMobileMatcher` | `func WithMobileMatcher(matcher func(string) bool) Option` | WithMobileMatcher sets the matcher used by IsMobileWithOptions. | facade | — |
 | `WithNumberMatcher` | `func WithNumberMatcher(matcher func(string) bool) Option` | WithNumberMatcher sets the matcher used by IsNumberStrWithOptions. | facade | — |
+
+### vftp
+
+Import path: `github.com/imajinyun/go-knifer/vftp`
+
+Package vftp provides provider-neutral FTP list, download, and upload helpers.
+
+Quality: 5 functions · 5 with examples · 100.0% example coverage · synopsis sources: facade=5, internal=0, empty=0
+
+| Function | Signature | Synopsis | Source | Examples |
+| --- | --- | --- | --- | --- |
+| `Download` | `func Download(ctx context.Context, provider Provider, request DownloadRequest) (DownloadResponse, error)` | Download validates request and delegates to provider through a short-lived Client. | facade | `ExampleDownload` |
+| `List` | `func List(ctx context.Context, provider Provider, request ListRequest) (ListResponse, error)` | List validates request and delegates to provider through a short-lived Client. | facade | `ExampleList` |
+| `New` | `func New(opts ...Option) *Client` | New returns a provider-neutral FTP client. | facade | `ExampleNew` |
+| `Upload` | `func Upload(ctx context.Context, provider Provider, request UploadRequest) (UploadResponse, error)` | Upload validates request and delegates to provider through a short-lived Client. | facade | `ExampleUpload` |
+| `WithProvider` | `func WithProvider(provider Provider) Option` | WithProvider sets the provider used by list, download, and upload calls. | facade | `ExampleWithProvider` |
+
+### vhan
+
+Import path: `github.com/imajinyun/go-knifer/vhan`
+
+Package vhan provides provider-neutral Han text romanization helpers.
+
+Quality: 4 functions · 4 with examples · 100.0% example coverage · synopsis sources: facade=4, internal=0, empty=0
+
+| Function | Signature | Synopsis | Source | Examples |
+| --- | --- | --- | --- | --- |
+| `Convert` | `func Convert(ctx context.Context, provider Provider, request ConvertRequest) (ConvertResponse, error)` | Convert validates request and delegates to provider through a short-lived Client. | facade | `ExampleConvert` |
+| `Initials` | `func Initials(ctx context.Context, provider Provider, request InitialsRequest) (InitialsResponse, error)` | Initials validates request and delegates to provider through a short-lived Client. | facade | `ExampleInitials` |
+| `New` | `func New(opts ...Option) *Client` | New returns a provider-neutral Han text romanization client. | facade | `ExampleNew` |
+| `WithProvider` | `func WithProvider(provider Provider) Option` | WithProvider sets the provider used by conversion and initials calls. | facade | `ExampleWithProvider` |
 
 ### vhash
 
@@ -2061,16 +2110,18 @@ Import path: `github.com/imajinyun/go-knifer/vpoi`
 
 Package vpoi provides office-document utilities.
 
-Quality: 26 functions · 5 with examples · 19.2% example coverage · synopsis sources: facade=26, internal=0, empty=0
+Quality: 28 functions · 6 with examples · 21.4% example coverage · synopsis sources: facade=28, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
+| `IsValidSheetName` | `func IsValidSheetName(sheet string) bool` | IsValidSheetName reports whether sheet can be used as an Excel worksheet name. | facade | — |
 | `ReadRows` | `func ReadRows(path string, opts ...ReadOption) ([][]string, error)` | ReadRows reads rows from the first worksheet in path. | facade | — |
-| `ReadRowsFromReader` | `func ReadRowsFromReader(r io.Reader, opts ...ReadOption) ([][]string, error)` | ReadRowsFromReader reads rows from the first worksheet in r. | facade | `ExampleReadRowsFromReader`, `ExampleReadRowsFromReader_withReadSheet` |
+| `ReadRowsFromReader` | `func ReadRowsFromReader(r io.Reader, opts ...ReadOption) ([][]string, error)` | ReadRowsFromReader reads rows from the first worksheet in r. | facade | `ExampleReadRowsFromReader`, `ExampleReadRowsFromReader_withReadSheet`, `ExampleReadRowsFromReader_withValidatedSheet` |
 | `ReadSheetRows` | `func ReadSheetRows(path string, sheet string) ([][]string, error)` | ReadSheetRows reads rows from sheet in path. | facade | — |
 | `ReadSheetRowsWithOptions` | `func ReadSheetRowsWithOptions(path string, sheet string, opts ...ReadOption) ([][]string, error)` | ReadSheetRowsWithOptions reads rows from sheet in path with custom open options. | facade | — |
 | `SheetNames` | `func SheetNames(path string) ([]string, error)` | SheetNames returns all worksheet names in path. | facade | `ExampleSheetNames` |
 | `SheetNamesWithOptions` | `func SheetNamesWithOptions(path string, opts ...ReadOption) ([]string, error)` | SheetNamesWithOptions returns all worksheet names in path with custom open options. | facade | — |
+| `ValidateSheetName` | `func ValidateSheetName(sheet string) error` | ValidateSheetName validates Excel worksheet naming constraints. | facade | `ExampleValidateSheetName` |
 | `WithChmod` | `func WithChmod(chmod func(string, fs.FileMode) error) WriteOption` | WithChmod sets the chmod provider used after saving workbooks. | facade | — |
 | `WithCreateParents` | `func WithCreateParents(create bool) WriteOption` | WithCreateParents controls whether write helpers create parent directories. | facade | — |
 | `WithDirPerm` | `func WithDirPerm(perm fs.FileMode) WriteOption` | WithDirPerm sets the parent-directory permission used when saving workbooks. | facade | — |
@@ -2590,6 +2641,23 @@ Quality: 43 functions · 14 with examples · 32.6% example coverage · synopsis 
 | `Window` | `func Window[T any](a []T, size int) [][]T` | Window returns overlapping fixed-size windows with a step of one. | internal | `ExampleWindow` |
 | `Zip2` | `func Zip2[A any, B any](a []A, b []B) []Pair[A, B]` | Zip2 pairs elements from two slices up to the shorter length. | internal | `ExampleZip2` |
 
+### vssh
+
+Import path: `github.com/imajinyun/go-knifer/vssh`
+
+Package vssh provides provider-neutral SSH command and SFTP transfer helpers.
+
+Quality: 6 functions · 6 with examples · 100.0% example coverage · synopsis sources: facade=6, internal=0, empty=0
+
+| Function | Signature | Synopsis | Source | Examples |
+| --- | --- | --- | --- | --- |
+| `Download` | `func Download(ctx context.Context, provider Provider, request DownloadRequest) (DownloadResponse, error)` | Download validates request and delegates to provider through a short-lived Client. | facade | `ExampleDownload` |
+| `List` | `func List(ctx context.Context, provider Provider, request ListRequest) (ListResponse, error)` | List validates request and delegates to provider through a short-lived Client. | facade | `ExampleList` |
+| `New` | `func New(opts ...Option) *Client` | New returns a provider-neutral SSH/SFTP client. | facade | `ExampleNew` |
+| `Run` | `func Run(ctx context.Context, provider Provider, request CommandRequest) (CommandResponse, error)` | Run validates request and delegates to provider through a short-lived Client. | facade | `ExampleRun` |
+| `Upload` | `func Upload(ctx context.Context, provider Provider, request UploadRequest) (UploadResponse, error)` | Upload validates request and delegates to provider through a short-lived Client. | facade | `ExampleUpload` |
+| `WithProvider` | `func WithProvider(provider Provider) Option` | WithProvider sets the provider used by command and transfer calls. | facade | `ExampleWithProvider` |
+
 ### vstr
 
 Import path: `github.com/imajinyun/go-knifer/vstr`
@@ -2787,20 +2855,41 @@ Quality: 111 functions · 5 with examples · 4.5% example coverage · synopsis s
 | `WithUserEnvLookup` | `func WithUserEnvLookup(lookup func(string) string) UserInfoOption` | WithUserEnvLookup sets the environment lookup function used by NewUserInfoWithOptions. | facade | — |
 | `WithWorkingDirFunc` | `func WithWorkingDirFunc(fn func() (string, error)) UserInfoOption` | WithWorkingDirFunc sets the function used to discover the current working directory. | facade | — |
 
+### vtok
+
+Import path: `github.com/imajinyun/go-knifer/vtok`
+
+Package vtok provides provider-neutral text tokenization helpers.
+
+Quality: 4 functions · 4 with examples · 100.0% example coverage · synopsis sources: facade=4, internal=0, empty=0
+
+| Function | Signature | Synopsis | Source | Examples |
+| --- | --- | --- | --- | --- |
+| `Keywords` | `func Keywords(ctx context.Context, provider Provider, request KeywordsRequest) (KeywordsResponse, error)` | Keywords validates request and delegates to provider through a short-lived Client. | facade | `ExampleKeywords` |
+| `New` | `func New(opts ...Option) *Client` | New returns a provider-neutral tokenization client. | facade | `ExampleNew` |
+| `Tokenize` | `func Tokenize(ctx context.Context, provider Provider, request TokenizeRequest) (TokenizeResponse, error)` | Tokenize validates request and delegates to provider through a short-lived Client. | facade | `ExampleTokenize` |
+| `WithProvider` | `func WithProvider(provider Provider) Option` | WithProvider sets the provider used by tokenization and keyword calls. | facade | `ExampleWithProvider` |
+
 ### vtpl
 
 Import path: `github.com/imajinyun/go-knifer/vtpl`
 
 Package vtpl provides Go html/template rendering utilities.
 
-Quality: 9 functions · 5 with examples · 55.6% example coverage · synopsis sources: facade=9, internal=0, empty=0
+Quality: 15 functions · 6 with examples · 40.0% example coverage · synopsis sources: facade=15, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
+| `NewHTMLEngine` | `func NewHTMLEngine(opts ...EngineOption) Engine` | NewHTMLEngine creates an Engine backed by html/template. | facade | — |
+| `NewTextEngine` | `func NewTextEngine(opts ...EngineOption) Engine` | NewTextEngine creates an Engine backed by text/template. | facade | — |
 | `Render` | `func Render(tpl string, data any) (string, error)` | Render renders a Go html/template string with data. | facade | `ExampleRender`, `ExampleRender_htmlEscaping`, `ExampleRender_parseError` |
 | `RenderTemplate` | `func RenderTemplate(tpl string, data any) (string, error)` | RenderTemplate renders a Go html/template string with data. | facade | `ExampleRenderTemplate` |
+| `RenderWithEngine` | `func RenderWithEngine(ctx context.Context, engine Engine, source string, data any) (string, error)` | RenderWithEngine renders a template source through a caller-selected engine. | facade | `ExampleRenderWithEngine_customEngine`, `ExampleRenderWithEngine_htmlEngine`, `ExampleRenderWithEngine_textEngine` |
 | `RenderWithOptions` | `func RenderWithOptions(tpl string, data any, opts ...RenderOption) (string, error)` | RenderWithOptions renders a Go html/template string with per-call options. | facade | `ExampleRenderWithOptions` |
 | `WithDelims` | `func WithDelims(left string, right string) RenderOption` | WithDelims sets template action delimiters. | facade | — |
+| `WithEngineDelims` | `func WithEngineDelims(left string, right string) EngineOption` | WithEngineDelims sets template action delimiters for built-in engines. | facade | — |
+| `WithEngineFuncMap` | `func WithEngineFuncMap(funcMap map[string]any) EngineOption` | WithEngineFuncMap sets functions available to built-in engines. | facade | — |
+| `WithEngineTemplateName` | `func WithEngineTemplateName(name string) EngineOption` | WithEngineTemplateName sets the template name used by built-in engines. | facade | — |
 | `WithFuncMap` | `func WithFuncMap(funcMap template.FuncMap) RenderOption` | WithFuncMap sets functions available to the template. | facade | `ExampleWithFuncMap` |
 | `WithTemplateExecutor` | `func WithTemplateExecutor(executor func(*template.Template, io.Writer, any) error) RenderOption` | WithTemplateExecutor sets the executor used after parsing. | facade | — |
 | `WithTemplateFactory` | `func WithTemplateFactory(factory func(string) *template.Template) RenderOption` | WithTemplateFactory sets the template constructor used before parsing. | facade | — |

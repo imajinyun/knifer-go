@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"reflect"
 
 	"github.com/imajinyun/go-knifer/vpoi"
 )
@@ -65,6 +66,32 @@ func ExampleWriteRowsToBuffer_emptySheetName() {
 	// Output:
 	// true
 	// true
+}
+
+func ExampleValidateSheetName() {
+	err := vpoi.ValidateSheetName("bad/name")
+
+	fmt.Println(errors.Is(err, vpoi.ErrInvalidSheetName))
+	fmt.Println(vpoi.IsValidSheetName("Reports"))
+	// Output:
+	// true
+	// true
+}
+
+func ExampleReadRowsFromReader_withValidatedSheet() {
+	buf, err := vpoi.WriteRowsToBuffer("Users", [][]string{{"id", "name"}, {"1", "alice"}})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	rows, err := vpoi.ReadRowsFromReader(bytes.NewReader(buf.Bytes()), vpoi.WithReadSheet("Users"))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(reflect.DeepEqual(rows, [][]string{{"id", "name"}, {"1", "alice"}}))
+	// Output: true
 }
 
 func ExampleWithReadSheet() {

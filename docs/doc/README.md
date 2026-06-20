@@ -36,55 +36,60 @@ The project follows an “internal implementation + public facade” layout: `in
 
 | Module | Import path | Description |
 | --- | --- | --- |
-| [`vbean`](01-vbean.md) | `github.com/imajinyun/go-knifer/vbean` | Bean/struct mapping helpers: struct/map conversion, copy properties, tag and alias matching, ignore-empty/zero options, and weak type conversion. |
-| [`vblf`](02-vblf.md) | `github.com/imajinyun/go-knifer/vblf` | Bloom filters: bitmap/bitset/filter abstractions, string hash algorithms, option constructors, validation-returning `E` constructors, and provider-backed file initialization. |
-| [`vbool`](03-vbool.md) | `github.com/imajinyun/go-knifer/vbool` | Boolean helpers: negate, bool-to-int, all/any checks. |
-| [`vcache`](04-vcache.md) | `github.com/imajinyun/go-knifer/vcache` | Generic caches: FIFO, LFU, LRU, Timed, Weak, and NoCache; supports TTL, clocks, removal listeners, lazy loading, ticker/runner providers, and weak-cache finalizer providers. |
-| [`vcodec`](05-vcodec.md) | `github.com/imajinyun/go-knifer/vcodec` | Encoding helpers: Base64, URL-safe Base64, raw URL-safe Base64, custom Base64 encoding providers, and Hex. |
-| [`vconf`](06-vconf.md) | `github.com/imajinyun/go-knifer/vconf` | Grouped configuration reader for setting/properties-style text, YAML subset, and TOML parsing, with typed getters, schema validation, profile/remote/file loading, SSRF-checked remote loads, bounded reads, and clone support. |
-| [`vconv`](07-vconv.md) | `github.com/imajinyun/go-knifer/vconv` | Permissive type conversion: string, int, int64, float64, bool, bytes, and default-value variants. |
-| [`vcron`](08-vcron.md) | `github.com/imajinyun/go-knifer/vcron` | Cron expression parsing and task scheduling, configurable schedulers/options, provider injection, running-task metrics, `Wait`, and graceful `Shutdown(ctx)`. |
-| [`vcrypto`](09-vcrypto.md) | `github.com/imajinyun/go-knifer/vcrypto` | Cryptography and digests: SHA-2, HMAC, PBKDF2-SHA256, parameter signing, random bytes, AES-GCM, RSA OAEP/PSS, PEM, and X.509 helpers. |
-| [`vcsv`](10-vcsv.md) | `github.com/imajinyun/go-knifer/vcsv` | CSV helpers: reader/writer options, records-to-map conversion, map writing, struct tag export, and record callbacks. |
-| [`vdate`](11-vdate.md) | `github.com/imajinyun/go-knifer/vdate` | Date/time helpers: common layouts, parse/format, begin/end of day/month/year, offsets, and comparisons. |
-| [`vdb`](12-vdb.md) | `github.com/imajinyun/go-knifer/vdb` | Database helpers built on `database/sql`: SQL execution, named parameters, entities, conditions, query builders, transactions, pagination, metadata lookup, and injectable `sql.Open` providers. |
-| [`vdfa`](13-vdfa.md) | `github.com/imajinyun/go-knifer/vdfa` | DFA word-tree matching: stop-rune filtering, first/all matches, dense/greedy modes, found-word metadata, matcher helpers, text replacement, and async initialization providers. |
-| [`verr`](14-verr.md) | `github.com/imajinyun/go-knifer/verr` | Error helpers: panic recovery, aggregation, multierror matching, stack capture/formatting, injectable logging/stack/exit/timer/runner providers, and optional logrus/Sentry integration. |
-| [`vfile`](15-vfile.md) | `github.com/imajinyun/go-knifer/vfile` | File and IO helpers: read/write/copy, lines, mkdir/touch/delete, filename helpers, quiet close, and provider-backed file-system operations. |
-| [`vform`](16-vform.md) | `github.com/imajinyun/go-knifer/vform` | Form and input validation helpers: email, mobile, URL, IPv4/IPv6, ID card, Chinese text, number strings, and matcher providers. |
-| [`vhash`](17-vhash.md) | `github.com/imajinyun/go-knifer/vhash` | Non-cryptographic hash helpers: additive, FNV, injectable 32-bit providers, and classic string hashes. |
-| [`vhttp`](18-vhttp.md) | `github.com/imajinyun/go-knifer/vhttp` | Standard-library HTTP facade: chainable clients, global/isolated config, explicit-error shortcuts, classified HTTP errors, safe downloads, BasicAuth, HTML helpers, and provider-backed transports/factories. |
-| [`vid`](19-vid.md) | `github.com/imajinyun/go-knifer/vid` | ID helpers: UUIDs, ObjectId, Snowflake, worker/datacenter derivation, NanoId generation, fallback random sources, and isolated Snowflake creation. |
-| [`vident`](20-vident.md) | `github.com/imajinyun/go-knifer/vident` | Identity helpers: mainland China ID card conversion/validation, birthday/age/gender extraction, province/city/district parsing, masking, and HK/Macau/Taiwan card validation. |
-| [`vimg`](21-vimg.md) | `github.com/imajinyun/go-knifer/vimg` | Image helpers: thumbnails, PNG/JPEG/GIF conversion, metadata, QR/barcode generation and decoding, QR logo/background options, and graphical captchas. |
-| [`vjob`](22-vjob.md) | `github.com/imajinyun/go-knifer/vjob` | Sliceable job execution with typed adapters, context cancellation, and serialized merge callbacks. |
-| [`vjson`](23-vjson.md) | `github.com/imajinyun/go-knifer/vjson` | Ordered JSON objects/arrays, parsing/formatting, path get/put, provider-backed marshal/unmarshal, configurable conversion, and XML/JSON adapters. |
-| [`vjwt`](24-vjwt.md) | `github.com/imajinyun/go-knifer/vjwt` | JWT creation, parsing, signing, verification, time-claim validation, HMAC/RSA-PSS/ECDSA support, and unsigned-token rejection. |
-| [`vlog`](25-vlog.md) | `github.com/imajinyun/go-knifer/vlog` | Logging facade: console/color loggers, log levels, global logger, static functions, per-call options, and isolated logger creation. |
-| [`vmail`](26-vmail.md) | `github.com/imajinyun/go-knifer/vmail` | Mail helpers: RFC 5322 parsing, MIME message construction, text/HTML, inline files, attachments, quick send helpers, context-aware SMTP, mandatory TLS defaults, injection checks, and provider options. |
-| [`vmap`](27-vmap.md) | `github.com/imajinyun/go-knifer/vmap` | Map helpers: construction, contains/get/find, sorted keys/values, map/filter/reject/partition, reduce/group/count, inverse, merge, set-style diffs, pick/omit, clone, and equality. |
-| [`vmask`](28-vmask.md) | `github.com/imajinyun/go-knifer/vmask` | Masking helpers for names, IDs, phones, addresses, email, passwords, license plates, bank cards, IPs, passports, and credit codes. |
-| [`vnet`](29-vnet.md) | `github.com/imajinyun/go-knifer/vnet` | Network helpers: IPv4/IPv6 conversion, CIDR/range/mask utilities, local ports, host/interface/MAC lookup, TLS config, dial/ping options, and multipart forms. |
-| [`vnum`](30-vnum.md) | `github.com/imajinyun/go-knifer/vnum` | Numeric helpers: precise arithmetic, generic aggregation, rounding, parsing/formatting providers, random unique numbers, ranges, factorial/combinations, gcd/lcm, binary conversion, byte conversion, and expression calculation. |
-| [`vobj`](31-vobj.md) | `github.com/imajinyun/go-knifer/vobj` | Object helpers: nil/empty checks, equality, defaults, clone/serialization, comparison, type inspection, and container utilities. |
-| [`vpass`](32-vpass.md) | `github.com/imajinyun/go-knifer/vpass` | Password helpers: deterministic local scoring, strength buckets, strong/weak predicates, repeated/sequential-run detection, and common weak-password blocklist. |
-| [`vpoi`](33-vpoi.md) | `github.com/imajinyun/go-knifer/vpoi` | Office document helpers: XLSX sheet listing, row reading/writing, multi-sheet writing, in-memory workbook creation, and injectable workbook/file-system providers. |
-| [`vrand`](34-vrand.md) | `github.com/imajinyun/go-knifer/vrand` | Random helpers: integers, floats, booleans, bytes, strings, numeric strings, random element selection, deterministic seeding, and resettable pseudo-random source providers. |
-| [`vref`](35-vref.md) | `github.com/imajinyun/go-knifer/vref` | Reflection helpers: field lookup/mutation, method discovery/invocation, constructor-style calls, nil-safe type/value utilities, classifier helpers, and explicit unsafe access options. |
-| [`vregex`](36-vregex.md) | `github.com/imajinyun/go-knifer/vregex` | Regular-expression helpers: matching, group extraction, named groups, deletion, counting, index lookup, template/function replacement, escaping, and compiler/DOTALL options. |
-| [`vresty`](37-vresty.md) | `github.com/imajinyun/go-knifer/vresty` | Resty v3 HTTP facade: chainable requests, JSON/form/multipart bodies, isolated/global config, request factories, resettable default clients, downloads, safe downloads, and response helpers. |
-| [`vsem`](38-vsem.md) | `github.com/imajinyun/go-knifer/vsem` | Weighted, context-aware counting semaphore with FIFO fairness, try-acquire, close notifications, and in-use metrics. |
-| [`vset`](39-vset.md) | `github.com/imajinyun/go-knifer/vset` | Generic and typed set utilities with add/remove/contains, set operations, and JSON/YAML encoding helpers. |
-| [`vskt`](40-vskt.md) | `github.com/imajinyun/go-knifer/vskt` | TCP socket utilities: plain connections, NIO/AIO server/client helpers, protocol encoder/decoder interfaces, and configurable thread-pool/listener/connection/runner/IP-parser providers. |
-| [`vslice`](41-vslice.md) | `github.com/imajinyun/go-knifer/vslice` | Slice helpers: contains/index, reverse, distinct, join, filter/map, sub-slice, concat, set-like operations, and paging. |
-| [`vstr`](42-vstr.md) | `github.com/imajinyun/go-knifer/vstr` | String/text helpers: blank checks, trimming, splitting, substrings, formatting, emoji helpers, naming conversion, Unicode escaping, Ant matching, text similarity, SimHash, HTML escaping, and rune checks. |
-| [`vsys`](43-vsys.md) | `github.com/imajinyun/go-knifer/vsys` | System/runtime information: host, OS, user, Go runtime, process memory, goroutines, environment variables, resettable info cache, and injectable env/command/runtime providers. |
-| [`vtpl`](44-vtpl.md) | `github.com/imajinyun/go-knifer/vtpl` | Go `html/template` rendering helpers with template name, FuncMap, delimiter, factory, and executor options. |
-| [`vurl`](45-vurl.md) | `github.com/imajinyun/go-knifer/vurl` | URL/URI helpers: parse, normalize, resolve, query encode/decode, percent encoding providers, URL building, Data URI, scheme checks, file URL conversion, resource open/size helpers, and SSRF-oriented safe variants. |
-| [`vver`](46-vver.md) | `github.com/imajinyun/go-knifer/vver` | Version helpers: comparison, greater/less predicates, expression matching, inclusive ranges, and custom expression delimiters. |
-| [`vxml`](47-vxml.md) | `github.com/imajinyun/go-knifer/vxml` | XML helpers: parse/read/write/format, tree navigation, XPath-style lookup, escaping, map/bean conversion, transform options, and namespace utilities. |
-| [`vzip`](48-vzip.md) | `github.com/imajinyun/go-knifer/vzip` | ZIP, gzip, and zlib helpers: archive creation/extraction, entry lookup, traversal, append, in-memory entries, stream compression, bounded extraction/decompression, traversal checks, and symlink escape checks. |
-| [`vcli`](49-vcli.md) | `github.com/imajinyun/go-knifer/vcli` | CLI helpers: context-aware command execution, injected runners, typed flag parsing, subcommand routing, deterministic help rendering, and ANSI color controls. |
+| [`vai`](01-vai.md) | `github.com/imajinyun/go-knifer/vai` | AI adapter helpers: provider-injected chat and embeddings, request validation, defensive copies, deterministic examples, and redaction-safe diagnostics. |
+| [`vbean`](02-vbean.md) | `github.com/imajinyun/go-knifer/vbean` | Bean/struct mapping helpers: struct/map conversion, copy properties, tag and alias matching, ignore-empty/zero options, and weak type conversion. |
+| [`vblf`](03-vblf.md) | `github.com/imajinyun/go-knifer/vblf` | Bloom filters: bitmap/bitset/filter abstractions, string hash algorithms, option constructors, validation-returning `E` constructors, and provider-backed file initialization. |
+| [`vbool`](04-vbool.md) | `github.com/imajinyun/go-knifer/vbool` | Boolean helpers: negate, bool-to-int, all/any checks. |
+| [`vcache`](05-vcache.md) | `github.com/imajinyun/go-knifer/vcache` | Generic caches: FIFO, LFU, LRU, Timed, Weak, and NoCache; supports TTL, clocks, removal listeners, lazy loading, ticker/runner providers, and weak-cache finalizer providers. |
+| [`vcli`](06-vcli.md) | `github.com/imajinyun/go-knifer/vcli` | CLI helpers: context-aware command execution, injected runners, typed flag parsing, subcommand routing, deterministic help rendering, and ANSI color controls. |
+| [`vcodec`](07-vcodec.md) | `github.com/imajinyun/go-knifer/vcodec` | Encoding helpers: Base64, URL-safe Base64, raw URL-safe Base64, custom Base64 encoding providers, and Hex. |
+| [`vconf`](08-vconf.md) | `github.com/imajinyun/go-knifer/vconf` | Grouped configuration reader for setting/properties-style text, YAML subset, and TOML parsing, with typed getters, schema validation, profile/remote/file loading, SSRF-checked remote loads, bounded reads, and clone support. |
+| [`vconv`](09-vconv.md) | `github.com/imajinyun/go-knifer/vconv` | Permissive type conversion: string, int, int64, float64, bool, bytes, and default-value variants. |
+| [`vcron`](10-vcron.md) | `github.com/imajinyun/go-knifer/vcron` | Cron expression parsing and task scheduling, configurable schedulers/options, provider injection, running-task metrics, `Wait`, and graceful `Shutdown(ctx)`. |
+| [`vcrypto`](11-vcrypto.md) | `github.com/imajinyun/go-knifer/vcrypto` | Cryptography and digests: SHA-2, HMAC, PBKDF2-SHA256, parameter signing, random bytes, AES-GCM, RSA OAEP/PSS, PEM, and X.509 helpers. |
+| [`vcsv`](12-vcsv.md) | `github.com/imajinyun/go-knifer/vcsv` | CSV helpers: reader/writer options, records-to-map conversion, map writing, struct tag export, and record callbacks. |
+| [`vdate`](13-vdate.md) | `github.com/imajinyun/go-knifer/vdate` | Date/time helpers: common layouts, parse/format, begin/end of day/month/year, offsets, and comparisons. |
+| [`vdb`](14-vdb.md) | `github.com/imajinyun/go-knifer/vdb` | Database helpers built on `database/sql`: SQL execution, named parameters, entities, conditions, query builders, transactions, pagination, metadata lookup, and injectable `sql.Open` providers. |
+| [`vdfa`](15-vdfa.md) | `github.com/imajinyun/go-knifer/vdfa` | DFA word-tree matching: stop-rune filtering, first/all matches, dense/greedy modes, found-word metadata, matcher helpers, text replacement, and async initialization providers. |
+| [`verr`](16-verr.md) | `github.com/imajinyun/go-knifer/verr` | Error helpers: panic recovery, aggregation, multierror matching, stack capture/formatting, injectable logging/stack/exit/timer/runner providers, and optional logrus/Sentry integration. |
+| [`vfile`](17-vfile.md) | `github.com/imajinyun/go-knifer/vfile` | File and IO helpers: read/write/copy, lines, mkdir/touch/delete, filename helpers, quiet close, and provider-backed file-system operations. |
+| [`vform`](18-vform.md) | `github.com/imajinyun/go-knifer/vform` | Form and input validation helpers: email, mobile, URL, IPv4/IPv6, ID card, Chinese text, number strings, and matcher providers. |
+| [`vftp`](19-vftp.md) | `github.com/imajinyun/go-knifer/vftp` | FTP adapter helpers: provider-injected listing, in-memory download/upload contracts, request validation, transfer limits, and defensive copies. |
+| [`vhan`](20-vhan.md) | `github.com/imajinyun/go-knifer/vhan` | Han text adapter helpers: provider-injected Chinese-to-pinyin conversion and initials extraction, request validation, input limits, and defensive copies. |
+| [`vhash`](21-vhash.md) | `github.com/imajinyun/go-knifer/vhash` | Non-cryptographic hash helpers: additive, FNV, injectable 32-bit providers, and classic string hashes. |
+| [`vhttp`](22-vhttp.md) | `github.com/imajinyun/go-knifer/vhttp` | Standard-library HTTP facade: chainable clients, global/isolated config, explicit-error shortcuts, classified HTTP errors, safe downloads, BasicAuth, HTML helpers, and provider-backed transports/factories. |
+| [`vid`](23-vid.md) | `github.com/imajinyun/go-knifer/vid` | ID helpers: UUIDs, ObjectId, Snowflake, worker/datacenter derivation, NanoId generation, fallback random sources, and isolated Snowflake creation. |
+| [`vident`](24-vident.md) | `github.com/imajinyun/go-knifer/vident` | Identity helpers: mainland China ID card conversion/validation, birthday/age/gender extraction, province/city/district parsing, masking, and HK/Macau/Taiwan card validation. |
+| [`vimg`](25-vimg.md) | `github.com/imajinyun/go-knifer/vimg` | Image helpers: thumbnails, PNG/JPEG/GIF conversion, metadata, QR/barcode generation and decoding, QR logo/background options, and graphical captchas. |
+| [`vjob`](26-vjob.md) | `github.com/imajinyun/go-knifer/vjob` | Sliceable job execution with typed adapters, context cancellation, and serialized merge callbacks. |
+| [`vjson`](27-vjson.md) | `github.com/imajinyun/go-knifer/vjson` | Ordered JSON objects/arrays, parsing/formatting, path get/put, provider-backed marshal/unmarshal, configurable conversion, and XML/JSON adapters. |
+| [`vjwt`](28-vjwt.md) | `github.com/imajinyun/go-knifer/vjwt` | JWT creation, parsing, signing, verification, time-claim validation, HMAC/RSA-PSS/ECDSA support, and unsigned-token rejection. |
+| [`vlog`](29-vlog.md) | `github.com/imajinyun/go-knifer/vlog` | Logging facade: console/color loggers, log levels, global logger, static functions, per-call options, and isolated logger creation. |
+| [`vmail`](30-vmail.md) | `github.com/imajinyun/go-knifer/vmail` | Mail helpers: RFC 5322 parsing, MIME message construction, text/HTML, inline files, attachments, quick send helpers, context-aware SMTP, mandatory TLS defaults, injection checks, and provider options. |
+| [`vmap`](31-vmap.md) | `github.com/imajinyun/go-knifer/vmap` | Map helpers: construction, contains/get/find, sorted keys/values, map/filter/reject/partition, reduce/group/count, inverse, merge, set-style diffs, pick/omit, clone, and equality. |
+| [`vmask`](32-vmask.md) | `github.com/imajinyun/go-knifer/vmask` | Masking helpers for names, IDs, phones, addresses, email, passwords, license plates, bank cards, IPs, passports, and credit codes. |
+| [`vnet`](33-vnet.md) | `github.com/imajinyun/go-knifer/vnet` | Network helpers: IPv4/IPv6 conversion, CIDR/range/mask utilities, local ports, host/interface/MAC lookup, TLS config, dial/ping options, and multipart forms. |
+| [`vnum`](34-vnum.md) | `github.com/imajinyun/go-knifer/vnum` | Numeric helpers: precise arithmetic, generic aggregation, rounding, parsing/formatting providers, random unique numbers, ranges, factorial/combinations, gcd/lcm, binary conversion, byte conversion, and expression calculation. |
+| [`vobj`](35-vobj.md) | `github.com/imajinyun/go-knifer/vobj` | Object helpers: nil/empty checks, equality, defaults, clone/serialization, comparison, type inspection, and container utilities. |
+| [`vpass`](36-vpass.md) | `github.com/imajinyun/go-knifer/vpass` | Password helpers: deterministic local scoring, strength buckets, strong/weak predicates, repeated/sequential-run detection, and common weak-password blocklist. |
+| [`vpoi`](37-vpoi.md) | `github.com/imajinyun/go-knifer/vpoi` | Office document helpers: XLSX sheet listing, row reading/writing, multi-sheet writing, in-memory workbook creation, and injectable workbook/file-system providers. |
+| [`vrand`](38-vrand.md) | `github.com/imajinyun/go-knifer/vrand` | Random helpers: integers, floats, booleans, bytes, strings, numeric strings, random element selection, deterministic seeding, and resettable pseudo-random source providers. |
+| [`vref`](39-vref.md) | `github.com/imajinyun/go-knifer/vref` | Reflection helpers: field lookup/mutation, method discovery/invocation, constructor-style calls, nil-safe type/value utilities, classifier helpers, and explicit unsafe access options. |
+| [`vregex`](40-vregex.md) | `github.com/imajinyun/go-knifer/vregex` | Regular-expression helpers: matching, group extraction, named groups, deletion, counting, index lookup, template/function replacement, escaping, and compiler/DOTALL options. |
+| [`vresty`](41-vresty.md) | `github.com/imajinyun/go-knifer/vresty` | Resty v3 HTTP facade: chainable requests, JSON/form/multipart bodies, isolated/global config, request factories, resettable default clients, downloads, safe downloads, and response helpers. |
+| [`vsem`](42-vsem.md) | `github.com/imajinyun/go-knifer/vsem` | Weighted, context-aware counting semaphore with FIFO fairness, try-acquire, close notifications, and in-use metrics. |
+| [`vset`](43-vset.md) | `github.com/imajinyun/go-knifer/vset` | Generic and typed set utilities with add/remove/contains, set operations, and JSON/YAML encoding helpers. |
+| [`vskt`](44-vskt.md) | `github.com/imajinyun/go-knifer/vskt` | TCP socket utilities: plain connections, NIO/AIO server/client helpers, protocol encoder/decoder interfaces, and configurable thread-pool/listener/connection/runner/IP-parser providers. |
+| [`vslice`](45-vslice.md) | `github.com/imajinyun/go-knifer/vslice` | Slice helpers: contains/index, reverse, distinct, join, filter/map, sub-slice, concat, set-like operations, and paging. |
+| [`vssh`](46-vssh.md) | `github.com/imajinyun/go-knifer/vssh` | SSH/SFTP adapter helpers: provider-injected command execution, SFTP-style listing, in-memory download/upload contracts, output and transfer limits, and defensive copies. |
+| [`vstr`](47-vstr.md) | `github.com/imajinyun/go-knifer/vstr` | String/text helpers: blank checks, trimming, splitting, substrings, formatting, emoji helpers, naming conversion, Unicode escaping, Ant matching, text similarity, SimHash, HTML escaping, and rune checks. |
+| [`vsys`](48-vsys.md) | `github.com/imajinyun/go-knifer/vsys` | System/runtime information: host, OS, user, Go runtime, process memory, goroutines, environment variables, resettable info cache, and injectable env/command/runtime providers. |
+| [`vtok`](49-vtok.md) | `github.com/imajinyun/go-knifer/vtok` | Tokenization adapter helpers: provider-injected text tokenization and keyword extraction, request validation, input/token limits, and defensive copies. |
+| [`vtpl`](50-vtpl.md) | `github.com/imajinyun/go-knifer/vtpl` | Template rendering helpers with `html/template`, `text/template`, engine-neutral adapters, context-first rendering, template name, FuncMap, delimiter, factory, and executor options. |
+| [`vurl`](51-vurl.md) | `github.com/imajinyun/go-knifer/vurl` | URL/URI helpers: parse, normalize, resolve, query encode/decode, percent encoding providers, URL building, Data URI, scheme checks, file URL conversion, resource open/size helpers, and SSRF-oriented safe variants. |
+| [`vver`](52-vver.md) | `github.com/imajinyun/go-knifer/vver` | Version helpers: comparison, greater/less predicates, expression matching, inclusive ranges, and custom expression delimiters. |
+| [`vxml`](53-vxml.md) | `github.com/imajinyun/go-knifer/vxml` | XML helpers: parse/read/write/format, tree navigation, XPath-style lookup, escaping, map/bean conversion, transform options, and namespace utilities. |
+| [`vzip`](54-vzip.md) | `github.com/imajinyun/go-knifer/vzip` | ZIP, gzip, and zlib helpers: archive creation/extraction, entry lookup, traversal, append, in-memory entries, stream compression, bounded extraction/decompression, traversal checks, and symlink escape checks. |
 
 <a id="quickstart-documents"></a>
 
@@ -172,6 +177,10 @@ Security-sensitive helpers expose only the currently recommended public API surf
 - Bloom filter constructors ending in `E` return validation errors for invalid sizes or hash configuration instead of panicking.
 - `vdb` condition builders validate operators against an allowlist.
 - `vskt.AioSession` serializes reads that share the session buffer and keeps buffers available during close callbacks.
+- `vftp` does not open network connections, read credentials, touch local filesystem paths, or log transfer data; callers inject providers and enforce deployment-specific FTP security at the boundary.
+- `vssh` does not open network connections, execute shell commands, read credentials, parse keys, touch local filesystem paths, or log command output or transfer data; callers inject providers and enforce SSH/SFTP security at the boundary.
+- `vhan` does not import dictionaries, tokenize text, open network connections, read credentials, touch local filesystem paths, or log input text; callers inject providers and own dictionary/polyphone behavior at the boundary.
+- `vtok` does not import dictionaries, segment text, rank keywords, open network connections, read credentials, touch local filesystem paths, or log input text; callers inject providers and own tokenizer/ranking behavior at the boundary.
 
 <a id="recommended-api-entry-points"></a>
 
@@ -191,6 +200,8 @@ Use these APIs for new code. Request helpers that can fail return errors explici
 | Create an LRU cache | `vcache.NewLRU` or `vcache.NewLRUWithTimeout` |
 | Parse a cron expression | `vcron.NewPattern` or `vcron.MustNewPattern` |
 | Load remote configuration from a trust boundary | `vconf.LoadRemoteSafe` or `vconf.LoadRemoteSafeWithOptions` |
+| Use a provider-injected FTP contract without adding a network client dependency | `vftp.New`, `vftp.List`, `vftp.Download`, `vftp.Upload` |
+| Use a provider-injected SSH/SFTP contract without adding a network client dependency | `vssh.New`, `vssh.Run`, `vssh.List`, `vssh.Download`, `vssh.Upload` |
 
 <a id="build-test-and-release-workflow"></a>
 

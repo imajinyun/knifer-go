@@ -22,7 +22,7 @@
 │   ├── api/exports.txt # exported API snapshot (19k+ lines, CI-enforced)
 │   ├── api/tools.json  # machine-readable facade function catalog for AI/tooling
 │   ├── api/tools.md    # generated human-readable facade function catalog
-│   └── doc/            # 48 per-package quickstart docs (01-vbean.md .. 48-vzip.md)
+│   └── doc/            # 48 per-package quickstart docs (02-vbean.md .. 54-vzip.md)
 ├── AGENTS.md           # cross-agent workflow, validation, and generated-doc rules
 └── .github/workflows/  # CI (go.yml) + release (release.yml) automation
 ```
@@ -165,7 +165,7 @@ When the user asks to implement, rename, refactor, document, or otherwise modify
 
    Run `make worktree-check` before broad validation. If unrelated untracked Go files exist, do not stage, edit, delete, or rely on them unless the user explicitly includes them in scope. Set `SKIP_WORKTREE_CHECK=1` only when those files are intentionally excluded and report them.
 
-3. **Format** touched Go files with `gofmt -w` before validation. If `golangci-lint` reports `gofmt`, run `gofmt -w` on the reported files, then re-run the focused package tests and lint gate.
+3. **Format** touched Go files with `gofmt -w` before validation. Go source must keep real tab indentation, not space-indented visual alignment. For editor display, follow `.editorconfig`: `.go` files use `indent_style = tab`, `indent_size = tab`, and `tab_width = 4` so one literal tab renders as one tab stop instead of appearing like eight spaces. If `golangci-lint` reports `gofmt`, run `gofmt -w` on the reported files, then re-run the focused package tests and lint gate.
 
 4. **Validate** focused tests first, then broaden to repository-level gates when feasible:
    - `go test -v -gcflags="all=-l -N" ./<changed-package>` for affected Go packages.

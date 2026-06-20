@@ -1,11 +1,56 @@
 package vtpl
 
 import (
+	"context"
 	"html/template"
 	"io"
 
 	templateimpl "github.com/imajinyun/go-knifer/internal/template"
 )
+
+// ErrMissingEngine reports that no template engine was provided.
+var ErrMissingEngine = templateimpl.ErrMissingEngine
+
+// ErrInvalidRenderRequest reports an invalid engine render request.
+var ErrInvalidRenderRequest = templateimpl.ErrInvalidRenderRequest
+
+// RenderRequest is the engine-neutral input for rendering a template source.
+type RenderRequest = templateimpl.RenderRequest
+
+// Engine renders template requests with an adapter-selected implementation.
+type Engine = templateimpl.Engine
+
+// EngineFunc adapts a function to Engine.
+type EngineFunc = templateimpl.EngineFunc
+
+// EngineOption customizes built-in template engines.
+type EngineOption = templateimpl.EngineOption
+
+// WithEngineTemplateName sets the template name used by built-in engines.
+func WithEngineTemplateName(name string) EngineOption {
+	return templateimpl.WithEngineTemplateName(name)
+}
+
+// WithEngineFuncMap sets functions available to built-in engines.
+func WithEngineFuncMap(funcMap map[string]any) EngineOption {
+	return templateimpl.WithEngineFuncMap(funcMap)
+}
+
+// WithEngineDelims sets template action delimiters for built-in engines.
+func WithEngineDelims(left, right string) EngineOption {
+	return templateimpl.WithEngineDelims(left, right)
+}
+
+// NewHTMLEngine creates an Engine backed by html/template.
+func NewHTMLEngine(opts ...EngineOption) Engine { return templateimpl.NewHTMLEngine(opts...) }
+
+// NewTextEngine creates an Engine backed by text/template.
+func NewTextEngine(opts ...EngineOption) Engine { return templateimpl.NewTextEngine(opts...) }
+
+// RenderWithEngine renders a template source through a caller-selected engine.
+func RenderWithEngine(ctx context.Context, engine Engine, source string, data any) (string, error) {
+	return templateimpl.RenderWithEngine(ctx, engine, source, data)
+}
 
 // RenderOption customizes template rendering per call.
 type RenderOption = templateimpl.RenderOption

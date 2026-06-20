@@ -1,6 +1,7 @@
 package vtpl_test
 
 import (
+	"context"
 	"fmt"
 	"html/template"
 	"strings"
@@ -52,6 +53,41 @@ func ExampleRender_htmlEscaping() {
 	fmt.Println(err)
 	// Output:
 	// <p>&lt;go-knifer&gt;</p>
+	// <nil>
+}
+
+func ExampleRenderWithEngine_textEngine() {
+	engine := vtpl.NewTextEngine()
+	result, err := vtpl.RenderWithEngine(context.Background(), engine, "{{.}}", "<go-knifer>")
+
+	fmt.Println(result)
+	fmt.Println(err)
+	// Output:
+	// <go-knifer>
+	// <nil>
+}
+
+func ExampleRenderWithEngine_htmlEngine() {
+	engine := vtpl.NewHTMLEngine()
+	result, err := vtpl.RenderWithEngine(context.Background(), engine, "{{.}}", "<go-knifer>")
+
+	fmt.Println(result)
+	fmt.Println(err)
+	// Output:
+	// &lt;go-knifer&gt;
+	// <nil>
+}
+
+func ExampleRenderWithEngine_customEngine() {
+	engine := vtpl.EngineFunc(func(ctx context.Context, req vtpl.RenderRequest) (string, error) {
+		return "custom: " + req.Source, ctx.Err()
+	})
+	result, err := vtpl.RenderWithEngine(context.Background(), engine, "template source", nil)
+
+	fmt.Println(result)
+	fmt.Println(err)
+	// Output:
+	// custom: template source
 	// <nil>
 }
 

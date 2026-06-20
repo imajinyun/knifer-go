@@ -44,3 +44,13 @@ func ExampleQRCodeImage() {
 	fmt.Println(img.Bounds().Dx(), img.Bounds().Dy(), err)
 	// Output: 64 64 <nil>
 }
+
+func ExampleLineCaptcha_ImageBytes() {
+	c := vimg.NewLineCaptcha(100, 40)
+	first := c.ImageBytes()
+	want := append([]byte(nil), first...)
+	first[0] ^= 0xff
+
+	fmt.Println(bytes.Equal(c.ImageBytes(), want))
+	// Output: true
+}

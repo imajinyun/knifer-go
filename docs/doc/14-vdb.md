@@ -111,3 +111,24 @@ func main() {
 	fmt.Println(args)
 }
 ```
+
+`Page` carries optional `ORDER BY` fields so pagination can stay stable without a separate `OrderBy(...)` call when the page contract owns the sort.
+
+## Validate identifiers before using raw SQL escape hatches
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/imajinyun/go-knifer/vdb"
+)
+
+func main() {
+	fmt.Println(vdb.IsSafeIdentifier("orders.created_at"))
+	fmt.Println(vdb.IsSafeIdentifier("orders; drop table orders"))
+}
+```
+
+Use `IsSafeIdentifier` only for guardrails around trusted identifier inputs. Values should still go through placeholders instead of string concatenation.

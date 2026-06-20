@@ -59,3 +59,24 @@ func ExampleBuildLikeValue() {
 	fmt.Println(vdb.BuildLikeValue("go", "contains"))
 	// Output: %go%
 }
+
+func ExampleNewPage() {
+	sql, args, _ := vdb.NewBuilder(vdb.WithDialect(vdb.DialectMySQL)).
+		Select("id", "created_at").
+		From("orders").
+		Page(vdb.NewPage(2, 10, vdb.Desc("created_at"))).
+		SQL()
+	fmt.Println(sql)
+	fmt.Println(args)
+	// Output:
+	// SELECT `id`, `created_at` FROM `orders` ORDER BY `created_at` DESC LIMIT 10 OFFSET 10
+	// []
+}
+
+func ExampleIsSafeIdentifier() {
+	fmt.Println(vdb.IsSafeIdentifier("orders.created_at"))
+	fmt.Println(vdb.IsSafeIdentifier("orders; drop table orders"))
+	// Output:
+	// true
+	// false
+}

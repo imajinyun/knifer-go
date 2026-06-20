@@ -323,7 +323,7 @@ func NewPage(number, size int, orders ...Order) Page {
 	if size < 1 {
 		size = 20
 	}
-	return Page{Number: number, Size: size, Orders: orders}
+	return Page{Number: number, Size: size, Orders: slices.Clone(orders)}
 }
 
 // Offset returns the zero-based row offset.

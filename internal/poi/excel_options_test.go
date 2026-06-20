@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"testing"
 
+	knifer "github.com/imajinyun/go-knifer"
 	"github.com/xuri/excelize/v2"
 )
 
@@ -20,6 +21,13 @@ func TestReadWriteOptions(t *testing.T) {
 	}
 	if err := WriteRows(path, rows, WithWriteSheet("Data"), WithOverwrite(false)); err == nil {
 		t.Fatalf("WriteRows should reject overwrite when disabled")
+	} else {
+		if !errors.Is(err, fs.ErrExist) {
+			t.Fatalf("WriteRows overwrite error = %v, want fs.ErrExist", err)
+		}
+		if !errors.Is(err, knifer.ErrCodeInvalidInput) {
+			t.Fatalf("WriteRows overwrite error = %v, want ErrCodeInvalidInput", err)
+		}
 	}
 	got, err := ReadRows(path, WithReadSheet("Data"))
 	if err != nil {

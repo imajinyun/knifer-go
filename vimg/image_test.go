@@ -77,3 +77,17 @@ func TestThumbnailBadArgs(t *testing.T) {
 		t.Fatal("expected error for unsupported format")
 	}
 }
+
+func BenchmarkThumbnailFacadePNG(b *testing.B) {
+	src := makePNG(320, 240)
+	b.ReportAllocs()
+	var sink int
+	for b.Loop() {
+		out := &bytes.Buffer{}
+		if err := Thumbnail(out, bytes.NewReader(src), 80, "png"); err != nil {
+			b.Fatal(err)
+		}
+		sink = out.Len()
+	}
+	_ = sink
+}

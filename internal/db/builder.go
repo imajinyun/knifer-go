@@ -170,6 +170,7 @@ func (b *SQLBuilder) selectSQL() (string, []any, error) {
 	if len(b.tables) == 0 {
 		return "", nil, invalidInputf("db: SELECT requires table")
 	}
+	orders := b.effectiveOrders()
 	fields := b.fields
 	if len(fields) == 0 {
 		fields = []string{"*"}
@@ -183,7 +184,7 @@ func (b *SQLBuilder) selectSQL() (string, []any, error) {
 	if err := validateIdentifierList(b.groups, "GROUP BY fields", false); err != nil {
 		return "", nil, err
 	}
-	for _, order := range b.orders {
+	for _, order := range orders {
 		if strings.TrimSpace(order.Field) == "" {
 			continue
 		}
@@ -210,13 +211,22 @@ func (b *SQLBuilder) selectSQL() (string, []any, error) {
 	if b.having != "" {
 		parts = append(parts, "HAVING", b.having)
 	}
-	if len(b.orders) > 0 {
-		parts = append(parts, "ORDER BY", buildOrders(b.orders, b.wrapper))
+	if len(orders) > 0 {
+		parts = append(parts, "ORDER BY", buildOrders(orders, b.wrapper))
 	}
 	if b.page != nil {
 		parts = append(parts, b.paginationSQL(*b.page))
 	}
 	return strings.Join(parts, " "), params, nil
+}
+
+func (b *SQLBuilder) effectiveOrders() []Order {
+	orders := make([]Order, 0, len(b.orders))
+	orders = append(orders, b.orders...)
+	if b.page != nil {
+		orders = append(orders, b.page.Orders...)
+	}
+	return orders
 }
 
 func (b *SQLBuilder) insertSQL() (string, []any, error) {

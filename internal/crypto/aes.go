@@ -5,6 +5,8 @@ import (
 	"crypto/cipher"
 	"errors"
 	"slices"
+
+	knifer "github.com/imajinyun/go-knifer"
 )
 
 type aesGCMConfig struct {
@@ -150,5 +152,9 @@ func AESDecryptGCMWithOptions(cipherText, key, nonce, additionalData []byte, opt
 	if len(nonce) != gcm.NonceSize() {
 		return nil, ErrInvalidIV
 	}
-	return gcm.Open(nil, nonce, cipherText, additionalData)
+	plain, err := gcm.Open(nil, nonce, cipherText, additionalData)
+	if err != nil {
+		return nil, knifer.WrapError(knifer.ErrCodeInvalidInput, "aes-gcm authentication failed", errors.Join(ErrInvalidCipherText, err))
+	}
+	return plain, nil
 }

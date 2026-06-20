@@ -27,16 +27,17 @@ For Go changes, load `golang-how-to` first, then use the relevant Go skills it s
 - Style, readability, and formatting: `golang-code-style`.
 - CI, Makefile, governance, or generated-artifact gates: `golang-continuous-integration`.
 - Error contracts: `golang-error-handling` and `golang-safety`.
-- Security-sensitive packages (`vhttp`, `vresty`, `vurl`, `vconf`, `vzip`, `vfile`, `vcrypto`, `vjwt`, `vrand`, `vid`, `vdb`): `golang-security` plus `golang-safety`.
+- Security-sensitive packages (`vhttp`, `vresty`, `vurl`, `vconf`, `vzip`, `vfile`, `vcrypto`, `vjwt`, `vrand`, `vid`, `vdb`, `vcli`, `vai`, `vftp`, `vssh`): `golang-security` plus `golang-safety`.
 
 ## Agent workflow
 
 1. Inspect the existing package, tests, docs, `ai-context.json`, and generated snapshots before editing.
 2. Keep changes scoped to the requested logical task; never stage unrelated local work or secrets.
 3. Prefer adding behavior tests before implementation changes.
-4. Run focused checks first, then the required governance checks for the touched area.
-5. If generated artifacts are expected to change, run the generator, review the diff, then run the corresponding check target.
-6. Report exact commands run and whether they passed, failed, or were skipped with a reason.
+4. Format Go files with `gofmt -w`. Go indentation must remain real tab characters; editor display should render one tab stop for `.go` files according to `.editorconfig` instead of replacing tabs with spaces.
+5. Run focused checks first, then the required governance checks for the touched area.
+6. If generated artifacts are expected to change, run the generator, review the diff, then run the corresponding check target.
+7. Report exact commands run and whether they passed, failed, or were skipped with a reason.
 
 ## Validation shortcuts
 

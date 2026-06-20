@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
+	"unicode/utf8"
 
 	knifer "github.com/imajinyun/go-knifer"
 	"github.com/xuri/excelize/v2"
@@ -40,6 +42,20 @@ var (
 	ErrNoSheet error = &sentinel{code: knifer.ErrCodeNotFound, msg: "poi: workbook has no sheet"}
 	// ErrEmptySheetName indicates an empty worksheet name.
 	ErrEmptySheetName error = &sentinel{code: knifer.ErrCodeInvalidInput, msg: "poi: sheet name is empty"}
+	// ErrInvalidSheetName indicates a worksheet name that Excel cannot represent.
+	ErrInvalidSheetName error = &sentinel{code: knifer.ErrCodeInvalidInput, msg: "poi: sheet name is invalid"}
+)
+
+const maxSheetNameRunes = 31
+
+var invalidSheetNameChars = strings.NewReplacer(
+	":", "",
+	"\\", "",
+	"/", "",
+	"?", "",
+	"*", "",
+	"[", "",
+	"]", "",
 )
 
 type readConfig struct {
@@ -200,6 +216,20 @@ func WithSaveAsFunc(saveAs SaveAsFunc) WriteOption {
 	}
 }
 
+// IsValidSheetName reports whether sheet can be used as an Excel worksheet name.
+func IsValidSheetName(sheet string) bool { return ValidateSheetName(sheet) == nil }
+
+// ValidateSheetName validates Excel worksheet naming constraints.
+func ValidateSheetName(sheet string) error {
+	if sheet == "" {
+		return ErrEmptySheetName
+	}
+	if utf8.RuneCountInString(sheet) > maxSheetNameRunes || invalidSheetNameChars.Replace(sheet) != sheet {
+		return knifer.WrapError(knifer.ErrCodeInvalidInput, "poi: invalid sheet name", ErrInvalidSheetName)
+	}
+	return nil
+}
+
 func applyReadOptions(opts []ReadOption) readConfig {
 	cfg := defaultReadConfig()
 	for _, opt := range opts {
@@ -249,6 +279,11 @@ func SheetNames(path string) ([]string, error) {
 // SheetNamesWithOptions returns all worksheet names in path with custom open options.
 func SheetNamesWithOptions(path string, opts ...ReadOption) ([]string, error) {
 	cfg := applyReadOptions(opts)
+	if cfg.sheet != "" {
+		if err := ValidateSheetName(cfg.sheet); err != nil {
+			return nil, err
+		}
+	}
 	f, err := cfg.openFile(path, cfg.openOptions...)
 	if err != nil {
 		return nil, err
@@ -260,6 +295,11 @@ func SheetNamesWithOptions(path string, opts ...ReadOption) ([]string, error) {
 // ReadRows reads rows from the first worksheet in path.
 func ReadRows(path string, opts ...ReadOption) ([][]string, error) {
 	cfg := applyReadOptions(opts)
+	if cfg.sheet != "" {
+		if err := ValidateSheetName(cfg.sheet); err != nil {
+			return nil, err
+		}
+	}
 	f, err := cfg.openFile(path, cfg.openOptions...)
 	if err != nil {
 		return nil, err
@@ -275,6 +315,9 @@ func ReadSheetRows(path, sheet string) ([][]string, error) {
 
 // ReadSheetRowsWithOptions reads rows from sheet in path with custom open options.
 func ReadSheetRowsWithOptions(path, sheet string, opts ...ReadOption) ([][]string, error) {
+	if err := ValidateSheetName(sheet); err != nil {
+		return nil, err
+	}
 	cfg := applyReadOptions(opts)
 	f, err := cfg.openFile(path, cfg.openOptions...)
 	if err != nil {
@@ -287,6 +330,11 @@ func ReadSheetRowsWithOptions(path, sheet string, opts ...ReadOption) ([][]strin
 // ReadRowsFromReader reads rows from the first worksheet in r.
 func ReadRowsFromReader(r io.Reader, opts ...ReadOption) ([][]string, error) {
 	cfg := applyReadOptions(opts)
+	if cfg.sheet != "" {
+		if err := ValidateSheetName(cfg.sheet); err != nil {
+			return nil, err
+		}
+	}
 	f, err := cfg.openReader(r, cfg.openOptions...)
 	if err != nil {
 		return nil, err
@@ -308,8 +356,8 @@ func WriteSheetRows(path, sheet string, rows [][]string, opts ...WriteOption) er
 
 func writeRows(path string, rows [][]string, cfg writeConfig) error {
 	sheet := cfg.sheet
-	if sheet == "" {
-		return ErrEmptySheetName
+	if err := ValidateSheetName(sheet); err != nil {
+		return err
 	}
 	f := cfg.newFile()
 	defer func() { _ = f.Close() }()
@@ -342,11 +390,18 @@ func WriteSheets(path string, sheets map[string][][]string, opts ...WriteOption)
 		return saveWorkbook(f, path, cfg)
 	}
 
-	first := true
-	for sheet, rows := range sheets {
-		if sheet == "" {
-			return ErrEmptySheetName
+	sheetNames := make([]string, 0, len(sheets))
+	for sheet := range sheets {
+		if err := ValidateSheetName(sheet); err != nil {
+			return err
 		}
+		sheetNames = append(sheetNames, sheet)
+	}
+	slices.Sort(sheetNames)
+
+	first := true
+	for _, sheet := range sheetNames {
+		rows := sheets[sheet]
 		if first {
 			if err := replaceDefaultSheet(f, sheet); err != nil {
 				return err
@@ -372,8 +427,8 @@ func WriteRowsToBuffer(sheet string, rows [][]string, opts ...WriteOption) (*byt
 	allOpts := append([]WriteOption{WithWriteSheet(sheet)}, opts...)
 	cfg := applyWriteOptions(allOpts)
 	sheet = cfg.sheet
-	if sheet == "" {
-		return nil, ErrEmptySheetName
+	if err := ValidateSheetName(sheet); err != nil {
+		return nil, err
 	}
 	f := cfg.newFile()
 	defer func() { _ = f.Close() }()
@@ -402,8 +457,8 @@ func readRowsWithConfig(f *excelize.File, cfg readConfig) ([][]string, error) {
 }
 
 func readSheetRows(f *excelize.File, sheet string) ([][]string, error) {
-	if sheet == "" {
-		return nil, ErrEmptySheetName
+	if err := ValidateSheetName(sheet); err != nil {
+		return nil, err
 	}
 	return f.GetRows(sheet)
 }
@@ -450,7 +505,7 @@ func ensureParentDir(path string, cfg writeConfig) error {
 func saveWorkbook(f *excelize.File, path string, cfg writeConfig) error {
 	if !cfg.overwrite {
 		if _, err := cfg.stat(path); err == nil {
-			return fmt.Errorf("poi: file already exists: %s", path)
+			return knifer.WrapError(knifer.ErrCodeInvalidInput, "poi: file already exists", fs.ErrExist)
 		} else if !os.IsNotExist(err) {
 			return err
 		}

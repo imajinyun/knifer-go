@@ -90,7 +90,15 @@ var (
 	ErrNoSheet = poiimpl.ErrNoSheet
 	// ErrEmptySheetName indicates an empty worksheet name.
 	ErrEmptySheetName = poiimpl.ErrEmptySheetName
+	// ErrInvalidSheetName indicates a worksheet name that Excel cannot represent.
+	ErrInvalidSheetName = poiimpl.ErrInvalidSheetName
 )
+
+// IsValidSheetName reports whether sheet can be used as an Excel worksheet name.
+func IsValidSheetName(sheet string) bool { return poiimpl.IsValidSheetName(sheet) }
+
+// ValidateSheetName validates Excel worksheet naming constraints.
+func ValidateSheetName(sheet string) error { return poiimpl.ValidateSheetName(sheet) }
 
 // SheetNames returns all worksheet names in path.
 func SheetNames(path string) ([]string, error) { return SheetNamesWithOptions(path) }

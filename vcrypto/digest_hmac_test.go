@@ -45,6 +45,12 @@ func TestAdditionalDigestAndHMAC(t *testing.T) {
 	if got := vcrypto.HMACHex(sha256.New, []byte("key"), payload); got != vcrypto.HMACSHA256Hex([]byte("key"), payload) {
 		t.Fatalf("HMACHex = %q", got)
 	}
+	if got := vcrypto.HMACHex(nil, []byte("key"), payload); got != vcrypto.HMACSHA256Hex([]byte("key"), payload) {
+		t.Fatalf("HMACHex nil hash = %q", got)
+	}
+	if got := vcrypto.HMACBytes(nil, []byte("key"), payload); !bytes.Equal(got, vcrypto.HMACBytes(sha256.New, []byte("key"), payload)) {
+		t.Fatalf("HMACBytes nil hash = %x", got)
+	}
 	if got := vcrypto.HMACSHA384Hex([]byte("key"), payload); got == "" {
 		t.Fatal("HMACSHA384Hex is empty")
 	}
@@ -82,5 +88,14 @@ func TestFacadeSHA512(t *testing.T) {
 	d := vcrypto.SHA512(payload)
 	if len(d) != 64 {
 		t.Fatalf("SHA512 len = %d, want 64", len(d))
+	}
+}
+
+func BenchmarkHMACSHA256Hex(b *testing.B) {
+	key := []byte("benchmark-key")
+	payload := []byte("benchmark payload")
+	b.ReportAllocs()
+	for b.Loop() {
+		_ = vcrypto.HMACSHA256Hex(key, payload)
 	}
 }

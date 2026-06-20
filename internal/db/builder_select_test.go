@@ -27,6 +27,39 @@ func TestSQLBuilderSelectWherePage(t *testing.T) {
 	}
 }
 
+func TestSQLBuilderPageOrders(t *testing.T) {
+	sqlText, args, err := NewBuilder(WithDialect(DialectMySQL)).
+		Select("id", "created_at").
+		From("orders").
+		Page(NewPage(2, 10, Desc("created_at"))).
+		SQL()
+	if err != nil {
+		t.Fatalf("SQL() error = %v", err)
+	}
+	wantSQL := "SELECT `id`, `created_at` FROM `orders` ORDER BY `created_at` DESC LIMIT 10 OFFSET 10"
+	if sqlText != wantSQL {
+		t.Fatalf("sql = %q, want %q", sqlText, wantSQL)
+	}
+	if len(args) != 0 {
+		t.Fatalf("args = %#v", args)
+	}
+}
+
+func BenchmarkSQLBuilderPageOrders(b *testing.B) {
+	page := NewPage(2, 10, Desc("created_at"))
+	for b.Loop() {
+		_, _, err := NewBuilder(WithDialect(DialectMySQL)).
+			Select("id", "created_at").
+			From("orders").
+			Where(Eq("status", "paid")).
+			Page(page).
+			SQL()
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}
+
 func TestSQLBuilderRejectsUnsafeIdentifiers(t *testing.T) {
 	tests := []struct {
 		name string
@@ -36,6 +69,7 @@ func TestSQLBuilderRejectsUnsafeIdentifiers(t *testing.T) {
 		{name: "from table", err: sqlErr(Select("id").From("users; drop table users").SQL())},
 		{name: "where field", err: sqlErr(Select("id").From("users").Where(Eq("id OR 1=1", 1)).SQL())},
 		{name: "order field", err: sqlErr(Select("id").From("users").OrderBy(Asc("id desc; drop table users")).SQL())},
+		{name: "page order field", err: sqlErr(Select("id").From("users").Page(NewPage(1, 10, Asc("id desc; drop table users"))).SQL())},
 		{name: "insert table", err: sqlErr(Insert(NewEntity("users; drop table users").Set("name", "alice")).SQL())},
 		{name: "insert field", err: sqlErr(Insert(NewEntity("users").Set("name; drop", "alice")).SQL())},
 		{name: "update field", err: sqlErr(Update(NewEntity("users").Set("name = hacked", "alice")).Where(Eq("id", 1)).SQL())},

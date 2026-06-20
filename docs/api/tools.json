@@ -2,19 +2,180 @@
   "schema": "1.4",
   "module": "github.com/imajinyun/go-knifer",
   "summary": {
-    "package_count": 49,
-    "function_count": 2562,
-    "functions_with_examples": 275,
-    "context_aware_functions": 22,
-    "returns_error_functions": 580,
-    "variadic_functions": 765,
+    "package_count": 54,
+    "function_count": 2596,
+    "functions_with_examples": 306,
+    "context_aware_functions": 36,
+    "returns_error_functions": 595,
+    "variadic_functions": 772,
     "synopsis_sources": {
       "empty": 0,
-      "facade": 1925,
-      "internal": 637
+      "facade": 1962,
+      "internal": 634
     }
   },
   "packages": [
+    {
+      "import_path": "github.com/imajinyun/go-knifer/vai",
+      "name": "vai",
+      "synopsis": "Package vai provides provider-neutral AI chat and embedding helpers.",
+      "summary": {
+        "function_count": 6,
+        "functions_with_examples": 6,
+        "example_coverage_percent": 100,
+        "synopsis_sources": {
+          "empty": 0,
+          "facade": 6,
+          "internal": 0
+        }
+      },
+      "functions": [
+        {
+          "name": "Chat",
+          "signature": "func Chat(ctx context.Context, provider ChatProvider, request ChatRequest) (ChatResponse, error)",
+          "synopsis": "Chat validates request and delegates to provider through a short-lived Client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "ctx",
+              "type": "context.Context"
+            },
+            {
+              "name": "provider",
+              "type": "ChatProvider"
+            },
+            {
+              "name": "request",
+              "type": "ChatRequest"
+            }
+          ],
+          "results": [
+            "ChatResponse",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": true,
+          "variadic": false,
+          "examples": [
+            "ExampleChat"
+          ]
+        },
+        {
+          "name": "Embed",
+          "signature": "func Embed(ctx context.Context, provider EmbeddingProvider, request EmbeddingRequest) (EmbeddingResponse, error)",
+          "synopsis": "Embed validates request and delegates to provider through a short-lived Client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "ctx",
+              "type": "context.Context"
+            },
+            {
+              "name": "provider",
+              "type": "EmbeddingProvider"
+            },
+            {
+              "name": "request",
+              "type": "EmbeddingRequest"
+            }
+          ],
+          "results": [
+            "EmbeddingResponse",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": true,
+          "variadic": false,
+          "examples": [
+            "ExampleEmbed"
+          ]
+        },
+        {
+          "name": "New",
+          "signature": "func New(opts ...Option) *Client",
+          "synopsis": "New returns a provider-neutral AI client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "opts",
+              "type": "...Option"
+            }
+          ],
+          "results": [
+            "*Client"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": true,
+          "examples": [
+            "ExampleNew"
+          ]
+        },
+        {
+          "name": "Redact",
+          "signature": "func Redact(text string) string",
+          "synopsis": "Redact replaces obvious secret-like tokens for examples and diagnostic text.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "text",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "string"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleRedact"
+          ]
+        },
+        {
+          "name": "WithChatProvider",
+          "signature": "func WithChatProvider(provider ChatProvider) Option",
+          "synopsis": "WithChatProvider sets the provider used by Client.Chat.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "provider",
+              "type": "ChatProvider"
+            }
+          ],
+          "results": [
+            "Option"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleWithChatProvider"
+          ]
+        },
+        {
+          "name": "WithEmbeddingProvider",
+          "signature": "func WithEmbeddingProvider(provider EmbeddingProvider) Option",
+          "synopsis": "WithEmbeddingProvider sets the provider used by Client.Embed.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "provider",
+              "type": "EmbeddingProvider"
+            }
+          ],
+          "results": [
+            "Option"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleWithEmbeddingProvider"
+          ]
+        }
+      ]
+    },
     {
       "import_path": "github.com/imajinyun/go-knifer/vbean",
       "name": "vbean",
@@ -5310,8 +5471,8 @@
       "synopsis": "Package vcrypto provides public APIs for cryptographic utilities.",
       "summary": {
         "function_count": 71,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 7,
+        "functions_with_examples": 7,
+        "example_coverage_percent": 9.9,
         "synopsis_sources": {
           "empty": 0,
           "facade": 71,
@@ -5483,7 +5644,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleAESOpenGCM"
+          ]
         },
         {
           "name": "AESOpenGCMWithOptions",
@@ -5802,7 +5966,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleHMACHex"
+          ]
         },
         {
           "name": "HMACSHA256Hex",
@@ -8112,13 +8279,13 @@
       "name": "vdb",
       "synopsis": "Package vdb exposes database/sql helper APIs for SQL execution, query building, entities, conditions, pagination, transactions, named parameters, and lightweight metadata lookup.",
       "summary": {
-        "function_count": 50,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 10,
+        "function_count": 51,
+        "functions_with_examples": 7,
+        "example_coverage_percent": 13.7,
         "synopsis_sources": {
           "empty": 0,
-          "facade": 11,
-          "internal": 39
+          "facade": 15,
+          "internal": 36
         }
       },
       "functions": [
@@ -8525,6 +8692,27 @@
           "variadic": false
         },
         {
+          "name": "IsSafeIdentifier",
+          "signature": "func IsSafeIdentifier(name string) bool",
+          "synopsis": "IsSafeIdentifier reports whether name is a plain SQL identifier path.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "name",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "bool"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleIsSafeIdentifier"
+          ]
+        },
+        {
           "name": "Like",
           "signature": "func Like(field string, value any) Condition",
           "synopsis": "Like creates a LIKE condition.",
@@ -8687,7 +8875,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewPage"
+          ]
         },
         {
           "name": "NewPageResult",
@@ -8737,7 +8928,7 @@
           "name": "NewWrapper",
           "signature": "func NewWrapper(prefix string, suffix string) Wrapper",
           "synopsis": "NewWrapper returns an identifier wrapper.",
-          "synopsis_source": "internal",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "prefix",
@@ -8758,8 +8949,8 @@
         {
           "name": "NormalizeDialect",
           "signature": "func NormalizeDialect(name string) Dialect",
-          "synopsis": "NormalizeDialect maps common driver names to a Dialect.",
-          "synopsis_source": "internal",
+          "synopsis": "NormalizeDialect maps common driver names to a SQL dialect.",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "name",
@@ -9133,7 +9324,7 @@
           "name": "WrapperForDialect",
           "signature": "func WrapperForDialect(d Dialect) Wrapper",
           "synopsis": "WrapperForDialect returns the conventional identifier wrapper for dialect.",
-          "synopsis_source": "internal",
+          "synopsis_source": "facade",
           "params": [
             {
               "name": "d",
@@ -12645,6 +12836,274 @@
           "returns_error": false,
           "context_aware": false,
           "variadic": false
+        }
+      ]
+    },
+    {
+      "import_path": "github.com/imajinyun/go-knifer/vftp",
+      "name": "vftp",
+      "synopsis": "Package vftp provides provider-neutral FTP list, download, and upload helpers.",
+      "summary": {
+        "function_count": 5,
+        "functions_with_examples": 5,
+        "example_coverage_percent": 100,
+        "synopsis_sources": {
+          "empty": 0,
+          "facade": 5,
+          "internal": 0
+        }
+      },
+      "functions": [
+        {
+          "name": "Download",
+          "signature": "func Download(ctx context.Context, provider Provider, request DownloadRequest) (DownloadResponse, error)",
+          "synopsis": "Download validates request and delegates to provider through a short-lived Client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "ctx",
+              "type": "context.Context"
+            },
+            {
+              "name": "provider",
+              "type": "Provider"
+            },
+            {
+              "name": "request",
+              "type": "DownloadRequest"
+            }
+          ],
+          "results": [
+            "DownloadResponse",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": true,
+          "variadic": false,
+          "examples": [
+            "ExampleDownload"
+          ]
+        },
+        {
+          "name": "List",
+          "signature": "func List(ctx context.Context, provider Provider, request ListRequest) (ListResponse, error)",
+          "synopsis": "List validates request and delegates to provider through a short-lived Client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "ctx",
+              "type": "context.Context"
+            },
+            {
+              "name": "provider",
+              "type": "Provider"
+            },
+            {
+              "name": "request",
+              "type": "ListRequest"
+            }
+          ],
+          "results": [
+            "ListResponse",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": true,
+          "variadic": false,
+          "examples": [
+            "ExampleList"
+          ]
+        },
+        {
+          "name": "New",
+          "signature": "func New(opts ...Option) *Client",
+          "synopsis": "New returns a provider-neutral FTP client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "opts",
+              "type": "...Option"
+            }
+          ],
+          "results": [
+            "*Client"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": true,
+          "examples": [
+            "ExampleNew"
+          ]
+        },
+        {
+          "name": "Upload",
+          "signature": "func Upload(ctx context.Context, provider Provider, request UploadRequest) (UploadResponse, error)",
+          "synopsis": "Upload validates request and delegates to provider through a short-lived Client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "ctx",
+              "type": "context.Context"
+            },
+            {
+              "name": "provider",
+              "type": "Provider"
+            },
+            {
+              "name": "request",
+              "type": "UploadRequest"
+            }
+          ],
+          "results": [
+            "UploadResponse",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": true,
+          "variadic": false,
+          "examples": [
+            "ExampleUpload"
+          ]
+        },
+        {
+          "name": "WithProvider",
+          "signature": "func WithProvider(provider Provider) Option",
+          "synopsis": "WithProvider sets the provider used by list, download, and upload calls.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "provider",
+              "type": "Provider"
+            }
+          ],
+          "results": [
+            "Option"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleWithProvider"
+          ]
+        }
+      ]
+    },
+    {
+      "import_path": "github.com/imajinyun/go-knifer/vhan",
+      "name": "vhan",
+      "synopsis": "Package vhan provides provider-neutral Han text romanization helpers.",
+      "summary": {
+        "function_count": 4,
+        "functions_with_examples": 4,
+        "example_coverage_percent": 100,
+        "synopsis_sources": {
+          "empty": 0,
+          "facade": 4,
+          "internal": 0
+        }
+      },
+      "functions": [
+        {
+          "name": "Convert",
+          "signature": "func Convert(ctx context.Context, provider Provider, request ConvertRequest) (ConvertResponse, error)",
+          "synopsis": "Convert validates request and delegates to provider through a short-lived Client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "ctx",
+              "type": "context.Context"
+            },
+            {
+              "name": "provider",
+              "type": "Provider"
+            },
+            {
+              "name": "request",
+              "type": "ConvertRequest"
+            }
+          ],
+          "results": [
+            "ConvertResponse",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": true,
+          "variadic": false,
+          "examples": [
+            "ExampleConvert"
+          ]
+        },
+        {
+          "name": "Initials",
+          "signature": "func Initials(ctx context.Context, provider Provider, request InitialsRequest) (InitialsResponse, error)",
+          "synopsis": "Initials validates request and delegates to provider through a short-lived Client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "ctx",
+              "type": "context.Context"
+            },
+            {
+              "name": "provider",
+              "type": "Provider"
+            },
+            {
+              "name": "request",
+              "type": "InitialsRequest"
+            }
+          ],
+          "results": [
+            "InitialsResponse",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": true,
+          "variadic": false,
+          "examples": [
+            "ExampleInitials"
+          ]
+        },
+        {
+          "name": "New",
+          "signature": "func New(opts ...Option) *Client",
+          "synopsis": "New returns a provider-neutral Han text romanization client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "opts",
+              "type": "...Option"
+            }
+          ],
+          "results": [
+            "*Client"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": true,
+          "examples": [
+            "ExampleNew"
+          ]
+        },
+        {
+          "name": "WithProvider",
+          "signature": "func WithProvider(provider Provider) Option",
+          "synopsis": "WithProvider sets the provider used by conversion and initials calls.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "provider",
+              "type": "Provider"
+            }
+          ],
+          "results": [
+            "Option"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleWithProvider"
+          ]
         }
       ]
     },
@@ -34971,16 +35430,34 @@
       "name": "vpoi",
       "synopsis": "Package vpoi provides office-document utilities.",
       "summary": {
-        "function_count": 26,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 19.2,
+        "function_count": 28,
+        "functions_with_examples": 6,
+        "example_coverage_percent": 21.4,
         "synopsis_sources": {
           "empty": 0,
-          "facade": 26,
+          "facade": 28,
           "internal": 0
         }
       },
       "functions": [
+        {
+          "name": "IsValidSheetName",
+          "signature": "func IsValidSheetName(sheet string) bool",
+          "synopsis": "IsValidSheetName reports whether sheet can be used as an Excel worksheet name.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "sheet",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "bool"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
         {
           "name": "ReadRows",
           "signature": "func ReadRows(path string, opts ...ReadOption) ([][]string, error)",
@@ -35028,7 +35505,8 @@
           "variadic": true,
           "examples": [
             "ExampleReadRowsFromReader",
-            "ExampleReadRowsFromReader_withReadSheet"
+            "ExampleReadRowsFromReader_withReadSheet",
+            "ExampleReadRowsFromReader_withValidatedSheet"
           ]
         },
         {
@@ -35125,6 +35603,27 @@
           "returns_error": true,
           "context_aware": false,
           "variadic": true
+        },
+        {
+          "name": "ValidateSheetName",
+          "signature": "func ValidateSheetName(sheet string) error",
+          "synopsis": "ValidateSheetName validates Excel worksheet naming constraints.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "sheet",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleValidateSheetName"
+          ]
         },
         {
           "name": "WithChmod",
@@ -44512,6 +45011,185 @@
       ]
     },
     {
+      "import_path": "github.com/imajinyun/go-knifer/vssh",
+      "name": "vssh",
+      "synopsis": "Package vssh provides provider-neutral SSH command and SFTP transfer helpers.",
+      "summary": {
+        "function_count": 6,
+        "functions_with_examples": 6,
+        "example_coverage_percent": 100,
+        "synopsis_sources": {
+          "empty": 0,
+          "facade": 6,
+          "internal": 0
+        }
+      },
+      "functions": [
+        {
+          "name": "Download",
+          "signature": "func Download(ctx context.Context, provider Provider, request DownloadRequest) (DownloadResponse, error)",
+          "synopsis": "Download validates request and delegates to provider through a short-lived Client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "ctx",
+              "type": "context.Context"
+            },
+            {
+              "name": "provider",
+              "type": "Provider"
+            },
+            {
+              "name": "request",
+              "type": "DownloadRequest"
+            }
+          ],
+          "results": [
+            "DownloadResponse",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": true,
+          "variadic": false,
+          "examples": [
+            "ExampleDownload"
+          ]
+        },
+        {
+          "name": "List",
+          "signature": "func List(ctx context.Context, provider Provider, request ListRequest) (ListResponse, error)",
+          "synopsis": "List validates request and delegates to provider through a short-lived Client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "ctx",
+              "type": "context.Context"
+            },
+            {
+              "name": "provider",
+              "type": "Provider"
+            },
+            {
+              "name": "request",
+              "type": "ListRequest"
+            }
+          ],
+          "results": [
+            "ListResponse",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": true,
+          "variadic": false,
+          "examples": [
+            "ExampleList"
+          ]
+        },
+        {
+          "name": "New",
+          "signature": "func New(opts ...Option) *Client",
+          "synopsis": "New returns a provider-neutral SSH/SFTP client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "opts",
+              "type": "...Option"
+            }
+          ],
+          "results": [
+            "*Client"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": true,
+          "examples": [
+            "ExampleNew"
+          ]
+        },
+        {
+          "name": "Run",
+          "signature": "func Run(ctx context.Context, provider Provider, request CommandRequest) (CommandResponse, error)",
+          "synopsis": "Run validates request and delegates to provider through a short-lived Client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "ctx",
+              "type": "context.Context"
+            },
+            {
+              "name": "provider",
+              "type": "Provider"
+            },
+            {
+              "name": "request",
+              "type": "CommandRequest"
+            }
+          ],
+          "results": [
+            "CommandResponse",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": true,
+          "variadic": false,
+          "examples": [
+            "ExampleRun"
+          ]
+        },
+        {
+          "name": "Upload",
+          "signature": "func Upload(ctx context.Context, provider Provider, request UploadRequest) (UploadResponse, error)",
+          "synopsis": "Upload validates request and delegates to provider through a short-lived Client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "ctx",
+              "type": "context.Context"
+            },
+            {
+              "name": "provider",
+              "type": "Provider"
+            },
+            {
+              "name": "request",
+              "type": "UploadRequest"
+            }
+          ],
+          "results": [
+            "UploadResponse",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": true,
+          "variadic": false,
+          "examples": [
+            "ExampleUpload"
+          ]
+        },
+        {
+          "name": "WithProvider",
+          "signature": "func WithProvider(provider Provider) Option",
+          "synopsis": "WithProvider sets the provider used by command and transfer calls.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "provider",
+              "type": "Provider"
+            }
+          ],
+          "results": [
+            "Option"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleWithProvider"
+          ]
+        }
+      ]
+    },
+    {
       "import_path": "github.com/imajinyun/go-knifer/vstr",
       "name": "vstr",
       "synopsis": "Package vstr provides public APIs for string and text utilities.",
@@ -47796,20 +48474,175 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vtpl",
-      "name": "vtpl",
-      "synopsis": "Package vtpl provides Go html/template rendering utilities.",
+      "import_path": "github.com/imajinyun/go-knifer/vtok",
+      "name": "vtok",
+      "synopsis": "Package vtok provides provider-neutral text tokenization helpers.",
       "summary": {
-        "function_count": 9,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 55.6,
+        "function_count": 4,
+        "functions_with_examples": 4,
+        "example_coverage_percent": 100,
         "synopsis_sources": {
           "empty": 0,
-          "facade": 9,
+          "facade": 4,
           "internal": 0
         }
       },
       "functions": [
+        {
+          "name": "Keywords",
+          "signature": "func Keywords(ctx context.Context, provider Provider, request KeywordsRequest) (KeywordsResponse, error)",
+          "synopsis": "Keywords validates request and delegates to provider through a short-lived Client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "ctx",
+              "type": "context.Context"
+            },
+            {
+              "name": "provider",
+              "type": "Provider"
+            },
+            {
+              "name": "request",
+              "type": "KeywordsRequest"
+            }
+          ],
+          "results": [
+            "KeywordsResponse",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": true,
+          "variadic": false,
+          "examples": [
+            "ExampleKeywords"
+          ]
+        },
+        {
+          "name": "New",
+          "signature": "func New(opts ...Option) *Client",
+          "synopsis": "New returns a provider-neutral tokenization client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "opts",
+              "type": "...Option"
+            }
+          ],
+          "results": [
+            "*Client"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": true,
+          "examples": [
+            "ExampleNew"
+          ]
+        },
+        {
+          "name": "Tokenize",
+          "signature": "func Tokenize(ctx context.Context, provider Provider, request TokenizeRequest) (TokenizeResponse, error)",
+          "synopsis": "Tokenize validates request and delegates to provider through a short-lived Client.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "ctx",
+              "type": "context.Context"
+            },
+            {
+              "name": "provider",
+              "type": "Provider"
+            },
+            {
+              "name": "request",
+              "type": "TokenizeRequest"
+            }
+          ],
+          "results": [
+            "TokenizeResponse",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": true,
+          "variadic": false,
+          "examples": [
+            "ExampleTokenize"
+          ]
+        },
+        {
+          "name": "WithProvider",
+          "signature": "func WithProvider(provider Provider) Option",
+          "synopsis": "WithProvider sets the provider used by tokenization and keyword calls.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "provider",
+              "type": "Provider"
+            }
+          ],
+          "results": [
+            "Option"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleWithProvider"
+          ]
+        }
+      ]
+    },
+    {
+      "import_path": "github.com/imajinyun/go-knifer/vtpl",
+      "name": "vtpl",
+      "synopsis": "Package vtpl provides Go html/template rendering utilities.",
+      "summary": {
+        "function_count": 15,
+        "functions_with_examples": 6,
+        "example_coverage_percent": 40,
+        "synopsis_sources": {
+          "empty": 0,
+          "facade": 15,
+          "internal": 0
+        }
+      },
+      "functions": [
+        {
+          "name": "NewHTMLEngine",
+          "signature": "func NewHTMLEngine(opts ...EngineOption) Engine",
+          "synopsis": "NewHTMLEngine creates an Engine backed by html/template.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "opts",
+              "type": "...EngineOption"
+            }
+          ],
+          "results": [
+            "Engine"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": true
+        },
+        {
+          "name": "NewTextEngine",
+          "signature": "func NewTextEngine(opts ...EngineOption) Engine",
+          "synopsis": "NewTextEngine creates an Engine backed by text/template.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "opts",
+              "type": "...EngineOption"
+            }
+          ],
+          "results": [
+            "Engine"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": true
+        },
         {
           "name": "Render",
           "signature": "func Render(tpl string, data any) (string, error)",
@@ -47865,6 +48698,42 @@
           ]
         },
         {
+          "name": "RenderWithEngine",
+          "signature": "func RenderWithEngine(ctx context.Context, engine Engine, source string, data any) (string, error)",
+          "synopsis": "RenderWithEngine renders a template source through a caller-selected engine.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "ctx",
+              "type": "context.Context"
+            },
+            {
+              "name": "engine",
+              "type": "Engine"
+            },
+            {
+              "name": "source",
+              "type": "string"
+            },
+            {
+              "name": "data",
+              "type": "any"
+            }
+          ],
+          "results": [
+            "string",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": true,
+          "variadic": false,
+          "examples": [
+            "ExampleRenderWithEngine_customEngine",
+            "ExampleRenderWithEngine_htmlEngine",
+            "ExampleRenderWithEngine_textEngine"
+          ]
+        },
+        {
           "name": "RenderWithOptions",
           "signature": "func RenderWithOptions(tpl string, data any, opts ...RenderOption) (string, error)",
           "synopsis": "RenderWithOptions renders a Go html/template string with per-call options.",
@@ -47911,6 +48780,64 @@
           ],
           "results": [
             "RenderOption"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "WithEngineDelims",
+          "signature": "func WithEngineDelims(left string, right string) EngineOption",
+          "synopsis": "WithEngineDelims sets template action delimiters for built-in engines.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "left",
+              "type": "string"
+            },
+            {
+              "name": "right",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "EngineOption"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "WithEngineFuncMap",
+          "signature": "func WithEngineFuncMap(funcMap map[string]any) EngineOption",
+          "synopsis": "WithEngineFuncMap sets functions available to built-in engines.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "funcMap",
+              "type": "map[string]any"
+            }
+          ],
+          "results": [
+            "EngineOption"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "WithEngineTemplateName",
+          "signature": "func WithEngineTemplateName(name string) EngineOption",
+          "synopsis": "WithEngineTemplateName sets the template name used by built-in engines.",
+          "synopsis_source": "facade",
+          "params": [
+            {
+              "name": "name",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "EngineOption"
           ],
           "returns_error": false,
           "context_aware": false,

@@ -2,6 +2,8 @@
 
 `vpoi` provides helpers for Excel XLSX worksheet listing, row reads/writes, multi-sheet writes, and in-memory buffer export.
 
+Worksheet names are validated before opening or saving workbooks. Use `vpoi.ValidateSheetName` or `vpoi.IsValidSheetName` when sheet names come from user input, and rely on deterministic alphabetical sheet ordering when `WriteSheets` materializes multi-sheet workbooks.
+
 ## Write and read workbook files
 
 ```go
@@ -61,6 +63,25 @@ func main() {
 }
 ```
 
+## Validate worksheet names early
+
+```go
+package main
+
+import (
+	"errors"
+	"fmt"
+
+	"github.com/imajinyun/go-knifer/vpoi"
+)
+
+func main() {
+	err := vpoi.ValidateSheetName("bad/name")
+	fmt.Println(errors.Is(err, vpoi.ErrInvalidSheetName))
+	fmt.Println(vpoi.IsValidSheetName("Reports"))
+}
+```
+
 ## Read and write with an in-memory buffer
 
 ```go
@@ -105,6 +126,7 @@ func main() {
 	sheets := map[string][][]string{
 		"Users":  {{"id", "name"}, {"1", "alice"}},
 		"Orders": {{"id", "total"}, {"100", "42"}},
+		"Audit":  {{"event"}, {"created"}},
 	}
 	if err := vpoi.WriteSheets(path, sheets, vpoi.WithOverwrite(true)); err != nil {
 		panic(err)
@@ -113,6 +135,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(names)
+	fmt.Println(names) // alphabetical order: [Audit Orders Users]
 }
 ```

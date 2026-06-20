@@ -429,6 +429,7 @@
     }
   },
   "public_facades": [
+    { "package": "vai", "domain": "AI adapters", "internal": "internal/ai" },
     { "package": "vbean", "domain": "struct/map mapping", "internal": "internal/bean" },
     { "package": "vblf", "domain": "bloom filter", "internal": "internal/bloomfilter" },
     { "package": "vbool", "domain": "booleans", "internal": "internal/boolean" },
@@ -446,6 +447,7 @@
     { "package": "verr", "domain": "error handling", "internal": "internal/errx" },
     { "package": "vfile", "domain": "file and IO", "internal": "internal/file" },
     { "package": "vform", "domain": "form/input validation", "internal": "internal/validator" },
+    { "package": "vftp", "domain": "FTP adapters", "internal": "internal/ftp" },
     { "package": "vhash", "domain": "non-cryptographic hashes", "internal": "internal/hash" },
     { "package": "vhttp", "domain": "HTTP", "internal": "internal/httpx" },
     { "package": "vid", "domain": "generated IDs", "internal": "internal/id" },
@@ -462,6 +464,7 @@
     { "package": "vnum", "domain": "numeric helpers", "internal": "internal/num" },
     { "package": "vobj", "domain": "object helpers", "internal": "internal/obj" },
     { "package": "vpass", "domain": "password strength", "internal": "internal/pass" },
+    { "package": "vhan", "domain": "Han text romanization adapters", "internal": "internal/pinyin" },
     { "package": "vpoi", "domain": "office documents", "internal": "internal/poi" },
     { "package": "vrand", "domain": "randomness", "internal": "internal/rand" },
     { "package": "vref", "domain": "reflection", "internal": "internal/ref" },
@@ -471,9 +474,11 @@
     { "package": "vset", "domain": "sets", "internal": "internal/sets" },
     { "package": "vskt", "domain": "sockets", "internal": "internal/socket" },
     { "package": "vslice", "domain": "slices", "internal": "internal/slice" },
+    { "package": "vssh", "domain": "SSH/SFTP adapters", "internal": "internal/ssh" },
     { "package": "vstr", "domain": "strings/text", "internal": "internal/str" },
     { "package": "vsys", "domain": "system information", "internal": "internal/system" },
     { "package": "vtpl", "domain": "templates", "internal": "internal/template" },
+    { "package": "vtok", "domain": "tokenization adapters", "internal": "internal/tokenize" },
     { "package": "vurl", "domain": "URL/URI", "internal": "internal/url" },
     { "package": "vver", "domain": "version comparison", "internal": "internal/version" },
     { "package": "vxml", "domain": "XML", "internal": "internal/xml" },
@@ -491,6 +496,9 @@
     "vrand",
     "vid",
     "vdb",
-    "vcli"
+    "vcli",
+    "vai",
+    "vftp",
+    "vssh"
   ]
 }

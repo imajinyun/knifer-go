@@ -22,6 +22,8 @@ func main() {
 }
 ```
 
+When the hash factory is `nil`, `HMACHex` and `HMACBytes` fall back to SHA-256 instead of panicking. Prefer passing an explicit hash when interoperability matters.
+
 ## AES-GCM encryption and decryption
 
 ```go
@@ -51,6 +53,8 @@ func main() {
 	fmt.Println(string(plain))
 }
 ```
+
+Authentication failures from `AESOpenGCM` / `AESDecryptGCM` match `vcrypto.ErrInvalidCipherText`, so callers can distinguish tampering or wrong AAD from nonce-length validation errors.
 
 ## Derive keys with PBKDF2
 

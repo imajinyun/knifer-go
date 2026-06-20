@@ -19,6 +19,11 @@ func ExampleHMACSHA256Hex() {
 	// Output: 5031fe3d989c6d1537a013fa6e739da23463fdaec3b70137d828e36ace221bd0
 }
 
+func ExampleHMACHex() {
+	fmt.Println(vcrypto.HMACHex(nil, []byte("key"), []byte("data")))
+	// Output: 5031fe3d989c6d1537a013fa6e739da23463fdaec3b70137d828e36ace221bd0
+}
+
 func ExampleValidateAESKey() {
 	err := vcrypto.ValidateAESKey([]byte("too-short"))
 	fmt.Println(errors.Is(err, knifer.ErrCodeInvalidInput))
@@ -53,4 +58,17 @@ func ExampleAESEncryptGCM() {
 	}
 	fmt.Println(string(plain))
 	// Output: secret
+}
+
+func ExampleAESOpenGCM() {
+	key := []byte("0123456789abcdef")
+	nonce := []byte("123456789012")
+	cipherText, err := vcrypto.AESEncryptGCM([]byte("secret"), key, nonce, nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	_, err = vcrypto.AESOpenGCM(cipherText, key, nonce, []byte("wrong aad"))
+	fmt.Println(errors.Is(err, vcrypto.ErrInvalidCipherText))
+	// Output: true
 }

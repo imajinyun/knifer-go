@@ -40,11 +40,13 @@ func AESSealGCMWithOptions(plain, key, additionalData []byte, opts ...AESGCMOpti
 }
 
 // AESOpenGCM decrypts data produced by AESSealGCM or AESEncryptGCM.
+// Authentication failures match ErrInvalidCipherText.
 func AESOpenGCM(cipherText, key, nonce, additionalData []byte) ([]byte, error) {
 	return cryptoimpl.AESOpenGCM(cipherText, key, nonce, additionalData)
 }
 
 // AESOpenGCMWithOptions decrypts AES-GCM data with options.
+// Authentication failures match ErrInvalidCipherText.
 func AESOpenGCMWithOptions(cipherText, key, nonce, additionalData []byte, opts ...AESGCMOption) ([]byte, error) {
 	return cryptoimpl.AESOpenGCMWithOptions(cipherText, key, nonce, additionalData, opts...)
 }
@@ -60,11 +62,13 @@ func AESEncryptGCMWithOptions(plain, key, nonce, additionalData []byte, opts ...
 }
 
 // AESDecryptGCM decrypts AES-GCM data.
+// Authentication failures match ErrInvalidCipherText.
 func AESDecryptGCM(cipherText, key, nonce, additionalData []byte) ([]byte, error) {
 	return cryptoimpl.AESDecryptGCM(cipherText, key, nonce, additionalData)
 }
 
 // AESDecryptGCMWithOptions decrypts AES-GCM data with options.
+// Authentication failures match ErrInvalidCipherText.
 func AESDecryptGCMWithOptions(cipherText, key, nonce, additionalData []byte, opts ...AESGCMOption) ([]byte, error) {
 	return cryptoimpl.AESDecryptGCMWithOptions(cipherText, key, nonce, additionalData, opts...)
 }

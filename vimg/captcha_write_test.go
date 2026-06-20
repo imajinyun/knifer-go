@@ -2,12 +2,14 @@ package vimg_test
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"testing"
 
+	knifer "github.com/imajinyun/go-knifer"
 	"github.com/imajinyun/go-knifer/vimg"
 )
 
@@ -27,6 +29,13 @@ func TestFacadeCaptchaWriteToFileOptions(t *testing.T) {
 	}
 	if err := c.WriteToFileWithOptions(path, vimg.WithOverwrite(false)); err == nil {
 		t.Fatal("WriteToFileWithOptions should reject overwrite=false for existing file")
+	} else {
+		if !errors.Is(err, fs.ErrExist) {
+			t.Fatalf("WriteToFileWithOptions overwrite error = %v, want fs.ErrExist", err)
+		}
+		if !errors.Is(err, knifer.ErrCodeInvalidInput) {
+			t.Fatalf("WriteToFileWithOptions overwrite error = %v, want ErrCodeInvalidInput", err)
+		}
 	}
 }
 
@@ -81,5 +90,19 @@ func TestFacadeCaptchaWriteWithCreateParents(t *testing.T) {
 	}
 	if written.Len() == 0 {
 		t.Fatal("expected written content with createParents")
+	}
+}
+
+func TestFacadeCaptchaImageBytesDefensiveCopy(t *testing.T) {
+	c := vimg.NewLineCaptchaWithOptions(100, 40, vimg.WithGenerator(fixedGenerator{code: "ABCD"}))
+	original := c.ImageBytes()
+	if len(original) == 0 {
+		t.Fatal("ImageBytes returned empty data")
+	}
+	wantFirst := original[0]
+	original[0] ^= 0xff
+	got := c.ImageBytes()
+	if got[0] != wantFirst {
+		t.Fatalf("ImageBytes exposed internal backing array: got first byte %d, want %d", got[0], wantFirst)
 	}
 }
