@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 54,
     "function_count": 2604,
-    "functions_with_examples": 415,
+    "functions_with_examples": 566,
     "context_aware_functions": 36,
     "returns_error_functions": 603,
     "variadic_functions": 776,
@@ -11385,8 +11385,8 @@
       "synopsis": "Package vfile provides public APIs for file and IO utilities.",
       "summary": {
         "function_count": 59,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 8.5,
+        "functions_with_examples": 59,
+        "example_coverage_percent": 100,
         "synopsis_sources": {
           "empty": 0,
           "facade": 53,
@@ -11418,7 +11418,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleAppendFileString"
+          ]
         },
         {
           "name": "AppendFileStringWithOptions",
@@ -11444,7 +11447,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleAppendFileStringWithOptions"
+          ]
         },
         {
           "name": "CloseQuietly",
@@ -11459,7 +11465,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCloseQuietly"
+          ]
         },
         {
           "name": "Copy",
@@ -11482,7 +11491,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCopy"
+          ]
         },
         {
           "name": "CopyFile",
@@ -11508,7 +11520,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleCopyFile"
+          ]
         },
         {
           "name": "CopyFileWithOptions",
@@ -11534,7 +11549,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleCopyFileWithOptions"
+          ]
         },
         {
           "name": "CopyWithOptions",
@@ -11561,7 +11579,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleCopyWithOptions"
+          ]
         },
         {
           "name": "Del",
@@ -11579,7 +11600,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleDel"
+          ]
         },
         {
           "name": "DelWithOptions",
@@ -11601,7 +11625,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleDelWithOptions"
+          ]
         },
         {
           "name": "Exists",
@@ -11644,7 +11671,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleExistsWithOptions"
+          ]
         },
         {
           "name": "Extension",
@@ -11683,7 +11713,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsDirectory"
+          ]
         },
         {
           "name": "IsDirectoryWithOptions",
@@ -11705,7 +11738,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleIsDirectoryWithOptions"
+          ]
         },
         {
           "name": "IsFile",
@@ -11723,7 +11759,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsFile"
+          ]
         },
         {
           "name": "IsFileWithOptions",
@@ -11745,7 +11784,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleIsFileWithOptions"
+          ]
         },
         {
           "name": "MainName",
@@ -11788,7 +11830,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleMkdir"
+          ]
         },
         {
           "name": "MkdirWithOptions",
@@ -11810,7 +11855,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleMkdirWithOptions"
+          ]
         },
         {
           "name": "ReadAll",
@@ -11829,7 +11877,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleReadAll"
+          ]
         },
         {
           "name": "ReadAllWithOptions",
@@ -11852,7 +11903,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleReadAllWithOptions"
+          ]
         },
         {
           "name": "ReadChunks",
@@ -11874,7 +11928,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleReadChunks"
+          ]
         },
         {
           "name": "ReadChunksWithOptions",
@@ -11900,7 +11957,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleReadChunksWithOptions"
+          ]
         },
         {
           "name": "ReadFileBytes",
@@ -11919,7 +11979,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleReadFileBytes"
+          ]
         },
         {
           "name": "ReadFileBytesWithOptions",
@@ -11942,7 +12005,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleReadFileBytesWithOptions"
+          ]
         },
         {
           "name": "ReadFileChunks",
@@ -11964,7 +12030,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleReadFileChunks"
+          ]
         },
         {
           "name": "ReadFileChunksWithOptions",
@@ -11990,7 +12059,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleReadFileChunksWithOptions"
+          ]
         },
         {
           "name": "ReadFileLines",
@@ -12009,7 +12081,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleReadFileLines"
+          ]
         },
         {
           "name": "ReadFileLinesWithOptions",
@@ -12032,7 +12107,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleReadFileLinesWithOptions"
+          ]
         },
         {
           "name": "ReadFileString",
@@ -12051,7 +12129,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleReadFileString"
+          ]
         },
         {
           "name": "ReadFileStringWithOptions",
@@ -12074,7 +12155,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleReadFileStringWithOptions"
+          ]
         },
         {
           "name": "ReadLines",
@@ -12093,7 +12177,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleReadLines"
+          ]
         },
         {
           "name": "ReadLinesWithOptions",
@@ -12116,7 +12203,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleReadLinesWithOptions"
+          ]
         },
         {
           "name": "ReadString",
@@ -12161,7 +12251,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleReadStringWithOptions"
+          ]
         },
         {
           "name": "ReaderFromString",
@@ -12179,7 +12272,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleReaderFromString"
+          ]
         },
         {
           "name": "Size",
@@ -12197,7 +12293,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSize"
+          ]
         },
         {
           "name": "SizeWithOptions",
@@ -12219,7 +12318,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleSizeWithOptions"
+          ]
         },
         {
           "name": "Touch",
@@ -12241,7 +12343,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleTouch"
+          ]
         },
         {
           "name": "TouchWithOptions",
@@ -12263,7 +12368,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleTouchWithOptions"
+          ]
         },
         {
           "name": "WithBufferSize",
@@ -12281,7 +12389,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithBufferSize"
+          ]
         },
         {
           "name": "WithCreateParents",
@@ -12299,7 +12410,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithCreateParents"
+          ]
         },
         {
           "name": "WithDirPerm",
@@ -12317,7 +12431,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithDirPerm"
+          ]
         },
         {
           "name": "WithFilePerm",
@@ -12335,7 +12452,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithFilePerm"
+          ]
         },
         {
           "name": "WithInitialLineBuffer",
@@ -12353,7 +12473,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithInitialLineBuffer"
+          ]
         },
         {
           "name": "WithMaxBytes",
@@ -12371,7 +12494,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithMaxBytes"
+          ]
         },
         {
           "name": "WithMaxLineBytes",
@@ -12389,7 +12515,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithMaxLineBytes"
+          ]
         },
         {
           "name": "WithMkdirAll",
@@ -12407,7 +12536,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithMkdirAll"
+          ]
         },
         {
           "name": "WithMkdirPerm",
@@ -12425,7 +12557,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithMkdirPerm"
+          ]
         },
         {
           "name": "WithOpen",
@@ -12443,7 +12578,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithOpen"
+          ]
         },
         {
           "name": "WithOpenFile",
@@ -12461,7 +12599,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithOpenFile"
+          ]
         },
         {
           "name": "WithOverwrite",
@@ -12479,7 +12620,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithOverwrite"
+          ]
         },
         {
           "name": "WithRemoveAll",
@@ -12497,7 +12641,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithRemoveAll"
+          ]
         },
         {
           "name": "WithStat",
@@ -12515,7 +12662,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithStat"
+          ]
         },
         {
           "name": "WithUnlimitedRead",
@@ -12527,7 +12677,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithUnlimitedRead"
+          ]
         },
         {
           "name": "WriteFileBytes",
@@ -12553,7 +12706,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWriteFileBytes"
+          ]
         },
         {
           "name": "WriteFileBytesWithOptions",
@@ -12579,7 +12735,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWriteFileBytesWithOptions"
+          ]
         },
         {
           "name": "WriteFileString",
@@ -12634,7 +12793,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWriteFileStringWithOptions"
+          ]
         }
       ]
     },
@@ -20942,8 +21104,8 @@
       "synopsis": "Package vjson provides public APIs for JSON utilities.",
       "summary": {
         "function_count": 65,
-        "functions_with_examples": 7,
-        "example_coverage_percent": 10.8,
+        "functions_with_examples": 65,
+        "example_coverage_percent": 100,
         "synopsis_sources": {
           "empty": 0,
           "facade": 65,
@@ -20961,7 +21123,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCreateConfig"
+          ]
         },
         {
           "name": "Format",
@@ -20979,7 +21144,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleFormat"
+          ]
         },
         {
           "name": "FormatWithOptions",
@@ -21001,7 +21169,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleFormatWithOptions"
+          ]
         },
         {
           "name": "GetByPath",
@@ -21052,7 +21223,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetByPathOr"
+          ]
         },
         {
           "name": "IsArray",
@@ -21070,7 +21244,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsArray"
+          ]
         },
         {
           "name": "IsArrayWithOptions",
@@ -21092,7 +21269,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleIsArrayWithOptions"
+          ]
         },
         {
           "name": "IsJSON",
@@ -21135,7 +21315,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleIsJSONWithOptions"
+          ]
         },
         {
           "name": "IsNull",
@@ -21153,7 +21336,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsNull"
+          ]
         },
         {
           "name": "IsObj",
@@ -21171,7 +21357,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsObj"
+          ]
         },
         {
           "name": "IsObjWithOptions",
@@ -21193,7 +21382,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleIsObjWithOptions"
+          ]
         },
         {
           "name": "NewArray",
@@ -21205,7 +21397,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewArray"
+          ]
         },
         {
           "name": "NewArrayWithConfig",
@@ -21223,7 +21418,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewArrayWithConfig"
+          ]
         },
         {
           "name": "NewConfig",
@@ -21235,7 +21433,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewConfig"
+          ]
         },
         {
           "name": "NewJSONError",
@@ -21257,7 +21458,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewJSONError"
+          ]
         },
         {
           "name": "NewObject",
@@ -21269,7 +21473,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewObject"
+          ]
         },
         {
           "name": "NewObjectWithConfig",
@@ -21287,7 +21494,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewObjectWithConfig"
+          ]
         },
         {
           "name": "Parse",
@@ -21306,7 +21516,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParse"
+          ]
         },
         {
           "name": "ParseArray",
@@ -21325,7 +21538,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseArray"
+          ]
         },
         {
           "name": "ParseArrayWithConfig",
@@ -21348,7 +21564,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseArrayWithConfig"
+          ]
         },
         {
           "name": "ParseArrayWithOptions",
@@ -21371,7 +21590,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleParseArrayWithOptions"
+          ]
         },
         {
           "name": "ParseObj",
@@ -21416,7 +21638,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseObjWithConfig"
+          ]
         },
         {
           "name": "ParseObjWithOptions",
@@ -21439,7 +21664,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleParseObjWithOptions"
+          ]
         },
         {
           "name": "ParseWithConfig",
@@ -21462,7 +21690,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseWithConfig"
+          ]
         },
         {
           "name": "ParseWithOptions",
@@ -21485,7 +21716,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleParseWithOptions"
+          ]
         },
         {
           "name": "PutByPath",
@@ -21532,7 +21766,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleQuote"
+          ]
         },
         {
           "name": "ToBean",
@@ -21583,7 +21820,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleToBeanWithOptions"
+          ]
         },
         {
           "name": "ToList",
@@ -21605,7 +21845,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleToList"
+          ]
         },
         {
           "name": "ToListWithOptions",
@@ -21631,7 +21874,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleToListWithOptions"
+          ]
         },
         {
           "name": "ToPrettyStr",
@@ -21654,7 +21900,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleToPrettyStr"
+          ]
         },
         {
           "name": "ToPrettyStrWithConfig",
@@ -21677,7 +21926,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleToPrettyStrWithConfig"
+          ]
         },
         {
           "name": "ToStr",
@@ -21730,7 +21982,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleToStrIndent"
+          ]
         },
         {
           "name": "ToStrWithConfig",
@@ -21753,7 +22008,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleToStrWithConfig"
+          ]
         },
         {
           "name": "ToXML",
@@ -21776,7 +22034,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleToXML"
+          ]
         },
         {
           "name": "ToXMLWithOptions",
@@ -21803,7 +22064,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleToXMLWithOptions"
+          ]
         },
         {
           "name": "WithBeanConfig",
@@ -21821,7 +22085,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithBeanConfig"
+          ]
         },
         {
           "name": "WithBeanUnmarshalFunc",
@@ -21839,7 +22106,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithBeanUnmarshalFunc"
+          ]
         },
         {
           "name": "WithConfig",
@@ -21857,7 +22127,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithConfig"
+          ]
         },
         {
           "name": "WithDateFormat",
@@ -21875,7 +22148,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithDateFormat"
+          ]
         },
         {
           "name": "WithDecoderFactory",
@@ -21893,7 +22169,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithDecoderFactory"
+          ]
         },
         {
           "name": "WithFormatFloatFunc",
@@ -21911,7 +22190,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithFormatFloatFunc"
+          ]
         },
         {
           "name": "WithFormatIndent",
@@ -21929,7 +22211,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithFormatIndent"
+          ]
         },
         {
           "name": "WithFormatIndentWidth",
@@ -21947,7 +22232,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithFormatIndentWidth"
+          ]
         },
         {
           "name": "WithFormatIntFunc",
@@ -21965,7 +22253,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithFormatIntFunc"
+          ]
         },
         {
           "name": "WithFormatSpaceAfterKey",
@@ -21983,7 +22274,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithFormatSpaceAfterKey"
+          ]
         },
         {
           "name": "WithIgnoreNullValue",
@@ -22001,7 +22295,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithIgnoreNullValue"
+          ]
         },
         {
           "name": "WithIndent",
@@ -22019,7 +22316,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithIndent"
+          ]
         },
         {
           "name": "WithJSONValidFunc",
@@ -22037,7 +22337,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithJSONValidFunc"
+          ]
         },
         {
           "name": "WithMarshalFunc",
@@ -22055,7 +22358,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithMarshalFunc"
+          ]
         },
         {
           "name": "WithParseBoolFunc",
@@ -22073,7 +22379,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithParseBoolFunc"
+          ]
         },
         {
           "name": "WithParseConfig",
@@ -22091,7 +22400,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithParseConfig"
+          ]
         },
         {
           "name": "WithParseDecoderFactory",
@@ -22109,7 +22421,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithParseDecoderFactory"
+          ]
         },
         {
           "name": "WithParseFloatFunc",
@@ -22127,7 +22442,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithParseFloatFunc"
+          ]
         },
         {
           "name": "WithParseIntFunc",
@@ -22145,7 +22463,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithParseIntFunc"
+          ]
         },
         {
           "name": "WithParseUnmarshalFunc",
@@ -22163,7 +22484,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithParseUnmarshalFunc"
+          ]
         },
         {
           "name": "WithSprintFunc",
@@ -22181,7 +22505,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithSprintFunc"
+          ]
         },
         {
           "name": "WithUnmarshalFunc",
@@ -22199,7 +22526,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithUnmarshalFunc"
+          ]
         },
         {
           "name": "WrapJSONError",
@@ -22225,7 +22555,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWrapJSONError"
+          ]
         },
         {
           "name": "XMLToJSON",
@@ -22270,7 +22603,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleXMLToJSONWithOptions"
+          ]
         }
       ]
     },
@@ -27903,8 +28239,8 @@
       "synopsis": "Package vnet provides public APIs for network, IP, URL-encoding, TLS, and multipart utilities.",
       "summary": {
         "function_count": 166,
-        "functions_with_examples": 8,
-        "example_coverage_percent": 4.8,
+        "functions_with_examples": 47,
+        "example_coverage_percent": 28.3,
         "synopsis_sources": {
           "empty": 0,
           "facade": 53,
@@ -28055,7 +28391,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleBeginIPLong"
+          ]
         },
         {
           "name": "BeginIPLongWithOptions",
@@ -28128,7 +28467,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleBigIntToIPv6"
+          ]
         },
         {
           "name": "BuildInetSocketAddress",
@@ -28178,7 +28520,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleBuildInetSocketAddressWithOptions"
+          ]
         },
         {
           "name": "Connect",
@@ -28255,7 +28600,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCountByIPRange"
+          ]
         },
         {
           "name": "CountByIPRangeWithOptions",
@@ -28305,7 +28653,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCountByMaskBit"
+          ]
         },
         {
           "name": "CreateAddress",
@@ -28357,7 +28708,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleCreateAddressWithOptions"
+          ]
         },
         {
           "name": "CreateTLSConfig",
@@ -28369,7 +28723,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCreateTLSConfig"
+          ]
         },
         {
           "name": "EndIP",
@@ -28392,7 +28749,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleEndIP"
+          ]
         },
         {
           "name": "EndIPLong",
@@ -28415,7 +28775,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleEndIPLong"
+          ]
         },
         {
           "name": "EndIPLongWithOptions",
@@ -28492,7 +28855,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleFormatIPBlock"
+          ]
         },
         {
           "name": "FormatIPBlockWithOptions",
@@ -28706,7 +29072,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetLocalHostNameWithOptions"
+          ]
         },
         {
           "name": "GetLocalMACAddress",
@@ -28872,7 +29241,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetMultistageReverseProxyIP"
+          ]
         },
         {
           "name": "GetNetworkInterface",
@@ -28946,7 +29318,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetNetworkInterfacesWithOptions"
+          ]
         },
         {
           "name": "GetRemoteAddress",
@@ -29164,7 +29539,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleHideIPPart"
+          ]
         },
         {
           "name": "HideIPPartLong",
@@ -29182,7 +29560,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleHideIPPartLong"
+          ]
         },
         {
           "name": "IDNToASCII",
@@ -29201,7 +29582,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIDNToASCII"
+          ]
         },
         {
           "name": "IPv4ToLong",
@@ -29245,7 +29629,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIPv4ToLongDefault"
+          ]
         },
         {
           "name": "IPv4ToLongDefaultWithOptions",
@@ -29313,7 +29700,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIPv6ToBigInt"
+          ]
         },
         {
           "name": "IPv6ToBigIntWithOptions",
@@ -29372,7 +29762,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsIP"
+          ]
         },
         {
           "name": "IsIPWithOptions",
@@ -29412,7 +29805,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsIPv4"
+          ]
         },
         {
           "name": "IsIPv4WithOptions",
@@ -29452,7 +29848,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsIPv6"
+          ]
         },
         {
           "name": "IsIPv6WithOptions",
@@ -29525,7 +29924,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleIsInRangeWithOptions"
+          ]
         },
         {
           "name": "IsInnerIP",
@@ -29543,7 +29945,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsInnerIP"
+          ]
         },
         {
           "name": "IsInnerIPWithOptions",
@@ -29583,7 +29988,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsMaskBitValid"
+          ]
         },
         {
           "name": "IsMaskValid",
@@ -29601,7 +30009,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsMaskValid"
+          ]
         },
         {
           "name": "IsMaskValidWithOptions",
@@ -29685,7 +30096,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsUnknown"
+          ]
         },
         {
           "name": "IsUsableLocalPort",
@@ -29743,7 +30157,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsValidPort"
+          ]
         },
         {
           "name": "ListIPCIDR",
@@ -29770,7 +30187,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleListIPCIDR"
+          ]
         },
         {
           "name": "ListIPCIDRWithOptions",
@@ -29877,7 +30297,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleListIPs"
+          ]
         },
         {
           "name": "ListIPsWithOptions",
@@ -30022,7 +30445,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleLocalIPsWithOptions"
+          ]
         },
         {
           "name": "LocalIPv4s",
@@ -30100,7 +30526,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleLongToIPv4"
+          ]
         },
         {
           "name": "MaskBitByMask",
@@ -30168,7 +30597,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleMaskByIPRange"
+          ]
         },
         {
           "name": "MaskByIPRangeWithOptions",
@@ -30214,7 +30646,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleMaskByMaskBit"
+          ]
         },
         {
           "name": "MatchesWildcard",
@@ -30265,7 +30700,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleMatchesWildcardWithOptions"
+          ]
         },
         {
           "name": "NetCat",
@@ -30337,7 +30775,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewCertPool"
+          ]
         },
         {
           "name": "NewLocalPortGenerator",
@@ -30401,7 +30842,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewUploadSetting"
+          ]
         },
         {
           "name": "ParseCookies",
@@ -30445,7 +30889,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseMultipartForm"
+          ]
         },
         {
           "name": "Ping",
@@ -30533,7 +30980,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleTLSVersion"
+          ]
         },
         {
           "name": "ToIPList",
@@ -30551,7 +31001,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleToIPList"
+          ]
         },
         {
           "name": "UploadFileContentType",

@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/go-knifer` |
 | Packages | 54 |
 | Functions | 2604 |
-| Functions with examples | 415 |
+| Functions with examples | 566 |
 | Context-aware functions | 36 |
 | Functions returning error | 603 |
 | Variadic functions | 776 |
@@ -741,69 +741,69 @@ Import path: `github.com/imajinyun/go-knifer/vfile`
 
 Package vfile provides public APIs for file and IO utilities.
 
-Quality: 59 functions · 5 with examples · 8.5% example coverage · synopsis sources: facade=53, internal=6, empty=0
+Quality: 59 functions · 59 with examples · 100.0% example coverage · synopsis sources: facade=53, internal=6, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
-| `AppendFileString` | `func AppendFileString(path string, content string, opts ...WriteOption) error` | AppendFileString appends content to path, creating parent directories by default. | facade | — |
-| `AppendFileStringWithOptions` | `func AppendFileStringWithOptions(path string, content string, opts ...WriteOption) error` | AppendFileStringWithOptions appends content to path with per-call write options. | facade | — |
-| `CloseQuietly` | `func CloseQuietly(c io.Closer)` | CloseQuietly closes c and ignores the returned error. | internal | — |
-| `Copy` | `func Copy(dst io.Writer, src io.Reader) (int64, error)` | IoCopy copies from src to dst and returns the number of bytes written. | internal | — |
-| `CopyFile` | `func CopyFile(src string, dst string, opts ...WriteOption) error` | CopyFile copies src to dst, creating destination parents by default. | facade | — |
-| `CopyFileWithOptions` | `func CopyFileWithOptions(src string, dst string, opts ...WriteOption) error` | CopyFileWithOptions copies src to dst using per-call write options. | facade | — |
-| `CopyWithOptions` | `func CopyWithOptions(dst io.Writer, src io.Reader, opts ...ReadOption) (int64, error)` | IoCopyWithOptions copies from src to dst using per-call read options. | internal | — |
-| `Del` | `func Del(path string) error` | Del removes path recursively. | facade | — |
-| `DelWithOptions` | `func DelWithOptions(path string, opts ...DeleteOption) error` | DelWithOptions removes path recursively using per-call delete options. | facade | — |
+| `AppendFileString` | `func AppendFileString(path string, content string, opts ...WriteOption) error` | AppendFileString appends content to path, creating parent directories by default. | facade | `ExampleAppendFileString` |
+| `AppendFileStringWithOptions` | `func AppendFileStringWithOptions(path string, content string, opts ...WriteOption) error` | AppendFileStringWithOptions appends content to path with per-call write options. | facade | `ExampleAppendFileStringWithOptions` |
+| `CloseQuietly` | `func CloseQuietly(c io.Closer)` | CloseQuietly closes c and ignores the returned error. | internal | `ExampleCloseQuietly` |
+| `Copy` | `func Copy(dst io.Writer, src io.Reader) (int64, error)` | IoCopy copies from src to dst and returns the number of bytes written. | internal | `ExampleCopy` |
+| `CopyFile` | `func CopyFile(src string, dst string, opts ...WriteOption) error` | CopyFile copies src to dst, creating destination parents by default. | facade | `ExampleCopyFile` |
+| `CopyFileWithOptions` | `func CopyFileWithOptions(src string, dst string, opts ...WriteOption) error` | CopyFileWithOptions copies src to dst using per-call write options. | facade | `ExampleCopyFileWithOptions` |
+| `CopyWithOptions` | `func CopyWithOptions(dst io.Writer, src io.Reader, opts ...ReadOption) (int64, error)` | IoCopyWithOptions copies from src to dst using per-call read options. | internal | `ExampleCopyWithOptions` |
+| `Del` | `func Del(path string) error` | Del removes path recursively. | facade | `ExampleDel` |
+| `DelWithOptions` | `func DelWithOptions(path string, opts ...DeleteOption) error` | DelWithOptions removes path recursively using per-call delete options. | facade | `ExampleDelWithOptions` |
 | `Exists` | `func Exists(path string) bool` | Exists reports whether a file or directory exists at path. | facade | `ExampleExists` |
-| `ExistsWithOptions` | `func ExistsWithOptions(path string, opts ...StatOption) bool` | ExistsWithOptions reports whether a file or directory exists using per-call stat options. | facade | — |
+| `ExistsWithOptions` | `func ExistsWithOptions(path string, opts ...StatOption) bool` | ExistsWithOptions reports whether a file or directory exists using per-call stat options. | facade | `ExampleExistsWithOptions` |
 | `Extension` | `func Extension(path string) string` | Extension returns the file extension without the leading dot, or an empty string when absent. | internal | `ExampleExtension` |
-| `IsDirectory` | `func IsDirectory(path string) bool` | IsDirectory reports whether path exists and is a directory. | facade | — |
-| `IsDirectoryWithOptions` | `func IsDirectoryWithOptions(path string, opts ...StatOption) bool` | IsDirectoryWithOptions reports whether path exists and is a directory using per-call stat options. | facade | — |
-| `IsFile` | `func IsFile(path string) bool` | IsFile reports whether path exists and is a regular file. | facade | — |
-| `IsFileWithOptions` | `func IsFileWithOptions(path string, opts ...StatOption) bool` | IsFileWithOptions reports whether path exists and is a regular file using per-call stat options. | facade | — |
+| `IsDirectory` | `func IsDirectory(path string) bool` | IsDirectory reports whether path exists and is a directory. | facade | `ExampleIsDirectory` |
+| `IsDirectoryWithOptions` | `func IsDirectoryWithOptions(path string, opts ...StatOption) bool` | IsDirectoryWithOptions reports whether path exists and is a directory using per-call stat options. | facade | `ExampleIsDirectoryWithOptions` |
+| `IsFile` | `func IsFile(path string) bool` | IsFile reports whether path exists and is a regular file. | facade | `ExampleIsFile` |
+| `IsFileWithOptions` | `func IsFileWithOptions(path string, opts ...StatOption) bool` | IsFileWithOptions reports whether path exists and is a regular file using per-call stat options. | facade | `ExampleIsFileWithOptions` |
 | `MainName` | `func MainName(path string) string` | MainName returns the file name without its extension; parent directories are ignored. | internal | `ExampleMainName` |
-| `Mkdir` | `func Mkdir(dir string, opts ...DirOption) error` | Mkdir creates dir with directory options. | facade | — |
-| `MkdirWithOptions` | `func MkdirWithOptions(dir string, opts ...DirOption) error` | MkdirWithOptions creates dir with per-call directory options. | facade | — |
-| `ReadAll` | `func ReadAll(r io.Reader) ([]byte, error)` | ReadAll reads all data from r using the default read-size guard. | facade | — |
-| `ReadAllWithOptions` | `func ReadAllWithOptions(r io.Reader, opts ...ReadOption) ([]byte, error)` | ReadAllWithOptions reads data from r with per-call read options. | facade | — |
-| `ReadChunks` | `func ReadChunks(r io.Reader, handle func([]byte) error) error` | ReadChunks reads r in buffered chunks and invokes handle for each chunk. | facade | — |
-| `ReadChunksWithOptions` | `func ReadChunksWithOptions(r io.Reader, handle func([]byte) error, opts ...ReadOption) error` | ReadChunksWithOptions reads r in chunks with per-call read options. | facade | — |
-| `ReadFileBytes` | `func ReadFileBytes(path string) ([]byte, error)` | ReadFileBytes reads all bytes from the file at path. | facade | — |
-| `ReadFileBytesWithOptions` | `func ReadFileBytesWithOptions(path string, opts ...ReadOption) ([]byte, error)` | ReadFileBytesWithOptions reads bytes from a file with per-call read options. | facade | — |
-| `ReadFileChunks` | `func ReadFileChunks(path string, handle func([]byte) error) error` | ReadFileChunks reads the file at path in buffered chunks and invokes handle for each chunk. | facade | — |
-| `ReadFileChunksWithOptions` | `func ReadFileChunksWithOptions(path string, handle func([]byte) error, opts ...ReadOption) error` | ReadFileChunksWithOptions reads a file in chunks with per-call read options. | facade | — |
-| `ReadFileLines` | `func ReadFileLines(path string) ([]string, error)` | ReadFileLines reads all lines from the file at path using the default scanner limits. | facade | — |
-| `ReadFileLinesWithOptions` | `func ReadFileLinesWithOptions(path string, opts ...ReadOption) ([]string, error)` | ReadFileLinesWithOptions reads all lines from a file with per-call read options. | facade | — |
-| `ReadFileString` | `func ReadFileString(path string) (string, error)` | ReadFileString reads the whole file at path as a string. | facade | — |
-| `ReadFileStringWithOptions` | `func ReadFileStringWithOptions(path string, opts ...ReadOption) (string, error)` | ReadFileStringWithOptions reads a file as a string with per-call read options. | facade | — |
-| `ReadLines` | `func ReadLines(r io.Reader) ([]string, error)` | ReadLines reads all lines from r using the default scanner limits. | facade | — |
-| `ReadLinesWithOptions` | `func ReadLinesWithOptions(r io.Reader, opts ...ReadOption) ([]string, error)` | ReadLinesWithOptions reads all lines from r with per-call line options. | facade | — |
+| `Mkdir` | `func Mkdir(dir string, opts ...DirOption) error` | Mkdir creates dir with directory options. | facade | `ExampleMkdir` |
+| `MkdirWithOptions` | `func MkdirWithOptions(dir string, opts ...DirOption) error` | MkdirWithOptions creates dir with per-call directory options. | facade | `ExampleMkdirWithOptions` |
+| `ReadAll` | `func ReadAll(r io.Reader) ([]byte, error)` | ReadAll reads all data from r using the default read-size guard. | facade | `ExampleReadAll` |
+| `ReadAllWithOptions` | `func ReadAllWithOptions(r io.Reader, opts ...ReadOption) ([]byte, error)` | ReadAllWithOptions reads data from r with per-call read options. | facade | `ExampleReadAllWithOptions` |
+| `ReadChunks` | `func ReadChunks(r io.Reader, handle func([]byte) error) error` | ReadChunks reads r in buffered chunks and invokes handle for each chunk. | facade | `ExampleReadChunks` |
+| `ReadChunksWithOptions` | `func ReadChunksWithOptions(r io.Reader, handle func([]byte) error, opts ...ReadOption) error` | ReadChunksWithOptions reads r in chunks with per-call read options. | facade | `ExampleReadChunksWithOptions` |
+| `ReadFileBytes` | `func ReadFileBytes(path string) ([]byte, error)` | ReadFileBytes reads all bytes from the file at path. | facade | `ExampleReadFileBytes` |
+| `ReadFileBytesWithOptions` | `func ReadFileBytesWithOptions(path string, opts ...ReadOption) ([]byte, error)` | ReadFileBytesWithOptions reads bytes from a file with per-call read options. | facade | `ExampleReadFileBytesWithOptions` |
+| `ReadFileChunks` | `func ReadFileChunks(path string, handle func([]byte) error) error` | ReadFileChunks reads the file at path in buffered chunks and invokes handle for each chunk. | facade | `ExampleReadFileChunks` |
+| `ReadFileChunksWithOptions` | `func ReadFileChunksWithOptions(path string, handle func([]byte) error, opts ...ReadOption) error` | ReadFileChunksWithOptions reads a file in chunks with per-call read options. | facade | `ExampleReadFileChunksWithOptions` |
+| `ReadFileLines` | `func ReadFileLines(path string) ([]string, error)` | ReadFileLines reads all lines from the file at path using the default scanner limits. | facade | `ExampleReadFileLines` |
+| `ReadFileLinesWithOptions` | `func ReadFileLinesWithOptions(path string, opts ...ReadOption) ([]string, error)` | ReadFileLinesWithOptions reads all lines from a file with per-call read options. | facade | `ExampleReadFileLinesWithOptions` |
+| `ReadFileString` | `func ReadFileString(path string) (string, error)` | ReadFileString reads the whole file at path as a string. | facade | `ExampleReadFileString` |
+| `ReadFileStringWithOptions` | `func ReadFileStringWithOptions(path string, opts ...ReadOption) (string, error)` | ReadFileStringWithOptions reads a file as a string with per-call read options. | facade | `ExampleReadFileStringWithOptions` |
+| `ReadLines` | `func ReadLines(r io.Reader) ([]string, error)` | ReadLines reads all lines from r using the default scanner limits. | facade | `ExampleReadLines` |
+| `ReadLinesWithOptions` | `func ReadLinesWithOptions(r io.Reader, opts ...ReadOption) ([]string, error)` | ReadLinesWithOptions reads all lines from r with per-call line options. | facade | `ExampleReadLinesWithOptions` |
 | `ReadString` | `func ReadString(r io.Reader) (string, error)` | ReadString reads all data from r as a string using the default read-size guard. | facade | `ExampleReadString` |
-| `ReadStringWithOptions` | `func ReadStringWithOptions(r io.Reader, opts ...ReadOption) (string, error)` | ReadStringWithOptions reads data from r as a string with per-call read options. | facade | — |
-| `ReaderFromString` | `func ReaderFromString(s string) io.Reader` | ReaderFromString converts a string to an io.Reader. | internal | — |
-| `Size` | `func Size(path string) int64` | Size returns the file size in bytes, or -1 when path is missing or not a regular file. | facade | — |
-| `SizeWithOptions` | `func SizeWithOptions(path string, opts ...StatOption) int64` | SizeWithOptions returns the file size using per-call stat options. | facade | — |
-| `Touch` | `func Touch(path string, opts ...WriteOption) error` | Touch creates path when missing and updates its timestamp. | facade | — |
-| `TouchWithOptions` | `func TouchWithOptions(path string, opts ...WriteOption) error` | TouchWithOptions creates path when missing using per-call write options. | facade | — |
-| `WithBufferSize` | `func WithBufferSize(n int) ReadOption` | WithBufferSize sets the buffer size used by chunk reads and limited copies. | facade | — |
-| `WithCreateParents` | `func WithCreateParents(create bool) WriteOption` | WithCreateParents controls whether parent directories are created automatically. | facade | — |
-| `WithDirPerm` | `func WithDirPerm(perm fs.FileMode) WriteOption` | WithDirPerm sets the parent-directory permission used when creating directories. | facade | — |
-| `WithFilePerm` | `func WithFilePerm(perm fs.FileMode) WriteOption` | WithFilePerm sets the file permission used when creating files. | facade | — |
-| `WithInitialLineBuffer` | `func WithInitialLineBuffer(n int) ReadOption` | WithInitialLineBuffer sets the initial scanner buffer for line reads. | facade | — |
-| `WithMaxBytes` | `func WithMaxBytes(n int64) ReadOption` | WithMaxBytes limits how many bytes a read helper may consume. | facade | — |
-| `WithMaxLineBytes` | `func WithMaxLineBytes(n int) ReadOption` | WithMaxLineBytes sets the maximum scanner token size for line reads. | facade | — |
-| `WithMkdirAll` | `func WithMkdirAll(mkdirAll MkdirAllFunc) DirOption` | WithMkdirAll sets the function used to create directory trees. | facade | — |
-| `WithMkdirPerm` | `func WithMkdirPerm(perm fs.FileMode) DirOption` | WithMkdirPerm sets the directory permission used by Mkdir. | facade | — |
-| `WithOpen` | `func WithOpen(open OpenFunc) ReadOption` | WithOpen sets the function used to open files for reading. | facade | — |
-| `WithOpenFile` | `func WithOpenFile(openFile OpenFileFunc) WriteOption` | WithOpenFile sets the function used to open files for writing. | facade | — |
-| `WithOverwrite` | `func WithOverwrite(overwrite bool) WriteOption` | WithOverwrite controls whether an existing destination file may be replaced. | facade | — |
-| `WithRemoveAll` | `func WithRemoveAll(removeAll RemoveAllFunc) DeleteOption` | WithRemoveAll sets the function used to remove file trees. | facade | — |
-| `WithStat` | `func WithStat(stat StatFunc) StatOption` | WithStat sets the function used to inspect filesystem paths. | facade | — |
-| `WithUnlimitedRead` | `func WithUnlimitedRead() ReadOption` | WithUnlimitedRead disables the default read-size guard for callers that explicitly need it. | facade | — |
-| `WriteFileBytes` | `func WriteFileBytes(path string, data []byte, opts ...WriteOption) error` | WriteFileBytes writes data to path, creating parent directories by default. | facade | — |
-| `WriteFileBytesWithOptions` | `func WriteFileBytesWithOptions(path string, data []byte, opts ...WriteOption) error` | WriteFileBytesWithOptions writes data to path with per-call write options. | facade | — |
+| `ReadStringWithOptions` | `func ReadStringWithOptions(r io.Reader, opts ...ReadOption) (string, error)` | ReadStringWithOptions reads data from r as a string with per-call read options. | facade | `ExampleReadStringWithOptions` |
+| `ReaderFromString` | `func ReaderFromString(s string) io.Reader` | ReaderFromString converts a string to an io.Reader. | internal | `ExampleReaderFromString` |
+| `Size` | `func Size(path string) int64` | Size returns the file size in bytes, or -1 when path is missing or not a regular file. | facade | `ExampleSize` |
+| `SizeWithOptions` | `func SizeWithOptions(path string, opts ...StatOption) int64` | SizeWithOptions returns the file size using per-call stat options. | facade | `ExampleSizeWithOptions` |
+| `Touch` | `func Touch(path string, opts ...WriteOption) error` | Touch creates path when missing and updates its timestamp. | facade | `ExampleTouch` |
+| `TouchWithOptions` | `func TouchWithOptions(path string, opts ...WriteOption) error` | TouchWithOptions creates path when missing using per-call write options. | facade | `ExampleTouchWithOptions` |
+| `WithBufferSize` | `func WithBufferSize(n int) ReadOption` | WithBufferSize sets the buffer size used by chunk reads and limited copies. | facade | `ExampleWithBufferSize` |
+| `WithCreateParents` | `func WithCreateParents(create bool) WriteOption` | WithCreateParents controls whether parent directories are created automatically. | facade | `ExampleWithCreateParents` |
+| `WithDirPerm` | `func WithDirPerm(perm fs.FileMode) WriteOption` | WithDirPerm sets the parent-directory permission used when creating directories. | facade | `ExampleWithDirPerm` |
+| `WithFilePerm` | `func WithFilePerm(perm fs.FileMode) WriteOption` | WithFilePerm sets the file permission used when creating files. | facade | `ExampleWithFilePerm` |
+| `WithInitialLineBuffer` | `func WithInitialLineBuffer(n int) ReadOption` | WithInitialLineBuffer sets the initial scanner buffer for line reads. | facade | `ExampleWithInitialLineBuffer` |
+| `WithMaxBytes` | `func WithMaxBytes(n int64) ReadOption` | WithMaxBytes limits how many bytes a read helper may consume. | facade | `ExampleWithMaxBytes` |
+| `WithMaxLineBytes` | `func WithMaxLineBytes(n int) ReadOption` | WithMaxLineBytes sets the maximum scanner token size for line reads. | facade | `ExampleWithMaxLineBytes` |
+| `WithMkdirAll` | `func WithMkdirAll(mkdirAll MkdirAllFunc) DirOption` | WithMkdirAll sets the function used to create directory trees. | facade | `ExampleWithMkdirAll` |
+| `WithMkdirPerm` | `func WithMkdirPerm(perm fs.FileMode) DirOption` | WithMkdirPerm sets the directory permission used by Mkdir. | facade | `ExampleWithMkdirPerm` |
+| `WithOpen` | `func WithOpen(open OpenFunc) ReadOption` | WithOpen sets the function used to open files for reading. | facade | `ExampleWithOpen` |
+| `WithOpenFile` | `func WithOpenFile(openFile OpenFileFunc) WriteOption` | WithOpenFile sets the function used to open files for writing. | facade | `ExampleWithOpenFile` |
+| `WithOverwrite` | `func WithOverwrite(overwrite bool) WriteOption` | WithOverwrite controls whether an existing destination file may be replaced. | facade | `ExampleWithOverwrite` |
+| `WithRemoveAll` | `func WithRemoveAll(removeAll RemoveAllFunc) DeleteOption` | WithRemoveAll sets the function used to remove file trees. | facade | `ExampleWithRemoveAll` |
+| `WithStat` | `func WithStat(stat StatFunc) StatOption` | WithStat sets the function used to inspect filesystem paths. | facade | `ExampleWithStat` |
+| `WithUnlimitedRead` | `func WithUnlimitedRead() ReadOption` | WithUnlimitedRead disables the default read-size guard for callers that explicitly need it. | facade | `ExampleWithUnlimitedRead` |
+| `WriteFileBytes` | `func WriteFileBytes(path string, data []byte, opts ...WriteOption) error` | WriteFileBytes writes data to path, creating parent directories by default. | facade | `ExampleWriteFileBytes` |
+| `WriteFileBytesWithOptions` | `func WriteFileBytesWithOptions(path string, data []byte, opts ...WriteOption) error` | WriteFileBytesWithOptions writes data to path with per-call write options. | facade | `ExampleWriteFileBytesWithOptions` |
 | `WriteFileString` | `func WriteFileString(path string, content string, opts ...WriteOption) error` | WriteFileString writes content to path, creating parent directories by default. | facade | `ExampleWriteFileString` |
-| `WriteFileStringWithOptions` | `func WriteFileStringWithOptions(path string, content string, opts ...WriteOption) error` | WriteFileStringWithOptions writes content to path with per-call write options. | facade | — |
+| `WriteFileStringWithOptions` | `func WriteFileStringWithOptions(path string, content string, opts ...WriteOption) error` | WriteFileStringWithOptions writes content to path with per-call write options. | facade | `ExampleWriteFileStringWithOptions` |
 
 ### vform
 
@@ -1315,75 +1315,75 @@ Import path: `github.com/imajinyun/go-knifer/vjson`
 
 Package vjson provides public APIs for JSON utilities.
 
-Quality: 65 functions · 7 with examples · 10.8% example coverage · synopsis sources: facade=65, internal=0, empty=0
+Quality: 65 functions · 65 with examples · 100.0% example coverage · synopsis sources: facade=65, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
-| `CreateConfig` | `func CreateConfig() *Config` | CreateConfig creates a default JSON config. | facade | — |
-| `Format` | `func Format(raw string) string` | Format formats raw JSON string. | facade | — |
-| `FormatWithOptions` | `func FormatWithOptions(raw string, opts ...FormatOption) string` | FormatWithOptions formats raw JSON string with custom formatting options. | facade | — |
+| `CreateConfig` | `func CreateConfig() *Config` | CreateConfig creates a default JSON config. | facade | `ExampleCreateConfig` |
+| `Format` | `func Format(raw string) string` | Format formats raw JSON string. | facade | `ExampleFormat` |
+| `FormatWithOptions` | `func FormatWithOptions(raw string, opts ...FormatOption) string` | FormatWithOptions formats raw JSON string with custom formatting options. | facade | `ExampleFormatWithOptions` |
 | `GetByPath` | `func GetByPath(root any, path string) any` | GetByPath gets a value by path expression. | facade | `ExampleGetByPath` |
-| `GetByPathOr` | `func GetByPathOr(root any, path string, def any) any` | GetByPathOr gets a value by path expression with a default. | facade | — |
-| `IsArray` | `func IsArray(s string) bool` | IsArray reports whether s is a JSON array. | facade | — |
-| `IsArrayWithOptions` | `func IsArrayWithOptions(s string, opts ...ValidOption) bool` | IsArrayWithOptions reports whether s is a JSON array with options. | facade | — |
+| `GetByPathOr` | `func GetByPathOr(root any, path string, def any) any` | GetByPathOr gets a value by path expression with a default. | facade | `ExampleGetByPathOr` |
+| `IsArray` | `func IsArray(s string) bool` | IsArray reports whether s is a JSON array. | facade | `ExampleIsArray` |
+| `IsArrayWithOptions` | `func IsArrayWithOptions(s string, opts ...ValidOption) bool` | IsArrayWithOptions reports whether s is a JSON array with options. | facade | `ExampleIsArrayWithOptions` |
 | `IsJSON` | `func IsJSON(s string) bool` | IsJSON reports whether s is valid JSON. | facade | `ExampleIsJSON` |
-| `IsJSONWithOptions` | `func IsJSONWithOptions(s string, opts ...ValidOption) bool` | IsJSONWithOptions reports whether s is valid JSON with options. | facade | — |
-| `IsNull` | `func IsNull(v any) bool` | IsNull reports whether v is nil or JSON null. | facade | — |
-| `IsObj` | `func IsObj(s string) bool` | IsObj reports whether s is a JSON object. | facade | — |
-| `IsObjWithOptions` | `func IsObjWithOptions(s string, opts ...ValidOption) bool` | IsObjWithOptions reports whether s is a JSON object with options. | facade | — |
-| `NewArray` | `func NewArray() *Array` | NewArray creates an empty ordered JSON array. | facade | — |
-| `NewArrayWithConfig` | `func NewArrayWithConfig(cfg *Config) *Array` | NewArrayWithConfig creates a JSON array with cfg. | facade | — |
-| `NewConfig` | `func NewConfig() *Config` | NewConfig creates a default JSON config. | facade | — |
-| `NewJSONError` | `func NewJSONError(format string, args ...any) *Error` | NewJSONError creates a JSON error with a formatted message. | facade | — |
-| `NewObject` | `func NewObject() *Object` | NewObject creates an empty ordered JSON object. | facade | — |
-| `NewObjectWithConfig` | `func NewObjectWithConfig(cfg *Config) *Object` | NewObjectWithConfig creates a JSON object with cfg. | facade | — |
-| `Parse` | `func Parse(src any) (any, error)` | Parse automatically detects and parses JSON. | facade | — |
-| `ParseArray` | `func ParseArray(src any) (*Array, error)` | ParseArray parses src as a JSON array. | facade | — |
-| `ParseArrayWithConfig` | `func ParseArrayWithConfig(src any, cfg *Config) (*Array, error)` | ParseArrayWithConfig parses src as a JSON array with cfg. | facade | — |
-| `ParseArrayWithOptions` | `func ParseArrayWithOptions(src any, opts ...ParseOption) (*Array, error)` | ParseArrayWithOptions parses src as a JSON array with options. | facade | — |
+| `IsJSONWithOptions` | `func IsJSONWithOptions(s string, opts ...ValidOption) bool` | IsJSONWithOptions reports whether s is valid JSON with options. | facade | `ExampleIsJSONWithOptions` |
+| `IsNull` | `func IsNull(v any) bool` | IsNull reports whether v is nil or JSON null. | facade | `ExampleIsNull` |
+| `IsObj` | `func IsObj(s string) bool` | IsObj reports whether s is a JSON object. | facade | `ExampleIsObj` |
+| `IsObjWithOptions` | `func IsObjWithOptions(s string, opts ...ValidOption) bool` | IsObjWithOptions reports whether s is a JSON object with options. | facade | `ExampleIsObjWithOptions` |
+| `NewArray` | `func NewArray() *Array` | NewArray creates an empty ordered JSON array. | facade | `ExampleNewArray` |
+| `NewArrayWithConfig` | `func NewArrayWithConfig(cfg *Config) *Array` | NewArrayWithConfig creates a JSON array with cfg. | facade | `ExampleNewArrayWithConfig` |
+| `NewConfig` | `func NewConfig() *Config` | NewConfig creates a default JSON config. | facade | `ExampleNewConfig` |
+| `NewJSONError` | `func NewJSONError(format string, args ...any) *Error` | NewJSONError creates a JSON error with a formatted message. | facade | `ExampleNewJSONError` |
+| `NewObject` | `func NewObject() *Object` | NewObject creates an empty ordered JSON object. | facade | `ExampleNewObject` |
+| `NewObjectWithConfig` | `func NewObjectWithConfig(cfg *Config) *Object` | NewObjectWithConfig creates a JSON object with cfg. | facade | `ExampleNewObjectWithConfig` |
+| `Parse` | `func Parse(src any) (any, error)` | Parse automatically detects and parses JSON. | facade | `ExampleParse` |
+| `ParseArray` | `func ParseArray(src any) (*Array, error)` | ParseArray parses src as a JSON array. | facade | `ExampleParseArray` |
+| `ParseArrayWithConfig` | `func ParseArrayWithConfig(src any, cfg *Config) (*Array, error)` | ParseArrayWithConfig parses src as a JSON array with cfg. | facade | `ExampleParseArrayWithConfig` |
+| `ParseArrayWithOptions` | `func ParseArrayWithOptions(src any, opts ...ParseOption) (*Array, error)` | ParseArrayWithOptions parses src as a JSON array with options. | facade | `ExampleParseArrayWithOptions` |
 | `ParseObj` | `func ParseObj(src any) (*Object, error)` | ParseObj parses src as a JSON object. | facade | `ExampleParseObj_error` |
-| `ParseObjWithConfig` | `func ParseObjWithConfig(src any, cfg *Config) (*Object, error)` | ParseObjWithConfig parses src as a JSON object with cfg. | facade | — |
-| `ParseObjWithOptions` | `func ParseObjWithOptions(src any, opts ...ParseOption) (*Object, error)` | ParseObjWithOptions parses src as a JSON object with options. | facade | — |
-| `ParseWithConfig` | `func ParseWithConfig(src any, cfg *Config) (any, error)` | ParseWithConfig automatically detects and parses JSON with cfg. | facade | — |
-| `ParseWithOptions` | `func ParseWithOptions(src any, opts ...ParseOption) (any, error)` | ParseWithOptions automatically detects and parses JSON with options. | facade | — |
+| `ParseObjWithConfig` | `func ParseObjWithConfig(src any, cfg *Config) (*Object, error)` | ParseObjWithConfig parses src as a JSON object with cfg. | facade | `ExampleParseObjWithConfig` |
+| `ParseObjWithOptions` | `func ParseObjWithOptions(src any, opts ...ParseOption) (*Object, error)` | ParseObjWithOptions parses src as a JSON object with options. | facade | `ExampleParseObjWithOptions` |
+| `ParseWithConfig` | `func ParseWithConfig(src any, cfg *Config) (any, error)` | ParseWithConfig automatically detects and parses JSON with cfg. | facade | `ExampleParseWithConfig` |
+| `ParseWithOptions` | `func ParseWithOptions(src any, opts ...ParseOption) (any, error)` | ParseWithOptions automatically detects and parses JSON with options. | facade | `ExampleParseWithOptions` |
 | `PutByPath` | `func PutByPath(root any, path string, value any) error` | PutByPath writes a value by path expression. | facade | `ExamplePutByPath` |
-| `Quote` | `func Quote(s string) string` | Quote adds JSON double quotes and escapes s. | facade | — |
+| `Quote` | `func Quote(s string) string` | Quote adds JSON double quotes and escapes s. | facade | `ExampleQuote` |
 | `ToBean` | `func ToBean(src any, dst any) error` | ToBean deserializes JSON to dst, which must be a pointer. | facade | `ExampleToBean` |
-| `ToBeanWithOptions` | `func ToBeanWithOptions(src any, dst any, opts ...BeanOption) error` | ToBeanWithOptions deserializes JSON to dst using per-call options. | facade | — |
-| `ToList` | `func ToList(src any, dst any) error` | ToList deserializes a JSON array to dst, which must point to a slice. | facade | — |
-| `ToListWithOptions` | `func ToListWithOptions(src any, dst any, opts ...BeanOption) error` | ToListWithOptions deserializes a JSON array to dst using per-call options. | facade | — |
-| `ToPrettyStr` | `func ToPrettyStr(v any, opts ...EncodeOption) (string, error)` | ToPrettyStr serializes v to pretty JSON with 4-space indentation. | facade | — |
-| `ToPrettyStrWithConfig` | `func ToPrettyStrWithConfig(v any, cfg *Config) (string, error)` | ToPrettyStrWithConfig serializes v using cfg and cfg.IndentFactor. | facade | — |
+| `ToBeanWithOptions` | `func ToBeanWithOptions(src any, dst any, opts ...BeanOption) error` | ToBeanWithOptions deserializes JSON to dst using per-call options. | facade | `ExampleToBeanWithOptions` |
+| `ToList` | `func ToList(src any, dst any) error` | ToList deserializes a JSON array to dst, which must point to a slice. | facade | `ExampleToList` |
+| `ToListWithOptions` | `func ToListWithOptions(src any, dst any, opts ...BeanOption) error` | ToListWithOptions deserializes a JSON array to dst using per-call options. | facade | `ExampleToListWithOptions` |
+| `ToPrettyStr` | `func ToPrettyStr(v any, opts ...EncodeOption) (string, error)` | ToPrettyStr serializes v to pretty JSON with 4-space indentation. | facade | `ExampleToPrettyStr` |
+| `ToPrettyStrWithConfig` | `func ToPrettyStrWithConfig(v any, cfg *Config) (string, error)` | ToPrettyStrWithConfig serializes v using cfg and cfg.IndentFactor. | facade | `ExampleToPrettyStrWithConfig` |
 | `ToStr` | `func ToStr(v any, opts ...EncodeOption) (string, error)` | ToStr serializes v to compact JSON. | facade | `ExampleToStr` |
-| `ToStrIndent` | `func ToStrIndent(v any, indent int, opts ...EncodeOption) (string, error)` | ToStrIndent serializes v to pretty JSON with custom indentation. | facade | — |
-| `ToStrWithConfig` | `func ToStrWithConfig(v any, cfg *Config) (string, error)` | ToStrWithConfig serializes v using cfg. | facade | — |
-| `ToXML` | `func ToXML(root any, rootTag string) (string, error)` | ToXML serializes a JSON value to XML string. | facade | — |
-| `ToXMLWithOptions` | `func ToXMLWithOptions(root any, rootTag string, opts ...xml.WriteOption) (string, error)` | ToXMLWithOptions serializes a JSON value to XML string with XML writer options. | facade | — |
-| `WithBeanConfig` | `func WithBeanConfig(cfg *Config) BeanOption` | WithBeanConfig sets the JSON config used by bean conversion helpers. | facade | — |
-| `WithBeanUnmarshalFunc` | `func WithBeanUnmarshalFunc(unmarshal func([]byte, any) error) BeanOption` | WithBeanUnmarshalFunc sets a per-call unmarshal provider for bean conversion helpers. | facade | — |
-| `WithConfig` | `func WithConfig(cfg *Config) EncodeOption` | WithConfig sets the JSON config used by serialization helpers. | facade | — |
-| `WithDateFormat` | `func WithDateFormat(layout string) EncodeOption` | WithDateFormat sets the time layout used for time.Time values. | facade | — |
-| `WithDecoderFactory` | `func WithDecoderFactory(factory func(io.Reader) *json.Decoder) EncodeOption` | WithDecoderFactory sets the decoder factory stored in the JSON config. | facade | — |
-| `WithFormatFloatFunc` | `func WithFormatFloatFunc(format func(float64, byte, int, int) string) EncodeOption` | WithFormatFloatFunc sets the float formatter stored in the JSON config. | facade | — |
-| `WithFormatIndent` | `func WithFormatIndent(indent string) FormatOption` | WithFormatIndent sets the indentation string used by FormatWithOptions. | facade | — |
-| `WithFormatIndentWidth` | `func WithFormatIndentWidth(n int) FormatOption` | WithFormatIndentWidth sets indentation to n spaces. | facade | — |
-| `WithFormatIntFunc` | `func WithFormatIntFunc(format func(int64, int) string) EncodeOption` | WithFormatIntFunc sets the integer formatter stored in the JSON config. | facade | — |
-| `WithFormatSpaceAfterKey` | `func WithFormatSpaceAfterKey(space bool) FormatOption` | WithFormatSpaceAfterKey controls whether a space is written after ':'. | facade | — |
-| `WithIgnoreNullValue` | `func WithIgnoreNullValue(ignore bool) EncodeOption` | WithIgnoreNullValue controls whether null values are ignored during serialization. | facade | — |
-| `WithIndent` | `func WithIndent(indent int) EncodeOption` | WithIndent sets the indentation width. | facade | — |
-| `WithJSONValidFunc` | `func WithJSONValidFunc(valid func([]byte) bool) ValidOption` | WithJSONValidFunc sets the validator used by IsJSONWithOptions. | facade | — |
-| `WithMarshalFunc` | `func WithMarshalFunc(marshal func(any) ([]byte, error)) EncodeOption` | WithMarshalFunc sets the marshal provider used when wrapping structs for serialization. | facade | — |
-| `WithParseBoolFunc` | `func WithParseBoolFunc(parse func(string) (bool, error)) EncodeOption` | WithParseBoolFunc sets the bool parser stored in the JSON config. | facade | — |
-| `WithParseConfig` | `func WithParseConfig(cfg *Config) ParseOption` | WithParseConfig sets the JSON config used by parsing helpers. | facade | — |
-| `WithParseDecoderFactory` | `func WithParseDecoderFactory(factory func(io.Reader) *json.Decoder) ParseOption` | WithParseDecoderFactory sets a per-call decoder factory for parsing helpers. | facade | — |
-| `WithParseFloatFunc` | `func WithParseFloatFunc(parse func(string, int) (float64, error)) EncodeOption` | WithParseFloatFunc sets the float parser stored in the JSON config. | facade | — |
-| `WithParseIntFunc` | `func WithParseIntFunc(parse func(string, int, int) (int64, error)) EncodeOption` | WithParseIntFunc sets the integer parser stored in the JSON config. | facade | — |
-| `WithParseUnmarshalFunc` | `func WithParseUnmarshalFunc(unmarshal func([]byte, any) error) ParseOption` | WithParseUnmarshalFunc sets a per-call unmarshal provider for parsing helpers. | facade | — |
-| `WithSprintFunc` | `func WithSprintFunc(sprint func(any) string) EncodeOption` | WithSprintFunc sets the fallback scalar formatter stored in the JSON config. | facade | — |
-| `WithUnmarshalFunc` | `func WithUnmarshalFunc(unmarshal func([]byte, any) error) EncodeOption` | WithUnmarshalFunc sets the unmarshal provider stored in the JSON config. | facade | — |
-| `WrapJSONError` | `func WrapJSONError(cause error, format string, args ...any) *Error` | WrapJSONError wraps a lower-level error as a JSON error. | facade | — |
+| `ToStrIndent` | `func ToStrIndent(v any, indent int, opts ...EncodeOption) (string, error)` | ToStrIndent serializes v to pretty JSON with custom indentation. | facade | `ExampleToStrIndent` |
+| `ToStrWithConfig` | `func ToStrWithConfig(v any, cfg *Config) (string, error)` | ToStrWithConfig serializes v using cfg. | facade | `ExampleToStrWithConfig` |
+| `ToXML` | `func ToXML(root any, rootTag string) (string, error)` | ToXML serializes a JSON value to XML string. | facade | `ExampleToXML` |
+| `ToXMLWithOptions` | `func ToXMLWithOptions(root any, rootTag string, opts ...xml.WriteOption) (string, error)` | ToXMLWithOptions serializes a JSON value to XML string with XML writer options. | facade | `ExampleToXMLWithOptions` |
+| `WithBeanConfig` | `func WithBeanConfig(cfg *Config) BeanOption` | WithBeanConfig sets the JSON config used by bean conversion helpers. | facade | `ExampleWithBeanConfig` |
+| `WithBeanUnmarshalFunc` | `func WithBeanUnmarshalFunc(unmarshal func([]byte, any) error) BeanOption` | WithBeanUnmarshalFunc sets a per-call unmarshal provider for bean conversion helpers. | facade | `ExampleWithBeanUnmarshalFunc` |
+| `WithConfig` | `func WithConfig(cfg *Config) EncodeOption` | WithConfig sets the JSON config used by serialization helpers. | facade | `ExampleWithConfig` |
+| `WithDateFormat` | `func WithDateFormat(layout string) EncodeOption` | WithDateFormat sets the time layout used for time.Time values. | facade | `ExampleWithDateFormat` |
+| `WithDecoderFactory` | `func WithDecoderFactory(factory func(io.Reader) *json.Decoder) EncodeOption` | WithDecoderFactory sets the decoder factory stored in the JSON config. | facade | `ExampleWithDecoderFactory` |
+| `WithFormatFloatFunc` | `func WithFormatFloatFunc(format func(float64, byte, int, int) string) EncodeOption` | WithFormatFloatFunc sets the float formatter stored in the JSON config. | facade | `ExampleWithFormatFloatFunc` |
+| `WithFormatIndent` | `func WithFormatIndent(indent string) FormatOption` | WithFormatIndent sets the indentation string used by FormatWithOptions. | facade | `ExampleWithFormatIndent` |
+| `WithFormatIndentWidth` | `func WithFormatIndentWidth(n int) FormatOption` | WithFormatIndentWidth sets indentation to n spaces. | facade | `ExampleWithFormatIndentWidth` |
+| `WithFormatIntFunc` | `func WithFormatIntFunc(format func(int64, int) string) EncodeOption` | WithFormatIntFunc sets the integer formatter stored in the JSON config. | facade | `ExampleWithFormatIntFunc` |
+| `WithFormatSpaceAfterKey` | `func WithFormatSpaceAfterKey(space bool) FormatOption` | WithFormatSpaceAfterKey controls whether a space is written after ':'. | facade | `ExampleWithFormatSpaceAfterKey` |
+| `WithIgnoreNullValue` | `func WithIgnoreNullValue(ignore bool) EncodeOption` | WithIgnoreNullValue controls whether null values are ignored during serialization. | facade | `ExampleWithIgnoreNullValue` |
+| `WithIndent` | `func WithIndent(indent int) EncodeOption` | WithIndent sets the indentation width. | facade | `ExampleWithIndent` |
+| `WithJSONValidFunc` | `func WithJSONValidFunc(valid func([]byte) bool) ValidOption` | WithJSONValidFunc sets the validator used by IsJSONWithOptions. | facade | `ExampleWithJSONValidFunc` |
+| `WithMarshalFunc` | `func WithMarshalFunc(marshal func(any) ([]byte, error)) EncodeOption` | WithMarshalFunc sets the marshal provider used when wrapping structs for serialization. | facade | `ExampleWithMarshalFunc` |
+| `WithParseBoolFunc` | `func WithParseBoolFunc(parse func(string) (bool, error)) EncodeOption` | WithParseBoolFunc sets the bool parser stored in the JSON config. | facade | `ExampleWithParseBoolFunc` |
+| `WithParseConfig` | `func WithParseConfig(cfg *Config) ParseOption` | WithParseConfig sets the JSON config used by parsing helpers. | facade | `ExampleWithParseConfig` |
+| `WithParseDecoderFactory` | `func WithParseDecoderFactory(factory func(io.Reader) *json.Decoder) ParseOption` | WithParseDecoderFactory sets a per-call decoder factory for parsing helpers. | facade | `ExampleWithParseDecoderFactory` |
+| `WithParseFloatFunc` | `func WithParseFloatFunc(parse func(string, int) (float64, error)) EncodeOption` | WithParseFloatFunc sets the float parser stored in the JSON config. | facade | `ExampleWithParseFloatFunc` |
+| `WithParseIntFunc` | `func WithParseIntFunc(parse func(string, int, int) (int64, error)) EncodeOption` | WithParseIntFunc sets the integer parser stored in the JSON config. | facade | `ExampleWithParseIntFunc` |
+| `WithParseUnmarshalFunc` | `func WithParseUnmarshalFunc(unmarshal func([]byte, any) error) ParseOption` | WithParseUnmarshalFunc sets a per-call unmarshal provider for parsing helpers. | facade | `ExampleWithParseUnmarshalFunc` |
+| `WithSprintFunc` | `func WithSprintFunc(sprint func(any) string) EncodeOption` | WithSprintFunc sets the fallback scalar formatter stored in the JSON config. | facade | `ExampleWithSprintFunc` |
+| `WithUnmarshalFunc` | `func WithUnmarshalFunc(unmarshal func([]byte, any) error) EncodeOption` | WithUnmarshalFunc sets the unmarshal provider stored in the JSON config. | facade | `ExampleWithUnmarshalFunc` |
+| `WrapJSONError` | `func WrapJSONError(cause error, format string, args ...any) *Error` | WrapJSONError wraps a lower-level error as a JSON error. | facade | `ExampleWrapJSONError` |
 | `XMLToJSON` | `func XMLToJSON(xmlStr string) (*Object, error)` | XMLToJSON 将 XML 字符串解析为 JSONObject。 | facade | `ExampleXMLToJSON` |
-| `XMLToJSONWithOptions` | `func XMLToJSONWithOptions(xmlStr string, opts ...xml.ParseOption) (*Object, error)` | XMLToJSONWithOptions parses XML text into an ordered JSON object with XML parser options. | facade | — |
+| `XMLToJSONWithOptions` | `func XMLToJSONWithOptions(xmlStr string, opts ...xml.ParseOption) (*Object, error)` | XMLToJSONWithOptions parses XML text into an ordered JSON object with XML parser options. | facade | `ExampleXMLToJSONWithOptions` |
 
 ### vjwt
 
@@ -1708,7 +1708,7 @@ Import path: `github.com/imajinyun/go-knifer/vnet`
 
 Package vnet provides public APIs for network, IP, URL-encoding, TLS, and multipart utilities.
 
-Quality: 166 functions · 8 with examples · 4.8% example coverage · synopsis sources: facade=53, internal=113, empty=0
+Quality: 166 functions · 47 with examples · 28.3% example coverage · synopsis sources: facade=53, internal=113, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -1717,25 +1717,25 @@ Quality: 166 functions · 8 with examples · 4.8% example coverage · synopsis s
 | `AddRootCAReader` | `func AddRootCAReader(b *TLSConfigBuilder, r io.Reader) error` | AddRootCAReader appends PEM certificates from r to RootCAs. | internal | — |
 | `AddRootCAReaderWithOptions` | `func AddRootCAReaderWithOptions(b *TLSConfigBuilder, r io.Reader, opts ...TLSFileOption) error` | AddRootCAReaderWithOptions appends PEM certificates from r to RootCAs using options. | internal | — |
 | `BeginIP` | `func BeginIP(ip string, maskBit int) (string, error)` | BeginIP returns the first IPv4 address in an ip/maskBit block. | internal | `ExampleBeginIP` |
-| `BeginIPLong` | `func BeginIPLong(ip string, maskBit int) (uint32, error)` | BeginIPLong returns the first IPv4 value in an ip/maskBit block. | internal | — |
+| `BeginIPLong` | `func BeginIPLong(ip string, maskBit int) (uint32, error)` | BeginIPLong returns the first IPv4 value in an ip/maskBit block. | internal | `ExampleBeginIPLong` |
 | `BeginIPLongWithOptions` | `func BeginIPLongWithOptions(ip string, maskBit int, opts ...IPOption) (uint32, error)` | BeginIPLongWithOptions returns the first IPv4 value in an ip/maskBit block using custom providers. | internal | — |
 | `BeginIPWithOptions` | `func BeginIPWithOptions(ip string, maskBit int, opts ...IPOption) (string, error)` | BeginIPWithOptions returns the first IPv4 address in an ip/maskBit block using custom providers. | internal | — |
-| `BigIntToIPv6` | `func BigIntToIPv6(n *big.Int) (string, error)` | BigIntToIPv6 converts a big integer in the IPv6 address range to a string. | internal | — |
+| `BigIntToIPv6` | `func BigIntToIPv6(n *big.Int) (string, error)` | BigIntToIPv6 converts a big integer in the IPv6 address range to a string. | internal | `ExampleBigIntToIPv6` |
 | `BuildInetSocketAddress` | `func BuildInetSocketAddress(host string, defaultPort int) (*net.TCPAddr, error)` | BuildInetSocketAddress resolves host into a TCP address using defaultPort when the host omits a port. | facade | — |
-| `BuildInetSocketAddressWithOptions` | `func BuildInetSocketAddressWithOptions(host string, defaultPort int, opts ...AddressOption) (*net.TCPAddr, error)` | BuildInetSocketAddressWithOptions builds a TCP address with custom address resolution options. | internal | — |
+| `BuildInetSocketAddressWithOptions` | `func BuildInetSocketAddressWithOptions(host string, defaultPort int, opts ...AddressOption) (*net.TCPAddr, error)` | BuildInetSocketAddressWithOptions builds a TCP address with custom address resolution options. | internal | `ExampleBuildInetSocketAddressWithOptions` |
 | `Connect` | `func Connect(hostname string, port int, timeout time.Duration) (net.Conn, error)` | Connect opens a TCP connection to host:port. | facade | — |
 | `ConnectWithOptions` | `func ConnectWithOptions(hostname string, port int, opts ...ConnectOption) (net.Conn, error)` | ConnectWithOptions opens a connection to host:port using custom connection options. | facade | — |
-| `CountByIPRange` | `func CountByIPRange(fromIP string, toIP string) (uint64, error)` | CountByIPRange returns the inclusive number of IPv4 addresses in a range. | internal | — |
+| `CountByIPRange` | `func CountByIPRange(fromIP string, toIP string) (uint64, error)` | CountByIPRange returns the inclusive number of IPv4 addresses in a range. | internal | `ExampleCountByIPRange` |
 | `CountByIPRangeWithOptions` | `func CountByIPRangeWithOptions(fromIP string, toIP string, opts ...IPOption) (uint64, error)` | CountByIPRangeWithOptions returns the inclusive number of IPv4 addresses in a range using custom providers. | internal | — |
-| `CountByMaskBit` | `func CountByMaskBit(maskBit int, isAll bool) (uint64, error)` | CountByMaskBit returns the number of addresses represented by maskBit. | internal | — |
+| `CountByMaskBit` | `func CountByMaskBit(maskBit int, isAll bool) (uint64, error)` | CountByMaskBit returns the number of addresses represented by maskBit. | internal | `ExampleCountByMaskBit` |
 | `CreateAddress` | `func CreateAddress(host string, port int) *net.TCPAddr` | CreateAddress builds a TCP address from host and port. | internal | `ExampleCreateAddress` |
-| `CreateAddressWithOptions` | `func CreateAddressWithOptions(host string, port int, opts ...AddressOption) (*net.TCPAddr, error)` | CreateAddressWithOptions builds a TCP address from host and port with custom address resolution options. | internal | — |
-| `CreateTLSConfig` | `func CreateTLSConfig() *tls.Config` | CreateTLSConfig creates a TLS config using TLS 1.2 as the minimum version. | internal | — |
-| `EndIP` | `func EndIP(ip string, maskBit int) (string, error)` | EndIP returns the last IPv4 address in an ip/maskBit block. | internal | — |
-| `EndIPLong` | `func EndIPLong(ip string, maskBit int) (uint32, error)` | EndIPLong returns the last IPv4 value in an ip/maskBit block. | internal | — |
+| `CreateAddressWithOptions` | `func CreateAddressWithOptions(host string, port int, opts ...AddressOption) (*net.TCPAddr, error)` | CreateAddressWithOptions builds a TCP address from host and port with custom address resolution options. | internal | `ExampleCreateAddressWithOptions` |
+| `CreateTLSConfig` | `func CreateTLSConfig() *tls.Config` | CreateTLSConfig creates a TLS config using TLS 1.2 as the minimum version. | internal | `ExampleCreateTLSConfig` |
+| `EndIP` | `func EndIP(ip string, maskBit int) (string, error)` | EndIP returns the last IPv4 address in an ip/maskBit block. | internal | `ExampleEndIP` |
+| `EndIPLong` | `func EndIPLong(ip string, maskBit int) (uint32, error)` | EndIPLong returns the last IPv4 value in an ip/maskBit block. | internal | `ExampleEndIPLong` |
 | `EndIPLongWithOptions` | `func EndIPLongWithOptions(ip string, maskBit int, opts ...IPOption) (uint32, error)` | EndIPLongWithOptions returns the last IPv4 value in an ip/maskBit block using custom providers. | internal | — |
 | `EndIPWithOptions` | `func EndIPWithOptions(ip string, maskBit int, opts ...IPOption) (string, error)` | EndIPWithOptions returns the last IPv4 address in an ip/maskBit block using custom providers. | internal | — |
-| `FormatIPBlock` | `func FormatIPBlock(ip string, mask string) (string, error)` | FormatIPBlock formats ip and mask as ip/maskBit. | internal | — |
+| `FormatIPBlock` | `func FormatIPBlock(ip string, mask string) (string, error)` | FormatIPBlock formats ip and mask as ip/maskBit. | internal | `ExampleFormatIPBlock` |
 | `FormatIPBlockWithOptions` | `func FormatIPBlockWithOptions(ip string, mask string, opts ...IPOption) (string, error)` | FormatIPBlockWithOptions formats ip and mask as ip/maskBit using custom providers. | internal | — |
 | `GetDNSInfo` | `func GetDNSInfo(hostName string, attrNames ...string) ([]string, error)` | GetDNSInfo returns DNS records for hostName, optionally limited to attrNames record types. | facade | — |
 | `GetDNSInfoWithOptions` | `func GetDNSInfoWithOptions(hostName string, opts ...ResolveOption) ([]string, error)` | GetDNSInfoWithOptions looks up DNS records with custom resolver options. | internal | — |
@@ -1746,7 +1746,7 @@ Quality: 166 functions · 8 with examples · 4.8% example coverage · synopsis s
 | `GetLocalHardwareAddress` | `func GetLocalHardwareAddress() net.HardwareAddr` | GetLocalHardwareAddress returns the hardware address for the preferred local network interface. | facade | — |
 | `GetLocalHardwareAddressWithOptions` | `func GetLocalHardwareAddressWithOptions(opts ...InterfaceOption) net.HardwareAddr` | GetLocalHardwareAddressWithOptions returns the first non-empty local hardware address using custom providers. | internal | — |
 | `GetLocalHostName` | `func GetLocalHostName() string` | GetLocalHostName returns the local host name reported by the operating system. | facade | — |
-| `GetLocalHostNameWithOptions` | `func GetLocalHostNameWithOptions(opts ...InterfaceOption) string` | GetLocalHostNameWithOptions returns the OS host name using custom providers. | internal | — |
+| `GetLocalHostNameWithOptions` | `func GetLocalHostNameWithOptions(opts ...InterfaceOption) string` | GetLocalHostNameWithOptions returns the OS host name using custom providers. | internal | `ExampleGetLocalHostNameWithOptions` |
 | `GetLocalMACAddress` | `func GetLocalMACAddress(separator ...string) string` | GetLocalMACAddress returns the local hardware address formatted with an optional separator. | facade | — |
 | `GetLocalMACAddressWithOptions` | `func GetLocalMACAddressWithOptions(opts []InterfaceOption, separator ...string) string` | GetLocalMACAddressWithOptions returns the first non-empty local hardware address using custom providers. | internal | — |
 | `GetLocalhost` | `func GetLocalhost() net.IP` | GetLocalhost returns the preferred local host IP address. | facade | — |
@@ -1755,11 +1755,11 @@ Quality: 166 functions · 8 with examples · 4.8% example coverage · synopsis s
 | `GetLocalhostWithOptions` | `func GetLocalhostWithOptions(opts ...InterfaceOption) net.IP` | GetLocalhostWithOptions returns a preferred local host IP using custom providers. | internal | — |
 | `GetMACAddress` | `func GetMACAddress(inetAddress net.IP, separator ...string) string` | GetMACAddress returns the hardware address for inetAddress formatted with an optional separator. | facade | — |
 | `GetMACAddressWithOptions` | `func GetMACAddressWithOptions(inetAddress net.IP, opts []InterfaceOption, separator ...string) string` | GetMACAddressWithOptions returns the hardware address of the interface owning inetAddress using custom providers. | internal | — |
-| `GetMultistageReverseProxyIP` | `func GetMultistageReverseProxyIP(ip string) string` | GetMultistageReverseProxyIP returns the first non-unknown IP in a comma-separated proxy header. | internal | — |
+| `GetMultistageReverseProxyIP` | `func GetMultistageReverseProxyIP(ip string) string` | GetMultistageReverseProxyIP returns the first non-unknown IP in a comma-separated proxy header. | internal | `ExampleGetMultistageReverseProxyIP` |
 | `GetNetworkInterface` | `func GetNetworkInterface(name string) (*net.Interface, error)` | GetNetworkInterface returns the network interface with the given name. | facade | — |
 | `GetNetworkInterfaceWithOptions` | `func GetNetworkInterfaceWithOptions(name string, opts ...InterfaceOption) (*net.Interface, error)` | GetNetworkInterfaceWithOptions returns a network interface by name using custom providers. | internal | — |
 | `GetNetworkInterfaces` | `func GetNetworkInterfaces() ([]net.Interface, error)` | GetNetworkInterfaces returns all network interfaces visible to the local host. | facade | — |
-| `GetNetworkInterfacesWithOptions` | `func GetNetworkInterfacesWithOptions(opts ...InterfaceOption) ([]net.Interface, error)` | GetNetworkInterfacesWithOptions returns all network interfaces using custom providers. | internal | — |
+| `GetNetworkInterfacesWithOptions` | `func GetNetworkInterfacesWithOptions(opts ...InterfaceOption) ([]net.Interface, error)` | GetNetworkInterfacesWithOptions returns all network interfaces using custom providers. | internal | `ExampleGetNetworkInterfacesWithOptions` |
 | `GetRemoteAddress` | `func GetRemoteAddress(conn net.Conn) string` | GetRemoteAddress returns conn's remote address string. | internal | — |
 | `GetUsableLocalPort` | `func GetUsableLocalPort() (int, error)` | GetUsableLocalPort returns an available local port. | facade | — |
 | `GetUsableLocalPortFrom` | `func GetUsableLocalPortFrom(minPort int) (int, error)` | GetUsableLocalPortFrom returns an available local port greater than or equal to minPort. | facade | — |
@@ -1769,73 +1769,73 @@ Quality: 166 functions · 8 with examples · 4.8% example coverage · synopsis s
 | `GetUsableLocalPortWithOptions` | `func GetUsableLocalPortWithOptions(opts ...PortOption) (int, error)` | GetUsableLocalPortWithOptions returns an available local port in the default range with custom probe options. | internal | — |
 | `GetUsableLocalPorts` | `func GetUsableLocalPorts(numRequested int, minPort int, maxPort int) ([]int, error)` | GetUsableLocalPorts returns up to numRequested available local ports within the inclusive range. | facade | — |
 | `GetUsableLocalPortsWithOptions` | `func GetUsableLocalPortsWithOptions(numRequested int, minPort int, maxPort int, opts ...PortOption) ([]int, error)` | GetUsableLocalPortsWithOptions returns up to numRequested available ports in [minPort, maxPort] with custom probe options. | internal | — |
-| `HideIPPart` | `func HideIPPart(ip string) string` | HideIPPart hides the last IPv4 segment. | internal | — |
-| `HideIPPartLong` | `func HideIPPartLong(ip uint32) string` | HideIPPartLong hides the last segment of an IPv4 integer. | internal | — |
-| `IDNToASCII` | `func IDNToASCII(unicode string) (string, error)` | IDNToASCII converts a Unicode domain name to ASCII. | internal | — |
+| `HideIPPart` | `func HideIPPart(ip string) string` | HideIPPart hides the last IPv4 segment. | internal | `ExampleHideIPPart` |
+| `HideIPPartLong` | `func HideIPPartLong(ip uint32) string` | HideIPPartLong hides the last segment of an IPv4 integer. | internal | `ExampleHideIPPartLong` |
+| `IDNToASCII` | `func IDNToASCII(unicode string) (string, error)` | IDNToASCII converts a Unicode domain name to ASCII. | internal | `ExampleIDNToASCII` |
 | `IPv4ToLong` | `func IPv4ToLong(strIP string) (uint32, error)` | IPv4ToLong converts a dotted IPv4 string to uint32. | internal | `ExampleIPv4ToLong` |
-| `IPv4ToLongDefault` | `func IPv4ToLongDefault(strIP string, defaultValue uint32) uint32` | IPv4ToLongDefault converts a dotted IPv4 string to uint32, returning defaultValue when invalid. | internal | — |
+| `IPv4ToLongDefault` | `func IPv4ToLongDefault(strIP string, defaultValue uint32) uint32` | IPv4ToLongDefault converts a dotted IPv4 string to uint32, returning defaultValue when invalid. | internal | `ExampleIPv4ToLongDefault` |
 | `IPv4ToLongDefaultWithOptions` | `func IPv4ToLongDefaultWithOptions(strIP string, defaultValue uint32, opts ...IPOption) uint32` | IPv4ToLongDefaultWithOptions converts a dotted IPv4 string to uint32 using custom providers, returning defaultValue when invalid. | internal | — |
 | `IPv4ToLongWithOptions` | `func IPv4ToLongWithOptions(strIP string, opts ...IPOption) (uint32, error)` | IPv4ToLongWithOptions converts a dotted IPv4 string to uint32 using custom providers. | internal | — |
-| `IPv6ToBigInt` | `func IPv6ToBigInt(ipv6Str string) (*big.Int, error)` | IPv6ToBigInt converts an IPv6 string to a big integer. | internal | — |
+| `IPv6ToBigInt` | `func IPv6ToBigInt(ipv6Str string) (*big.Int, error)` | IPv6ToBigInt converts an IPv6 string to a big integer. | internal | `ExampleIPv6ToBigInt` |
 | `IPv6ToBigIntWithOptions` | `func IPv6ToBigIntWithOptions(ipv6Str string, opts ...IPOption) (*big.Int, error)` | IPv6ToBigIntWithOptions converts an IPv6 string to a big integer using custom providers. | internal | — |
 | `IsConnected` | `func IsConnected(conn net.Conn) bool` | IsConnected reports whether conn appears open. | internal | — |
-| `IsIP` | `func IsIP(s string) bool` | IsIP reports whether s is an IPv4 or IPv6 address. | internal | — |
+| `IsIP` | `func IsIP(s string) bool` | IsIP reports whether s is an IPv4 or IPv6 address. | internal | `ExampleIsIP` |
 | `IsIPWithOptions` | `func IsIPWithOptions(s string, opts ...IPOption) bool` | IsIPWithOptions reports whether s is an IPv4 or IPv6 address using custom providers. | internal | — |
-| `IsIPv4` | `func IsIPv4(s string) bool` | IsIPv4 reports whether s is an IPv4 address. | internal | — |
+| `IsIPv4` | `func IsIPv4(s string) bool` | IsIPv4 reports whether s is an IPv4 address. | internal | `ExampleIsIPv4` |
 | `IsIPv4WithOptions` | `func IsIPv4WithOptions(s string, opts ...IPOption) bool` | IsIPv4WithOptions reports whether s is an IPv4 address using custom providers. | internal | — |
-| `IsIPv6` | `func IsIPv6(s string) bool` | IsIPv6 reports whether s is an IPv6 address. | internal | — |
+| `IsIPv6` | `func IsIPv6(s string) bool` | IsIPv6 reports whether s is an IPv6 address. | internal | `ExampleIsIPv6` |
 | `IsIPv6WithOptions` | `func IsIPv6WithOptions(s string, opts ...IPOption) bool` | IsIPv6WithOptions reports whether s is an IPv6 address using custom providers. | internal | — |
 | `IsInRange` | `func IsInRange(ip string, cidr string) bool` | IsInRange reports whether ip belongs to cidr. | internal | `ExampleIsInRange` |
-| `IsInRangeWithOptions` | `func IsInRangeWithOptions(ip string, cidr string, opts ...IPOption) bool` | IsInRangeWithOptions reports whether ip belongs to cidr using custom providers. | internal | — |
-| `IsInnerIP` | `func IsInnerIP(ipAddress string) bool` | IsInnerIP reports whether ipAddress belongs to common private IPv4 ranges. | internal | — |
+| `IsInRangeWithOptions` | `func IsInRangeWithOptions(ip string, cidr string, opts ...IPOption) bool` | IsInRangeWithOptions reports whether ip belongs to cidr using custom providers. | internal | `ExampleIsInRangeWithOptions` |
+| `IsInnerIP` | `func IsInnerIP(ipAddress string) bool` | IsInnerIP reports whether ipAddress belongs to common private IPv4 ranges. | internal | `ExampleIsInnerIP` |
 | `IsInnerIPWithOptions` | `func IsInnerIPWithOptions(ipAddress string, opts ...IPOption) bool` | IsInnerIPWithOptions reports whether ipAddress belongs to common private IPv4 ranges using custom providers. | internal | — |
-| `IsMaskBitValid` | `func IsMaskBitValid(maskBit int) bool` | IsMaskBitValid reports whether maskBit is in [0, 32]. | internal | — |
-| `IsMaskValid` | `func IsMaskValid(mask string) bool` | IsMaskValid reports whether mask is a contiguous IPv4 mask. | internal | — |
+| `IsMaskBitValid` | `func IsMaskBitValid(maskBit int) bool` | IsMaskBitValid reports whether maskBit is in [0, 32]. | internal | `ExampleIsMaskBitValid` |
+| `IsMaskValid` | `func IsMaskValid(mask string) bool` | IsMaskValid reports whether mask is a contiguous IPv4 mask. | internal | `ExampleIsMaskValid` |
 | `IsMaskValidWithOptions` | `func IsMaskValidWithOptions(mask string, opts ...IPOption) bool` | IsMaskValidWithOptions reports whether mask is a contiguous IPv4 mask using custom providers. | internal | — |
 | `IsOpen` | `func IsOpen(address *net.TCPAddr, timeout time.Duration) bool` | IsOpen reports whether address can be opened within timeout. | facade | — |
 | `IsOpenWithOptions` | `func IsOpenWithOptions(address *net.TCPAddr, opts ...ConnectOption) bool` | IsOpenWithOptions reports whether address can be opened with custom connection options. | facade | — |
-| `IsUnknown` | `func IsUnknown(checkString string) bool` | IsUnknown reports whether checkString is empty or equals unknown case-insensitively. | internal | — |
+| `IsUnknown` | `func IsUnknown(checkString string) bool` | IsUnknown reports whether checkString is empty or equals unknown case-insensitively. | internal | `ExampleIsUnknown` |
 | `IsUsableLocalPort` | `func IsUsableLocalPort(port int) bool` | IsUsableLocalPort reports whether port can be listened on locally. | facade | — |
 | `IsUsableLocalPortWithOptions` | `func IsUsableLocalPortWithOptions(port int, opts ...PortOption) bool` | IsUsableLocalPortWithOptions reports whether port can be bound locally with custom probe options. | internal | — |
-| `IsValidPort` | `func IsValidPort(port int) bool` | IsValidPort reports whether port is a valid TCP/UDP port number. | internal | — |
-| `ListIPCIDR` | `func ListIPCIDR(ip string, maskBit int, isAll bool) ([]string, error)` | ListIPCIDR expands an ip/maskBit block into IPv4 strings. | internal | — |
+| `IsValidPort` | `func IsValidPort(port int) bool` | IsValidPort reports whether port is a valid TCP/UDP port number. | internal | `ExampleIsValidPort` |
+| `ListIPCIDR` | `func ListIPCIDR(ip string, maskBit int, isAll bool) ([]string, error)` | ListIPCIDR expands an ip/maskBit block into IPv4 strings. | internal | `ExampleListIPCIDR` |
 | `ListIPCIDRWithOptions` | `func ListIPCIDRWithOptions(ip string, maskBit int, isAll bool, opts ...IPOption) ([]string, error)` | ListIPCIDRWithOptions expands an ip/maskBit block into IPv4 strings using custom providers. | internal | — |
 | `ListIPRange` | `func ListIPRange(fromIP string, toIP string) ([]string, error)` | ListIPRange expands an inclusive IPv4 range into strings. | internal | `ExampleListIPRange` |
 | `ListIPRangeWithOptions` | `func ListIPRangeWithOptions(fromIP string, toIP string, opts ...IPOption) ([]string, error)` | ListIPRangeWithOptions expands an inclusive IPv4 range into strings using custom providers. | internal | — |
-| `ListIPs` | `func ListIPs(ipRange string, isAll bool) ([]string, error)` | ListIPs expands an IPv4 range expression: single IP, from-to, or ip/maskBit. | internal | — |
+| `ListIPs` | `func ListIPs(ipRange string, isAll bool) ([]string, error)` | ListIPs expands an IPv4 range expression: single IP, from-to, or ip/maskBit. | internal | `ExampleListIPs` |
 | `ListIPsWithOptions` | `func ListIPsWithOptions(ipRange string, isAll bool, opts ...IPOption) ([]string, error)` | ListIPsWithOptions expands an IPv4 range expression using custom providers: single IP, from-to, or ip/maskBit. | internal | — |
 | `LocalAddressList` | `func LocalAddressList(addressFilter func(net.IP) bool) []net.IP` | LocalAddressList returns local IP addresses accepted by addressFilter. | facade | — |
 | `LocalAddressListByInterface` | `func LocalAddressListByInterface(interfaceFilter func(net.Interface) bool, addressFilter func(net.IP) bool) []net.IP` | LocalAddressListByInterface returns local IP addresses whose interface and address pass the provided filters. | facade | — |
 | `LocalAddressListByInterfaceWithOptions` | `func LocalAddressListByInterfaceWithOptions(interfaceFilter func(net.Interface) bool, addressFilter func(net.IP) bool, opts ...InterfaceOption) []net.IP` | LocalAddressListByInterfaceWithOptions returns local IP addresses matching interface and address filters using custom providers. | internal | — |
 | `LocalAddressListWithOptions` | `func LocalAddressListWithOptions(addressFilter func(net.IP) bool, opts ...InterfaceOption) []net.IP` | LocalAddressListWithOptions returns local IP addresses matching addressFilter using custom providers. | internal | — |
 | `LocalIPs` | `func LocalIPs() []string` | LocalIPs returns local IP addresses as strings. | facade | — |
-| `LocalIPsWithOptions` | `func LocalIPsWithOptions(opts ...InterfaceOption) []string` | LocalIPsWithOptions returns all local IP addresses using custom providers. | internal | — |
+| `LocalIPsWithOptions` | `func LocalIPsWithOptions(opts ...InterfaceOption) []string` | LocalIPsWithOptions returns all local IP addresses using custom providers. | internal | `ExampleLocalIPsWithOptions` |
 | `LocalIPv4s` | `func LocalIPv4s() []string` | LocalIPv4s returns local IPv4 addresses as strings. | facade | — |
 | `LocalIPv4sWithOptions` | `func LocalIPv4sWithOptions(opts ...InterfaceOption) []string` | LocalIPv4sWithOptions returns local IPv4 addresses using custom providers. | internal | — |
 | `LocalIPv6s` | `func LocalIPv6s() []string` | LocalIPv6s returns local IPv6 addresses as strings. | facade | — |
 | `LocalIPv6sWithOptions` | `func LocalIPv6sWithOptions(opts ...InterfaceOption) []string` | LocalIPv6sWithOptions returns local IPv6 addresses using custom providers. | internal | — |
-| `LongToIPv4` | `func LongToIPv4(longIP uint32) string` | LongToIPv4 converts a uint32 IPv4 value to dotted string form. | internal | — |
+| `LongToIPv4` | `func LongToIPv4(longIP uint32) string` | LongToIPv4 converts a uint32 IPv4 value to dotted string form. | internal | `ExampleLongToIPv4` |
 | `MaskBitByMask` | `func MaskBitByMask(mask string) (int, error)` | MaskBitByMask converts a dotted IPv4 mask to mask bits. | internal | `ExampleMaskBitByMask` |
 | `MaskBitByMaskWithOptions` | `func MaskBitByMaskWithOptions(mask string, opts ...IPOption) (int, error)` | MaskBitByMaskWithOptions converts a dotted IPv4 mask to mask bits using custom providers. | internal | — |
-| `MaskByIPRange` | `func MaskByIPRange(fromIP string, toIP string) (string, error)` | MaskByIPRange returns the common IPv4 mask for an inclusive range. | internal | — |
+| `MaskByIPRange` | `func MaskByIPRange(fromIP string, toIP string) (string, error)` | MaskByIPRange returns the common IPv4 mask for an inclusive range. | internal | `ExampleMaskByIPRange` |
 | `MaskByIPRangeWithOptions` | `func MaskByIPRangeWithOptions(fromIP string, toIP string, opts ...IPOption) (string, error)` | MaskByIPRangeWithOptions returns the common IPv4 mask for an inclusive range using custom providers. | internal | — |
-| `MaskByMaskBit` | `func MaskByMaskBit(maskBit int) (string, error)` | MaskByMaskBit converts mask bits to a dotted IPv4 mask. | internal | — |
+| `MaskByMaskBit` | `func MaskByMaskBit(maskBit int) (string, error)` | MaskByMaskBit converts mask bits to a dotted IPv4 mask. | internal | `ExampleMaskByMaskBit` |
 | `MatchesWildcard` | `func MatchesWildcard(wildcard string, ipAddress string) bool` | MatchesWildcard reports whether ipAddress matches a wildcard such as 192.168.*.*. | internal | `ExampleMatchesWildcard` |
-| `MatchesWildcardWithOptions` | `func MatchesWildcardWithOptions(wildcard string, ipAddress string, opts ...WildcardOption) bool` | MatchesWildcardWithOptions reports whether ipAddress matches a wildcard with options. | internal | — |
+| `MatchesWildcardWithOptions` | `func MatchesWildcardWithOptions(wildcard string, ipAddress string, opts ...WildcardOption) bool` | MatchesWildcardWithOptions reports whether ipAddress matches a wildcard with options. | internal | `ExampleMatchesWildcardWithOptions` |
 | `NetCat` | `func NetCat(host string, port int, data []byte, timeout time.Duration) error` | NetCat sends data to host:port over TCP. | facade | — |
 | `NetCatWithOptions` | `func NetCatWithOptions(host string, port int, data []byte, opts ...ConnectOption) error` | NetCatWithOptions sends data to host:port using custom connection options. | facade | — |
-| `NewCertPool` | `func NewCertPool() *x509.CertPool` | NewCertPool returns a new empty certificate pool. | facade | — |
+| `NewCertPool` | `func NewCertPool() *x509.CertPool` | NewCertPool returns a new empty certificate pool. | facade | `ExampleNewCertPool` |
 | `NewLocalPortGenerator` | `func NewLocalPortGenerator(beginPort int) *LocalPortGenerator` | NewLocalPortGenerator returns a generator that scans local ports starting at beginPort. | facade | — |
 | `NewLocalPortGeneratorWithOptions` | `func NewLocalPortGeneratorWithOptions(beginPort int, opts ...PortOption) *LocalPortGenerator` | NewLocalPortGeneratorWithOptions creates a local port generator with custom probe options. | internal | — |
 | `NewTLSConfigBuilder` | `func NewTLSConfigBuilder() *TLSConfigBuilder` | NewTLSConfigBuilder creates a TLS config builder. | internal | — |
-| `NewUploadSetting` | `func NewUploadSetting() UploadSetting` | NewUploadSetting returns a default upload setting. | facade | — |
+| `NewUploadSetting` | `func NewUploadSetting() UploadSetting` | NewUploadSetting returns a default upload setting. | facade | `ExampleNewUploadSetting` |
 | `ParseCookies` | `func ParseCookies(cookieStr string) []*http.Cookie` | ParseCookies parses a Cookie header value. | internal | `ExampleParseCookies` |
-| `ParseMultipartForm` | `func ParseMultipartForm(r *http.Request, setting UploadSetting) (*MultipartFormData, error)` | ParseMultipartForm parses multipart/form-data from an HTTP request. | facade | — |
+| `ParseMultipartForm` | `func ParseMultipartForm(r *http.Request, setting UploadSetting) (*MultipartFormData, error)` | ParseMultipartForm parses multipart/form-data from an HTTP request. | facade | `ExampleParseMultipartForm` |
 | `Ping` | `func Ping(ip string, timeout time.Duration) bool` | Ping checks whether an IP or host is reachable by opening a TCP connection to common ports. | facade | — |
 | `PingWithOptions` | `func PingWithOptions(ip string, opts ...PingOption) bool` | PingWithOptions checks whether an IP or host is reachable with custom probe options. | facade | — |
 | `SaveUploadedFile` | `func SaveUploadedFile(file *multipart.FileHeader, destPath string, opts ...UploadSaveOption) error` | SaveUploadedFile saves file to destPath. | facade | — |
-| `TLSVersion` | `func TLSVersion(protocol string) uint16` | TLSVersion maps a protocol label to crypto/tls version constants. | internal | — |
-| `ToIPList` | `func ToIPList(addressList []net.IP) []string` | ToIPList converts IP addresses to strings. | internal | — |
+| `TLSVersion` | `func TLSVersion(protocol string) uint16` | TLSVersion maps a protocol label to crypto/tls version constants. | internal | `ExampleTLSVersion` |
+| `ToIPList` | `func ToIPList(addressList []net.IP) []string` | ToIPList converts IP addresses to strings. | internal | `ExampleToIPList` |
 | `UploadFileContentType` | `func UploadFileContentType(file *multipart.FileHeader) string` | UploadFileContentType returns the uploaded file content type header. | facade | — |
 | `UploadFileName` | `func UploadFileName(file *multipart.FileHeader) string` | UploadFileName returns the uploaded file name. | facade | — |
 | `UploadFileSize` | `func UploadFileSize(file *multipart.FileHeader) int64` | UploadFileSize returns the uploaded file size. | facade | — |
