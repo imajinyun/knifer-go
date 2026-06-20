@@ -36,6 +36,25 @@ func TestSentinelErrors(t *testing.T) {
 	}
 }
 
+func TestValidateAESKey(t *testing.T) {
+	for _, size := range []int{16, 24, 32} {
+		if err := ValidateAESKey(make([]byte, size)); err != nil {
+			t.Fatalf("ValidateAESKey(%d) = %v", size, err)
+		}
+	}
+	for _, size := range []int{0, 15, 17, 33} {
+		if err := ValidateAESKey(make([]byte, size)); !errors.Is(err, ErrInvalidKey) || !errors.Is(err, knifer.ErrCodeInvalidInput) {
+			t.Fatalf("ValidateAESKey(%d) = %v, want invalid key/input", size, err)
+		}
+	}
+}
+
+func TestSentinelIsRejectsUnrelatedErrors(t *testing.T) {
+	if errors.Is(ErrInvalidKey, errors.New("invalid key")) {
+		t.Fatal("ErrInvalidKey should not match unrelated error with same message")
+	}
+}
+
 func TestValidateAESIV(t *testing.T) {
 	if err := ValidateAESIV(make([]byte, 16)); err != nil {
 		t.Fatalf("ValidateAESIV(16) = %v", err)

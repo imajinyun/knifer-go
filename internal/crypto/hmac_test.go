@@ -1,6 +1,7 @@
 package crypto
 
 import (
+	"crypto/hmac"
 	"crypto/sha256"
 	"testing"
 )
@@ -24,5 +25,19 @@ func TestHMAC(t *testing.T) {
 	}
 	if !ConstantTimeEqual([]byte("same"), []byte("same")) || ConstantTimeEqual([]byte("same"), []byte("diff")) {
 		t.Fatal("ConstantTimeEqual() returned unexpected result")
+	}
+}
+
+func TestHMACNilHashFallbacks(t *testing.T) {
+	key := []byte("key")
+	data := []byte("hello")
+	if got, want := HMACBytes(nil, key, data), HMACBytes(sha256.New, key, data); !hmac.Equal(got, want) {
+		t.Fatalf("HMACBytes nil fallback = %x, want %x", got, want)
+	}
+	if got, want := HMACHex(nil, key, data), HMACHex(sha256.New, key, data); got != want {
+		t.Fatalf("HMACHex nil fallback = %s, want %s", got, want)
+	}
+	if ConstantTimeEqual([]byte("same"), []byte("same!")) {
+		t.Fatal("ConstantTimeEqual should reject different lengths")
 	}
 }
