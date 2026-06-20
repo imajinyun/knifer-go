@@ -22,3 +22,12 @@ func TestTotalThreadCount(t *testing.T) {
 		t.Fatalf("GetTotalThreadCountWithOptions = %d", got)
 	}
 }
+
+func TestProcessNilOptionsFallBackToDefaults(t *testing.T) {
+	if got := GetCurrentPIDWithOptions(nil, WithPIDFunc(nil)); got != os.Getpid() {
+		t.Fatalf("GetCurrentPIDWithOptions nil fallback = %d", got)
+	}
+	if got := GetTotalThreadCountWithOptions(nil, WithProcessNumGoroutineFunc(nil)); got <= 0 {
+		t.Fatalf("GetTotalThreadCountWithOptions nil fallback = %d", got)
+	}
+}

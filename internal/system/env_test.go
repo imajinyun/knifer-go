@@ -80,4 +80,26 @@ func TestGetEnvWithOptions(t *testing.T) {
 	})); !got || !boolCalled {
 		t.Fatalf("GetBoolWithOptions = %v", got)
 	}
+	if got := GetBoolWithOptions("BOOL", true, WithEnvLookupFunc(lookup), WithEnvBoolParser(func(string) (bool, error) {
+		return false, errors.New("invalid bool")
+	})); !got {
+		t.Fatalf("GetBoolWithOptions fallback = %v", got)
+	}
+}
+
+func TestEnvNilOptionsFallBackToDefaults(t *testing.T) {
+	t.Setenv("GKSYSTEM_NIL_OPTION_INT", "8")
+	t.Setenv("GKSYSTEM_NIL_OPTION_BOOL", "true")
+	if got := GetWithOptions("GKSYSTEM_NIL_OPTION_INT", true, nil, WithEnvLookupFunc(nil), WithEnvWarningWriter(nil)); got != "8" {
+		t.Fatalf("GetWithOptions nil fallback = %q", got)
+	}
+	if got := GetIntWithOptions("GKSYSTEM_NIL_OPTION_INT", 0, WithEnvIntParser(nil)); got != 8 {
+		t.Fatalf("GetIntWithOptions nil parser fallback = %d", got)
+	}
+	if got := GetBoolWithOptions("GKSYSTEM_NIL_OPTION_BOOL", false, WithEnvBoolParser(nil)); !got {
+		t.Fatalf("GetBoolWithOptions nil parser fallback = %v", got)
+	}
+	if got := GetOrDefaultWithOptions("GKSYSTEM_NIL_OPTION_MISSING", "fallback", WithEnvLookupFunc(nil)); got != "fallback" {
+		t.Fatalf("GetOrDefaultWithOptions nil lookup fallback = %q", got)
+	}
 }

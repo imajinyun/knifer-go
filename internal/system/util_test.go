@@ -2,6 +2,7 @@ package system
 
 import (
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -14,6 +15,8 @@ func TestReadableSize(t *testing.T) {
 		{512, "512 B"},
 		{1024, "1.00 KB"},
 		{1024 * 1024, "1.00 MB"},
+		{1024 * 1024 * 1024, "1.00 GB"},
+		{1024 * 1024 * 1024 * 1024, "1.00 TB"},
 	}
 	for _, c := range cases {
 		got := readableSize(c.in)
@@ -22,6 +25,24 @@ func TestReadableSize(t *testing.T) {
 		}
 	}
 }
+
+func TestAppendLineAndToStrBoundaries(t *testing.T) {
+	var b strings.Builder
+	appendLine(&b, "Empty: ", "")
+	appendLine(&b, "Nil: ", nil)
+	appendLine(&b, "Stringer: ", stringerFunc(func() string { return "stringer-value" }))
+	appendLine(&b, "Int: ", 12)
+	out := b.String()
+	for _, want := range []string{"Empty: [n/a]", "Nil: [n/a]", "Stringer: stringer-value", "Int: 12"} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("appendLine output missing %q in %q", want, out)
+		}
+	}
+}
+
+type stringerFunc func() string
+
+func (f stringerFunc) String() string { return f() }
 
 func TestFixPath(t *testing.T) {
 	if fixPath("") != "" {

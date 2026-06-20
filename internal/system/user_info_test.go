@@ -70,6 +70,44 @@ func TestUserInfoWithOptions(t *testing.T) {
 	}
 }
 
+func TestUserInfoErrorAndEnvironmentFallbackBoundaries(t *testing.T) {
+	sep := string(os.PathSeparator)
+	u := NewUserInfoWithOptions(
+		WithCurrentUserFunc(func() (*user.User, error) { return nil, os.ErrPermission }),
+		WithWorkingDirFunc(func() (string, error) { return "", os.ErrNotExist }),
+		WithTempDirFunc(func() string { return "" }),
+		WithUserEnvLookup(func(key string) string {
+			switch key {
+			case "USER":
+				return ""
+			case "USERNAME":
+				return "windows-user"
+			case "HOME":
+				return "/home/windows-user"
+			case "LANG":
+				return ""
+			case "LC_ALL":
+				return "ja_JP.UTF-8"
+			default:
+				return ""
+			}
+		}),
+	)
+	if u.GetName() != "windows-user" || u.GetHomeDir() != "/home/windows-user"+sep || u.GetCurrentDir() != "" || u.GetTempDir() != "" {
+		t.Fatalf("user error fallback paths = %#v", u)
+	}
+	if u.GetLanguage() != "ja" || u.GetCountry() != "JP" {
+		t.Fatalf("user LC_ALL fallback locale = %s/%s", u.GetLanguage(), u.GetCountry())
+	}
+}
+
+func TestUserInfoNilOptionsFallBackToDefaults(t *testing.T) {
+	u := NewUserInfoWithOptions(nil, WithCurrentUserFunc(nil), WithUserEnvLookup(nil), WithWorkingDirFunc(nil), WithTempDirFunc(nil))
+	if u.GetCurrentDir() == "" || u.GetTempDir() == "" {
+		t.Fatalf("nil option user fallback = %#v", u)
+	}
+}
+
 func TestParseLocale(t *testing.T) {
 	lang, country := parseLocale("zh_CN.UTF-8")
 	if lang != "zh" || country != "CN" {
@@ -82,5 +120,9 @@ func TestParseLocale(t *testing.T) {
 	lang, country = parseLocale("en")
 	if lang != "en" || country != "" {
 		t.Errorf("parseLocale(en) 错误: %s/%s", lang, country)
+	}
+	lang, country = parseLocale("pt_BR_POSIX.UTF-8")
+	if lang != "pt" || country != "BR" {
+		t.Errorf("parseLocale should ignore extra segments after country: %s/%s", lang, country)
 	}
 }

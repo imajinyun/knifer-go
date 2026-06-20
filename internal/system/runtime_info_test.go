@@ -47,3 +47,38 @@ func TestRuntimeInfoWithOptions(t *testing.T) {
 		t.Fatalf("GetRuntimeInfoWithOptions max = %d", r.GetMaxMemory())
 	}
 }
+
+func TestRuntimeInfoSafetyBoundaries(t *testing.T) {
+	r := NewRuntimeInfoWithOptions(
+		WithReadMemStatsFunc(func(stats *runtime.MemStats) {
+			stats.Sys = 10
+			stats.HeapSys = 8
+			stats.HeapIdle = 3
+			stats.HeapInuse = 20
+		}),
+		WithNumGoroutineFunc(func() int { return 11 }),
+	)
+	if got := r.GetUsableMemory(); got != 0 {
+		t.Fatalf("GetUsableMemory underflow guard = %d", got)
+	}
+	if r.GetTotalMemory() != 8 || r.GetFreeMemory() != 3 || r.GetHeapInuse() != 20 || r.GetGoroutineCount() != 11 {
+		t.Fatalf("runtime getters = %#v", r.GetMemStats())
+	}
+
+	r.readMemStats = nil
+	r.Refresh()
+	if r.GetMaxMemory() == 0 {
+		t.Fatal("Refresh with nil provider should restore runtime.ReadMemStats")
+	}
+	r.numGoroutine = nil
+	if r.GetGoroutineCount() <= 0 {
+		t.Fatal("GetGoroutineCount with nil provider should use runtime fallback")
+	}
+}
+
+func TestRuntimeInfoNilOptionsFallBackToRuntimeProviders(t *testing.T) {
+	r := NewRuntimeInfoWithOptions(nil, WithReadMemStatsFunc(nil), WithNumGoroutineFunc(nil))
+	if r.GetMaxMemory() == 0 || r.GetGoroutineCount() <= 0 {
+		t.Fatalf("nil option runtime fallback = %#v", r)
+	}
+}

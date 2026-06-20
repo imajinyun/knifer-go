@@ -1,6 +1,7 @@
 package system
 
 import (
+	"errors"
 	"runtime"
 	"strings"
 	"testing"
@@ -49,5 +50,62 @@ func TestSystemInfoGettersWithOptions(t *testing.T) {
 	o := GetOsInfoWithOptions(WithOSNameFunc(func() string { return "linux" }))
 	if o.GetName() != "linux" {
 		t.Fatalf("GetOsInfoWithOptions name = %q", o.GetName())
+	}
+}
+
+func TestGoInfoDefaultGOROOTProviderUsesCommandThenEnvFallback(t *testing.T) {
+	t.Run("command output wins when non-empty", func(t *testing.T) {
+		called := false
+		g := NewGoInfoWithOptions(
+			WithGoEnvOutputFunc(func(name string, args ...string) ([]byte, error) {
+				called = true
+				if name != "go" || strings.Join(args, " ") != "env GOROOT" {
+					t.Fatalf("go env command = %s %v", name, args)
+				}
+				return []byte("/deterministic/go/root\n"), nil
+			}),
+			WithGoRootEnvLookupFunc(func(string) string { return "/env/go/root" }),
+		)
+		if !called || g.GetGOROOT() != "/deterministic/go/root" {
+			t.Fatalf("GOROOT = %q called=%v", g.GetGOROOT(), called)
+		}
+	})
+
+	t.Run("command error falls back to environment", func(t *testing.T) {
+		g := NewGoInfoWithOptions(
+			WithGoEnvOutputFunc(func(string, ...string) ([]byte, error) {
+				return nil, errors.New("go command unavailable")
+			}),
+			WithGoRootEnvLookupFunc(func(key string) string {
+				if key != "GOROOT" {
+					t.Fatalf("env key = %q", key)
+				}
+				return "/fallback/go/root"
+			}),
+		)
+		if g.GetGOROOT() != "/fallback/go/root" {
+			t.Fatalf("GOROOT fallback = %q", g.GetGOROOT())
+		}
+	})
+}
+
+func TestGoInfoNilOptionsFallBackToRuntimeProviders(t *testing.T) {
+	g := NewGoInfoWithOptions(
+		nil,
+		WithGoVersionFunc(nil),
+		WithGoCompilerFunc(nil),
+		WithGoRootFunc(nil),
+		WithGoEnvOutputFunc(func(string, ...string) ([]byte, error) { return []byte("/nil/options/root"), nil }),
+		WithGoRootEnvLookupFunc(nil),
+		WithGoOSFunc(nil),
+		WithGoArchFunc(nil),
+		WithGoNumCPUFunc(nil),
+		WithGoNumCgoCallFunc(nil),
+	)
+	if g.GetVersion() != runtime.Version() || g.GetCompiler() != runtime.Compiler || g.GetGOOS() != runtime.GOOS || g.GetGOARCH() != runtime.GOARCH || g.GetNumCPU() != runtime.NumCPU() {
+		t.Fatalf("nil option fallback = %#v", g)
+	}
+	if g.GetGOROOT() != "/nil/options/root" {
+		t.Fatalf("nil option GOROOT fallback = %q", g.GetGOROOT())
 	}
 }
