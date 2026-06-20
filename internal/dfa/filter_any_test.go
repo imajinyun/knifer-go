@@ -30,3 +30,37 @@ func TestFilterAny(t *testing.T) {
 		t.Fatalf("FilterAny() = %#v", got)
 	}
 }
+
+func TestFilterAnyStringAndRealUserNestedScenario(t *testing.T) {
+	Init([]string{"token", "secret"})
+	filtered, err := FilterAny("token and secret", true, func(word FoundWord) string {
+		return "[redacted:" + word.Word + "]"
+	})
+	if err != nil {
+		t.Fatalf("FilterAny string = %v", err)
+	}
+	if filtered != "[redacted:token] and [redacted:secret]" {
+		t.Fatalf("FilterAny string = %q", filtered)
+	}
+
+	type comment struct {
+		Body string `json:"body"`
+	}
+	type payload struct {
+		Title    string    `json:"title"`
+		Comments []comment `json:"comments"`
+	}
+	got, err := FilterAny(payload{
+		Title: "public token",
+		Comments: []comment{
+			{Body: "keep"},
+			{Body: "secret value"},
+		},
+	}, true, nil)
+	if err != nil {
+		t.Fatalf("FilterAny nested payload = %v", err)
+	}
+	if got.Title != "public *****" || got.Comments[1].Body != "****** value" || got.Comments[0].Body != "keep" {
+		t.Fatalf("FilterAny nested payload = %#v", got)
+	}
+}

@@ -1,6 +1,9 @@
 package dfa
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestInitWithOptions(t *testing.T) {
 	InitWithOptions([]string{"t-io"}, WithCharFilter(func(r rune) bool { return r != '-' }))
@@ -28,5 +31,67 @@ func TestMatcherOptionsBypassPackageMatcher(t *testing.T) {
 	found, ok := GetFoundFirstWithOptions("a local word", WithMatcherWords([]string{"local"}))
 	if !ok || found.Word != "local" {
 		t.Fatalf("GetFoundFirstWithOptions = %#v ok=%v", found, ok)
+	}
+}
+
+func TestPackageLevelQueryHelpers(t *testing.T) {
+	InitString("alpha,beta,alphabet", DefaultSeparator)
+	if !IsInited() {
+		t.Fatal("InitString should mark package matcher as initialized")
+	}
+	if !ContainsAny(map[string]any{"text": "contains beta"}) {
+		t.Fatal("ContainsAny should match JSON text")
+	}
+	first, ok := GetFoundFirst("say alpha now")
+	if !ok || first.Word != "alpha" || first.String() != "alpha" {
+		t.Fatalf("GetFoundFirst = %#v ok=%v", first, ok)
+	}
+	firstAny, ok := GetFoundFirstAny(map[string]string{"text": "say beta"})
+	if !ok || firstAny.Word != "beta" {
+		t.Fatalf("GetFoundFirstAny = %#v ok=%v", firstAny, ok)
+	}
+	all := GetFoundAll("alpha beta")
+	if len(all) != 2 || all[0].Word != "alpha" || all[1].Word != "beta" {
+		t.Fatalf("GetFoundAll = %#v", all)
+	}
+	mode := GetFoundAllMode("alphabet", true, true)
+	if got := []string{mode[0].Word, mode[1].Word}; !reflect.DeepEqual(got, []string{"alpha", "alphabet"}) {
+		t.Fatalf("GetFoundAllMode dense+greedy = %#v", mode)
+	}
+	allAny := GetFoundAllAny(map[string]string{"text": "alpha beta"})
+	if len(allAny) != 2 {
+		t.Fatalf("GetFoundAllAny = %#v", allAny)
+	}
+	if got := FilterMode("alpha beta", true, func(word FoundWord) string { return "<" + word.Word + ">" }); got != "<alphabet>a" {
+		t.Fatalf("FilterMode = %q", got)
+	}
+}
+
+func TestPackageSetCharFilterAndAsyncRunnerFallback(t *testing.T) {
+	Init([]string{"a-b"})
+	if !Contains("ab") {
+		t.Fatal("default matcher should ignore stop runes")
+	}
+	SetCharFilter(func(r rune) bool { return r != '-' })
+	if !Contains("ab") {
+		t.Fatal("SetCharFilter should update package matcher filter")
+	}
+	SetCharFilter(nil)
+	if !Contains("ab") {
+		t.Fatal("SetCharFilter(nil) should leave matcher usable")
+	}
+
+	ConfigureAsyncRunner(func(func()) {})
+	ConfigureAsyncRunner(nil)
+	done := make(chan struct{})
+	ConfigureAsyncRunner(func(fn func()) {
+		fn()
+		close(done)
+	})
+	t.Cleanup(ResetAsyncRunner)
+	InitAsync([]string{"async-fallback"})
+	<-done
+	if !Contains("async fallback") {
+		t.Fatal("InitAsync should use configured deterministic runner")
 	}
 }

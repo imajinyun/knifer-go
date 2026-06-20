@@ -1,6 +1,9 @@
 package dfa
 
-import "testing"
+import (
+	"errors"
+	"testing"
+)
 
 func TestAnyHelpersUseJSONProviders(t *testing.T) {
 	tree := NewWordTree().AddWords("secret")
@@ -32,5 +35,38 @@ func TestAnyHelpersUseJSONProviders(t *testing.T) {
 	}
 	if got.Text != "***" || marshalCalls != 3 || unmarshalCalls != 1 {
 		t.Fatalf("providers got=%+v marshalCalls=%d unmarshalCalls=%d", got, marshalCalls, unmarshalCalls)
+	}
+}
+
+func TestAnyHelpersProviderErrorContracts(t *testing.T) {
+	tree := NewWordTree().AddWords("secret")
+	sentinel := errors.New("json provider failed")
+	failingMarshal := func(any) ([]byte, error) { return nil, sentinel }
+	if ContainsAnyWithOptions(struct{}{}, WithMatcher(tree), WithJSONMarshal(failingMarshal)) {
+		t.Fatal("ContainsAnyWithOptions should not match when marshal provider fails")
+	}
+	if got, ok := GetFoundFirstAnyWithOptions(struct{}{}, WithMatcher(tree), WithJSONMarshal(failingMarshal)); ok || got.String() != "" {
+		t.Fatalf("GetFoundFirstAnyWithOptions marshal failure = %#v ok=%v", got, ok)
+	}
+	if got := GetFoundAllAnyWithOptions(struct{}{}, WithMatcher(tree), WithJSONMarshal(failingMarshal)); len(got) != 0 {
+		t.Fatalf("GetFoundAllAnyWithOptions marshal failure = %#v", got)
+	}
+
+	_, err := FilterAnyWithOptions(struct{}{}, true, nil, WithMatcher(tree), WithJSONMarshal(failingMarshal))
+	if !errors.Is(err, sentinel) {
+		t.Fatalf("FilterAnyWithOptions marshal failure err = %v, want sentinel", err)
+	}
+	_, err = FilterAnyWithOptions(struct {
+		Text string `json:"text"`
+	}{Text: "secret"}, true, nil, WithMatcher(tree), WithJSONUnmarshal(func([]byte, any) error { return sentinel }))
+	if !errors.Is(err, sentinel) {
+		t.Fatalf("FilterAnyWithOptions unmarshal failure err = %v, want sentinel", err)
+	}
+
+	if got := jsonTextWithMarshal(map[string]string{"text": "secret"}, nil); got == "" {
+		t.Fatal("jsonTextWithMarshal nil provider should fall back to encoding/json")
+	}
+	if got := jsonTextWithMarshal("raw secret", failingMarshal); got != "raw secret" {
+		t.Fatalf("jsonTextWithMarshal string = %q", got)
 	}
 }
