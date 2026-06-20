@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 54,
     "function_count": 2604,
-    "functions_with_examples": 827,
+    "functions_with_examples": 891,
     "context_aware_functions": 36,
     "returns_error_functions": 603,
     "variadic_functions": 776,
@@ -5646,8 +5646,8 @@
       "synopsis": "Package vcrypto provides public APIs for cryptographic utilities.",
       "summary": {
         "function_count": 71,
-        "functions_with_examples": 7,
-        "example_coverage_percent": 9.9,
+        "functions_with_examples": 71,
+        "example_coverage_percent": 100,
         "synopsis_sources": {
           "empty": 0,
           "facade": 71,
@@ -5684,7 +5684,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleAESDecryptGCM"
+          ]
         },
         {
           "name": "AESDecryptGCMWithOptions",
@@ -5719,7 +5722,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleAESDecryptGCMWithOptions"
+          ]
         },
         {
           "name": "AESEncryptGCM",
@@ -5788,7 +5794,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleAESEncryptGCMWithOptions"
+          ]
         },
         {
           "name": "AESOpenGCM",
@@ -5857,7 +5866,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleAESOpenGCMWithOptions"
+          ]
         },
         {
           "name": "AESSealGCM",
@@ -5885,7 +5897,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleAESSealGCM"
+          ]
         },
         {
           "name": "AESSealGCMWithOptions",
@@ -5917,7 +5932,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleAESSealGCMWithOptions"
+          ]
         },
         {
           "name": "ConstantTimeEqual",
@@ -5939,7 +5957,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleConstantTimeEqual"
+          ]
         },
         {
           "name": "Digest",
@@ -5961,7 +5982,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleDigest"
+          ]
         },
         {
           "name": "DigestHex",
@@ -5983,7 +6007,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleDigestHex"
+          ]
         },
         {
           "name": "GenAESKey",
@@ -6002,7 +6029,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGenAESKey"
+          ]
         },
         {
           "name": "GenAESKeyWithOptions",
@@ -6025,7 +6055,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGenAESKeyWithOptions"
+          ]
         },
         {
           "name": "GenRSAKey",
@@ -6044,7 +6077,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGenRSAKey"
+          ]
         },
         {
           "name": "GenRSAKeyWithOptions",
@@ -6067,7 +6103,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGenRSAKeyWithOptions"
+          ]
         },
         {
           "name": "HMACBytes",
@@ -6093,7 +6132,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleHMACBytes"
+          ]
         },
         {
           "name": "HMACEqual",
@@ -6115,7 +6157,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleHMACEqual"
+          ]
         },
         {
           "name": "HMACHex",
@@ -6191,7 +6236,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleHMACSHA384Hex"
+          ]
         },
         {
           "name": "HMACSHA512Hex",
@@ -6213,7 +6261,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleHMACSHA512Hex"
+          ]
         },
         {
           "name": "PBKDF2",
@@ -6248,7 +6299,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExamplePBKDF2"
+          ]
         },
         {
           "name": "PBKDF2SHA256",
@@ -6279,7 +6333,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExamplePBKDF2SHA256"
+          ]
         },
         {
           "name": "ParseRSAPrivateKeyPEM",
@@ -6298,7 +6355,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseRSAPrivateKeyPEM"
+          ]
         },
         {
           "name": "ParseRSAPublicKeyPEM",
@@ -6317,7 +6377,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseRSAPublicKeyPEM"
+          ]
         },
         {
           "name": "ParseX509CertificatePEM",
@@ -6336,7 +6399,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseX509CertificatePEM"
+          ]
         },
         {
           "name": "PrivateKeyToPEM",
@@ -6354,7 +6420,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExamplePrivateKeyToPEM"
+          ]
         },
         {
           "name": "PrivateKeyToPKCS8PEM",
@@ -6373,7 +6442,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExamplePrivateKeyToPKCS8PEM"
+          ]
         },
         {
           "name": "PublicKeyFromCertificatePEM",
@@ -6392,7 +6464,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExamplePublicKeyFromCertificatePEM"
+          ]
         },
         {
           "name": "PublicKeyToPEM",
@@ -6411,7 +6486,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExamplePublicKeyToPEM"
+          ]
         },
         {
           "name": "PublicKeyToPKCS1PEM",
@@ -6429,7 +6507,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExamplePublicKeyToPKCS1PEM"
+          ]
         },
         {
           "name": "RSADecryptOAEP",
@@ -6456,7 +6537,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleRSADecryptOAEP"
+          ]
         },
         {
           "name": "RSADecryptOAEPWithOptions",
@@ -6487,7 +6571,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleRSADecryptOAEPWithOptions"
+          ]
         },
         {
           "name": "RSAEncryptOAEP",
@@ -6514,7 +6601,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleRSAEncryptOAEP"
+          ]
         },
         {
           "name": "RSAEncryptOAEPWithOptions",
@@ -6545,7 +6635,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleRSAEncryptOAEPWithOptions"
+          ]
         },
         {
           "name": "RSASignPSS",
@@ -6572,7 +6665,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleRSASignPSS"
+          ]
         },
         {
           "name": "RSASignPSSWithOptions",
@@ -6603,7 +6699,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleRSASignPSSWithOptions"
+          ]
         },
         {
           "name": "RSAVerifyPSS",
@@ -6633,7 +6732,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleRSAVerifyPSS"
+          ]
         },
         {
           "name": "RSAVerifyPSSWithOptions",
@@ -6667,7 +6769,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleRSAVerifyPSSWithOptions"
+          ]
         },
         {
           "name": "RandomBytes",
@@ -6686,7 +6791,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleRandomBytes"
+          ]
         },
         {
           "name": "RandomBytesWithOptions",
@@ -6730,7 +6838,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSHA224"
+          ]
         },
         {
           "name": "SHA224Hex",
@@ -6748,7 +6859,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSHA224Hex"
+          ]
         },
         {
           "name": "SHA256",
@@ -6766,7 +6880,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSHA256"
+          ]
         },
         {
           "name": "SHA256Hex",
@@ -6805,7 +6922,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSHA256HexBytes"
+          ]
         },
         {
           "name": "SHA384",
@@ -6823,7 +6943,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSHA384"
+          ]
         },
         {
           "name": "SHA384Hex",
@@ -6841,7 +6964,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSHA384Hex"
+          ]
         },
         {
           "name": "SHA512",
@@ -6859,7 +6985,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSHA512"
+          ]
         },
         {
           "name": "SHA512Hex",
@@ -6877,7 +7006,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSHA512Hex"
+          ]
         },
         {
           "name": "SHA512HexBytes",
@@ -6895,7 +7027,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSHA512HexBytes"
+          ]
         },
         {
           "name": "SignParams",
@@ -6933,7 +7068,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleSignParams"
+          ]
         },
         {
           "name": "SignParamsSHA256",
@@ -6955,7 +7093,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleSignParamsSHA256"
+          ]
         },
         {
           "name": "SignSHA256WithRSA",
@@ -6978,7 +7119,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSignSHA256WithRSA"
+          ]
         },
         {
           "name": "SignWithRSAOptions",
@@ -7005,7 +7149,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleSignWithRSAOptions"
+          ]
         },
         {
           "name": "ValidateAESGCMNonce",
@@ -7023,7 +7170,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleValidateAESGCMNonce"
+          ]
         },
         {
           "name": "ValidateAESIV",
@@ -7041,7 +7191,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleValidateAESIV"
+          ]
         },
         {
           "name": "ValidateAESKey",
@@ -7088,7 +7241,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleVerifySHA256WithRSA"
+          ]
         },
         {
           "name": "VerifyWithRSAOptions",
@@ -7118,7 +7274,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleVerifyWithRSAOptions"
+          ]
         },
         {
           "name": "WithGCMBlockFactory",
@@ -7136,7 +7295,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithGCMBlockFactory"
+          ]
         },
         {
           "name": "WithGCMNonceSize",
@@ -7154,7 +7316,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithGCMNonceSize"
+          ]
         },
         {
           "name": "WithGCMRandomOptions",
@@ -7172,7 +7337,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWithGCMRandomOptions"
+          ]
         },
         {
           "name": "WithGCMTagSize",
@@ -7190,7 +7358,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithGCMTagSize"
+          ]
         },
         {
           "name": "WithRSADigestHash",
@@ -7212,7 +7383,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithRSADigestHash"
+          ]
         },
         {
           "name": "WithRSADigestPSS",
@@ -7230,7 +7404,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithRSADigestPSS"
+          ]
         },
         {
           "name": "WithRSADigestRandomReader",
@@ -7248,7 +7425,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithRSADigestRandomReader"
+          ]
         },
         {
           "name": "WithRSAOAEPHash",
@@ -7266,7 +7446,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithRSAOAEPHash"
+          ]
         },
         {
           "name": "WithRSAPSSOptions",
@@ -7284,7 +7467,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithRSAPSSOptions"
+          ]
         },
         {
           "name": "WithRSARandomReader",
@@ -7302,7 +7488,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithRSARandomReader"
+          ]
         },
         {
           "name": "WithRandomReader",
@@ -7320,7 +7509,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithRandomReader"
+          ]
         }
       ]
     },

@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/go-knifer` |
 | Packages | 54 |
 | Functions | 2604 |
-| Functions with examples | 827 |
+| Functions with examples | 891 |
 | Context-aware functions | 36 |
 | Functions returning error | 603 |
 | Variadic functions | 776 |
@@ -407,81 +407,81 @@ Import path: `github.com/imajinyun/go-knifer/vcrypto`
 
 Package vcrypto provides public APIs for cryptographic utilities.
 
-Quality: 71 functions · 7 with examples · 9.9% example coverage · synopsis sources: facade=71, internal=0, empty=0
+Quality: 71 functions · 71 with examples · 100.0% example coverage · synopsis sources: facade=71, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
-| `AESDecryptGCM` | `func AESDecryptGCM(cipherText []byte, key []byte, nonce []byte, additionalData []byte) ([]byte, error)` | AESDecryptGCM decrypts AES-GCM data. | facade | — |
-| `AESDecryptGCMWithOptions` | `func AESDecryptGCMWithOptions(cipherText []byte, key []byte, nonce []byte, additionalData []byte, opts ...AESGCMOption) ([]byte, error)` | AESDecryptGCMWithOptions decrypts AES-GCM data with options. | facade | — |
+| `AESDecryptGCM` | `func AESDecryptGCM(cipherText []byte, key []byte, nonce []byte, additionalData []byte) ([]byte, error)` | AESDecryptGCM decrypts AES-GCM data. | facade | `ExampleAESDecryptGCM` |
+| `AESDecryptGCMWithOptions` | `func AESDecryptGCMWithOptions(cipherText []byte, key []byte, nonce []byte, additionalData []byte, opts ...AESGCMOption) ([]byte, error)` | AESDecryptGCMWithOptions decrypts AES-GCM data with options. | facade | `ExampleAESDecryptGCMWithOptions` |
 | `AESEncryptGCM` | `func AESEncryptGCM(plain []byte, key []byte, nonce []byte, additionalData []byte) ([]byte, error)` | AESEncryptGCM encrypts plain data using AES-GCM. | facade | `ExampleAESEncryptGCM` |
-| `AESEncryptGCMWithOptions` | `func AESEncryptGCMWithOptions(plain []byte, key []byte, nonce []byte, additionalData []byte, opts ...AESGCMOption) ([]byte, error)` | AESEncryptGCMWithOptions encrypts plain data using AES-GCM with options. | facade | — |
+| `AESEncryptGCMWithOptions` | `func AESEncryptGCMWithOptions(plain []byte, key []byte, nonce []byte, additionalData []byte, opts ...AESGCMOption) ([]byte, error)` | AESEncryptGCMWithOptions encrypts plain data using AES-GCM with options. | facade | `ExampleAESEncryptGCMWithOptions` |
 | `AESOpenGCM` | `func AESOpenGCM(cipherText []byte, key []byte, nonce []byte, additionalData []byte) ([]byte, error)` | AESOpenGCM decrypts data produced by AESSealGCM or AESEncryptGCM. | facade | `ExampleAESOpenGCM` |
-| `AESOpenGCMWithOptions` | `func AESOpenGCMWithOptions(cipherText []byte, key []byte, nonce []byte, additionalData []byte, opts ...AESGCMOption) ([]byte, error)` | AESOpenGCMWithOptions decrypts AES-GCM data with options. | facade | — |
-| `AESSealGCM` | `func AESSealGCM(plain []byte, key []byte, additionalData []byte) (nonce []byte, cipherText []byte, err error)` | AESSealGCM encrypts plain data using AES-GCM and a freshly generated nonce. | facade | — |
-| `AESSealGCMWithOptions` | `func AESSealGCMWithOptions(plain []byte, key []byte, additionalData []byte, opts ...AESGCMOption) (nonce []byte, cipherText []byte, err error)` | AESSealGCMWithOptions encrypts plain data using AES-GCM and a freshly generated nonce. | facade | — |
-| `ConstantTimeEqual` | `func ConstantTimeEqual(a []byte, b []byte) bool` | ConstantTimeEqual compares two byte slices in constant time when lengths match. | facade | — |
-| `Digest` | `func Digest(data []byte, newHash func() hash.Hash) []byte` | Digest returns digest bytes computed by newHash. | facade | — |
-| `DigestHex` | `func DigestHex(data []byte, newHash func() hash.Hash) string` | DigestHex returns the digest computed by newHash in lower-case hex form. | facade | — |
-| `GenAESKey` | `func GenAESKey(size int) ([]byte, error)` | GenAESKey returns a random AES key. | facade | — |
-| `GenAESKeyWithOptions` | `func GenAESKeyWithOptions(size int, opts ...RandomOption) ([]byte, error)` | GenAESKeyWithOptions returns a random AES key using custom random options. | facade | — |
-| `GenRSAKey` | `func GenRSAKey(bits int) (*rsa.PrivateKey, error)` | GenRSAKey generates an RSA private key. | facade | — |
-| `GenRSAKeyWithOptions` | `func GenRSAKeyWithOptions(bits int, opts ...RSAOption) (*rsa.PrivateKey, error)` | GenRSAKeyWithOptions generates an RSA private key with options. | facade | — |
-| `HMACBytes` | `func HMACBytes(fn func() hash.Hash, key []byte, data []byte) []byte` | HMACBytes returns HMAC digest bytes using the given hash function. | facade | — |
-| `HMACEqual` | `func HMACEqual(a []byte, b []byte) bool` | HMACEqual compares two MAC values in constant time. | facade | — |
+| `AESOpenGCMWithOptions` | `func AESOpenGCMWithOptions(cipherText []byte, key []byte, nonce []byte, additionalData []byte, opts ...AESGCMOption) ([]byte, error)` | AESOpenGCMWithOptions decrypts AES-GCM data with options. | facade | `ExampleAESOpenGCMWithOptions` |
+| `AESSealGCM` | `func AESSealGCM(plain []byte, key []byte, additionalData []byte) (nonce []byte, cipherText []byte, err error)` | AESSealGCM encrypts plain data using AES-GCM and a freshly generated nonce. | facade | `ExampleAESSealGCM` |
+| `AESSealGCMWithOptions` | `func AESSealGCMWithOptions(plain []byte, key []byte, additionalData []byte, opts ...AESGCMOption) (nonce []byte, cipherText []byte, err error)` | AESSealGCMWithOptions encrypts plain data using AES-GCM and a freshly generated nonce. | facade | `ExampleAESSealGCMWithOptions` |
+| `ConstantTimeEqual` | `func ConstantTimeEqual(a []byte, b []byte) bool` | ConstantTimeEqual compares two byte slices in constant time when lengths match. | facade | `ExampleConstantTimeEqual` |
+| `Digest` | `func Digest(data []byte, newHash func() hash.Hash) []byte` | Digest returns digest bytes computed by newHash. | facade | `ExampleDigest` |
+| `DigestHex` | `func DigestHex(data []byte, newHash func() hash.Hash) string` | DigestHex returns the digest computed by newHash in lower-case hex form. | facade | `ExampleDigestHex` |
+| `GenAESKey` | `func GenAESKey(size int) ([]byte, error)` | GenAESKey returns a random AES key. | facade | `ExampleGenAESKey` |
+| `GenAESKeyWithOptions` | `func GenAESKeyWithOptions(size int, opts ...RandomOption) ([]byte, error)` | GenAESKeyWithOptions returns a random AES key using custom random options. | facade | `ExampleGenAESKeyWithOptions` |
+| `GenRSAKey` | `func GenRSAKey(bits int) (*rsa.PrivateKey, error)` | GenRSAKey generates an RSA private key. | facade | `ExampleGenRSAKey` |
+| `GenRSAKeyWithOptions` | `func GenRSAKeyWithOptions(bits int, opts ...RSAOption) (*rsa.PrivateKey, error)` | GenRSAKeyWithOptions generates an RSA private key with options. | facade | `ExampleGenRSAKeyWithOptions` |
+| `HMACBytes` | `func HMACBytes(fn func() hash.Hash, key []byte, data []byte) []byte` | HMACBytes returns HMAC digest bytes using the given hash function. | facade | `ExampleHMACBytes` |
+| `HMACEqual` | `func HMACEqual(a []byte, b []byte) bool` | HMACEqual compares two MAC values in constant time. | facade | `ExampleHMACEqual` |
 | `HMACHex` | `func HMACHex(fn func() hash.Hash, key []byte, data []byte) string` | HMACHex returns HMAC digest in lower-case hex form using the given hash function. | facade | `ExampleHMACHex` |
 | `HMACSHA256Hex` | `func HMACSHA256Hex(key []byte, data []byte) string` | HMACSHA256Hex returns HMAC-SHA256 in lower-case hex form. | facade | `ExampleHMACSHA256Hex` |
-| `HMACSHA384Hex` | `func HMACSHA384Hex(key []byte, data []byte) string` | HMACSHA384Hex returns HMAC-SHA384 in lower-case hex form. | facade | — |
-| `HMACSHA512Hex` | `func HMACSHA512Hex(key []byte, data []byte) string` | HMACSHA512Hex returns HMAC-SHA512 in lower-case hex form. | facade | — |
-| `PBKDF2` | `func PBKDF2(password []byte, salt []byte, iterations int, keyLen int, fn func() hash.Hash) ([]byte, error)` | PBKDF2 derives a key from password and salt using PBKDF2. | facade | — |
-| `PBKDF2SHA256` | `func PBKDF2SHA256(password []byte, salt []byte, iterations int, keyLen int) ([]byte, error)` | PBKDF2SHA256 derives a key using PBKDF2-HMAC-SHA256. | facade | — |
-| `ParseRSAPrivateKeyPEM` | `func ParseRSAPrivateKeyPEM(data []byte) (*rsa.PrivateKey, error)` | ParseRSAPrivateKeyPEM parses a PKCS#1 or PKCS#8 RSA private key PEM. | facade | — |
-| `ParseRSAPublicKeyPEM` | `func ParseRSAPublicKeyPEM(data []byte) (*rsa.PublicKey, error)` | ParseRSAPublicKeyPEM parses a PKIX or PKCS#1 RSA public key PEM. | facade | — |
-| `ParseX509CertificatePEM` | `func ParseX509CertificatePEM(data []byte) (*x509.Certificate, error)` | ParseX509CertificatePEM parses an X.509 certificate from PEM data. | facade | — |
-| `PrivateKeyToPEM` | `func PrivateKeyToPEM(priv *rsa.PrivateKey) []byte` | PrivateKeyToPEM encodes an RSA private key as PKCS#1 PEM. | facade | — |
-| `PrivateKeyToPKCS8PEM` | `func PrivateKeyToPKCS8PEM(priv *rsa.PrivateKey) ([]byte, error)` | PrivateKeyToPKCS8PEM encodes an RSA private key as PKCS#8 PEM. | facade | — |
-| `PublicKeyFromCertificatePEM` | `func PublicKeyFromCertificatePEM(data []byte) (*rsa.PublicKey, error)` | PublicKeyFromCertificatePEM extracts an RSA public key from an X.509 certificate PEM. | facade | — |
-| `PublicKeyToPEM` | `func PublicKeyToPEM(pub *rsa.PublicKey) ([]byte, error)` | PublicKeyToPEM encodes an RSA public key as PKIX PEM. | facade | — |
-| `PublicKeyToPKCS1PEM` | `func PublicKeyToPKCS1PEM(pub *rsa.PublicKey) []byte` | PublicKeyToPKCS1PEM encodes an RSA public key as PKCS#1 PEM. | facade | — |
-| `RSADecryptOAEP` | `func RSADecryptOAEP(cipherText []byte, priv *rsa.PrivateKey, label []byte) ([]byte, error)` | RSADecryptOAEP decrypts data using RSA-OAEP with SHA-256. | facade | — |
-| `RSADecryptOAEPWithOptions` | `func RSADecryptOAEPWithOptions(cipherText []byte, priv *rsa.PrivateKey, label []byte, opts ...RSAOption) ([]byte, error)` | RSADecryptOAEPWithOptions decrypts data using RSA-OAEP with options. | facade | — |
-| `RSAEncryptOAEP` | `func RSAEncryptOAEP(plain []byte, pub *rsa.PublicKey, label []byte) ([]byte, error)` | RSAEncryptOAEP encrypts data using RSA-OAEP with SHA-256. | facade | — |
-| `RSAEncryptOAEPWithOptions` | `func RSAEncryptOAEPWithOptions(plain []byte, pub *rsa.PublicKey, label []byte, opts ...RSAOption) ([]byte, error)` | RSAEncryptOAEPWithOptions encrypts data using RSA-OAEP with options. | facade | — |
-| `RSASignPSS` | `func RSASignPSS(priv *rsa.PrivateKey, hash crypto.Hash, digest []byte) ([]byte, error)` | RSASignPSS signs digest using RSA-PSS. | facade | — |
-| `RSASignPSSWithOptions` | `func RSASignPSSWithOptions(priv *rsa.PrivateKey, hash crypto.Hash, digest []byte, opts ...RSAOption) ([]byte, error)` | RSASignPSSWithOptions signs digest using RSA-PSS with options. | facade | — |
-| `RSAVerifyPSS` | `func RSAVerifyPSS(pub *rsa.PublicKey, hash crypto.Hash, digest []byte, sig []byte) error` | RSAVerifyPSS verifies an RSA-PSS signature. | facade | — |
-| `RSAVerifyPSSWithOptions` | `func RSAVerifyPSSWithOptions(pub *rsa.PublicKey, hash crypto.Hash, digest []byte, sig []byte, opts ...RSAOption) error` | RSAVerifyPSSWithOptions verifies an RSA-PSS signature with options. | facade | — |
-| `RandomBytes` | `func RandomBytes(n int) ([]byte, error)` | RandomBytes returns n cryptographically secure random bytes. | facade | — |
+| `HMACSHA384Hex` | `func HMACSHA384Hex(key []byte, data []byte) string` | HMACSHA384Hex returns HMAC-SHA384 in lower-case hex form. | facade | `ExampleHMACSHA384Hex` |
+| `HMACSHA512Hex` | `func HMACSHA512Hex(key []byte, data []byte) string` | HMACSHA512Hex returns HMAC-SHA512 in lower-case hex form. | facade | `ExampleHMACSHA512Hex` |
+| `PBKDF2` | `func PBKDF2(password []byte, salt []byte, iterations int, keyLen int, fn func() hash.Hash) ([]byte, error)` | PBKDF2 derives a key from password and salt using PBKDF2. | facade | `ExamplePBKDF2` |
+| `PBKDF2SHA256` | `func PBKDF2SHA256(password []byte, salt []byte, iterations int, keyLen int) ([]byte, error)` | PBKDF2SHA256 derives a key using PBKDF2-HMAC-SHA256. | facade | `ExamplePBKDF2SHA256` |
+| `ParseRSAPrivateKeyPEM` | `func ParseRSAPrivateKeyPEM(data []byte) (*rsa.PrivateKey, error)` | ParseRSAPrivateKeyPEM parses a PKCS#1 or PKCS#8 RSA private key PEM. | facade | `ExampleParseRSAPrivateKeyPEM` |
+| `ParseRSAPublicKeyPEM` | `func ParseRSAPublicKeyPEM(data []byte) (*rsa.PublicKey, error)` | ParseRSAPublicKeyPEM parses a PKIX or PKCS#1 RSA public key PEM. | facade | `ExampleParseRSAPublicKeyPEM` |
+| `ParseX509CertificatePEM` | `func ParseX509CertificatePEM(data []byte) (*x509.Certificate, error)` | ParseX509CertificatePEM parses an X.509 certificate from PEM data. | facade | `ExampleParseX509CertificatePEM` |
+| `PrivateKeyToPEM` | `func PrivateKeyToPEM(priv *rsa.PrivateKey) []byte` | PrivateKeyToPEM encodes an RSA private key as PKCS#1 PEM. | facade | `ExamplePrivateKeyToPEM` |
+| `PrivateKeyToPKCS8PEM` | `func PrivateKeyToPKCS8PEM(priv *rsa.PrivateKey) ([]byte, error)` | PrivateKeyToPKCS8PEM encodes an RSA private key as PKCS#8 PEM. | facade | `ExamplePrivateKeyToPKCS8PEM` |
+| `PublicKeyFromCertificatePEM` | `func PublicKeyFromCertificatePEM(data []byte) (*rsa.PublicKey, error)` | PublicKeyFromCertificatePEM extracts an RSA public key from an X.509 certificate PEM. | facade | `ExamplePublicKeyFromCertificatePEM` |
+| `PublicKeyToPEM` | `func PublicKeyToPEM(pub *rsa.PublicKey) ([]byte, error)` | PublicKeyToPEM encodes an RSA public key as PKIX PEM. | facade | `ExamplePublicKeyToPEM` |
+| `PublicKeyToPKCS1PEM` | `func PublicKeyToPKCS1PEM(pub *rsa.PublicKey) []byte` | PublicKeyToPKCS1PEM encodes an RSA public key as PKCS#1 PEM. | facade | `ExamplePublicKeyToPKCS1PEM` |
+| `RSADecryptOAEP` | `func RSADecryptOAEP(cipherText []byte, priv *rsa.PrivateKey, label []byte) ([]byte, error)` | RSADecryptOAEP decrypts data using RSA-OAEP with SHA-256. | facade | `ExampleRSADecryptOAEP` |
+| `RSADecryptOAEPWithOptions` | `func RSADecryptOAEPWithOptions(cipherText []byte, priv *rsa.PrivateKey, label []byte, opts ...RSAOption) ([]byte, error)` | RSADecryptOAEPWithOptions decrypts data using RSA-OAEP with options. | facade | `ExampleRSADecryptOAEPWithOptions` |
+| `RSAEncryptOAEP` | `func RSAEncryptOAEP(plain []byte, pub *rsa.PublicKey, label []byte) ([]byte, error)` | RSAEncryptOAEP encrypts data using RSA-OAEP with SHA-256. | facade | `ExampleRSAEncryptOAEP` |
+| `RSAEncryptOAEPWithOptions` | `func RSAEncryptOAEPWithOptions(plain []byte, pub *rsa.PublicKey, label []byte, opts ...RSAOption) ([]byte, error)` | RSAEncryptOAEPWithOptions encrypts data using RSA-OAEP with options. | facade | `ExampleRSAEncryptOAEPWithOptions` |
+| `RSASignPSS` | `func RSASignPSS(priv *rsa.PrivateKey, hash crypto.Hash, digest []byte) ([]byte, error)` | RSASignPSS signs digest using RSA-PSS. | facade | `ExampleRSASignPSS` |
+| `RSASignPSSWithOptions` | `func RSASignPSSWithOptions(priv *rsa.PrivateKey, hash crypto.Hash, digest []byte, opts ...RSAOption) ([]byte, error)` | RSASignPSSWithOptions signs digest using RSA-PSS with options. | facade | `ExampleRSASignPSSWithOptions` |
+| `RSAVerifyPSS` | `func RSAVerifyPSS(pub *rsa.PublicKey, hash crypto.Hash, digest []byte, sig []byte) error` | RSAVerifyPSS verifies an RSA-PSS signature. | facade | `ExampleRSAVerifyPSS` |
+| `RSAVerifyPSSWithOptions` | `func RSAVerifyPSSWithOptions(pub *rsa.PublicKey, hash crypto.Hash, digest []byte, sig []byte, opts ...RSAOption) error` | RSAVerifyPSSWithOptions verifies an RSA-PSS signature with options. | facade | `ExampleRSAVerifyPSSWithOptions` |
+| `RandomBytes` | `func RandomBytes(n int) ([]byte, error)` | RandomBytes returns n cryptographically secure random bytes. | facade | `ExampleRandomBytes` |
 | `RandomBytesWithOptions` | `func RandomBytesWithOptions(n int, opts ...RandomOption) ([]byte, error)` | RandomBytesWithOptions returns n random bytes using custom random options. | facade | `ExampleRandomBytesWithOptions` |
-| `SHA224` | `func SHA224(data []byte) []byte` | SHA224 returns the SHA224 digest bytes of data. | facade | — |
-| `SHA224Hex` | `func SHA224Hex(data []byte) string` | SHA224Hex returns the SHA224 digest of data in lower-case hex form. | facade | — |
-| `SHA256` | `func SHA256(data []byte) []byte` | SHA256 returns the SHA256 digest bytes of data. | facade | — |
+| `SHA224` | `func SHA224(data []byte) []byte` | SHA224 returns the SHA224 digest bytes of data. | facade | `ExampleSHA224` |
+| `SHA224Hex` | `func SHA224Hex(data []byte) string` | SHA224Hex returns the SHA224 digest of data in lower-case hex form. | facade | `ExampleSHA224Hex` |
+| `SHA256` | `func SHA256(data []byte) []byte` | SHA256 returns the SHA256 digest bytes of data. | facade | `ExampleSHA256` |
 | `SHA256Hex` | `func SHA256Hex(s string) string` | SHA256Hex returns the SHA256 digest of s in lower-case hex form. | facade | `ExampleSHA256Hex` |
-| `SHA256HexBytes` | `func SHA256HexBytes(data []byte) string` | SHA256HexBytes returns the SHA256 digest of data in lower-case hex form. | facade | — |
-| `SHA384` | `func SHA384(data []byte) []byte` | SHA384 returns the SHA384 digest bytes of data. | facade | — |
-| `SHA384Hex` | `func SHA384Hex(data []byte) string` | SHA384Hex returns the SHA384 digest of data in lower-case hex form. | facade | — |
-| `SHA512` | `func SHA512(data []byte) []byte` | SHA512 returns the SHA512 digest bytes of data. | facade | — |
-| `SHA512Hex` | `func SHA512Hex(s string) string` | SHA512Hex returns the SHA512 digest of s in lower-case hex form. | facade | — |
-| `SHA512HexBytes` | `func SHA512HexBytes(data []byte) string` | SHA512HexBytes returns the SHA512 digest of data in lower-case hex form. | facade | — |
-| `SignParams` | `func SignParams(params map[string]any, digestHex func([]byte) string, separator string, keyValueSeparator string, ignoreNil bool, otherParams ...string) string` | SignParams joins params by sorted key and returns the digest hex using digestHex. | facade | — |
-| `SignParamsSHA256` | `func SignParamsSHA256(params map[string]any, otherParams ...string) string` | SignParamsSHA256 signs sorted params with SHA256. | facade | — |
-| `SignSHA256WithRSA` | `func SignSHA256WithRSA(data []byte, priv *rsa.PrivateKey) ([]byte, error)` | SignSHA256WithRSA signs data using SHA256withRSA. | facade | — |
-| `SignWithRSAOptions` | `func SignWithRSAOptions(data []byte, priv *rsa.PrivateKey, opts ...RSADigestOption) ([]byte, error)` | SignWithRSAOptions hashes data and signs it with configurable RSA options. | facade | — |
-| `ValidateAESGCMNonce` | `func ValidateAESGCMNonce(nonce []byte) error` | ValidateAESGCMNonce reports whether nonce has the default nonce size used by AES-GCM helpers. | facade | — |
-| `ValidateAESIV` | `func ValidateAESIV(iv []byte) error` | ValidateAESIV reports whether iv has the required block size for AES CBC/CFB/OFB/CTR helpers. | facade | — |
+| `SHA256HexBytes` | `func SHA256HexBytes(data []byte) string` | SHA256HexBytes returns the SHA256 digest of data in lower-case hex form. | facade | `ExampleSHA256HexBytes` |
+| `SHA384` | `func SHA384(data []byte) []byte` | SHA384 returns the SHA384 digest bytes of data. | facade | `ExampleSHA384` |
+| `SHA384Hex` | `func SHA384Hex(data []byte) string` | SHA384Hex returns the SHA384 digest of data in lower-case hex form. | facade | `ExampleSHA384Hex` |
+| `SHA512` | `func SHA512(data []byte) []byte` | SHA512 returns the SHA512 digest bytes of data. | facade | `ExampleSHA512` |
+| `SHA512Hex` | `func SHA512Hex(s string) string` | SHA512Hex returns the SHA512 digest of s in lower-case hex form. | facade | `ExampleSHA512Hex` |
+| `SHA512HexBytes` | `func SHA512HexBytes(data []byte) string` | SHA512HexBytes returns the SHA512 digest of data in lower-case hex form. | facade | `ExampleSHA512HexBytes` |
+| `SignParams` | `func SignParams(params map[string]any, digestHex func([]byte) string, separator string, keyValueSeparator string, ignoreNil bool, otherParams ...string) string` | SignParams joins params by sorted key and returns the digest hex using digestHex. | facade | `ExampleSignParams` |
+| `SignParamsSHA256` | `func SignParamsSHA256(params map[string]any, otherParams ...string) string` | SignParamsSHA256 signs sorted params with SHA256. | facade | `ExampleSignParamsSHA256` |
+| `SignSHA256WithRSA` | `func SignSHA256WithRSA(data []byte, priv *rsa.PrivateKey) ([]byte, error)` | SignSHA256WithRSA signs data using SHA256withRSA. | facade | `ExampleSignSHA256WithRSA` |
+| `SignWithRSAOptions` | `func SignWithRSAOptions(data []byte, priv *rsa.PrivateKey, opts ...RSADigestOption) ([]byte, error)` | SignWithRSAOptions hashes data and signs it with configurable RSA options. | facade | `ExampleSignWithRSAOptions` |
+| `ValidateAESGCMNonce` | `func ValidateAESGCMNonce(nonce []byte) error` | ValidateAESGCMNonce reports whether nonce has the default nonce size used by AES-GCM helpers. | facade | `ExampleValidateAESGCMNonce` |
+| `ValidateAESIV` | `func ValidateAESIV(iv []byte) error` | ValidateAESIV reports whether iv has the required block size for AES CBC/CFB/OFB/CTR helpers. | facade | `ExampleValidateAESIV` |
 | `ValidateAESKey` | `func ValidateAESKey(key []byte) error` | ValidateAESKey reports whether key is a valid AES key length (16, 24, or 32 bytes). | facade | `ExampleValidateAESKey` |
-| `VerifySHA256WithRSA` | `func VerifySHA256WithRSA(data []byte, sig []byte, pub *rsa.PublicKey) error` | VerifySHA256WithRSA verifies SHA256withRSA signature. | facade | — |
-| `VerifyWithRSAOptions` | `func VerifyWithRSAOptions(data []byte, sig []byte, pub *rsa.PublicKey, opts ...RSADigestOption) error` | VerifyWithRSAOptions hashes data and verifies an RSA signature with configurable options. | facade | — |
-| `WithGCMBlockFactory` | `func WithGCMBlockFactory(factory func([]byte) (cipher.Block, error)) AESGCMOption` | WithGCMBlockFactory sets the cipher block factory used by AES-GCM helpers. | facade | — |
-| `WithGCMNonceSize` | `func WithGCMNonceSize(size int) AESGCMOption` | WithGCMNonceSize sets a custom nonce size for AES-GCM helpers. | facade | — |
-| `WithGCMRandomOptions` | `func WithGCMRandomOptions(opts ...RandomOption) AESGCMOption` | WithGCMRandomOptions sets the entropy source options used when AESSealGCM generates a nonce. | facade | — |
-| `WithGCMTagSize` | `func WithGCMTagSize(size int) AESGCMOption` | WithGCMTagSize sets a custom tag size for AES-GCM helpers. | facade | — |
-| `WithRSADigestHash` | `func WithRSADigestHash(hashID crypto.Hash, newHash func() hash.Hash) RSADigestOption` | WithRSADigestHash sets the hash used by RSA data-signing helpers. | facade | — |
-| `WithRSADigestPSS` | `func WithRSADigestPSS(opts *rsa.PSSOptions) RSADigestOption` | WithRSADigestPSS signs and verifies using RSA-PSS instead of PKCS#1 v1.5. | facade | — |
-| `WithRSADigestRandomReader` | `func WithRSADigestRandomReader(reader io.Reader) RSADigestOption` | WithRSADigestRandomReader sets the entropy source used by RSA data-signing helpers. | facade | — |
-| `WithRSAOAEPHash` | `func WithRSAOAEPHash(newHash func() hash.Hash) RSAOption` | WithRSAOAEPHash sets the hash function used by RSA-OAEP helpers. | facade | — |
-| `WithRSAPSSOptions` | `func WithRSAPSSOptions(opts *rsa.PSSOptions) RSAOption` | WithRSAPSSOptions sets the PSS options used by RSA-PSS helpers. | facade | — |
-| `WithRSARandomReader` | `func WithRSARandomReader(reader io.Reader) RSAOption` | WithRSARandomReader sets the entropy source used by RSA helpers. | facade | — |
-| `WithRandomReader` | `func WithRandomReader(reader io.Reader) RandomOption` | WithRandomReader sets the entropy source used by random byte helpers. | facade | — |
+| `VerifySHA256WithRSA` | `func VerifySHA256WithRSA(data []byte, sig []byte, pub *rsa.PublicKey) error` | VerifySHA256WithRSA verifies SHA256withRSA signature. | facade | `ExampleVerifySHA256WithRSA` |
+| `VerifyWithRSAOptions` | `func VerifyWithRSAOptions(data []byte, sig []byte, pub *rsa.PublicKey, opts ...RSADigestOption) error` | VerifyWithRSAOptions hashes data and verifies an RSA signature with configurable options. | facade | `ExampleVerifyWithRSAOptions` |
+| `WithGCMBlockFactory` | `func WithGCMBlockFactory(factory func([]byte) (cipher.Block, error)) AESGCMOption` | WithGCMBlockFactory sets the cipher block factory used by AES-GCM helpers. | facade | `ExampleWithGCMBlockFactory` |
+| `WithGCMNonceSize` | `func WithGCMNonceSize(size int) AESGCMOption` | WithGCMNonceSize sets a custom nonce size for AES-GCM helpers. | facade | `ExampleWithGCMNonceSize` |
+| `WithGCMRandomOptions` | `func WithGCMRandomOptions(opts ...RandomOption) AESGCMOption` | WithGCMRandomOptions sets the entropy source options used when AESSealGCM generates a nonce. | facade | `ExampleWithGCMRandomOptions` |
+| `WithGCMTagSize` | `func WithGCMTagSize(size int) AESGCMOption` | WithGCMTagSize sets a custom tag size for AES-GCM helpers. | facade | `ExampleWithGCMTagSize` |
+| `WithRSADigestHash` | `func WithRSADigestHash(hashID crypto.Hash, newHash func() hash.Hash) RSADigestOption` | WithRSADigestHash sets the hash used by RSA data-signing helpers. | facade | `ExampleWithRSADigestHash` |
+| `WithRSADigestPSS` | `func WithRSADigestPSS(opts *rsa.PSSOptions) RSADigestOption` | WithRSADigestPSS signs and verifies using RSA-PSS instead of PKCS#1 v1.5. | facade | `ExampleWithRSADigestPSS` |
+| `WithRSADigestRandomReader` | `func WithRSADigestRandomReader(reader io.Reader) RSADigestOption` | WithRSADigestRandomReader sets the entropy source used by RSA data-signing helpers. | facade | `ExampleWithRSADigestRandomReader` |
+| `WithRSAOAEPHash` | `func WithRSAOAEPHash(newHash func() hash.Hash) RSAOption` | WithRSAOAEPHash sets the hash function used by RSA-OAEP helpers. | facade | `ExampleWithRSAOAEPHash` |
+| `WithRSAPSSOptions` | `func WithRSAPSSOptions(opts *rsa.PSSOptions) RSAOption` | WithRSAPSSOptions sets the PSS options used by RSA-PSS helpers. | facade | `ExampleWithRSAPSSOptions` |
+| `WithRSARandomReader` | `func WithRSARandomReader(reader io.Reader) RSAOption` | WithRSARandomReader sets the entropy source used by RSA helpers. | facade | `ExampleWithRSARandomReader` |
+| `WithRandomReader` | `func WithRandomReader(reader io.Reader) RandomOption` | WithRandomReader sets the entropy source used by random byte helpers. | facade | `ExampleWithRandomReader` |
 
 ### vcsv
 
