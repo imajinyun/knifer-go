@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 54,
     "function_count": 2604,
-    "functions_with_examples": 373,
+    "functions_with_examples": 415,
     "context_aware_functions": 36,
     "returns_error_functions": 603,
     "variadic_functions": 776,
@@ -46808,8 +46808,8 @@
       "synopsis": "Package vsys provides public APIs for system information utilities.",
       "summary": {
         "function_count": 111,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 4.5,
+        "functions_with_examples": 47,
+        "example_coverage_percent": 42.3,
         "synopsis_sources": {
           "empty": 0,
           "facade": 111,
@@ -46845,7 +46845,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleCurrentPIDWithOptions"
+          ]
         },
         {
           "name": "DumpSystemInfo",
@@ -46869,7 +46872,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleDumpSystemInfoTo"
+          ]
         },
         {
           "name": "DumpSystemInfoWithOptions",
@@ -46888,7 +46894,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleDumpSystemInfoWithOptions"
+          ]
         },
         {
           "name": "Env",
@@ -46954,7 +46963,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleEnvBoolWithOptions"
+          ]
         },
         {
           "name": "EnvInt",
@@ -47002,7 +47014,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleEnvIntWithOptions"
+          ]
         },
         {
           "name": "EnvOrDefault",
@@ -47108,7 +47123,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleFreeMemoryWithOptions"
+          ]
         },
         {
           "name": "Get",
@@ -47178,7 +47196,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetBoolWithOptions"
+          ]
         },
         {
           "name": "GetCurrentPID",
@@ -47244,7 +47265,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetFreeMemoryWithOptions"
+          ]
         },
         {
           "name": "GetGoInfo",
@@ -47274,7 +47298,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetGoInfoWithOptions"
+          ]
         },
         {
           "name": "GetHostInfo",
@@ -47304,7 +47331,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetHostInfoWithOptions"
+          ]
         },
         {
           "name": "GetInt",
@@ -47352,7 +47382,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetIntWithOptions"
+          ]
         },
         {
           "name": "GetMaxMemory",
@@ -47382,7 +47415,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetMaxMemoryWithOptions"
+          ]
         },
         {
           "name": "GetOrDefault",
@@ -47430,7 +47466,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetOrDefaultWithOptions"
+          ]
         },
         {
           "name": "GetOsInfo",
@@ -47460,7 +47499,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetOsInfoWithOptions"
+          ]
         },
         {
           "name": "GetRuntimeInfo",
@@ -47490,7 +47532,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetRuntimeInfoWithOptions"
+          ]
         },
         {
           "name": "GetTotalMemory",
@@ -47520,7 +47565,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetTotalMemoryWithOptions"
+          ]
         },
         {
           "name": "GetTotalThreadCount",
@@ -47550,7 +47598,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetTotalThreadCountWithOptions"
+          ]
         },
         {
           "name": "GetUserInfo",
@@ -47580,7 +47631,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetUserInfoWithOptions"
+          ]
         },
         {
           "name": "GetWithOptions",
@@ -47606,7 +47660,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetWithOptions"
+          ]
         },
         {
           "name": "MaxMemory",
@@ -47636,7 +47693,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleMaxMemoryWithOptions"
+          ]
         },
         {
           "name": "NewGoInfo",
@@ -47699,7 +47759,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewHostInfoWithOptions"
+          ]
         },
         {
           "name": "NewOsInfo",
@@ -47729,7 +47792,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewOsInfoWithOptions"
+          ]
         },
         {
           "name": "NewRuntimeInfo",
@@ -47759,7 +47825,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewRuntimeInfoWithOptions"
+          ]
         },
         {
           "name": "NewUserInfo",
@@ -47789,7 +47858,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewUserInfoWithOptions"
+          ]
         },
         {
           "name": "ResetInfoCache",
@@ -47816,7 +47888,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleSysGoInfoWithOptions"
+          ]
         },
         {
           "name": "SysHostInfoWithOptions",
@@ -47834,7 +47909,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleSysHostInfoWithOptions"
+          ]
         },
         {
           "name": "SysOsInfoWithOptions",
@@ -47852,7 +47930,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleSysOsInfoWithOptions"
+          ]
         },
         {
           "name": "SysRuntimeInfoWithOptions",
@@ -47870,7 +47951,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleSysRuntimeInfoWithOptions"
+          ]
         },
         {
           "name": "SysUserInfoWithOptions",
@@ -47888,7 +47972,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleSysUserInfoWithOptions"
+          ]
         },
         {
           "name": "SystemGoInfo",
@@ -47918,7 +48005,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleSystemGoInfoWithOptions"
+          ]
         },
         {
           "name": "SystemHostInfo",
@@ -47948,7 +48038,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleSystemHostInfoWithOptions"
+          ]
         },
         {
           "name": "SystemOsInfo",
@@ -47978,7 +48071,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleSystemOsInfoWithOptions"
+          ]
         },
         {
           "name": "SystemRuntimeInfo",
@@ -48008,7 +48104,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleSystemRuntimeInfoWithOptions"
+          ]
         },
         {
           "name": "SystemUserInfo",
@@ -48038,7 +48137,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleSystemUserInfoWithOptions"
+          ]
         },
         {
           "name": "TotalGoroutineCount",
@@ -48068,7 +48170,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleTotalGoroutineCountWithOptions"
+          ]
         },
         {
           "name": "TotalMemory",
@@ -48098,7 +48203,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleTotalMemoryWithOptions"
+          ]
         },
         {
           "name": "WithCurrentUserFunc",
@@ -48224,7 +48332,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithEnvBoolParser"
+          ]
         },
         {
           "name": "WithEnvIntParser",
@@ -48242,7 +48353,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithEnvIntParser"
+          ]
         },
         {
           "name": "WithEnvLookupFunc",
@@ -48332,7 +48446,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithGoEnvOutputFunc"
+          ]
         },
         {
           "name": "WithGoNumCPUFunc",
@@ -48404,7 +48521,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithGoRootEnvLookupFunc"
+          ]
         },
         {
           "name": "WithGoRootFunc",
@@ -48476,7 +48596,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithHostInterfaceAddrsFunc"
+          ]
         },
         {
           "name": "WithHostNameFunc",
@@ -48548,7 +48671,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithOSEnvLookupFunc"
+          ]
         },
         {
           "name": "WithOSFileSeparatorFunc",

@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/go-knifer` |
 | Packages | 54 |
 | Functions | 2604 |
-| Functions with examples | 373 |
+| Functions with examples | 415 |
 | Context-aware functions | 36 |
 | Functions returning error | 603 |
 | Variadic functions | 776 |
@@ -2747,110 +2747,110 @@ Import path: `github.com/imajinyun/go-knifer/vsys`
 
 Package vsys provides public APIs for system information utilities.
 
-Quality: 111 functions · 5 with examples · 4.5% example coverage · synopsis sources: facade=111, internal=0, empty=0
+Quality: 111 functions · 47 with examples · 42.3% example coverage · synopsis sources: facade=111, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
 | `CurrentPID` | `func CurrentPID() int` | CurrentPID returns the current process id. | facade | — |
-| `CurrentPIDWithOptions` | `func CurrentPIDWithOptions(opts ...ProcessOption) int` | CurrentPIDWithOptions returns the current process id using custom providers. | facade | — |
+| `CurrentPIDWithOptions` | `func CurrentPIDWithOptions(opts ...ProcessOption) int` | CurrentPIDWithOptions returns the current process id using custom providers. | facade | `ExampleCurrentPIDWithOptions` |
 | `DumpSystemInfo` | `func DumpSystemInfo()` | DumpSystemInfo writes system information to stdout. | facade | — |
-| `DumpSystemInfoTo` | `func DumpSystemInfoTo(w io.Writer)` | DumpSystemInfoTo writes system information to w. | facade | — |
-| `DumpSystemInfoWithOptions` | `func DumpSystemInfoWithOptions(w io.Writer, opts ...DumpOption)` | DumpSystemInfoWithOptions writes uncached system information to w using per-call providers. | facade | — |
+| `DumpSystemInfoTo` | `func DumpSystemInfoTo(w io.Writer)` | DumpSystemInfoTo writes system information to w. | facade | `ExampleDumpSystemInfoTo` |
+| `DumpSystemInfoWithOptions` | `func DumpSystemInfoWithOptions(w io.Writer, opts ...DumpOption)` | DumpSystemInfoWithOptions writes uncached system information to w using per-call providers. | facade | `ExampleDumpSystemInfoWithOptions` |
 | `Env` | `func Env(key string) string` | Env returns an environment variable value. | facade | — |
 | `EnvBool` | `func EnvBool(key string, def bool) bool` | EnvBool returns a bool environment variable or def when missing/invalid. | facade | — |
-| `EnvBoolWithOptions` | `func EnvBoolWithOptions(key string, def bool, opts ...EnvOption) bool` | EnvBoolWithOptions returns a bool environment variable or def using custom providers. | facade | — |
+| `EnvBoolWithOptions` | `func EnvBoolWithOptions(key string, def bool, opts ...EnvOption) bool` | EnvBoolWithOptions returns a bool environment variable or def using custom providers. | facade | `ExampleEnvBoolWithOptions` |
 | `EnvInt` | `func EnvInt(key string, def int) int` | EnvInt returns an int environment variable or def when missing/invalid. | facade | — |
-| `EnvIntWithOptions` | `func EnvIntWithOptions(key string, def int, opts ...EnvOption) int` | EnvIntWithOptions returns an int environment variable or def using custom providers. | facade | — |
+| `EnvIntWithOptions` | `func EnvIntWithOptions(key string, def int, opts ...EnvOption) int` | EnvIntWithOptions returns an int environment variable or def using custom providers. | facade | `ExampleEnvIntWithOptions` |
 | `EnvOrDefault` | `func EnvOrDefault(key string, def string) string` | EnvOrDefault returns an environment variable or def when empty/missing. | facade | — |
 | `EnvOrDefaultWithOptions` | `func EnvOrDefaultWithOptions(key string, def string, opts ...EnvOption) string` | EnvOrDefaultWithOptions returns an environment variable or def using custom providers. | facade | `ExampleEnvOrDefaultWithOptions` |
 | `EnvWithOptions` | `func EnvWithOptions(key string, opts ...EnvOption) string` | EnvWithOptions returns an environment variable value using custom providers. | facade | `ExampleEnvWithOptions` |
 | `FreeMemory` | `func FreeMemory() uint64` | FreeMemory returns idle memory in the current Go process. | facade | — |
-| `FreeMemoryWithOptions` | `func FreeMemoryWithOptions(opts ...RuntimeInfoOption) uint64` | FreeMemoryWithOptions returns idle memory using custom runtime providers. | facade | — |
+| `FreeMemoryWithOptions` | `func FreeMemoryWithOptions(opts ...RuntimeInfoOption) uint64` | FreeMemoryWithOptions returns idle memory using custom runtime providers. | facade | `ExampleFreeMemoryWithOptions` |
 | `Get` | `func Get(key string, quiet bool) string` | Get delegates to the internal system implementation. | facade | — |
 | `GetBool` | `func GetBool(key string, def bool) bool` | GetBool delegates to the internal system implementation. | facade | — |
-| `GetBoolWithOptions` | `func GetBoolWithOptions(key string, def bool, opts ...EnvOption) bool` | GetBoolWithOptions delegates to the internal system implementation. | facade | — |
+| `GetBoolWithOptions` | `func GetBoolWithOptions(key string, def bool, opts ...EnvOption) bool` | GetBoolWithOptions delegates to the internal system implementation. | facade | `ExampleGetBoolWithOptions` |
 | `GetCurrentPID` | `func GetCurrentPID() int` | GetCurrentPID delegates to the internal system implementation. | facade | `ExampleGetCurrentPID` |
 | `GetCurrentPIDWithOptions` | `func GetCurrentPIDWithOptions(opts ...ProcessOption) int` | GetCurrentPIDWithOptions delegates to the internal system implementation. | facade | `ExampleGetCurrentPIDWithOptions` |
 | `GetFreeMemory` | `func GetFreeMemory() uint64` | GetFreeMemory delegates to the internal system implementation. | facade | — |
-| `GetFreeMemoryWithOptions` | `func GetFreeMemoryWithOptions(opts ...RuntimeInfoOption) uint64` | GetFreeMemoryWithOptions delegates to the internal system implementation. | facade | — |
+| `GetFreeMemoryWithOptions` | `func GetFreeMemoryWithOptions(opts ...RuntimeInfoOption) uint64` | GetFreeMemoryWithOptions delegates to the internal system implementation. | facade | `ExampleGetFreeMemoryWithOptions` |
 | `GetGoInfo` | `func GetGoInfo() *GoInfo` | GetGoInfo delegates to the internal system implementation. | facade | — |
-| `GetGoInfoWithOptions` | `func GetGoInfoWithOptions(opts ...GoInfoOption) *GoInfo` | GetGoInfoWithOptions delegates to the internal system implementation. | facade | — |
+| `GetGoInfoWithOptions` | `func GetGoInfoWithOptions(opts ...GoInfoOption) *GoInfo` | GetGoInfoWithOptions delegates to the internal system implementation. | facade | `ExampleGetGoInfoWithOptions` |
 | `GetHostInfo` | `func GetHostInfo() *HostInfo` | GetHostInfo delegates to the internal system implementation. | facade | — |
-| `GetHostInfoWithOptions` | `func GetHostInfoWithOptions(opts ...HostInfoOption) *HostInfo` | GetHostInfoWithOptions delegates to the internal system implementation. | facade | — |
+| `GetHostInfoWithOptions` | `func GetHostInfoWithOptions(opts ...HostInfoOption) *HostInfo` | GetHostInfoWithOptions delegates to the internal system implementation. | facade | `ExampleGetHostInfoWithOptions` |
 | `GetInt` | `func GetInt(key string, def int) int` | GetInt delegates to the internal system implementation. | facade | — |
-| `GetIntWithOptions` | `func GetIntWithOptions(key string, def int, opts ...EnvOption) int` | GetIntWithOptions delegates to the internal system implementation. | facade | — |
+| `GetIntWithOptions` | `func GetIntWithOptions(key string, def int, opts ...EnvOption) int` | GetIntWithOptions delegates to the internal system implementation. | facade | `ExampleGetIntWithOptions` |
 | `GetMaxMemory` | `func GetMaxMemory() uint64` | GetMaxMemory delegates to the internal system implementation. | facade | — |
-| `GetMaxMemoryWithOptions` | `func GetMaxMemoryWithOptions(opts ...RuntimeInfoOption) uint64` | GetMaxMemoryWithOptions delegates to the internal system implementation. | facade | — |
+| `GetMaxMemoryWithOptions` | `func GetMaxMemoryWithOptions(opts ...RuntimeInfoOption) uint64` | GetMaxMemoryWithOptions delegates to the internal system implementation. | facade | `ExampleGetMaxMemoryWithOptions` |
 | `GetOrDefault` | `func GetOrDefault(key string, def string) string` | GetOrDefault delegates to the internal system implementation. | facade | — |
-| `GetOrDefaultWithOptions` | `func GetOrDefaultWithOptions(key string, def string, opts ...EnvOption) string` | GetOrDefaultWithOptions delegates to the internal system implementation. | facade | — |
+| `GetOrDefaultWithOptions` | `func GetOrDefaultWithOptions(key string, def string, opts ...EnvOption) string` | GetOrDefaultWithOptions delegates to the internal system implementation. | facade | `ExampleGetOrDefaultWithOptions` |
 | `GetOsInfo` | `func GetOsInfo() *OsInfo` | GetOsInfo delegates to the internal system implementation. | facade | — |
-| `GetOsInfoWithOptions` | `func GetOsInfoWithOptions(opts ...OsInfoOption) *OsInfo` | GetOsInfoWithOptions delegates to the internal system implementation. | facade | — |
+| `GetOsInfoWithOptions` | `func GetOsInfoWithOptions(opts ...OsInfoOption) *OsInfo` | GetOsInfoWithOptions delegates to the internal system implementation. | facade | `ExampleGetOsInfoWithOptions` |
 | `GetRuntimeInfo` | `func GetRuntimeInfo() *RuntimeInfo` | GetRuntimeInfo delegates to the internal system implementation. | facade | — |
-| `GetRuntimeInfoWithOptions` | `func GetRuntimeInfoWithOptions(opts ...RuntimeInfoOption) *RuntimeInfo` | GetRuntimeInfoWithOptions delegates to the internal system implementation. | facade | — |
+| `GetRuntimeInfoWithOptions` | `func GetRuntimeInfoWithOptions(opts ...RuntimeInfoOption) *RuntimeInfo` | GetRuntimeInfoWithOptions delegates to the internal system implementation. | facade | `ExampleGetRuntimeInfoWithOptions` |
 | `GetTotalMemory` | `func GetTotalMemory() uint64` | GetTotalMemory delegates to the internal system implementation. | facade | — |
-| `GetTotalMemoryWithOptions` | `func GetTotalMemoryWithOptions(opts ...RuntimeInfoOption) uint64` | GetTotalMemoryWithOptions delegates to the internal system implementation. | facade | — |
+| `GetTotalMemoryWithOptions` | `func GetTotalMemoryWithOptions(opts ...RuntimeInfoOption) uint64` | GetTotalMemoryWithOptions delegates to the internal system implementation. | facade | `ExampleGetTotalMemoryWithOptions` |
 | `GetTotalThreadCount` | `func GetTotalThreadCount() int` | GetTotalThreadCount delegates to the internal system implementation. | facade | — |
-| `GetTotalThreadCountWithOptions` | `func GetTotalThreadCountWithOptions(opts ...ProcessOption) int` | GetTotalThreadCountWithOptions delegates to the internal system implementation. | facade | — |
+| `GetTotalThreadCountWithOptions` | `func GetTotalThreadCountWithOptions(opts ...ProcessOption) int` | GetTotalThreadCountWithOptions delegates to the internal system implementation. | facade | `ExampleGetTotalThreadCountWithOptions` |
 | `GetUserInfo` | `func GetUserInfo() *UserInfo` | GetUserInfo delegates to the internal system implementation. | facade | — |
-| `GetUserInfoWithOptions` | `func GetUserInfoWithOptions(opts ...UserInfoOption) *UserInfo` | GetUserInfoWithOptions delegates to the internal system implementation. | facade | — |
-| `GetWithOptions` | `func GetWithOptions(key string, quiet bool, opts ...EnvOption) string` | GetWithOptions delegates to the internal system implementation. | facade | — |
+| `GetUserInfoWithOptions` | `func GetUserInfoWithOptions(opts ...UserInfoOption) *UserInfo` | GetUserInfoWithOptions delegates to the internal system implementation. | facade | `ExampleGetUserInfoWithOptions` |
+| `GetWithOptions` | `func GetWithOptions(key string, quiet bool, opts ...EnvOption) string` | GetWithOptions delegates to the internal system implementation. | facade | `ExampleGetWithOptions` |
 | `MaxMemory` | `func MaxMemory() uint64` | MaxMemory returns the detected memory upper bound. | facade | — |
-| `MaxMemoryWithOptions` | `func MaxMemoryWithOptions(opts ...RuntimeInfoOption) uint64` | MaxMemoryWithOptions returns the detected memory upper bound using custom runtime providers. | facade | — |
+| `MaxMemoryWithOptions` | `func MaxMemoryWithOptions(opts ...RuntimeInfoOption) uint64` | MaxMemoryWithOptions returns the detected memory upper bound using custom runtime providers. | facade | `ExampleMaxMemoryWithOptions` |
 | `NewGoInfo` | `func NewGoInfo() *GoInfo` | NewGoInfo delegates to the internal system implementation. | facade | — |
 | `NewGoInfoWithOptions` | `func NewGoInfoWithOptions(opts ...GoInfoOption) *GoInfo` | NewGoInfoWithOptions delegates to the internal system implementation. | facade | `ExampleNewGoInfoWithOptions` |
 | `NewHostInfo` | `func NewHostInfo() *HostInfo` | NewHostInfo delegates to the internal system implementation. | facade | — |
-| `NewHostInfoWithOptions` | `func NewHostInfoWithOptions(opts ...HostInfoOption) *HostInfo` | NewHostInfoWithOptions delegates to the internal system implementation. | facade | — |
+| `NewHostInfoWithOptions` | `func NewHostInfoWithOptions(opts ...HostInfoOption) *HostInfo` | NewHostInfoWithOptions delegates to the internal system implementation. | facade | `ExampleNewHostInfoWithOptions` |
 | `NewOsInfo` | `func NewOsInfo() *OsInfo` | NewOsInfo delegates to the internal system implementation. | facade | — |
-| `NewOsInfoWithOptions` | `func NewOsInfoWithOptions(opts ...OsInfoOption) *OsInfo` | NewOsInfoWithOptions delegates to the internal system implementation. | facade | — |
+| `NewOsInfoWithOptions` | `func NewOsInfoWithOptions(opts ...OsInfoOption) *OsInfo` | NewOsInfoWithOptions delegates to the internal system implementation. | facade | `ExampleNewOsInfoWithOptions` |
 | `NewRuntimeInfo` | `func NewRuntimeInfo() *RuntimeInfo` | NewRuntimeInfo delegates to the internal system implementation. | facade | — |
-| `NewRuntimeInfoWithOptions` | `func NewRuntimeInfoWithOptions(opts ...RuntimeInfoOption) *RuntimeInfo` | NewRuntimeInfoWithOptions delegates to the internal system implementation. | facade | — |
+| `NewRuntimeInfoWithOptions` | `func NewRuntimeInfoWithOptions(opts ...RuntimeInfoOption) *RuntimeInfo` | NewRuntimeInfoWithOptions delegates to the internal system implementation. | facade | `ExampleNewRuntimeInfoWithOptions` |
 | `NewUserInfo` | `func NewUserInfo() *UserInfo` | NewUserInfo delegates to the internal system implementation. | facade | — |
-| `NewUserInfoWithOptions` | `func NewUserInfoWithOptions(opts ...UserInfoOption) *UserInfo` | NewUserInfoWithOptions delegates to the internal system implementation. | facade | — |
+| `NewUserInfoWithOptions` | `func NewUserInfoWithOptions(opts ...UserInfoOption) *UserInfo` | NewUserInfoWithOptions delegates to the internal system implementation. | facade | `ExampleNewUserInfoWithOptions` |
 | `ResetInfoCache` | `func ResetInfoCache()` | ResetInfoCache clears cached singleton system information. | facade | — |
-| `SysGoInfoWithOptions` | `func SysGoInfoWithOptions(opts ...GoInfoOption) *GoInfo` | SysGoInfoWithOptions returns uncached Go runtime metadata collected with per-call options. | facade | — |
-| `SysHostInfoWithOptions` | `func SysHostInfoWithOptions(opts ...HostInfoOption) *HostInfo` | SysHostInfoWithOptions returns uncached host information collected with per-call options. | facade | — |
-| `SysOsInfoWithOptions` | `func SysOsInfoWithOptions(opts ...OsInfoOption) *OsInfo` | SysOsInfoWithOptions returns uncached operating system information collected with per-call options. | facade | — |
-| `SysRuntimeInfoWithOptions` | `func SysRuntimeInfoWithOptions(opts ...RuntimeInfoOption) *RuntimeInfo` | SysRuntimeInfoWithOptions returns uncached runtime statistics collected with per-call options. | facade | — |
-| `SysUserInfoWithOptions` | `func SysUserInfoWithOptions(opts ...UserInfoOption) *UserInfo` | SysUserInfoWithOptions returns uncached user information collected with per-call options. | facade | — |
+| `SysGoInfoWithOptions` | `func SysGoInfoWithOptions(opts ...GoInfoOption) *GoInfo` | SysGoInfoWithOptions returns uncached Go runtime metadata collected with per-call options. | facade | `ExampleSysGoInfoWithOptions` |
+| `SysHostInfoWithOptions` | `func SysHostInfoWithOptions(opts ...HostInfoOption) *HostInfo` | SysHostInfoWithOptions returns uncached host information collected with per-call options. | facade | `ExampleSysHostInfoWithOptions` |
+| `SysOsInfoWithOptions` | `func SysOsInfoWithOptions(opts ...OsInfoOption) *OsInfo` | SysOsInfoWithOptions returns uncached operating system information collected with per-call options. | facade | `ExampleSysOsInfoWithOptions` |
+| `SysRuntimeInfoWithOptions` | `func SysRuntimeInfoWithOptions(opts ...RuntimeInfoOption) *RuntimeInfo` | SysRuntimeInfoWithOptions returns uncached runtime statistics collected with per-call options. | facade | `ExampleSysRuntimeInfoWithOptions` |
+| `SysUserInfoWithOptions` | `func SysUserInfoWithOptions(opts ...UserInfoOption) *UserInfo` | SysUserInfoWithOptions returns uncached user information collected with per-call options. | facade | `ExampleSysUserInfoWithOptions` |
 | `SystemGoInfo` | `func SystemGoInfo() *GoInfo` | SystemGoInfo returns cached Go runtime metadata. | facade | — |
-| `SystemGoInfoWithOptions` | `func SystemGoInfoWithOptions(opts ...GoInfoOption) *GoInfo` | SystemGoInfoWithOptions returns uncached Go runtime metadata collected with per-call options. | facade | — |
+| `SystemGoInfoWithOptions` | `func SystemGoInfoWithOptions(opts ...GoInfoOption) *GoInfo` | SystemGoInfoWithOptions returns uncached Go runtime metadata collected with per-call options. | facade | `ExampleSystemGoInfoWithOptions` |
 | `SystemHostInfo` | `func SystemHostInfo() *HostInfo` | SystemHostInfo returns cached host information. | facade | — |
-| `SystemHostInfoWithOptions` | `func SystemHostInfoWithOptions(opts ...HostInfoOption) *HostInfo` | SystemHostInfoWithOptions returns uncached host information collected with per-call options. | facade | — |
+| `SystemHostInfoWithOptions` | `func SystemHostInfoWithOptions(opts ...HostInfoOption) *HostInfo` | SystemHostInfoWithOptions returns uncached host information collected with per-call options. | facade | `ExampleSystemHostInfoWithOptions` |
 | `SystemOsInfo` | `func SystemOsInfo() *OsInfo` | SystemOsInfo returns cached operating system information. | facade | — |
-| `SystemOsInfoWithOptions` | `func SystemOsInfoWithOptions(opts ...OsInfoOption) *OsInfo` | SystemOsInfoWithOptions returns uncached operating system information collected with per-call options. | facade | — |
+| `SystemOsInfoWithOptions` | `func SystemOsInfoWithOptions(opts ...OsInfoOption) *OsInfo` | SystemOsInfoWithOptions returns uncached operating system information collected with per-call options. | facade | `ExampleSystemOsInfoWithOptions` |
 | `SystemRuntimeInfo` | `func SystemRuntimeInfo() *RuntimeInfo` | SystemRuntimeInfo returns refreshed runtime statistics. | facade | — |
-| `SystemRuntimeInfoWithOptions` | `func SystemRuntimeInfoWithOptions(opts ...RuntimeInfoOption) *RuntimeInfo` | SystemRuntimeInfoWithOptions returns uncached runtime statistics collected with per-call options. | facade | — |
+| `SystemRuntimeInfoWithOptions` | `func SystemRuntimeInfoWithOptions(opts ...RuntimeInfoOption) *RuntimeInfo` | SystemRuntimeInfoWithOptions returns uncached runtime statistics collected with per-call options. | facade | `ExampleSystemRuntimeInfoWithOptions` |
 | `SystemUserInfo` | `func SystemUserInfo() *UserInfo` | SystemUserInfo returns cached user information. | facade | — |
-| `SystemUserInfoWithOptions` | `func SystemUserInfoWithOptions(opts ...UserInfoOption) *UserInfo` | SystemUserInfoWithOptions returns uncached user information collected with per-call options. | facade | — |
+| `SystemUserInfoWithOptions` | `func SystemUserInfoWithOptions(opts ...UserInfoOption) *UserInfo` | SystemUserInfoWithOptions returns uncached user information collected with per-call options. | facade | `ExampleSystemUserInfoWithOptions` |
 | `TotalGoroutineCount` | `func TotalGoroutineCount() int` | TotalGoroutineCount returns the current goroutine count. | facade | — |
-| `TotalGoroutineCountWithOptions` | `func TotalGoroutineCountWithOptions(opts ...ProcessOption) int` | TotalGoroutineCountWithOptions returns the current goroutine count using custom providers. | facade | — |
+| `TotalGoroutineCountWithOptions` | `func TotalGoroutineCountWithOptions(opts ...ProcessOption) int` | TotalGoroutineCountWithOptions returns the current goroutine count using custom providers. | facade | `ExampleTotalGoroutineCountWithOptions` |
 | `TotalMemory` | `func TotalMemory() uint64` | TotalMemory returns memory allocated from OS by the current Go process. | facade | — |
-| `TotalMemoryWithOptions` | `func TotalMemoryWithOptions(opts ...RuntimeInfoOption) uint64` | TotalMemoryWithOptions returns memory allocated from OS using custom runtime providers. | facade | — |
+| `TotalMemoryWithOptions` | `func TotalMemoryWithOptions(opts ...RuntimeInfoOption) uint64` | TotalMemoryWithOptions returns memory allocated from OS using custom runtime providers. | facade | `ExampleTotalMemoryWithOptions` |
 | `WithCurrentUserFunc` | `func WithCurrentUserFunc(fn func() (*user.User, error)) UserInfoOption` | WithCurrentUserFunc sets the function used to discover the current OS user. | facade | — |
 | `WithDumpGoOptions` | `func WithDumpGoOptions(opts ...GoInfoOption) DumpOption` | WithDumpGoOptions sets Go runtime metadata providers used by DumpSystemInfoWithOptions. | facade | — |
 | `WithDumpHostOptions` | `func WithDumpHostOptions(opts ...HostInfoOption) DumpOption` | WithDumpHostOptions sets host information providers used by DumpSystemInfoWithOptions. | facade | — |
 | `WithDumpOsOptions` | `func WithDumpOsOptions(opts ...OsInfoOption) DumpOption` | WithDumpOsOptions sets OS information providers used by DumpSystemInfoWithOptions. | facade | — |
 | `WithDumpRuntimeOptions` | `func WithDumpRuntimeOptions(opts ...RuntimeInfoOption) DumpOption` | WithDumpRuntimeOptions sets runtime information providers used by DumpSystemInfoWithOptions. | facade | — |
 | `WithDumpUserOptions` | `func WithDumpUserOptions(opts ...UserInfoOption) DumpOption` | WithDumpUserOptions sets user information providers used by DumpSystemInfoWithOptions. | facade | — |
-| `WithEnvBoolParser` | `func WithEnvBoolParser(parser func(string) (bool, error)) EnvOption` | WithEnvBoolParser sets the parser used by EnvBoolWithOptions. | facade | — |
-| `WithEnvIntParser` | `func WithEnvIntParser(parser func(string) (int, error)) EnvOption` | WithEnvIntParser sets the parser used by EnvIntWithOptions. | facade | — |
+| `WithEnvBoolParser` | `func WithEnvBoolParser(parser func(string) (bool, error)) EnvOption` | WithEnvBoolParser sets the parser used by EnvBoolWithOptions. | facade | `ExampleWithEnvBoolParser` |
+| `WithEnvIntParser` | `func WithEnvIntParser(parser func(string) (int, error)) EnvOption` | WithEnvIntParser sets the parser used by EnvIntWithOptions. | facade | `ExampleWithEnvIntParser` |
 | `WithEnvLookupFunc` | `func WithEnvLookupFunc(fn func(string) (string, bool)) EnvOption` | WithEnvLookupFunc sets the function used to look up environment variables. | facade | — |
 | `WithEnvWarningWriter` | `func WithEnvWarningWriter(w io.Writer) EnvOption` | WithEnvWarningWriter sets the writer used for missing-variable warnings. | facade | — |
 | `WithGoArchFunc` | `func WithGoArchFunc(fn func() string) GoInfoOption` | WithGoArchFunc sets the function used to collect GOARCH. | facade | — |
 | `WithGoCompilerFunc` | `func WithGoCompilerFunc(fn func() string) GoInfoOption` | WithGoCompilerFunc sets the function used to collect the Go compiler name. | facade | — |
-| `WithGoEnvOutputFunc` | `func WithGoEnvOutputFunc(fn func(string, ...string) ([]byte, error)) GoInfoOption` | WithGoEnvOutputFunc sets the command runner used by the default GOROOT collector. | facade | — |
+| `WithGoEnvOutputFunc` | `func WithGoEnvOutputFunc(fn func(string, ...string) ([]byte, error)) GoInfoOption` | WithGoEnvOutputFunc sets the command runner used by the default GOROOT collector. | facade | `ExampleWithGoEnvOutputFunc` |
 | `WithGoNumCPUFunc` | `func WithGoNumCPUFunc(fn func() int) GoInfoOption` | WithGoNumCPUFunc sets the function used to collect the CPU count. | facade | — |
 | `WithGoNumCgoCallFunc` | `func WithGoNumCgoCallFunc(fn func() int64) GoInfoOption` | WithGoNumCgoCallFunc sets the function used to collect the cgo call count. | facade | — |
 | `WithGoOSFunc` | `func WithGoOSFunc(fn func() string) GoInfoOption` | WithGoOSFunc sets the function used to collect GOOS. | facade | — |
-| `WithGoRootEnvLookupFunc` | `func WithGoRootEnvLookupFunc(fn func(string) string) GoInfoOption` | WithGoRootEnvLookupFunc sets the environment lookup used by the default GOROOT collector. | facade | — |
+| `WithGoRootEnvLookupFunc` | `func WithGoRootEnvLookupFunc(fn func(string) string) GoInfoOption` | WithGoRootEnvLookupFunc sets the environment lookup used by the default GOROOT collector. | facade | `ExampleWithGoRootEnvLookupFunc` |
 | `WithGoRootFunc` | `func WithGoRootFunc(fn func() string) GoInfoOption` | WithGoRootFunc sets the function used to collect GOROOT. | facade | — |
 | `WithGoVersionFunc` | `func WithGoVersionFunc(fn func() string) GoInfoOption` | WithGoVersionFunc sets the function used to collect the Go version. | facade | — |
 | `WithHostAddressFunc` | `func WithHostAddressFunc(fn func() string) HostInfoOption` | WithHostAddressFunc sets the function used to collect the host address directly. | facade | — |
-| `WithHostInterfaceAddrsFunc` | `func WithHostInterfaceAddrsFunc(fn func() ([]net.Addr, error)) HostInfoOption` | WithHostInterfaceAddrsFunc sets the function used to collect local interface addresses. | facade | — |
+| `WithHostInterfaceAddrsFunc` | `func WithHostInterfaceAddrsFunc(fn func() ([]net.Addr, error)) HostInfoOption` | WithHostInterfaceAddrsFunc sets the function used to collect local interface addresses. | facade | `ExampleWithHostInterfaceAddrsFunc` |
 | `WithHostNameFunc` | `func WithHostNameFunc(fn func() (string, error)) HostInfoOption` | WithHostNameFunc sets the function used to collect the host name. | facade | — |
 | `WithNumGoroutineFunc` | `func WithNumGoroutineFunc(fn func() int) RuntimeInfoOption` | WithNumGoroutineFunc sets the function used to collect the goroutine count. | facade | — |
 | `WithOSArchFunc` | `func WithOSArchFunc(fn func() string) OsInfoOption` | WithOSArchFunc sets the function used to collect the OS architecture. | facade | — |
-| `WithOSEnvLookupFunc` | `func WithOSEnvLookupFunc(fn func(string) string) OsInfoOption` | WithOSEnvLookupFunc sets the environment lookup used by the default OS version collector. | facade | — |
+| `WithOSEnvLookupFunc` | `func WithOSEnvLookupFunc(fn func(string) string) OsInfoOption` | WithOSEnvLookupFunc sets the environment lookup used by the default OS version collector. | facade | `ExampleWithOSEnvLookupFunc` |
 | `WithOSFileSeparatorFunc` | `func WithOSFileSeparatorFunc(fn func() string) OsInfoOption` | WithOSFileSeparatorFunc sets the function used to collect the file separator. | facade | — |
 | `WithOSLineSeparatorFunc` | `func WithOSLineSeparatorFunc(fn func() string) OsInfoOption` | WithOSLineSeparatorFunc sets the function used to collect the line separator. | facade | — |
 | `WithOSNameFunc` | `func WithOSNameFunc(fn func() string) OsInfoOption` | WithOSNameFunc sets the function used to collect the OS name. | facade | — |
