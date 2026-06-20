@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/go-knifer` |
 | Packages | 54 |
 | Functions | 2604 |
-| Functions with examples | 760 |
+| Functions with examples | 827 |
 | Context-aware functions | 36 |
 | Functions returning error | 603 |
 | Variadic functions | 776 |
@@ -1391,82 +1391,82 @@ Import path: `github.com/imajinyun/go-knifer/vjwt`
 
 Package vjwt provides public APIs for JWT utilities.
 
-Quality: 72 functions · 5 with examples · 6.9% example coverage · synopsis sources: facade=72, internal=0, empty=0
+Quality: 72 functions · 72 with examples · 100.0% example coverage · synopsis sources: facade=72, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
-| `AlgorithmName` | `func AlgorithmName(idOrAlgorithm string) string` | AlgorithmName returns the standard cryptographic algorithm name for a JWT algorithm ID. | facade | — |
-| `CreateJWTToken` | `func CreateJWTToken(payload map[string]any, key []byte) (string, error)` | CreateJWTToken creates a signed token using HMAC key. | facade | — |
-| `CreateJWTTokenWithSigner` | `func CreateJWTTokenWithSigner(payload map[string]any, signer JWTSigner) (string, error)` | CreateJWTTokenWithSigner creates a signed token using signer. | facade | — |
-| `CreateSigner` | `func CreateSigner(algorithmID string, key []byte) (JWTSigner, error)` | CreateSigner creates an HMAC signer from algorithm ID. | facade | — |
-| `CreateSignerStrict` | `func CreateSignerStrict(algorithmID string, key []byte) (JWTSigner, error)` | CreateSignerStrict creates an HMAC signer and enforces the recommended minimum key length. | facade | — |
-| `CreateToken` | `func CreateToken(payload map[string]any, key []byte) (string, error)` | CreateToken creates an HS256 token from payload and HMAC key. | facade | — |
-| `CreateTokenWithAlgorithm` | `func CreateTokenWithAlgorithm(payload map[string]any, key []byte, algorithm string) (string, error)` | CreateTokenWithAlgorithm creates a token with an explicit HMAC algorithm. | facade | — |
-| `CreateTokenWithHeaders` | `func CreateTokenWithHeaders(headers map[string]any, payload map[string]any, key []byte) (string, error)` | CreateTokenWithHeaders creates an HS256 token with custom headers, payload, and HMAC key. | facade | — |
-| `CreateTokenWithHeadersAndAlgorithm` | `func CreateTokenWithHeadersAndAlgorithm(headers map[string]any, payload map[string]any, key []byte, algorithm string) (string, error)` | CreateTokenWithHeadersAndAlgorithm creates a token with headers and an explicit HMAC algorithm. | facade | — |
-| `CreateTokenWithHeadersAndSigner` | `func CreateTokenWithHeadersAndSigner(headers map[string]any, payload map[string]any, signer JWTSigner) (string, error)` | CreateTokenWithHeadersAndSigner creates a token with custom headers and signer. | facade | — |
-| `CreateTokenWithOptions` | `func CreateTokenWithOptions(opts ...TokenOption) (string, error)` | CreateTokenWithOptions creates a token from functional options and avoids adding more overload variants. | facade | `ExampleCreateTokenWithOptions` |
-| `CreateTokenWithSigner` | `func CreateTokenWithSigner(payload map[string]any, signer JWTSigner) (string, error)` | CreateTokenWithSigner creates a token from payload using signer. | facade | — |
-| `ES256` | `func ES256(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) JWTSigner` | ES256 creates an ES256 signer. | facade | — |
-| `ES256WithOptions` | `func ES256WithOptions(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey, opts ...SignerOption) JWTSigner` | ES256WithOptions creates an ES256 signer with options. | facade | — |
-| `ES384` | `func ES384(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) JWTSigner` | ES384 creates an ES384 signer. | facade | — |
-| `ES384WithOptions` | `func ES384WithOptions(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey, opts ...SignerOption) JWTSigner` | ES384WithOptions creates an ES384 signer with options. | facade | — |
-| `ES512` | `func ES512(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) JWTSigner` | ES512 creates an ES512 signer. | facade | — |
-| `ES512WithOptions` | `func ES512WithOptions(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey, opts ...SignerOption) JWTSigner` | ES512WithOptions creates an ES512 signer with options. | facade | — |
-| `HS256` | `func HS256(key []byte) JWTSigner` | HS256 creates an HS256 signer. | facade | — |
-| `HS384` | `func HS384(key []byte) JWTSigner` | HS384 creates an HS384 signer. | facade | — |
-| `HS512` | `func HS512(key []byte) JWTSigner` | HS512 creates an HS512 signer. | facade | — |
-| `JWTErrorf` | `func JWTErrorf(format string, args ...any) *JWTError` | JWTErrorf creates a formatted JWT module error with invalid-input code. | facade | — |
-| `JWTOf` | `func JWTOf(token string) (*JWT, error)` | JWTOf parses a token string. | facade | — |
-| `JWTOfWithOptions` | `func JWTOfWithOptions(token string, opts ...JSONOption) (*JWT, error)` | JWTOfWithOptions parses a token string with JSON options. | facade | — |
-| `JWTSignerECDSA` | `func JWTSignerECDSA(algorithm string, priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) (JWTSigner, error)` | JWTSignerECDSA creates an ECDSA signer. | facade | — |
-| `JWTSignerES256` | `func JWTSignerES256(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) JWTSigner` | JWTSignerES256 creates an ES256 signer. | facade | — |
-| `JWTSignerHMAC` | `func JWTSignerHMAC(algorithm string, key []byte) (JWTSigner, error)` | JWTSignerHMAC creates an HMAC signer. | facade | — |
-| `JWTSignerHS256` | `func JWTSignerHS256(key []byte) JWTSigner` | JWTSignerHS256 creates an HS256 signer. | facade | — |
+| `AlgorithmName` | `func AlgorithmName(idOrAlgorithm string) string` | AlgorithmName returns the standard cryptographic algorithm name for a JWT algorithm ID. | facade | `ExampleAlgorithmName` |
+| `CreateJWTToken` | `func CreateJWTToken(payload map[string]any, key []byte) (string, error)` | CreateJWTToken creates a signed token using HMAC key. | facade | `ExampleCreateJWTToken` |
+| `CreateJWTTokenWithSigner` | `func CreateJWTTokenWithSigner(payload map[string]any, signer JWTSigner) (string, error)` | CreateJWTTokenWithSigner creates a signed token using signer. | facade | `ExampleCreateJWTTokenWithSigner` |
+| `CreateSigner` | `func CreateSigner(algorithmID string, key []byte) (JWTSigner, error)` | CreateSigner creates an HMAC signer from algorithm ID. | facade | `ExampleCreateSigner` |
+| `CreateSignerStrict` | `func CreateSignerStrict(algorithmID string, key []byte) (JWTSigner, error)` | CreateSignerStrict creates an HMAC signer and enforces the recommended minimum key length. | facade | `ExampleCreateSignerStrict` |
+| `CreateToken` | `func CreateToken(payload map[string]any, key []byte) (string, error)` | CreateToken creates an HS256 token from payload and HMAC key. | facade | `ExampleCreateToken` |
+| `CreateTokenWithAlgorithm` | `func CreateTokenWithAlgorithm(payload map[string]any, key []byte, algorithm string) (string, error)` | CreateTokenWithAlgorithm creates a token with an explicit HMAC algorithm. | facade | `ExampleCreateTokenWithAlgorithm` |
+| `CreateTokenWithHeaders` | `func CreateTokenWithHeaders(headers map[string]any, payload map[string]any, key []byte) (string, error)` | CreateTokenWithHeaders creates an HS256 token with custom headers, payload, and HMAC key. | facade | `ExampleCreateTokenWithHeaders` |
+| `CreateTokenWithHeadersAndAlgorithm` | `func CreateTokenWithHeadersAndAlgorithm(headers map[string]any, payload map[string]any, key []byte, algorithm string) (string, error)` | CreateTokenWithHeadersAndAlgorithm creates a token with headers and an explicit HMAC algorithm. | facade | `ExampleCreateTokenWithHeadersAndAlgorithm` |
+| `CreateTokenWithHeadersAndSigner` | `func CreateTokenWithHeadersAndSigner(headers map[string]any, payload map[string]any, signer JWTSigner) (string, error)` | CreateTokenWithHeadersAndSigner creates a token with custom headers and signer. | facade | `ExampleCreateTokenWithHeadersAndSigner` |
+| `CreateTokenWithOptions` | `func CreateTokenWithOptions(opts ...TokenOption) (string, error)` | CreateTokenWithOptions creates a token from functional options and avoids adding more overload variants. | facade | `ExampleCreateTokenWithOptions`, `ExampleCreateTokenWithOptions_jsonOptions`, `ExampleCreateTokenWithOptions_signer`, `ExampleCreateTokenWithOptions_strictKey` |
+| `CreateTokenWithSigner` | `func CreateTokenWithSigner(payload map[string]any, signer JWTSigner) (string, error)` | CreateTokenWithSigner creates a token from payload using signer. | facade | `ExampleCreateTokenWithSigner` |
+| `ES256` | `func ES256(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) JWTSigner` | ES256 creates an ES256 signer. | facade | `ExampleES256` |
+| `ES256WithOptions` | `func ES256WithOptions(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey, opts ...SignerOption) JWTSigner` | ES256WithOptions creates an ES256 signer with options. | facade | `ExampleES256WithOptions` |
+| `ES384` | `func ES384(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) JWTSigner` | ES384 creates an ES384 signer. | facade | `ExampleES384` |
+| `ES384WithOptions` | `func ES384WithOptions(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey, opts ...SignerOption) JWTSigner` | ES384WithOptions creates an ES384 signer with options. | facade | `ExampleES384WithOptions` |
+| `ES512` | `func ES512(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) JWTSigner` | ES512 creates an ES512 signer. | facade | `ExampleES512` |
+| `ES512WithOptions` | `func ES512WithOptions(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey, opts ...SignerOption) JWTSigner` | ES512WithOptions creates an ES512 signer with options. | facade | `ExampleES512WithOptions` |
+| `HS256` | `func HS256(key []byte) JWTSigner` | HS256 creates an HS256 signer. | facade | `ExampleHS256` |
+| `HS384` | `func HS384(key []byte) JWTSigner` | HS384 creates an HS384 signer. | facade | `ExampleHS384` |
+| `HS512` | `func HS512(key []byte) JWTSigner` | HS512 creates an HS512 signer. | facade | `ExampleHS512` |
+| `JWTErrorf` | `func JWTErrorf(format string, args ...any) *JWTError` | JWTErrorf creates a formatted JWT module error with invalid-input code. | facade | `ExampleJWTErrorf` |
+| `JWTOf` | `func JWTOf(token string) (*JWT, error)` | JWTOf parses a token string. | facade | `ExampleJWTOf` |
+| `JWTOfWithOptions` | `func JWTOfWithOptions(token string, opts ...JSONOption) (*JWT, error)` | JWTOfWithOptions parses a token string with JSON options. | facade | `ExampleJWTOfWithOptions` |
+| `JWTSignerECDSA` | `func JWTSignerECDSA(algorithm string, priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) (JWTSigner, error)` | JWTSignerECDSA creates an ECDSA signer. | facade | `ExampleJWTSignerECDSA` |
+| `JWTSignerES256` | `func JWTSignerES256(priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) JWTSigner` | JWTSignerES256 creates an ES256 signer. | facade | `ExampleJWTSignerES256` |
+| `JWTSignerHMAC` | `func JWTSignerHMAC(algorithm string, key []byte) (JWTSigner, error)` | JWTSignerHMAC creates an HMAC signer. | facade | `ExampleJWTSignerHMAC` |
+| `JWTSignerHS256` | `func JWTSignerHS256(key []byte) JWTSigner` | JWTSignerHS256 creates an HS256 signer. | facade | `ExampleJWTSignerHS256` |
 | `MinHMACKeyBytes` | `func MinHMACKeyBytes(algorithm string) (int, error)` | MinHMACKeyBytes returns the minimum recommended HMAC key length for an HS* JWT algorithm. | facade | `ExampleMinHMACKeyBytes` |
-| `MustHMACSigner` | `func MustHMACSigner(algorithm string, key []byte) JWTSigner` | MustHMACSigner creates an HMAC signer and panics on invalid algorithms. | facade | — |
-| `New` | `func New() *JWT` | New creates a new JWT object. | facade | — |
-| `NewECDSASigner` | `func NewECDSASigner(algorithm string, priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) (JWTSigner, error)` | NewECDSASigner creates an ECDSA signer for ES256, ES384, or ES512. | facade | — |
-| `NewECDSASignerWithOptions` | `func NewECDSASignerWithOptions(algorithm string, priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey, opts ...SignerOption) (JWTSigner, error)` | NewECDSASignerWithOptions creates an ECDSA signer for ES256, ES384, or ES512 with options. | facade | — |
-| `NewHMACSigner` | `func NewHMACSigner(algorithm string, key []byte) (JWTSigner, error)` | NewHMACSigner creates an HMAC signer for HS256, HS384, or HS512. | facade | — |
+| `MustHMACSigner` | `func MustHMACSigner(algorithm string, key []byte) JWTSigner` | MustHMACSigner creates an HMAC signer and panics on invalid algorithms. | facade | `ExampleMustHMACSigner` |
+| `New` | `func New() *JWT` | New creates a new JWT object. | facade | `ExampleNew` |
+| `NewECDSASigner` | `func NewECDSASigner(algorithm string, priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey) (JWTSigner, error)` | NewECDSASigner creates an ECDSA signer for ES256, ES384, or ES512. | facade | `ExampleNewECDSASigner` |
+| `NewECDSASignerWithOptions` | `func NewECDSASignerWithOptions(algorithm string, priv *ecdsa.PrivateKey, pub *ecdsa.PublicKey, opts ...SignerOption) (JWTSigner, error)` | NewECDSASignerWithOptions creates an ECDSA signer for ES256, ES384, or ES512 with options. | facade | `ExampleNewECDSASignerWithOptions` |
+| `NewHMACSigner` | `func NewHMACSigner(algorithm string, key []byte) (JWTSigner, error)` | NewHMACSigner creates an HMAC signer for HS256, HS384, or HS512. | facade | `ExampleNewHMACSigner` |
 | `NewHMACSignerStrict` | `func NewHMACSignerStrict(algorithm string, key []byte) (JWTSigner, error)` | NewHMACSignerStrict creates an HMAC signer and enforces the recommended minimum key length. | facade | `ExampleNewHMACSignerStrict` |
-| `NewJWT` | `func NewJWT() *JWT` | NewJWT creates a new JWT object. | facade | — |
+| `NewJWT` | `func NewJWT() *JWT` | NewJWT creates a new JWT object. | facade | `ExampleNewJWT` |
 | `NewJWTError` | `func NewJWTError(msg string) *JWTError` | NewJWTError creates a JWT module error with invalid-input code. | facade | `ExampleNewJWTError` |
-| `NewRSAPSSSigner` | `func NewRSAPSSSigner(algorithm string, priv *rsa.PrivateKey, pub *rsa.PublicKey) (JWTSigner, error)` | NewRSAPSSSigner creates an RSA-PSS signer for PS256, PS384, or PS512. | facade | — |
+| `NewRSAPSSSigner` | `func NewRSAPSSSigner(algorithm string, priv *rsa.PrivateKey, pub *rsa.PublicKey) (JWTSigner, error)` | NewRSAPSSSigner creates an RSA-PSS signer for PS256, PS384, or PS512. | facade | `ExampleNewRSAPSSSigner` |
 | `NewRSAPSSSignerWithOptions` | `func NewRSAPSSSignerWithOptions(algorithm string, priv *rsa.PrivateKey, pub *rsa.PublicKey, opts ...SignerOption) (JWTSigner, error)` | NewRSAPSSSignerWithOptions creates an RSA-PSS signer for PS256, PS384, or PS512 with options. | facade | `ExampleNewRSAPSSSignerWithOptions` |
-| `OfValidator` | `func OfValidator(token string) *JWTValidator` | OfValidator creates a validator from token string. | facade | — |
-| `OfValidatorJWT` | `func OfValidatorJWT(j *JWT) *JWTValidator` | OfValidatorJWT creates a validator from an existing JWT object. | facade | — |
-| `PS256` | `func PS256(priv *rsa.PrivateKey, pub *rsa.PublicKey) JWTSigner` | PS256 creates a PS256 signer. | facade | — |
-| `PS256WithOptions` | `func PS256WithOptions(priv *rsa.PrivateKey, pub *rsa.PublicKey, opts ...SignerOption) JWTSigner` | PS256WithOptions creates a PS256 signer with options. | facade | — |
-| `PS384` | `func PS384(priv *rsa.PrivateKey, pub *rsa.PublicKey) JWTSigner` | PS384 creates a PS384 signer. | facade | — |
-| `PS384WithOptions` | `func PS384WithOptions(priv *rsa.PrivateKey, pub *rsa.PublicKey, opts ...SignerOption) JWTSigner` | PS384WithOptions creates a PS384 signer with options. | facade | — |
-| `PS512` | `func PS512(priv *rsa.PrivateKey, pub *rsa.PublicKey) JWTSigner` | PS512 creates a PS512 signer. | facade | — |
-| `PS512WithOptions` | `func PS512WithOptions(priv *rsa.PrivateKey, pub *rsa.PublicKey, opts ...SignerOption) JWTSigner` | PS512WithOptions creates a PS512 signer with options. | facade | — |
-| `ParseJWT` | `func ParseJWT(token string) (*JWT, error)` | ParseJWT parses a token string. | facade | — |
-| `ParseToken` | `func ParseToken(token string) (*JWT, error)` | ParseToken parses a token string. | facade | — |
-| `ParseTokenWithOptions` | `func ParseTokenWithOptions(token string, opts ...JSONOption) (*JWT, error)` | ParseTokenWithOptions parses a token string with JSON options. | facade | — |
-| `ValidateAlgorithm` | `func ValidateAlgorithm(token string, signer JWTSigner) error` | ValidateAlgorithm checks whether token's alg header matches signer. | facade | — |
-| `ValidateDate` | `func ValidateDate(j *JWT, now time.Time, leeway int64) error` | ValidateDate validates time based JWT claims. | facade | — |
-| `ValidateJWTDate` | `func ValidateJWTDate(j *JWT, now time.Time, leeway int64) error` | ValidateJWTDate validates time based JWT claims. | facade | — |
-| `Verify` | `func Verify(token string, key []byte) bool` | Verify verifies a token using an HMAC key. | facade | — |
-| `VerifyJWT` | `func VerifyJWT(token string, key []byte) bool` | VerifyJWT verifies a token using HMAC key. | facade | — |
-| `VerifyJWTWithSigner` | `func VerifyJWTWithSigner(token string, signer JWTSigner) bool` | VerifyJWTWithSigner verifies a token using signer. | facade | — |
-| `VerifyStrict` | `func VerifyStrict(token string, key []byte) bool` | VerifyStrict verifies a token using the header algorithm without fallback. | facade | — |
-| `VerifyWithSigner` | `func VerifyWithSigner(token string, signer JWTSigner) bool` | VerifyWithSigner verifies a token using signer. | facade | — |
-| `WithJSONMarshalFunc` | `func WithJSONMarshalFunc(marshal func(any) ([]byte, error)) JSONOption` | WithJSONMarshalFunc sets the JSON marshal provider used by JWT signing helpers. | facade | — |
-| `WithJSONUnmarshalFunc` | `func WithJSONUnmarshalFunc(unmarshal func([]byte, any) error) JSONOption` | WithJSONUnmarshalFunc sets the JSON unmarshal provider used by JWT parsing helpers. | facade | — |
-| `WithRSAPSSOptions` | `func WithRSAPSSOptions(opts *rsa.PSSOptions) SignerOption` | WithRSAPSSOptions sets RSA-PSS options used by RSA-PSS signing and verification. | facade | — |
-| `WithSignerRandomReader` | `func WithSignerRandomReader(reader io.Reader) SignerOption` | WithSignerRandomReader sets the random source used by RSA-PSS and ECDSA signing. | facade | — |
-| `WithTokenAlgorithm` | `func WithTokenAlgorithm(algorithm string) TokenOption` | WithTokenAlgorithm sets the HMAC algorithm used by CreateTokenWithOptions. | facade | — |
-| `WithTokenHeaders` | `func WithTokenHeaders(headers map[string]any) TokenOption` | WithTokenHeaders sets JWT header fields for CreateTokenWithOptions. | facade | — |
-| `WithTokenJSONOptions` | `func WithTokenJSONOptions(opts ...JSONOption) TokenOption` | WithTokenJSONOptions sets JSON codec options used when signing in CreateTokenWithOptions. | facade | — |
-| `WithTokenKey` | `func WithTokenKey(key []byte) TokenOption` | WithTokenKey sets the HMAC key used by CreateTokenWithOptions. | facade | — |
-| `WithTokenPayload` | `func WithTokenPayload(payload map[string]any) TokenOption` | WithTokenPayload sets JWT payload fields for CreateTokenWithOptions. | facade | — |
-| `WithTokenSigner` | `func WithTokenSigner(signer JWTSigner) TokenOption` | WithTokenSigner sets the signer used by CreateTokenWithOptions and takes precedence over key/algorithm options. | facade | — |
-| `WithTokenStrictKey` | `func WithTokenStrictKey() TokenOption` | WithTokenStrictKey makes CreateTokenWithOptions enforce the recommended HMAC key length. | facade | — |
-| `WithValidateClock` | `func WithValidateClock(clock func() time.Time) ValidateOption` | WithValidateClock sets the clock used by JWT.ValidateWithOptions. | facade | — |
-| `WithValidateLeeway` | `func WithValidateLeeway(leeway int64) ValidateOption` | WithValidateLeeway sets the leeway in seconds used by JWT.ValidateWithOptions. | facade | — |
-| `WithValidateTime` | `func WithValidateTime(now time.Time) ValidateOption` | WithValidateTime sets the time used by JWT.ValidateWithOptions. | facade | — |
+| `OfValidator` | `func OfValidator(token string) *JWTValidator` | OfValidator creates a validator from token string. | facade | `ExampleOfValidator` |
+| `OfValidatorJWT` | `func OfValidatorJWT(j *JWT) *JWTValidator` | OfValidatorJWT creates a validator from an existing JWT object. | facade | `ExampleOfValidatorJWT` |
+| `PS256` | `func PS256(priv *rsa.PrivateKey, pub *rsa.PublicKey) JWTSigner` | PS256 creates a PS256 signer. | facade | `ExamplePS256` |
+| `PS256WithOptions` | `func PS256WithOptions(priv *rsa.PrivateKey, pub *rsa.PublicKey, opts ...SignerOption) JWTSigner` | PS256WithOptions creates a PS256 signer with options. | facade | `ExamplePS256WithOptions` |
+| `PS384` | `func PS384(priv *rsa.PrivateKey, pub *rsa.PublicKey) JWTSigner` | PS384 creates a PS384 signer. | facade | `ExamplePS384` |
+| `PS384WithOptions` | `func PS384WithOptions(priv *rsa.PrivateKey, pub *rsa.PublicKey, opts ...SignerOption) JWTSigner` | PS384WithOptions creates a PS384 signer with options. | facade | `ExamplePS384WithOptions` |
+| `PS512` | `func PS512(priv *rsa.PrivateKey, pub *rsa.PublicKey) JWTSigner` | PS512 creates a PS512 signer. | facade | `ExamplePS512` |
+| `PS512WithOptions` | `func PS512WithOptions(priv *rsa.PrivateKey, pub *rsa.PublicKey, opts ...SignerOption) JWTSigner` | PS512WithOptions creates a PS512 signer with options. | facade | `ExamplePS512WithOptions` |
+| `ParseJWT` | `func ParseJWT(token string) (*JWT, error)` | ParseJWT parses a token string. | facade | `ExampleParseJWT` |
+| `ParseToken` | `func ParseToken(token string) (*JWT, error)` | ParseToken parses a token string. | facade | `ExampleParseToken` |
+| `ParseTokenWithOptions` | `func ParseTokenWithOptions(token string, opts ...JSONOption) (*JWT, error)` | ParseTokenWithOptions parses a token string with JSON options. | facade | `ExampleParseTokenWithOptions` |
+| `ValidateAlgorithm` | `func ValidateAlgorithm(token string, signer JWTSigner) error` | ValidateAlgorithm checks whether token's alg header matches signer. | facade | `ExampleValidateAlgorithm` |
+| `ValidateDate` | `func ValidateDate(j *JWT, now time.Time, leeway int64) error` | ValidateDate validates time based JWT claims. | facade | `ExampleValidateDate` |
+| `ValidateJWTDate` | `func ValidateJWTDate(j *JWT, now time.Time, leeway int64) error` | ValidateJWTDate validates time based JWT claims. | facade | `ExampleValidateJWTDate` |
+| `Verify` | `func Verify(token string, key []byte) bool` | Verify verifies a token using an HMAC key. | facade | `ExampleVerify` |
+| `VerifyJWT` | `func VerifyJWT(token string, key []byte) bool` | VerifyJWT verifies a token using HMAC key. | facade | `ExampleVerifyJWT` |
+| `VerifyJWTWithSigner` | `func VerifyJWTWithSigner(token string, signer JWTSigner) bool` | VerifyJWTWithSigner verifies a token using signer. | facade | `ExampleVerifyJWTWithSigner` |
+| `VerifyStrict` | `func VerifyStrict(token string, key []byte) bool` | VerifyStrict verifies a token using the header algorithm without fallback. | facade | `ExampleVerifyStrict` |
+| `VerifyWithSigner` | `func VerifyWithSigner(token string, signer JWTSigner) bool` | VerifyWithSigner verifies a token using signer. | facade | `ExampleVerifyWithSigner` |
+| `WithJSONMarshalFunc` | `func WithJSONMarshalFunc(marshal func(any) ([]byte, error)) JSONOption` | WithJSONMarshalFunc sets the JSON marshal provider used by JWT signing helpers. | facade | `ExampleWithJSONMarshalFunc` |
+| `WithJSONUnmarshalFunc` | `func WithJSONUnmarshalFunc(unmarshal func([]byte, any) error) JSONOption` | WithJSONUnmarshalFunc sets the JSON unmarshal provider used by JWT parsing helpers. | facade | `ExampleWithJSONUnmarshalFunc` |
+| `WithRSAPSSOptions` | `func WithRSAPSSOptions(opts *rsa.PSSOptions) SignerOption` | WithRSAPSSOptions sets RSA-PSS options used by RSA-PSS signing and verification. | facade | `ExampleWithRSAPSSOptions` |
+| `WithSignerRandomReader` | `func WithSignerRandomReader(reader io.Reader) SignerOption` | WithSignerRandomReader sets the random source used by RSA-PSS and ECDSA signing. | facade | `ExampleWithSignerRandomReader` |
+| `WithTokenAlgorithm` | `func WithTokenAlgorithm(algorithm string) TokenOption` | WithTokenAlgorithm sets the HMAC algorithm used by CreateTokenWithOptions. | facade | `ExampleWithTokenAlgorithm` |
+| `WithTokenHeaders` | `func WithTokenHeaders(headers map[string]any) TokenOption` | WithTokenHeaders sets JWT header fields for CreateTokenWithOptions. | facade | `ExampleWithTokenHeaders` |
+| `WithTokenJSONOptions` | `func WithTokenJSONOptions(opts ...JSONOption) TokenOption` | WithTokenJSONOptions sets JSON codec options used when signing in CreateTokenWithOptions. | facade | `ExampleWithTokenJSONOptions` |
+| `WithTokenKey` | `func WithTokenKey(key []byte) TokenOption` | WithTokenKey sets the HMAC key used by CreateTokenWithOptions. | facade | `ExampleWithTokenKey` |
+| `WithTokenPayload` | `func WithTokenPayload(payload map[string]any) TokenOption` | WithTokenPayload sets JWT payload fields for CreateTokenWithOptions. | facade | `ExampleWithTokenPayload` |
+| `WithTokenSigner` | `func WithTokenSigner(signer JWTSigner) TokenOption` | WithTokenSigner sets the signer used by CreateTokenWithOptions and takes precedence over key/algorithm options. | facade | `ExampleWithTokenSigner` |
+| `WithTokenStrictKey` | `func WithTokenStrictKey() TokenOption` | WithTokenStrictKey makes CreateTokenWithOptions enforce the recommended HMAC key length. | facade | `ExampleWithTokenStrictKey` |
+| `WithValidateClock` | `func WithValidateClock(clock func() time.Time) ValidateOption` | WithValidateClock sets the clock used by JWT.ValidateWithOptions. | facade | `ExampleWithValidateClock` |
+| `WithValidateLeeway` | `func WithValidateLeeway(leeway int64) ValidateOption` | WithValidateLeeway sets the leeway in seconds used by JWT.ValidateWithOptions. | facade | `ExampleWithValidateLeeway` |
+| `WithValidateTime` | `func WithValidateTime(now time.Time) ValidateOption` | WithValidateTime sets the time used by JWT.ValidateWithOptions. | facade | `ExampleWithValidateTime` |
 
 ### vlog
 

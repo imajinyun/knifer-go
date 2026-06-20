@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 54,
     "function_count": 2604,
-    "functions_with_examples": 760,
+    "functions_with_examples": 827,
     "context_aware_functions": 36,
     "returns_error_functions": 603,
     "variadic_functions": 776,
@@ -23003,8 +23003,8 @@
       "synopsis": "Package vjwt provides public APIs for JWT utilities.",
       "summary": {
         "function_count": 72,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 6.9,
+        "functions_with_examples": 72,
+        "example_coverage_percent": 100,
         "synopsis_sources": {
           "empty": 0,
           "facade": 72,
@@ -23028,7 +23028,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleAlgorithmName"
+          ]
         },
         {
           "name": "CreateJWTToken",
@@ -23051,7 +23054,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCreateJWTToken"
+          ]
         },
         {
           "name": "CreateJWTTokenWithSigner",
@@ -23074,7 +23080,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCreateJWTTokenWithSigner"
+          ]
         },
         {
           "name": "CreateSigner",
@@ -23097,7 +23106,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCreateSigner"
+          ]
         },
         {
           "name": "CreateSignerStrict",
@@ -23120,7 +23132,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCreateSignerStrict"
+          ]
         },
         {
           "name": "CreateToken",
@@ -23143,7 +23158,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCreateToken"
+          ]
         },
         {
           "name": "CreateTokenWithAlgorithm",
@@ -23170,7 +23188,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCreateTokenWithAlgorithm"
+          ]
         },
         {
           "name": "CreateTokenWithHeaders",
@@ -23197,7 +23218,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCreateTokenWithHeaders"
+          ]
         },
         {
           "name": "CreateTokenWithHeadersAndAlgorithm",
@@ -23228,7 +23252,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCreateTokenWithHeadersAndAlgorithm"
+          ]
         },
         {
           "name": "CreateTokenWithHeadersAndSigner",
@@ -23255,7 +23282,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCreateTokenWithHeadersAndSigner"
+          ]
         },
         {
           "name": "CreateTokenWithOptions",
@@ -23276,7 +23306,10 @@
           "context_aware": false,
           "variadic": true,
           "examples": [
-            "ExampleCreateTokenWithOptions"
+            "ExampleCreateTokenWithOptions",
+            "ExampleCreateTokenWithOptions_jsonOptions",
+            "ExampleCreateTokenWithOptions_signer",
+            "ExampleCreateTokenWithOptions_strictKey"
           ]
         },
         {
@@ -23300,7 +23333,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCreateTokenWithSigner"
+          ]
         },
         {
           "name": "ES256",
@@ -23322,7 +23358,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleES256"
+          ]
         },
         {
           "name": "ES256WithOptions",
@@ -23348,7 +23387,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleES256WithOptions"
+          ]
         },
         {
           "name": "ES384",
@@ -23370,7 +23412,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleES384"
+          ]
         },
         {
           "name": "ES384WithOptions",
@@ -23396,7 +23441,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleES384WithOptions"
+          ]
         },
         {
           "name": "ES512",
@@ -23418,7 +23466,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleES512"
+          ]
         },
         {
           "name": "ES512WithOptions",
@@ -23444,7 +23495,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleES512WithOptions"
+          ]
         },
         {
           "name": "HS256",
@@ -23462,7 +23516,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleHS256"
+          ]
         },
         {
           "name": "HS384",
@@ -23480,7 +23537,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleHS384"
+          ]
         },
         {
           "name": "HS512",
@@ -23498,7 +23558,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleHS512"
+          ]
         },
         {
           "name": "JWTErrorf",
@@ -23520,7 +23583,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleJWTErrorf"
+          ]
         },
         {
           "name": "JWTOf",
@@ -23539,7 +23605,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleJWTOf"
+          ]
         },
         {
           "name": "JWTOfWithOptions",
@@ -23562,7 +23631,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleJWTOfWithOptions"
+          ]
         },
         {
           "name": "JWTSignerECDSA",
@@ -23589,7 +23661,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleJWTSignerECDSA"
+          ]
         },
         {
           "name": "JWTSignerES256",
@@ -23611,7 +23686,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleJWTSignerES256"
+          ]
         },
         {
           "name": "JWTSignerHMAC",
@@ -23634,7 +23712,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleJWTSignerHMAC"
+          ]
         },
         {
           "name": "JWTSignerHS256",
@@ -23652,7 +23733,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleJWTSignerHS256"
+          ]
         },
         {
           "name": "MinHMACKeyBytes",
@@ -23696,7 +23780,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleMustHMACSigner"
+          ]
         },
         {
           "name": "New",
@@ -23708,7 +23795,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNew"
+          ]
         },
         {
           "name": "NewECDSASigner",
@@ -23735,7 +23825,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewECDSASigner"
+          ]
         },
         {
           "name": "NewECDSASignerWithOptions",
@@ -23766,7 +23859,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewECDSASignerWithOptions"
+          ]
         },
         {
           "name": "NewHMACSigner",
@@ -23789,7 +23885,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewHMACSigner"
+          ]
         },
         {
           "name": "NewHMACSignerStrict",
@@ -23827,7 +23926,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewJWT"
+          ]
         },
         {
           "name": "NewJWTError",
@@ -23875,7 +23977,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewRSAPSSSigner"
+          ]
         },
         {
           "name": "NewRSAPSSSignerWithOptions",
@@ -23927,7 +24032,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleOfValidator"
+          ]
         },
         {
           "name": "OfValidatorJWT",
@@ -23945,7 +24053,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleOfValidatorJWT"
+          ]
         },
         {
           "name": "PS256",
@@ -23967,7 +24078,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExamplePS256"
+          ]
         },
         {
           "name": "PS256WithOptions",
@@ -23993,7 +24107,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExamplePS256WithOptions"
+          ]
         },
         {
           "name": "PS384",
@@ -24015,7 +24132,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExamplePS384"
+          ]
         },
         {
           "name": "PS384WithOptions",
@@ -24041,7 +24161,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExamplePS384WithOptions"
+          ]
         },
         {
           "name": "PS512",
@@ -24063,7 +24186,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExamplePS512"
+          ]
         },
         {
           "name": "PS512WithOptions",
@@ -24089,7 +24215,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExamplePS512WithOptions"
+          ]
         },
         {
           "name": "ParseJWT",
@@ -24108,7 +24237,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseJWT"
+          ]
         },
         {
           "name": "ParseToken",
@@ -24127,7 +24259,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseToken"
+          ]
         },
         {
           "name": "ParseTokenWithOptions",
@@ -24150,7 +24285,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleParseTokenWithOptions"
+          ]
         },
         {
           "name": "ValidateAlgorithm",
@@ -24172,7 +24310,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleValidateAlgorithm"
+          ]
         },
         {
           "name": "ValidateDate",
@@ -24198,7 +24339,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleValidateDate"
+          ]
         },
         {
           "name": "ValidateJWTDate",
@@ -24224,7 +24368,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleValidateJWTDate"
+          ]
         },
         {
           "name": "Verify",
@@ -24246,7 +24393,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleVerify"
+          ]
         },
         {
           "name": "VerifyJWT",
@@ -24268,7 +24418,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleVerifyJWT"
+          ]
         },
         {
           "name": "VerifyJWTWithSigner",
@@ -24290,7 +24443,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleVerifyJWTWithSigner"
+          ]
         },
         {
           "name": "VerifyStrict",
@@ -24312,7 +24468,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleVerifyStrict"
+          ]
         },
         {
           "name": "VerifyWithSigner",
@@ -24334,7 +24493,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleVerifyWithSigner"
+          ]
         },
         {
           "name": "WithJSONMarshalFunc",
@@ -24352,7 +24514,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithJSONMarshalFunc"
+          ]
         },
         {
           "name": "WithJSONUnmarshalFunc",
@@ -24370,7 +24535,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithJSONUnmarshalFunc"
+          ]
         },
         {
           "name": "WithRSAPSSOptions",
@@ -24388,7 +24556,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithRSAPSSOptions"
+          ]
         },
         {
           "name": "WithSignerRandomReader",
@@ -24406,7 +24577,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithSignerRandomReader"
+          ]
         },
         {
           "name": "WithTokenAlgorithm",
@@ -24424,7 +24598,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithTokenAlgorithm"
+          ]
         },
         {
           "name": "WithTokenHeaders",
@@ -24442,7 +24619,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithTokenHeaders"
+          ]
         },
         {
           "name": "WithTokenJSONOptions",
@@ -24460,7 +24640,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWithTokenJSONOptions"
+          ]
         },
         {
           "name": "WithTokenKey",
@@ -24478,7 +24661,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithTokenKey"
+          ]
         },
         {
           "name": "WithTokenPayload",
@@ -24496,7 +24682,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithTokenPayload"
+          ]
         },
         {
           "name": "WithTokenSigner",
@@ -24514,7 +24703,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithTokenSigner"
+          ]
         },
         {
           "name": "WithTokenStrictKey",
@@ -24526,7 +24718,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithTokenStrictKey"
+          ]
         },
         {
           "name": "WithValidateClock",
@@ -24544,7 +24739,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithValidateClock"
+          ]
         },
         {
           "name": "WithValidateLeeway",
@@ -24562,7 +24760,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithValidateLeeway"
+          ]
         },
         {
           "name": "WithValidateTime",
@@ -24580,7 +24781,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithValidateTime"
+          ]
         }
       ]
     },
