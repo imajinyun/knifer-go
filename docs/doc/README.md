@@ -5,6 +5,7 @@
 ## 📑 Table of Contents
 
 - [🧭 Quick navigation](#quick-navigation)
+- [⭐ Start with star domains](#start-with-star-domains)
 - [🧩 Package catalog](#package-catalog)
 - [📝 Quickstart documents](#quickstart-documents)
 - [🧭 Sprint direction](#sprint-direction)
@@ -28,6 +29,26 @@
 - 🤖 Machine-readable AI/CLI metadata: [`../../ai-context.json`](../../ai-context.json)
 - 🧯 Security policy: [`../../SECURITY.md`](../../SECURITY.md)
 - 📝 Changelog: [`../../CHANGELOG.md`](../../CHANGELOG.md)
+
+<a id="start-with-star-domains"></a>
+
+## ⭐ Start with star domains
+
+These domains are the quickest way to evaluate whether `go-knifer` fits a project. They combine recommended API entry points, executable examples, cookbook workflows, benchmark commands, and explicit safety boundaries.
+
+| Need | Start here | Trust signals |
+| --- | --- | --- |
+| Safe HTTP and downloads | [`vhttp`](22-vhttp.md), [`vresty`](41-vresty.md), [`vurl`](51-vurl.md) | Helper selection, safe URL policy checklist, FAQ, benchmark commands, and stdlib/Resty boundary guidance. |
+| Safe crypto workflows | [`vcrypto`](11-vcrypto.md), [`vrand`](38-vrand.md), [`vjwt`](28-vjwt.md) | Recommended cryptographic entry points, secret-handling FAQ, benchmark commands, and direct-stdlib boundary guidance. |
+| Daily JSON and file workflows | [`vjson`](27-vjson.md), [`vfile`](17-vfile.md) | Cookbook examples for object/path/formatting/file I/O, filesystem safety guidance, and explicit error handling. |
+
+Comparison entry points:
+
+- Use [`vhttp`](22-vhttp.md) for standard-library-style HTTP helpers and [`vresty`](41-vresty.md) when Resty-style request chains improve readability.
+- Use [`vurl`](51-vurl.md) for URL construction, normalization, query encoding, resource probing, or safe opening before an HTTP request is needed.
+- Use [`vcrypto`](11-vcrypto.md) when recommended crypto workflows reduce misuse risk; use the Go standard library directly when a caller needs lower-level protocol control.
+- Use [`vjson`](27-vjson.md) for common object/path/formatting/XML bridge flows; use `encoding/json` directly for streaming, tokenization, or full decoder control.
+- Use [`vfile`](17-vfile.md) for bounded reads, provider-backed file-system tests, and explicit file errors; keep untrusted path handling visible at the call site.
 
 <a id="package-catalog"></a>
 

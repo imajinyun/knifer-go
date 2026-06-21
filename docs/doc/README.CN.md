@@ -5,6 +5,7 @@
 ## 📑 Table of Contents
 
 - [🧭 快速导航](#quick-navigation)
+- [⭐ 从 star domain 开始](#start-with-star-domains)
 - [🧩 模块目录](#package-catalog)
 - [📝 Quickstart 文档](#quickstart-documents)
 - [🏗️ 架构与包边界](#architecture-and-package-boundaries)
@@ -27,6 +28,26 @@
 - 🤖 机器可读 AI/CLI 元数据：[`../../ai-context.json`](../../ai-context.json)
 - 🧯 安全策略：[`../../SECURITY.md`](../../SECURITY.md)
 - 📝 变更日志：[`../../CHANGELOG.md`](../../CHANGELOG.md)
+
+<a id="start-with-star-domains"></a>
+
+## ⭐ 从 star domain 开始
+
+下面三个领域最适合用来快速判断 `go-knifer` 是否适合你的项目。它们同时具备推荐 API 入口、可执行示例、cookbook 工作流、benchmark 命令和明确的安全边界。
+
+| 需求 | 从这里开始 | 可信信号 |
+| --- | --- | --- |
+| 安全 HTTP 请求与下载 | [`vhttp`](22-vhttp.md)、[`vresty`](41-vresty.md)、[`vurl`](51-vurl.md) | helper 选择指南、安全 URL 策略清单、FAQ、benchmark 命令和标准库/Resty 边界说明。 |
+| 安全加密工作流 | [`vcrypto`](11-vcrypto.md)、[`vrand`](38-vrand.md)、[`vjwt`](28-vjwt.md) | 推荐加密入口、secret 处理 FAQ、benchmark 命令和直接使用标准库的边界说明。 |
+| 日常 JSON 与文件工作流 | [`vjson`](27-vjson.md)、[`vfile`](17-vfile.md) | 对象/路径/格式化/文件 IO cookbook 示例、文件系统安全建议和显式错误处理。 |
+
+对比入口：
+
+- 使用 [`vhttp`](22-vhttp.md) 获取标准库风格 HTTP helper；当 Resty 风格链式请求更易读时使用 [`vresty`](41-vresty.md)。
+- 使用 [`vurl`](51-vurl.md) 做 URL 构造、标准化、query 编码、资源探测，或在真正发 HTTP 请求前做安全打开。
+- 当推荐加密工作流可以降低误用风险时使用 [`vcrypto`](11-vcrypto.md)；当调用方需要更底层的协议控制时直接使用 Go 标准库。
+- 使用 [`vjson`](27-vjson.md) 处理常见对象、路径、格式化和 XML bridge 流程；如果需要 streaming、tokenization 或完整 decoder 控制，直接使用 `encoding/json`。
+- 使用 [`vfile`](17-vfile.md) 处理有边界读取、provider-backed 文件系统测试和显式文件错误；不可信路径处理应保留在调用点显式可见。
 
 <a id="package-catalog"></a>
 

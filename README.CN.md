@@ -16,6 +16,7 @@
 - [📚 简介](#introduction)
 - [✨ 为什么选择 go-knifer](#why-go-knifer)
 - [🚀 安装](#install)
+- [⭐ 从这些包开始](#start-with-these-packages)
 - [🧭 按场景查找](#find-by-scenario)
 - [🧩 模块目录](#package-catalog)
 - [🏗️ 架构](#architecture)
@@ -54,6 +55,87 @@
 ```bash
 go get github.com/imajinyun/go-knifer
 ```
+
+<a id="start-with-these-packages"></a>
+
+## ⭐ 从这些包开始
+
+如果你第一次接触 `go-knifer`，建议先从三个最容易产生直接价值的领域开始：
+
+| 需求 | 从这里开始 | 原因 |
+| --- | --- | --- |
+| 安全 HTTP 请求与下载 | [`vhttp`](docs/doc/22-vhttp.md)、[`vresty`](docs/doc/41-vresty.md)、[`vurl`](docs/doc/51-vurl.md) | 提供常见请求 helper，并为不可信 URL 和文件下载保留显式安全路径。 |
+| 安全加密工作流 | [`vcrypto`](docs/doc/11-vcrypto.md)、[`vrand`](docs/doc/38-vrand.md)、[`vjwt`](docs/doc/28-vjwt.md) | 提供推荐的 hash、HMAC、加密、安全随机字节和签名 token 入口。 |
+| 日常 JSON 与文件工作流 | [`vjson`](docs/doc/27-vjson.md)、[`vfile`](docs/doc/17-vfile.md) | 提供 cookbook 风格的对象解析、格式化、读写、复制和显式错误处理示例。 |
+
+### 安全 HTTP 请求
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/imajinyun/go-knifer/vhttp"
+)
+
+func main() {
+	body, err := vhttp.GetStringSafeE("https://api.example.com/health",
+		vhttp.WithAllowedHosts("api.example.com"),
+	)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(body)
+}
+```
+
+### 安全随机 token
+
+```go
+package main
+
+import (
+	"encoding/hex"
+	"fmt"
+
+	"github.com/imajinyun/go-knifer/vrand"
+)
+
+func main() {
+	token, err := vrand.SecureBytes(32)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(hex.EncodeToString(token))
+}
+```
+
+### JSON 对象路径读取
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/imajinyun/go-knifer/vjson"
+)
+
+func main() {
+	obj, err := vjson.ParseObj(`{"user":{"name":"go-knifer"}}`)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(vjson.GetByPath(obj, "user.name"))
+}
+```
+
+对比入口：
+
+- HTTP：[`vhttp`](docs/doc/22-vhttp.md) 适合标准库风格 helper，[`vresty`](docs/doc/41-vresty.md) 适合 Resty 风格链式请求，[`vurl`](docs/doc/51-vurl.md) 适合仅做 URL 处理。
+- 加密：[`vcrypto`](docs/doc/11-vcrypto.md) 说明推荐 helper 与直接使用标准库控制细节之间的边界。
+- JSON/file：[`vjson`](docs/doc/27-vjson.md) 说明何时直接使用 `encoding/json`；[`vfile`](docs/doc/17-vfile.md) 说明文件系统安全建议。
 
 <a id="find-by-scenario"></a>
 

@@ -16,6 +16,7 @@
 - [📚 Introduction](#introduction)
 - [✨ Why go-knifer](#why-go-knifer)
 - [🚀 Install](#install)
+- [⭐ Start with these packages](#start-with-these-packages)
 - [🧭 Find by scenario](#find-by-scenario)
 - [🧩 Package catalog](#package-catalog)
 - [🏗️ Architecture](#architecture)
@@ -55,6 +56,87 @@ Go 1.25 or later is required.
 ```bash
 go get github.com/imajinyun/go-knifer
 ```
+
+<a id="start-with-these-packages"></a>
+
+## ⭐ Start with these packages
+
+If you are new to `go-knifer`, start with the three domains that provide the clearest day-one value:
+
+| Need | Start here | Why |
+| --- | --- | --- |
+| Safe HTTP and downloads | [`vhttp`](docs/doc/22-vhttp.md), [`vresty`](docs/doc/41-vresty.md), [`vurl`](docs/doc/51-vurl.md) | Common request helpers plus explicit safe paths for untrusted URLs and files. |
+| Safe crypto workflows | [`vcrypto`](docs/doc/11-vcrypto.md), [`vrand`](docs/doc/38-vrand.md), [`vjwt`](docs/doc/28-vjwt.md) | Recommended hashing, HMAC, encryption, secure random bytes, and signed-token entry points. |
+| Daily JSON and file workflows | [`vjson`](docs/doc/27-vjson.md), [`vfile`](docs/doc/17-vfile.md) | Cookbook-style helpers for common object, formatting, read/write, copy, and explicit-error flows. |
+
+### Safe HTTP request
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/imajinyun/go-knifer/vhttp"
+)
+
+func main() {
+	body, err := vhttp.GetStringSafeE("https://api.example.com/health",
+		vhttp.WithAllowedHosts("api.example.com"),
+	)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(body)
+}
+```
+
+### Secure random token
+
+```go
+package main
+
+import (
+	"encoding/hex"
+	"fmt"
+
+	"github.com/imajinyun/go-knifer/vrand"
+)
+
+func main() {
+	token, err := vrand.SecureBytes(32)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(hex.EncodeToString(token))
+}
+```
+
+### JSON object path lookup
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/imajinyun/go-knifer/vjson"
+)
+
+func main() {
+	obj, err := vjson.ParseObj(`{"user":{"name":"go-knifer"}}`)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(vjson.GetByPath(obj, "user.name"))
+}
+```
+
+Comparison entry points:
+
+- HTTP: [`vhttp`](docs/doc/22-vhttp.md) for standard-library-style helpers, [`vresty`](docs/doc/41-vresty.md) for Resty-style request chains, and [`vurl`](docs/doc/51-vurl.md) for URL-only work.
+- Crypto: [`vcrypto`](docs/doc/11-vcrypto.md) documents the boundary between recommended helpers and direct standard-library control.
+- JSON/file: [`vjson`](docs/doc/27-vjson.md) documents when to use `encoding/json` directly; [`vfile`](docs/doc/17-vfile.md) documents filesystem safety guidance.
 
 <a id="find-by-scenario"></a>
 
