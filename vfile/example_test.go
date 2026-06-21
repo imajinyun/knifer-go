@@ -15,6 +15,82 @@ import (
 	"github.com/imajinyun/go-knifer/vfile"
 )
 
+func Example_cookbookReadWriteTextFile() {
+	dir, cleanup := exampleTempDir()
+	defer cleanup()
+
+	path := filepath.Join(dir, "note.txt")
+	if err := vfile.WriteFileString(path, "hello"); err != nil {
+		fmt.Println(err)
+		return
+	}
+	content, err := vfile.ReadFileString(path)
+	fmt.Println(content, err)
+	// Output: hello <nil>
+}
+
+func Example_cookbookAppendWithoutClobbering() {
+	dir, cleanup := exampleTempDir()
+	defer cleanup()
+
+	path := filepath.Join(dir, "app.log")
+	_ = vfile.WriteFileString(path, "start")
+	_ = vfile.AppendFileString(path, "\nstop")
+	content, _ := vfile.ReadFileString(path)
+	fmt.Println(content)
+	// Output:
+	// start
+	// stop
+}
+
+func Example_cookbookCopyThenMove() {
+	dir, cleanup := exampleTempDir()
+	defer cleanup()
+
+	src := filepath.Join(dir, "src.txt")
+	backup := filepath.Join(dir, "backup", "src.txt")
+	moved := filepath.Join(dir, "moved.txt")
+	_ = vfile.WriteFileString(src, "payload")
+	_ = vfile.CopyFile(src, backup)
+	_ = vfile.CopyFile(src, moved)
+	_ = vfile.Del(src)
+
+	fmt.Println(vfile.Exists(backup), vfile.Exists(src), vfile.Exists(moved))
+	// Output: true false true
+}
+
+func Example_cookbookCheckExistenceBeforeOptionalWork() {
+	dir, cleanup := exampleTempDir()
+	defer cleanup()
+
+	path := filepath.Join(dir, "optional.txt")
+	if !vfile.Exists(path) {
+		_ = vfile.WriteFileString(path, "created")
+	}
+	fmt.Println(vfile.Exists(path))
+	// Output: true
+}
+
+func Example_cookbookTemporaryDirectory() {
+	dir, cleanup := exampleTempDir()
+	defer cleanup()
+
+	path := filepath.Join(dir, "nested", "note.txt")
+	_ = vfile.WriteFileString(path, "isolated")
+	fmt.Println(vfile.IsFile(path), strings.HasPrefix(path, dir))
+	// Output: true true
+}
+
+func Example_cookbookExplicitFileError() {
+	dir, cleanup := exampleTempDir()
+	defer cleanup()
+
+	missing := filepath.Join(dir, "missing.txt")
+	_, err := vfile.ReadFileString(missing)
+	fmt.Println(errors.Is(err, knifer.ErrCodeNotFound))
+	// Output: true
+}
+
 func ExampleMainName() {
 	fmt.Println(vfile.MainName("/tmp/report.csv"))
 	// Output: report

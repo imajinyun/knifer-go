@@ -14,6 +14,78 @@ import (
 	"github.com/imajinyun/go-knifer/vxml"
 )
 
+func Example_cookbookEncodeStruct() {
+	type user struct {
+		Name string `json:"name"`
+		Age  int    `json:"age"`
+	}
+
+	body, err := vjson.ToStr(user{Name: "go-knifer", Age: 5})
+	fmt.Println(body, err)
+	// Output: {"age":5,"name":"go-knifer"} <nil>
+}
+
+func Example_cookbookDecodeStruct() {
+	type user struct {
+		Name string `json:"name"`
+		Age  int    `json:"age"`
+	}
+
+	var dst user
+	err := vjson.ToBean(`{"name":"go-knifer","age":5}`, &dst)
+	fmt.Println(dst.Name, dst.Age, err)
+	// Output: go-knifer 5 <nil>
+}
+
+func Example_cookbookParseObjectPathDefault() {
+	obj, err := vjson.ParseObj(`{"user":{"name":"go-knifer"}}`)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(vjson.GetByPath(obj, "user.name"))
+	fmt.Println(vjson.GetByPathOr(obj, "user.email", "missing"))
+	// Output:
+	// go-knifer
+	// missing
+}
+
+func Example_cookbookFormatForHumans() {
+	fmt.Println(vjson.FormatWithOptions(`{"name":"go-knifer"}`, vjson.WithFormatIndentWidth(2)))
+	// Output:
+	// {
+	//   "name": "go-knifer"
+	// }
+}
+
+func Example_cookbookConvertXMLAndJSON() {
+	obj, err := vjson.XMLToJSON(`<user><name>go-knifer</name></user>`)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	xmlText, err := vjson.ToXMLWithOptions(obj.GetJSONObject("user"), "user", vxml.WithOmitDeclaration(true))
+	fmt.Println(vjson.GetByPath(obj, "user.name"), xmlText, err)
+	// Output: go-knifer <user><name>go-knifer</name></user> <nil>
+}
+
+func Example_cookbookCustomParsingBehavior() {
+	obj, err := vjson.ParseObjWithOptions(`{"n":"ignored"}`, vjson.WithParseDecoderFactory(func(io.Reader) *stdjson.Decoder {
+		dec := stdjson.NewDecoder(strings.NewReader(`{"n":7}`))
+		dec.UseNumber()
+		return dec
+	}))
+	fmt.Println(obj.GetInt("n"), err)
+	// Output: 7 <nil>
+}
+
+func Example_cookbookExplicitErrorHandling() {
+	_, err := vjson.ParseObj(`["not","an","object"]`)
+	fmt.Println(errors.Is(err, knifer.ErrCodeInvalidInput))
+	// Output: true
+}
+
 func ExampleToStr() {
 	s, _ := vjson.ToStr(map[string]any{"name": "go"})
 	fmt.Println(s)
