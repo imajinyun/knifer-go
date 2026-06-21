@@ -133,8 +133,8 @@ func (db *DB) Upsert(ctx context.Context, entity Entity, conflictFields []string
 
 // Update updates rows matching conditions.
 func (db *DB) Update(ctx context.Context, entity Entity, conds ...Condition) (sql.Result, error) {
-	if len(conds) == 0 {
-		return nil, invalidInputf("db: UPDATE without conditions is unsafe; use UpdateAll to update every row explicitly")
+	if err := requireEffectiveConditions(db.dialect, db.wrapper, "UPDATE", conds); err != nil {
+		return nil, err
 	}
 	return updateEntity(ctx, db.sqlDB, db.dialect, db.wrapper, entity, conds...)
 }
@@ -146,8 +146,8 @@ func (db *DB) UpdateAll(ctx context.Context, entity Entity) (sql.Result, error) 
 
 // Delete deletes rows matching conditions.
 func (db *DB) Delete(ctx context.Context, table string, conds ...Condition) (sql.Result, error) {
-	if len(conds) == 0 {
-		return nil, invalidInputf("db: DELETE without conditions is unsafe; use DeleteAll to delete every row explicitly")
+	if err := requireEffectiveConditions(db.dialect, db.wrapper, "DELETE", conds); err != nil {
+		return nil, err
 	}
 	return deleteRows(ctx, db.sqlDB, db.dialect, db.wrapper, table, conds...)
 }
@@ -330,6 +330,24 @@ func deleteRows(ctx context.Context, exec sqlExecutor, dialect Dialect, wrapper 
 	return result, nil
 }
 
+func requireEffectiveConditions(dialect Dialect, wrapper Wrapper, operation string, conds []Condition) error {
+	if len(conds) == 0 {
+		return invalidInputf("db: %s without conditions is unsafe; use %sAll to affect every row explicitly", operation, titleOperation(operation))
+	}
+	where, _, _, err := buildConditions(conds, dialect, wrapper, 1)
+	if err != nil {
+		return err
+	}
+	if strings.TrimSpace(where) == "" {
+		return invalidInputf("db: %s without effective conditions is unsafe; use %sAll to affect every row explicitly", operation, titleOperation(operation))
+	}
+	return nil
+}
+
+func titleOperation(operation string) string {
+	return strings.ToUpper(operation[:1]) + strings.ToLower(operation[1:])
+}
+
 func buildCountSQL(dialect Dialect, wrapper Wrapper, tables []string, conds ...Condition) (string, []any, error) {
 	if len(tables) == 0 {
 		return "", nil, invalidInputf("db: COUNT requires table")
@@ -381,6 +399,9 @@ func buildUpsertSQL(dialect Dialect, wrapper Wrapper, entity Entity, conflictFie
 		case DialectPostgres, DialectSQLite:
 			if len(conflictFields) == 0 {
 				return "", nil, invalidInputf("db: upsert conflict fields are required for %s", dialect)
+			}
+			if err := validateIdentifierList(conflictFields, "upsert conflict fields", false); err != nil {
+				return "", nil, err
 			}
 			return insertSQL + " ON CONFLICT (" + wrapList(conflictFields, wrapper) + ") DO NOTHING", args, nil
 		default:

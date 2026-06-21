@@ -75,6 +75,8 @@ func TestSessionGuardsAndInvalidIdentifiers(t *testing.T) {
 	_ = db.Tx(ctx, nil, func(s *Session) error {
 		assertDBCode(t, mustErr2(s.Update(ctx, entity)), knifer.ErrCodeInvalidInput)
 		assertDBCode(t, mustErr2(s.Delete(ctx, "users")), knifer.ErrCodeInvalidInput)
+		assertDBCode(t, mustErr2(s.Update(ctx, entity, Condition{})), knifer.ErrCodeInvalidInput)
+		assertDBCode(t, mustErr2(s.Delete(ctx, "users", AndGroup())), knifer.ErrCodeInvalidInput)
 		assertDBCode(t, s.Savepoint(ctx, "bad name"), knifer.ErrCodeInvalidInput)
 		assertDBCode(t, s.RollbackTo(ctx, "bad name"), knifer.ErrCodeInvalidInput)
 		return errors.New("stop") // force rollback, avoid commit noise

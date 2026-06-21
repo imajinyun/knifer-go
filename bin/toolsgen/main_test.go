@@ -256,19 +256,7 @@ func TestToolsCatalogSecuritySensitiveExamplesBudget(t *testing.T) {
 		t.Fatalf("generateToolsDoc(%q) error = %v", root, err)
 	}
 	const minExamplesPerPackage = 5
-	securitySensitivePackages := []string{
-		"vhttp",
-		"vresty",
-		"vurl",
-		"vconf",
-		"vzip",
-		"vfile",
-		"vcrypto",
-		"vjwt",
-		"vrand",
-		"vid",
-		"vdb",
-	}
+	securitySensitivePackages := loadSecuritySensitivePackages(t, root)
 	examplesByPackage := toolsExamplesByPackage(doc)
 	missing := []string{}
 	for _, name := range securitySensitivePackages {
@@ -486,6 +474,30 @@ func repositoryRoot(t *testing.T) string {
 		t.Fatalf("Getwd() error = %v", err)
 	}
 	return filepath.Clean(filepath.Join(wd, "..", ".."))
+}
+
+func loadSecuritySensitivePackages(t *testing.T, root string) []string {
+	t.Helper()
+
+	type aiContext struct {
+		SecuritySensitivePackages []string `json:"security_sensitive_packages"`
+	}
+
+	path := filepath.Join(root, "ai-context.json")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("ReadFile(%q) error = %v", path, err)
+	}
+
+	var context aiContext
+	if err := json.Unmarshal(data, &context); err != nil {
+		t.Fatalf("Unmarshal(%q) error = %v", path, err)
+	}
+	if len(context.SecuritySensitivePackages) == 0 {
+		t.Fatalf("%s has no security_sensitive_packages entries", path)
+	}
+
+	return context.SecuritySensitivePackages
 }
 
 func writeTestFile(t *testing.T, root, name, content string) {

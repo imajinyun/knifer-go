@@ -1,4 +1,4 @@
-.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check test test-race race-test shuffle-test coverage-profile coverage-report coverage-check api-check tools-check tools-gen tools-report ai-context-check ci-workflow-check docs-gen docs-check generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke check ci-test
+.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check test test-race race-test shuffle-test coverage-profile coverage-report coverage-check api-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check docs-gen docs-check generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -35,6 +35,7 @@ help:
 	@echo "  quick-check     Run fast local governance gates"
 	@echo "  security-check  Run lint and govulncheck"
 	@echo "  full-check      Run full local gates with race coverage"
+	@echo "  release-check   Run release readiness gates"
 	@echo "  agent-check     Run default AI/Agent-safe validation gates"
 	@echo "  agent-full-check Run full AI/Agent validation gates"
 	@echo "  agent-security-check Run AI/Agent security validation gates"
@@ -45,6 +46,7 @@ help:
 	@echo "  tools-check     Verify machine-readable tools catalog is current"
 	@echo "  tools-gen       Regenerate machine-readable tools catalog"
 	@echo "  tools-report    Print tools catalog quality report"
+	@echo "  docs-quickstart-check Verify facade quickstart documentation structure"
 	@echo "  docs-gen        Regenerate documentation artifacts"
 	@echo "  docs-check      Verify generated documentation artifacts are current"
 	@echo "  ai-context-check Verify machine-readable AI context metadata"
@@ -136,9 +138,12 @@ tools-gen:
 tools-report:
 	$(GO) run ./bin/toolsgen -quality
 
+docs-quickstart-check:
+	bash bin/check_docs_quickstart.sh
+
 docs-gen: tools-gen
 
-docs-check: tools-check
+docs-check: tools-check docs-quickstart-check
 
 ai-context-check:
 	bash bin/check_ai_context.sh
@@ -177,11 +182,13 @@ lint:
 govulncheck:
 	$(GO) tool govulncheck $(PKGS)
 
-quick-check: worktree-check mod-verify vet arch test api-check tools-check ai-context-check diff-whitespace
+quick-check: worktree-check mod-verify vet arch test api-check docs-check ai-context-check diff-whitespace
 
 security-check: lint govulncheck
 
-full-check: worktree-check mod-verify vet arch test-race coverage-check api-check tools-check ai-context-check lint govulncheck diff-whitespace
+full-check: worktree-check mod-verify vet arch test-race coverage-check api-check docs-check ai-context-check lint govulncheck diff-whitespace
+
+release-check: full-check ci-workflow-check
 
 agent-check: quick-check change-policy-check security-sensitive-diff
 
@@ -207,4 +214,4 @@ bench-smoke:
 
 check: full-check
 
-ci-test: mod-verify vet tidy-check diff-check arch test-race coverage-check api-check tools-check ai-context-check
+ci-test: mod-verify vet tidy-check diff-check arch test-race coverage-check api-check docs-check ai-context-check

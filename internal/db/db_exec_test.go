@@ -155,6 +155,8 @@ func TestDBInsertUpdateDelete(t *testing.T) {
 	// Guard rails: condition-less Update/Delete are rejected.
 	assertDBCode(t, mustErr2(db.Update(ctx, entity)), knifer.ErrCodeInvalidInput)
 	assertDBCode(t, mustErr2(db.Delete(ctx, "users")), knifer.ErrCodeInvalidInput)
+	assertDBCode(t, mustErr2(db.Update(ctx, entity, Condition{})), knifer.ErrCodeInvalidInput)
+	assertDBCode(t, mustErr2(db.Delete(ctx, "users", Condition{Field: " "})), knifer.ErrCodeInvalidInput)
 }
 
 func TestDBInsertGetIDErrors(t *testing.T) {

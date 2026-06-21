@@ -13,10 +13,23 @@ coverage_file="${1:-coverage.out}"
 coverage_config="$(
 	python3 - "${AI_CONTEXT}" <<'PY'
 import json
+import os
 import sys
 
-with open(sys.argv[1], "r", encoding="utf-8") as f:
+ai_context = sys.argv[1]
+root_dir = os.path.dirname(ai_context)
+
+with open(ai_context, "r", encoding="utf-8") as f:
     data = json.load(f)
+
+def has_statement_source(package_dir):
+    path = os.path.join(root_dir, package_dir)
+    if not os.path.isdir(path):
+        return False
+    return any(
+        entry.endswith(".go") and not entry.endswith("_test.go") and entry != "doc.go"
+        for entry in os.listdir(path)
+    )
 
 coverage_gates = data["coverage_gates"]
 repository_threshold = coverage_gates["repository_threshold"]
@@ -24,14 +37,28 @@ package_thresholds = " ".join(
     f"{package_path}={threshold:.1f}"
     for package_path, threshold in coverage_gates["package_thresholds"].items()
 )
-print(f"{repository_threshold:.1f}|{package_thresholds}")
+module = data["project"]["module"]
+facade_to_internal = {
+    entry["package"]: entry["internal"].rstrip("/")
+    for entry in data["public_facades"]
+}
+security_sensitive_paths = set()
+for package in data["security_sensitive_packages"]:
+    package_dir = package.rstrip("/")
+    if has_statement_source(package_dir):
+        security_sensitive_paths.add(f"{module}/{package_dir}")
+    internal = facade_to_internal.get(package)
+    if internal and has_statement_source(internal):
+        security_sensitive_paths.add(f"{module}/{internal}")
+security_sensitive_paths = " ".join(sorted(security_sensitive_paths))
+print(f"{repository_threshold:.1f}|{package_thresholds}|{security_sensitive_paths}")
 PY
 )"
 
-metadata_threshold="${coverage_config%%|*}"
-metadata_package_thresholds="${coverage_config#*|}"
+IFS='|' read -r metadata_threshold metadata_package_thresholds metadata_security_sensitive_paths <<<"${coverage_config}"
 threshold="${COVERAGE_THRESHOLD:-${metadata_threshold}}"
 package_thresholds="${PACKAGE_COVERAGE_THRESHOLDS:-${metadata_package_thresholds}}"
+security_sensitive_paths="${SECURITY_SENSITIVE_COVERAGE_PATHS:-${metadata_security_sensitive_paths}}"
 
 if [ ! -f "${coverage_file}" ]; then
 	echo "COVERAGE CHECK ERROR: ${coverage_file} does not exist" >&2
@@ -59,12 +86,54 @@ BEGIN {
 '
 
 if [ -z "${package_thresholds}" ]; then
+	:
+else
+	for gate in ${package_thresholds}; do
+		package_path="${gate%%=*}"
+		package_threshold="${gate#*=}"
+		package_total="$(
+			awk -v pkg="${package_path}" '
+			NR == 1 { next }
+			{
+				file = $1
+				sub(/:.*/, "", file)
+				if (file ~ "^" pkg "/[^/]+\\.go$") {
+					statements += $2
+					if ($3 > 0) {
+						covered += $2
+					}
+				}
+			}
+			END {
+				if (statements > 0) {
+					printf "%.1f", covered * 100 / statements
+				}
+			}
+			' "${coverage_file}"
+		)"
+		if [ -z "${package_total}" ]; then
+			echo "COVERAGE CHECK ERROR: package ${package_path} has no coverage data" >&2
+			exit 2
+		fi
+		awk -v package_path="${package_path}" -v total="${package_total}" -v threshold="${package_threshold}" '
+		BEGIN {
+			if (total + 0 < threshold + 0) {
+				printf "%s coverage %.1f%% is below required %.1f%%\n", package_path, total, threshold > "/dev/stderr"
+				exit 1
+			}
+			printf "%s coverage %.1f%% meets required %.1f%%\n", package_path, total, threshold
+		}
+		'
+	done
+fi
+
+if [ -z "${security_sensitive_paths}" ]; then
 	exit 0
 fi
 
-for gate in ${package_thresholds}; do
-	package_path="${gate%%=*}"
-	package_threshold="${gate#*=}"
+missing_security_sensitive_paths=""
+security_sensitive_count=0
+for package_path in ${security_sensitive_paths}; do
 	package_total="$(
 		awk -v pkg="${package_path}" '
 		NR == 1 { next }
@@ -86,16 +155,19 @@ for gate in ${package_thresholds}; do
 		' "${coverage_file}"
 	)"
 	if [ -z "${package_total}" ]; then
-		echo "COVERAGE CHECK ERROR: package ${package_path} has no coverage data" >&2
-		exit 2
+		missing_security_sensitive_paths="${missing_security_sensitive_paths}${package_path}
+"
+	else
+		security_sensitive_count=$((security_sensitive_count + 1))
 	fi
-	awk -v package_path="${package_path}" -v total="${package_total}" -v threshold="${package_threshold}" '
-	BEGIN {
-		if (total + 0 < threshold + 0) {
-			printf "%s coverage %.1f%% is below required %.1f%%\n", package_path, total, threshold > "/dev/stderr"
-			exit 1
-		}
-		printf "%s coverage %.1f%% meets required %.1f%%\n", package_path, total, threshold
-	}
-	'
 done
+
+if [ -n "${missing_security_sensitive_paths}" ]; then
+	echo "COVERAGE CHECK ERROR: security-sensitive package(s) have no coverage data:" >&2
+	printf '%s' "${missing_security_sensitive_paths}" | while IFS= read -r package_path; do
+		[ -z "${package_path}" ] || echo "  - ${package_path}" >&2
+	done
+	exit 2
+fi
+
+echo "security-sensitive coverage data present for ${security_sensitive_count} package path(s)"

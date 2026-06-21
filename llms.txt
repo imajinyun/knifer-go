@@ -18,10 +18,12 @@
 
 | Public facade | Full domain | internal package |
 |---|---|---|
+| vai | AI adapters | internal/ai |
 | vstr | string/text helpers | internal/str |
 | vslice | slice utilities | internal/slice |
 | vmap | map utilities | internal/maps |
 | vcache | caches (FIFO/LRU/LFU/TTL) | internal/cache |
+| vcli | CLI helpers | internal/cli |
 | vcrypto | cryptography/digests | internal/crypto |
 | vhttp | HTTP (stdlib) | internal/httpx |
 | vresty | HTTP (Resty) | internal/httpx/resty |
@@ -52,6 +54,7 @@
 | vimg | images/captchas | internal/imgx |
 | vxml | XML | internal/xml |
 | vmail | email/SMTP | internal/mail |
+| vftp | FTP adapters | internal/ftp |
 | vskt | sockets | internal/socket |
 | vnet | IP/port/network | internal/net |
 | vdb | database/SQL | internal/db |
@@ -64,8 +67,11 @@
 | vform | form/input validation | internal/validator |
 | vver | version comparison | internal/version |
 | vsys | system information | internal/system |
+| vhan | Han text romanization adapters | internal/pinyin |
 | vpoi | office documents (Excel) | internal/poi |
 | vobj | object helpers | internal/obj |
+| vssh | SSH/SFTP adapters | internal/ssh |
+| vtok | tokenization adapters | internal/tokenize |
 
 ## Iconography
 
@@ -85,7 +91,7 @@
 - Prefer `(result, error)` over `panic`.
 - IO/network functions take `context.Context` as first parameter.
 - Renaming a public symbol = breaking change (SemVer).
-- Security-sensitive: vhttp, vresty, vurl, vconf, vzip, vfile, vcrypto, vjwt, vrand, vid, vdb.
+- Security-sensitive: vhttp, vresty, vurl, vconf, vzip, vfile, vcrypto, vjwt, vrand, vid, vdb, vcli, vai, vftp, vssh.
 
 ## Validation commands
 

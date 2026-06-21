@@ -1,9 +1,18 @@
 # Contributing to go-knifer
 
 Thanks for contributing! go-knifer is a large, multi-domain Go utility library
-(48 public subpackages). To keep it consistent and maintainable at this scale,
+(54 public facade subpackages). To keep it consistent and maintainable at this scale,
 please follow the conventions below. Most of them are enforced by CI
 (`go vet`, `golangci-lint`, and `bin/check_arch.sh`).
+
+## Documentation map
+
+- Start with [`README.md`](README.md) for project overview, installation, and package discovery.
+- Use [`docs/doc/README.md`](docs/doc/README.md) as the documentation hub and package catalog.
+- Use [`docs/api/exports.txt`](docs/api/exports.txt) and [`docs/api/tools.md`](docs/api/tools.md) for public API and tool-catalog review.
+- Read [`SECURITY.md`](SECURITY.md) before changing security-sensitive facades or their `internal/*` implementations.
+- Keep user-visible changes in [`CHANGELOG.md`](CHANGELOG.md).
+- Agents should follow [`AGENTS.md`](AGENTS.md); Claude-specific deep workflow details live in [`CLAUDE.md`](CLAUDE.md).
 
 ## Project layout
 

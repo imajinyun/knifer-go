@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 54,
     "function_count": 2604,
-    "functions_with_examples": 982,
+    "functions_with_examples": 990,
     "context_aware_functions": 36,
     "returns_error_functions": 603,
     "variadic_functions": 776,
@@ -8679,8 +8679,8 @@
       "synopsis": "Package vdb exposes database/sql helper APIs for SQL execution, query building, entities, conditions, pagination, transactions, named parameters, and lightweight metadata lookup.",
       "summary": {
         "function_count": 51,
-        "functions_with_examples": 7,
-        "example_coverage_percent": 13.7,
+        "functions_with_examples": 10,
+        "example_coverage_percent": 19.6,
         "synopsis_sources": {
           "empty": 0,
           "facade": 15,
@@ -9406,7 +9406,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleOrGroup"
+          ]
         },
         {
           "name": "OrWith",
@@ -9451,7 +9454,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseNamed"
+          ]
         },
         {
           "name": "Raw",
@@ -9569,7 +9575,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleUpdate"
+          ]
         },
         {
           "name": "Use",
@@ -37518,8 +37527,8 @@
       "synopsis": "Package vrand provides public APIs for random value utilities.",
       "summary": {
         "function_count": 29,
-        "functions_with_examples": 6,
-        "example_coverage_percent": 20.7,
+        "functions_with_examples": 9,
+        "example_coverage_percent": 31,
         "synopsis_sources": {
           "empty": 0,
           "facade": 18,
@@ -37578,7 +37587,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleBytesWithOptions"
+          ]
         },
         {
           "name": "ConfigureDefaultRandomSourceProvider",
@@ -37636,7 +37648,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleEleWithOptions"
+          ]
         },
         {
           "name": "Float",
@@ -37757,7 +37772,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleIntWithOptions"
+          ]
         },
         {
           "name": "Long",
@@ -54851,8 +54869,8 @@
       "synopsis": "Package vzip provides ZIP, gzip, and zlib utilities.",
       "summary": {
         "function_count": 92,
-        "functions_with_examples": 20,
-        "example_coverage_percent": 21.7,
+        "functions_with_examples": 22,
+        "example_coverage_percent": 23.9,
         "synopsis_sources": {
           "empty": 0,
           "facade": 92,
@@ -56448,7 +56466,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleZipFiles"
+          ]
         },
         {
           "name": "ZipFilesFilter",
@@ -56478,7 +56499,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleZipFilesFilter"
+          ]
         },
         {
           "name": "ZipFilesFilterWithOptions",

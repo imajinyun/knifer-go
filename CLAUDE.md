@@ -1,6 +1,6 @@
 # go-knifer — AI Agent Guide
 
-> Go utility library (48 public `v*` facade packages + `internal/*` implementations).
+> Go utility library (54 public `v*` facade packages + `internal/*` implementations).
 
 `AGENTS.md` is the cross-agent concise entrypoint. This file is the Claude-specific detailed guide and should carry the deeper workflow, package-boundary, and validation playbooks. Keep shared rules aligned, but avoid duplicating long policy text across both files.
 
@@ -22,7 +22,7 @@
 │   ├── api/exports.txt # exported API snapshot (19k+ lines, CI-enforced)
 │   ├── api/tools.json  # machine-readable facade function catalog for AI/tooling
 │   ├── api/tools.md    # generated human-readable facade function catalog
-│   └── doc/            # 48 per-package quickstart docs (02-vbean.md .. 54-vzip.md)
+│   └── doc/            # 54 per-package quickstart docs (01-vai.md .. 54-vzip.md)
 ├── AGENTS.md           # cross-agent workflow, validation, and generated-doc rules
 └── .github/workflows/  # CI (go.yml) + release (release.yml) automation
 ```
@@ -34,10 +34,11 @@
 - **Production `panic` is exceptional.** Only in `MustXxx`/`PanicXxx` APIs or documented cases.
 - **Facades are thin.** No business logic, loops, `panic`, or type assertions in `v*`.
 
-### Package catalog (48 v* packages)
+### Package catalog (54 v* packages)
 
 | Package | Domain | internal |
 |---------|--------|----------|
+| vai | AI adapters | internal/ai |
 | vstr | string/text | internal/str |
 | vslice | slices | internal/slice |
 | vmap | maps | internal/maps |
@@ -53,6 +54,7 @@
 | vlog | logging | internal/log |
 | verr | error handling/panic recovery | internal/errx |
 | vfile | file/IO | internal/file |
+| vcli | CLI helpers | internal/cli |
 | vurl | URL/URI | internal/url |
 | vmask | data masking | internal/mask |
 | vcodec | Base64/Hex | internal/codec |
@@ -73,6 +75,7 @@
 | vimg | images/captchas | internal/imgx |
 | vxml | XML | internal/xml |
 | vmail | email/SMTP | internal/mail |
+| vftp | FTP adapters | internal/ftp |
 | vskt | sockets | internal/socket |
 | vnet | IP/port/network | internal/net |
 | vdb | database/SQL | internal/db |
@@ -85,7 +88,10 @@
 | vform | form/input validation | internal/validator |
 | vver | version comparison | internal/version |
 | vsys | system information | internal/system |
+| vhan | Han text romanization adapters | internal/pinyin |
 | vpoi | office documents (Excel) | internal/poi |
+| vssh | SSH/SFTP adapters | internal/ssh |
+| vtok | tokenization adapters | internal/tokenize |
 
 ### Validation commands
 
@@ -133,7 +139,7 @@
 - IO/network functions take `context.Context` as first parameter.
 - No synonym aliases for the same function.
 - Renaming a public symbol is a breaking change (SemVer).
-- Security-sensitive code: `vhttp`, `vresty`, `vurl`, `vconf`, `vzip`, `vfile`, `vcrypto`, `vjwt`, `vrand`, `vid`, `vdb`. See `SECURITY.md`.
+- Security-sensitive code: `vhttp`, `vresty`, `vurl`, `vconf`, `vzip`, `vfile`, `vcrypto`, `vjwt`, `vrand`, `vid`, `vdb`, `vcli`, `vai`, `vftp`, `vssh`. See `SECURITY.md`.
 
 ### Governance constraints
 

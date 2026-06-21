@@ -51,6 +51,12 @@ Changes touching these packages require extra review:
 - `vcrypto`, `vjwt`, `vrand`, `vid`: cryptography, token verification,
   randomness, signatures, and key handling.
 - `vdb`: SQL construction, named arguments, transactions, and resource cleanup.
+- `vcli`: external command execution, argument separation, shell boundaries,
+  timeout policy, and output limits.
+- `vai`: provider requests, prompt or embedding payload sensitivity, credential
+  handling, redaction-safe diagnostics, and defensive request copying.
+- `vftp`, `vssh`: remote command or transfer boundaries, credentials, SFTP/FTP
+  path handling, transfer limits, and output-size limits.
 
 Security linter suppressions in `.golangci.yml` must stay narrow and documented.
 Prefer adding a regression test over broadening a suppression. New `#nosec` or

@@ -80,3 +80,44 @@ func ExampleIsSafeIdentifier() {
 	// true
 	// false
 }
+
+func ExampleParseNamed() {
+	named, err := vdb.ParseNamed(
+		"SELECT * FROM users WHERE id = :id::int AND status = :status",
+		map[string]any{"id": 7, "status": "active"},
+		vdb.DialectPostgres,
+	)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(named.SQL)
+	fmt.Println(named.Params)
+	fmt.Println(named.Names)
+	// Output:
+	// SELECT * FROM users WHERE id = $1::int AND status = $2
+	// [7 active]
+	// [id status]
+}
+
+func ExampleUpdate() {
+	entity := vdb.EntityFromMap("users", map[string]any{"active": false})
+	sql, args, _ := vdb.Update(entity).Where(vdb.Eq("id", 7)).SQL()
+	fmt.Println(sql)
+	fmt.Println(args)
+	// Output:
+	// UPDATE users SET active = ? WHERE id = ?
+	// [false 7]
+}
+
+func ExampleOrGroup() {
+	sql, args, _ := vdb.BuildConditions(
+		vdb.AndGroup(vdb.Eq("tenant_id", 42)),
+		vdb.OrGroup(vdb.Eq("status", "active"), vdb.Eq("status", "pending")),
+	)
+	fmt.Println(sql)
+	fmt.Println(args)
+	// Output:
+	// (tenant_id = ?) OR (status = ? AND status = ?)
+	// [42 active pending]
+}

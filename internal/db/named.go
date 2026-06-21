@@ -31,7 +31,7 @@ func ParseNamed(query string, args map[string]any, dialect Dialect) (NamedSQL, e
 			b.WriteByte(ch)
 			continue
 		}
-		if ch != ':' || inSingle || inDouble || i+1 >= len(query) || query[i+1] == ':' || !isNameStart(rune(query[i+1])) {
+		if ch != ':' || inSingle || inDouble || i+1 >= len(query) || query[i+1] == ':' || (i > 0 && query[i-1] == ':') || !isNameStart(rune(query[i+1])) {
 			b.WriteByte(ch)
 			continue
 		}

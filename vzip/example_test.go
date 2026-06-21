@@ -140,6 +140,66 @@ func ExampleZipEntries() {
 	// Output: [README.md config/app.yml]
 }
 
+func ExampleZipFiles() {
+	dir, err := os.MkdirTemp("", "go-knifer-vzip-files-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+	file := filepath.Join(dir, "app.txt")
+	if err := os.WriteFile(file, []byte("app"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	archivePath := filepath.Join(dir, "out.zip")
+	if err := vzip.ZipFiles(archivePath, false, file); err != nil {
+		fmt.Println(err)
+		return
+	}
+	names, err := vzip.ListFileNames(archivePath, "")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(names)
+	// Output: [app.txt]
+}
+
+func ExampleZipFilesFilter() {
+	dir, err := os.MkdirTemp("", "go-knifer-vzip-filter-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+	keep := filepath.Join(dir, "keep.txt")
+	skip := filepath.Join(dir, "skip.log")
+	if err := os.WriteFile(keep, []byte("keep"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	if err := os.WriteFile(skip, []byte("skip"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	archivePath := filepath.Join(dir, "filtered.zip")
+	filter := func(path string, info os.FileInfo) bool {
+		return info.IsDir() || filepath.Ext(path) == ".txt"
+	}
+	if err := vzip.ZipFilesFilter(archivePath, false, filter, keep, skip); err != nil {
+		fmt.Println(err)
+		return
+	}
+	names, err := vzip.ListFileNames(archivePath, "")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(names)
+	// Output: [keep.txt]
+}
+
 func ExampleZipData() {
 	archivePath, cleanup, err := writeExampleArchive(vzip.EntryData{Name: "placeholder", Data: []byte("ignored")})
 	if err != nil {

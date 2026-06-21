@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/go-knifer` |
 | Packages | 54 |
 | Functions | 2604 |
-| Functions with examples | 982 |
+| Functions with examples | 990 |
 | Context-aware functions | 36 |
 | Functions returning error | 603 |
 | Variadic functions | 776 |
@@ -563,7 +563,7 @@ Import path: `github.com/imajinyun/go-knifer/vdb`
 
 Package vdb exposes database/sql helper APIs for SQL execution, query building, entities, conditions, pagination, transactions, named parameters, and lightweight metadata lookup.
 
-Quality: 51 functions · 7 with examples · 13.7% example coverage · synopsis sources: facade=15, internal=36, empty=0
+Quality: 51 functions · 10 with examples · 19.6% example coverage · synopsis sources: facade=15, internal=36, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -600,15 +600,15 @@ Quality: 51 functions · 7 with examples · 13.7% example coverage · synopsis s
 | `NewWrapper` | `func NewWrapper(prefix string, suffix string) Wrapper` | NewWrapper returns an identifier wrapper. | facade | — |
 | `NormalizeDialect` | `func NormalizeDialect(name string) Dialect` | NormalizeDialect maps common driver names to a SQL dialect. | facade | — |
 | `Open` | `func Open(driverName string, dataSourceName string, opts ...Option) (*DB, error)` | Open opens a database using database/sql and applies pool/dialect options. | facade | — |
-| `OrGroup` | `func OrGroup(conds ...Condition) Condition` | OrGroup groups conditions with OR. | internal | — |
+| `OrGroup` | `func OrGroup(conds ...Condition) Condition` | OrGroup groups conditions with OR. | internal | `ExampleOrGroup` |
 | `OrWith` | `func OrWith(c Condition) Condition` | OrWith marks c as linked by OR. | internal | — |
-| `ParseNamed` | `func ParseNamed(query string, args map[string]any, dialect Dialect) (NamedSQL, error)` | ParseNamed replaces :name parameters with dialect placeholders. | internal | — |
+| `ParseNamed` | `func ParseNamed(query string, args map[string]any, dialect Dialect) (NamedSQL, error)` | ParseNamed replaces :name parameters with dialect placeholders. | internal | `ExampleParseNamed` |
 | `Raw` | `func Raw(sql string, args ...any) *SQLBuilder` | Raw creates a builder from a trusted raw SQL fragment. | internal | — |
 | `RemoveOuterOrderBy` | `func RemoveOuterOrderBy(sql string) string` | RemoveOuterOrderBy removes the last top-level ORDER BY clause from a SELECT statement. | internal | — |
 | `ScanOne` | `func ScanOne(rows *sql.Rows) (Entity, bool, error)` | ScanOne scans the first row into Entity. | internal | — |
 | `ScanRows` | `func ScanRows(rows *sql.Rows) ([]Entity, error)` | ScanRows scans all rows into Entity values. | internal | — |
 | `Select` | `func Select(fields ...string) *SQLBuilder` | Select starts a SELECT builder. | internal | `ExampleSelect` |
-| `Update` | `func Update(e Entity) *SQLBuilder` | Update builds an UPDATE statement for entity. | internal | — |
+| `Update` | `func Update(e Entity) *SQLBuilder` | Update builds an UPDATE statement for entity. | internal | `ExampleUpdate` |
 | `Use` | `func Use(sqlDB *sql.DB, opts ...Option) *DB` | Use wraps an existing *sql.DB and applies pool/dialect options. | facade | — |
 | `WithConnMaxIdleTime` | `func WithConnMaxIdleTime(d time.Duration) Option` | WithConnMaxIdleTime sets database/sql max idle time when opening or wrapping a DB. | facade | — |
 | `WithConnMaxLifetime` | `func WithConnMaxLifetime(d time.Duration) Option` | WithConnMaxLifetime sets database/sql max connection lifetime when opening or wrapping a DB. | facade | — |
@@ -2157,22 +2157,22 @@ Import path: `github.com/imajinyun/go-knifer/vrand`
 
 Package vrand provides public APIs for random value utilities.
 
-Quality: 29 functions · 6 with examples · 20.7% example coverage · synopsis sources: facade=18, internal=11, empty=0
+Quality: 29 functions · 9 with examples · 31.0% example coverage · synopsis sources: facade=18, internal=11, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
 | `Bool` | `func Bool() bool` | Bool returns a pseudo-random boolean. | facade | — |
 | `BoolWithOptions` | `func BoolWithOptions(opts ...RandomOption) bool` | RandomBoolWithOptions returns a random boolean with per-call options. | internal | — |
-| `BytesWithOptions` | `func BytesWithOptions(n int, opts ...RandomOption) ([]byte, error)` | RandomBytesWithOptions returns n random bytes with per-call options. | internal | — |
+| `BytesWithOptions` | `func BytesWithOptions(n int, opts ...RandomOption) ([]byte, error)` | RandomBytesWithOptions returns n random bytes with per-call options. | internal | `ExampleBytesWithOptions` |
 | `ConfigureDefaultRandomSourceProvider` | `func ConfigureDefaultRandomSourceProvider(provider func() *rand.Rand)` | ConfigureDefaultRandomSourceProvider sets the provider used to lazily create the package-level pseudo-random source. | facade | — |
 | `Ele` | `func Ele[T any](a []T) T` | Ele returns a pseudo-random element from a, or the zero value when a is empty. | facade | `ExampleEle` |
-| `EleWithOptions` | `func EleWithOptions[T any](a []T, opts ...RandomOption) T` | RandomEleWithOptions returns a random element with per-call options, or the zero value for an empty slice. | internal | — |
+| `EleWithOptions` | `func EleWithOptions[T any](a []T, opts ...RandomOption) T` | RandomEleWithOptions returns a random element with per-call options, or the zero value for an empty slice. | internal | `ExampleEleWithOptions` |
 | `Float` | `func Float() float64` | Float returns a pseudo-random float64 in [0.0, 1.0). | facade | — |
 | `FloatWithOptions` | `func FloatWithOptions(opts ...RandomOption) float64` | RandomFloatWithOptions returns a random float64 in [0.0, 1.0) with per-call options. | internal | — |
 | `Int` | `func Int(max int) int` | Int returns a pseudo-random integer in [0, max), or 0 when max is non-positive. | facade | — |
 | `IntRange` | `func IntRange(min int, max int) int` | IntRange returns a pseudo-random integer in [min, max), or min when max <= min. | facade | `ExampleIntRange` |
 | `IntRangeWithOptions` | `func IntRangeWithOptions(min int, max int, opts ...RandomOption) int` | RandomIntRangeWithOptions returns a random integer in [min, max) with per-call options. | internal | — |
-| `IntWithOptions` | `func IntWithOptions(max int, opts ...RandomOption) int` | RandomIntWithOptions returns a random integer in [0, max) with per-call options. | internal | — |
+| `IntWithOptions` | `func IntWithOptions(max int, opts ...RandomOption) int` | RandomIntWithOptions returns a random integer in [0, max) with per-call options. | internal | `ExampleIntWithOptions` |
 | `Long` | `func Long() int64` | Long returns a non-negative pseudo-random int64. | facade | — |
 | `LongWithOptions` | `func LongWithOptions(opts ...RandomOption) int64` | RandomLongWithOptions returns a non-negative random int64 with per-call options. | internal | — |
 | `Numbers` | `func Numbers(n int) string` | Numbers returns a pseudo-random numeric string of length n. | facade | — |
@@ -3123,7 +3123,7 @@ Import path: `github.com/imajinyun/go-knifer/vzip`
 
 Package vzip provides ZIP, gzip, and zlib utilities.
 
-Quality: 92 functions · 20 with examples · 21.7% example coverage · synopsis sources: facade=92, internal=0, empty=0
+Quality: 92 functions · 22 with examples · 23.9% example coverage · synopsis sources: facade=92, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -3198,8 +3198,8 @@ Quality: 92 functions · 20 with examples · 21.7% example coverage · synopsis 
 | `ZipEntriesToWriter` | `func ZipEntriesToWriter(out io.Writer, entries ...EntryData) error` | ZipEntriesToWriter writes in-memory entries into out as a ZIP archive. | facade | `ExampleZipEntriesToWriter` |
 | `ZipEntriesToWriterWithOptions` | `func ZipEntriesToWriterWithOptions(out io.Writer, entries []EntryData, opts ...ArchiveOption) error` | ZipEntriesToWriterWithOptions writes in-memory entries into out as a ZIP archive with per-call options. | facade | `ExampleZipEntriesToWriterWithOptions` |
 | `ZipEntriesWithOptions` | `func ZipEntriesWithOptions(zipFile string, entries []EntryData, opts ...ArchiveOption) error` | ZipEntriesWithOptions creates or overwrites zipFile and adds in-memory entries with per-call options. | facade | — |
-| `ZipFiles` | `func ZipFiles(dest string, withSrcDir bool, srcFiles ...string) error` | ZipFiles creates a ZIP archive from source files or directories. | facade | — |
-| `ZipFilesFilter` | `func ZipFilesFilter(dest string, withSrcDir bool, filter FileFilter, srcFiles ...string) error` | ZipFilesFilter creates a ZIP archive and filters source paths. | facade | — |
+| `ZipFiles` | `func ZipFiles(dest string, withSrcDir bool, srcFiles ...string) error` | ZipFiles creates a ZIP archive from source files or directories. | facade | `ExampleZipFiles` |
+| `ZipFilesFilter` | `func ZipFilesFilter(dest string, withSrcDir bool, filter FileFilter, srcFiles ...string) error` | ZipFilesFilter creates a ZIP archive and filters source paths. | facade | `ExampleZipFilesFilter` |
 | `ZipFilesFilterWithOptions` | `func ZipFilesFilterWithOptions(dest string, withSrcDir bool, filter FileFilter, srcFiles []string, opts ...ArchiveOption) error` | ZipFilesFilterWithOptions creates a ZIP archive with source filtering and per-call options. | facade | — |
 | `ZipFilesUsingOptions` | `func ZipFilesUsingOptions(dest string, srcFiles []string, opts ...ArchiveOption) error` | ZipFilesUsingOptions creates a ZIP archive from source files or directories using only functional options. | facade | — |
 | `ZipFilesWithOptions` | `func ZipFilesWithOptions(dest string, withSrcDir bool, srcFiles []string, opts ...ArchiveOption) error` | ZipFilesWithOptions creates a ZIP archive from source files or directories with per-call options. | facade | — |

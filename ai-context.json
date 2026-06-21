@@ -42,7 +42,7 @@
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "low",
-      "notes": "Fast local gate; includes worktree-check, module verification, vet, architecture, tests, API snapshot, tools catalog, AI context, and whitespace diff checks."
+      "notes": "Fast local gate; includes worktree-check, module verification, vet, architecture, tests, API snapshot, documentation checks, AI context, and whitespace diff checks."
     },
     "agent_check": {
       "cmd": "make agent-check",
@@ -149,6 +149,16 @@
       "risk_level": "medium",
       "notes": "Runs golangci-lint and govulncheck."
     },
+    "release_check": {
+      "cmd": "make release-check COVERAGE_FILE=/tmp/go-knifer-coverage.out",
+      "safe_for_agent_auto_run": true,
+      "writes_workspace": false,
+      "writes_git_config": false,
+      "network_required": true,
+      "risk_level": "medium",
+      "creates_artifacts": ["/tmp/go-knifer-coverage.out"],
+      "notes": "Release readiness gate; runs full local checks plus CI workflow governance validation."
+    },
     "coverage_profile": {
       "cmd": "make coverage-profile COVERAGE_FILE=/tmp/go-knifer-coverage.out",
       "safe_for_agent_auto_run": true,
@@ -167,7 +177,7 @@
       "network_required": false,
       "risk_level": "medium",
       "reads_artifacts": ["/tmp/go-knifer-coverage.out"],
-      "notes": "Requires a fresh coverage profile at the configured path."
+      "notes": "Requires a fresh coverage profile at the configured path and verifies security-sensitive packages have coverage data."
     },
     "api_check": {
       "cmd": "make api-check",
@@ -194,7 +204,16 @@
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "low",
-      "notes": "Checks generated documentation artifacts, including the machine-readable tools catalog."
+      "notes": "Checks generated documentation artifacts and facade quickstart cookbook structure."
+    },
+    "docs_quickstart_check": {
+      "cmd": "make docs-quickstart-check",
+      "safe_for_agent_auto_run": true,
+      "writes_workspace": false,
+      "writes_git_config": false,
+      "network_required": false,
+      "risk_level": "low",
+      "notes": "Validates that every public facade has a standardized docs/doc quickstart with required cookbook sections."
     },
     "ai_context_check": {
       "cmd": "make ai-context-check",
@@ -368,6 +387,15 @@
           "required_commands": ["make ci-agent-governance"],
           "required_env": ["AGENT_CHANGE_BASE_REF", "AGENT_EVIDENCE_FILE"],
           "required_artifacts": ["agent-validation-evidence"]
+        }
+      },
+      "release": {
+        "path": ".github/workflows/release.yml",
+        "required_jobs": ["release"],
+        "agent_governance": {
+          "required_commands": ["make release-check"],
+          "required_env": [],
+          "required_artifacts": []
         }
       }
     }

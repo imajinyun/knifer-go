@@ -3,6 +3,7 @@ package vrand_test
 import (
 	"encoding/hex"
 	"fmt"
+	mathrand "math/rand"
 	"strings"
 
 	"github.com/imajinyun/go-knifer/vrand"
@@ -46,4 +47,25 @@ func ExampleStringFrom() {
 func ExampleEle() {
 	fmt.Println(vrand.Ele([]string{"only"}))
 	// Output: only
+}
+
+func ExampleBytesWithOptions() {
+	b, err := vrand.BytesWithOptions(4, vrand.WithRandomReader(strings.NewReader("data")), vrand.WithStrictCryptoRandom())
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(b))
+	// Output: data
+}
+
+func ExampleIntWithOptions() {
+	source := mathrand.New(mathrand.NewSource(1))
+	fmt.Println(vrand.IntWithOptions(100, vrand.WithRandomSource(source)))
+	// Output: 81
+}
+
+func ExampleEleWithOptions() {
+	source := mathrand.New(mathrand.NewSource(1))
+	fmt.Println(vrand.EleWithOptions([]string{"a", "b", "c"}, vrand.WithRandomSource(source)))
+	// Output: c
 }

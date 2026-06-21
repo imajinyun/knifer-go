@@ -7,6 +7,12 @@ subpackage APIs are treated as the compatibility boundary.
 
 ## Unreleased
 
+### Documentation
+
+- Standardized all 54 facade quickstarts with helper selection guidance,
+  safety and correctness checklists, when-not-to-use boundaries, related package
+  guidance, benchmark and trade-off notes, and FAQs.
+
 ### Governance
 
 - Defined public API stability levels for stable `v*` facades, internal
@@ -25,6 +31,14 @@ subpackage APIs are treated as the compatibility boundary.
 - Added package-level coverage gates for security-sensitive facade packages:
   `vhttp`, `vresty`, `vconf`, `vzip`, `vcrypto`, `vurl`, `vfile`,
   `internal/httpx/http`, and `internal/httpx/resty`.
+- Strengthened coverage governance so security-sensitive packages declared in
+  `ai-context.json` must have coverage profile data.
+- Hardened database mutation guards, upsert conflict validation, secure random
+  byte failure handling, and zip extraction destination safety tests.
+- Added executable examples for database named parameters and updates, random
+  option helpers, and ZIP file/filter archive helpers.
+- Added a release readiness gate and strengthened release automation with tag
+  format, changelog, full validation, and protected environment checks.
 - Added Makefile-driven stability gates so local validation and CI share the
   same module, vet, architecture, race/shuffle test, coverage, lint, and
   vulnerability check targets.

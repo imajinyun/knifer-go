@@ -69,8 +69,8 @@ func (s *Session) Upsert(ctx context.Context, entity Entity, conflictFields []st
 
 // Update updates rows in the transaction.
 func (s *Session) Update(ctx context.Context, entity Entity, conds ...Condition) (sql.Result, error) {
-	if len(conds) == 0 {
-		return nil, invalidInputf("db: UPDATE without conditions is unsafe; use UpdateAll to update every row explicitly")
+	if err := requireEffectiveConditions(s.parent.dialect, s.parent.wrapper, "UPDATE", conds); err != nil {
+		return nil, err
 	}
 	return updateEntity(ctx, s.tx, s.parent.dialect, s.parent.wrapper, entity, conds...)
 }
@@ -82,8 +82,8 @@ func (s *Session) UpdateAll(ctx context.Context, entity Entity) (sql.Result, err
 
 // Delete deletes rows in the transaction.
 func (s *Session) Delete(ctx context.Context, table string, conds ...Condition) (sql.Result, error) {
-	if len(conds) == 0 {
-		return nil, invalidInputf("db: DELETE without conditions is unsafe; use DeleteAll to delete every row explicitly")
+	if err := requireEffectiveConditions(s.parent.dialect, s.parent.wrapper, "DELETE", conds); err != nil {
+		return nil, err
 	}
 	return deleteRows(ctx, s.tx, s.parent.dialect, s.parent.wrapper, table, conds...)
 }

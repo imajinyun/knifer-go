@@ -2,10 +2,13 @@ package zip
 
 import (
 	"archive/zip"
+	"errors"
 	"os"
 	"path/filepath"
 	"slices"
 	"testing"
+
+	knifer "github.com/imajinyun/go-knifer"
 )
 
 func newZipCreateSource(t *testing.T) (string, string) {
@@ -25,6 +28,20 @@ func newZipCreateSource(t *testing.T) (string, string) {
 		t.Fatal(err)
 	}
 	return tmp, src
+}
+
+func TestZipFilesRejectsUnsafeDestination(t *testing.T) {
+	tmp, src := newZipCreateSource(t)
+	assertZipCode(t, ZipFiles(filepath.Join(src, "out.zip"), false, src), knifer.ErrCodeInvalidInput)
+
+	destDir := filepath.Join(tmp, "dest-dir")
+	if err := os.MkdirAll(destDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	assertZipCode(t, ZipFiles(destDir, false, filepath.Join(src, "a.txt")), knifer.ErrCodeInvalidInput)
+	if _, err := os.Stat(filepath.Join(src, "out.zip")); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("unsafe archive was created inside source, stat err=%v", err)
+	}
 }
 
 func TestZipFilesCreatesArchiveFromDirectory(t *testing.T) {

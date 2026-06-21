@@ -188,6 +188,9 @@ func RandomBytesWithOptions(n int, opts ...RandomOption) ([]byte, error) {
 	cfg := applyRandomOptions(opts)
 	buf := make([]byte, n)
 	err := fillRandomBytesWithConfig(buf, cfg)
+	if err != nil {
+		return nil, err
+	}
 	return buf, err
 }
 

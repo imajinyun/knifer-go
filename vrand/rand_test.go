@@ -2,6 +2,7 @@ package vrand
 
 import (
 	"errors"
+	"io"
 	mathrand "math/rand"
 	"strings"
 	"testing"
@@ -74,23 +75,29 @@ func TestSecureBytes(t *testing.T) {
 		t.Fatalf("SecureBytesWithOptions = %q, %v", b, err)
 	}
 
-	_, err = SecureBytesWithOptions(3, WithRandomReader(strings.NewReader("x")), WithRandomSource(mathrand.New(mathrand.NewSource(1))))
+	b, err = SecureBytesWithOptions(3, WithRandomReader(strings.NewReader("x")), WithRandomSource(mathrand.New(mathrand.NewSource(1))))
 	if err == nil {
 		t.Fatal("SecureBytesWithOptions error = nil, want entropy error")
+	}
+	if len(b) != 0 {
+		t.Fatalf("SecureBytesWithOptions error bytes len = %d, want 0", len(b))
 	}
 }
 
 func TestRandFacadeBytesFailureBoundaries(t *testing.T) {
 	readerErr := errors.New("entropy failed")
-	if _, err := SecureBytesWithOptions(4, WithRandomReader(failingReader{err: readerErr})); !errors.Is(err, readerErr) {
+	if b, err := SecureBytesWithOptions(4, WithRandomReader(failingReader{err: readerErr})); !errors.Is(err, readerErr) || len(b) != 0 {
 		t.Fatalf("SecureBytesWithOptions reader error = %v, want %v", err, readerErr)
 	}
-	if _, err := SecureBytesWithOptions(4, WithRandomReader(strings.NewReader("x"))); err == nil {
-		t.Fatal("SecureBytesWithOptions short read error = nil")
+	if b, err := SecureBytesWithOptions(4, WithRandomReader(strings.NewReader("x"))); !errors.Is(err, io.ErrUnexpectedEOF) || len(b) != 0 {
+		t.Fatalf("SecureBytesWithOptions short read = (%#v, %v), want no bytes and unexpected EOF", b, err)
 	}
 
-	if _, err := BytesWithOptions(4, WithRandomReader(failingReader{err: readerErr}), WithStrictCryptoRandom()); !errors.Is(err, readerErr) {
+	if b, err := BytesWithOptions(4, WithRandomReader(failingReader{err: readerErr}), WithStrictCryptoRandom()); !errors.Is(err, readerErr) || len(b) != 0 {
 		t.Fatalf("BytesWithOptions strict reader error = %v, want %v", err, readerErr)
+	}
+	if b, err := BytesWithOptions(4, WithRandomReader(strings.NewReader("xy")), WithStrictCryptoRandom()); !errors.Is(err, io.ErrUnexpectedEOF) || len(b) != 0 {
+		t.Fatalf("BytesWithOptions strict short read = (%#v, %v), want no bytes and unexpected EOF", b, err)
 	}
 	fallback, err := BytesWithOptions(4,
 		WithRandomReader(failingReader{err: readerErr}),

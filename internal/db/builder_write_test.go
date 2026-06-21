@@ -62,4 +62,8 @@ func TestUpsertSQLReportsUnsupportedAndInvalidInput(t *testing.T) {
 
 	_, _, err = buildUpsertSQL(DialectSQLite, WrapperForDialect(DialectSQLite), entity, nil)
 	assertDBCode(t, err, knifer.ErrCodeInvalidInput)
+
+	doNothingEntity := NewEntity("users").Set("id", 1)
+	_, _, err = buildUpsertSQL(DialectSQLite, WrapperForDialect(DialectSQLite), doNothingEntity, []string{"id", "bad;drop"})
+	assertDBCode(t, err, knifer.ErrCodeInvalidInput)
 }
