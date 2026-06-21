@@ -28,6 +28,12 @@ Choose the codec based on the transport or representation requirement, not just 
 - Use URL escaping, JSON encoding, or form encoding when the problem is syntax escaping rather than byte-to-text representation.
 - Avoid repeatedly encoding large payloads into strings when byte slices or streaming APIs would avoid extra allocations.
 
+## Related packages
+
+- Use `vcrypto` when encoded data also needs hashing, encryption, signing, or verification.
+- Use `vhash` when the goal is a deterministic non-cryptographic hash rather than an encoding.
+- Use `vurl` when URL escaping is part of URL parsing, query construction, or normalization.
+
 ## Benchmarks and trade-offs
 
 Benchmark with representative payload sizes and output forms before choosing helpers in hot paths:

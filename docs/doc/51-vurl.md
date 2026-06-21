@@ -31,6 +31,12 @@ Use `vurl` when the task is about URL shape or safe resource access rather than 
 - Use `vnet` when the task is IP math, CIDR/range handling, DNS records, TCP probes, TLS configuration, or multipart upload saving.
 - Use `Open` and `OpenWithOptions` only for trusted resource locations. Use `OpenSafe` or `OpenSafeWithOptions` for user, configuration, webhook, or upstream URLs.
 
+## Related packages
+
+- Use `vhttp` or `vresty` when a validated URL should be used for an outbound HTTP request.
+- Use `vnet` when policy depends on resolved IPs, private ranges, ports, or network interfaces.
+- Use `vcodec` when URL-safe encoding or decoding is the main task rather than URL construction.
+
 ## Benchmarks and trade-offs
 
 Measure URL parsing, normalization, query encoding, and safe resource access overhead locally:

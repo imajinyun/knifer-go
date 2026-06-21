@@ -118,6 +118,12 @@ func main() {
 }
 ```
 
+## Related packages
+
+- Use `vslice` when order, duplicates, or index-aware operations matter.
+- Use `vmap` when values should be associated with keys rather than represented as membership only.
+- Use `vblf` when probabilistic membership with lower memory use is acceptable.
+
 ## Benchmarks and trade-offs
 
 Run the focused set tests when changing set behavior:

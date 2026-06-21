@@ -24,6 +24,12 @@ Choose helpers based on whether you need a boolean, a match list, captured data,
 - Benchmark or bound inputs for hot paths and large text. Even safe Go regexes can still consume CPU on broad scans.
 - Use `WithDotAll` only when matching across newlines is intended; it can greatly widen what a pattern matches.
 
+## Related packages
+
+- Use `vstr` when exact string trimming, splitting, prefix/suffix checks, or naming conversion is sufficient.
+- Use `vform` when regex checks are part of a broader field validation workflow.
+- Use `vdfa` when text filtering should use dictionary matching instead of pattern matching.
+
 ## When not to use vregex
 
 - Use compiled `regexp.Regexp` values directly when the same pattern runs repeatedly in a hot loop.

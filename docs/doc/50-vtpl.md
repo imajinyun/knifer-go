@@ -50,6 +50,12 @@ func main() {
 - Avoid `NewTextEngine` for browser-bound HTML or attributes; it does not apply `html/template` contextual escaping.
 - Avoid executing user-supplied templates unless the application constrains functions, data, and runtime budget.
 
+## Related packages
+
+- Use `vmail` when rendered templates become email bodies or MIME messages.
+- Use `vjson` when template data or fixtures need JSON formatting and path inspection.
+- Use `vstr` when template inputs need string normalization or HTML escaping before rendering.
+
 ## Benchmarks and trade-offs
 
 - `Render` and `RenderWithOptions` parse the source for each call, which is convenient for small dynamic snippets but slower than reusing parsed templates.

@@ -131,6 +131,12 @@ func main() {
 }
 ```
 
+## Related packages
+
+- Use `vjob` for finite slice, map-key, or range batch workloads that are not wall-clock schedules.
+- Use `vlog` when scheduled jobs need structured execution diagnostics.
+- Use `verr` when job failures need collection, wrapping, or panic recovery.
+
 ## Benchmarks and trade-offs
 
 Cron behavior is time- and concurrency-dependent, so validate scheduler behavior with focused tests:

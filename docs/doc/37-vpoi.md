@@ -27,6 +27,12 @@ Choose helpers by where the workbook lives and whether you need one sheet, multi
 - Avoid logging raw spreadsheet cells when they may contain personal data, credentials, or customer content.
 - Prefer in-memory buffer helpers for HTTP export paths where no durable file is needed.
 
+## Related packages
+
+- Use `vcsv` when tabular data should remain plain text without XLSX workbook metadata.
+- Use `vfile` when workbook paths, temporary files, or directory traversal need filesystem policy checks.
+- Use `vbean` when parsed rows need to be bound into typed records after validation.
+
 ## When not to use vpoi
 
 - Use the underlying Excel library directly when you need formulas, charts, styles, merged cells, data validation, images, comments, or advanced workbook features.

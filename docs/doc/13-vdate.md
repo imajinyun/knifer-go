@@ -29,6 +29,12 @@ Choose helpers by the business rule you are expressing: formatting/parsing, cale
 - Use strict protocol parsers when input must follow RFC3339, Unix timestamps, or another externally defined format exactly.
 - Avoid calendar helpers for elapsed-time measurement; use `time.Since`, `Sub`, or monotonic-aware `time.Time` values.
 
+## Related packages
+
+- Use `vconv` when date parsing is one part of broader loose type conversion.
+- Use `vjson` when dates need package-level JSON formatting behavior.
+- Use `vnum` when date workflows include duration, age, or calendar-derived numeric calculations.
+
 ## Benchmarks and trade-offs
 
 Most date helpers are thin wrappers around `time`, but parsing, formatting, and location lookup can still matter in batch jobs:

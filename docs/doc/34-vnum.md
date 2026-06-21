@@ -118,6 +118,12 @@ func main() {
 - Use `crypto/rand`, `math/rand/v2`, or a dedicated random library directly when random generation semantics are security-critical or simulation-specific.
 - Avoid expression evaluation on untrusted, unbounded input unless the caller constrains expression length and allowed syntax.
 
+## Related packages
+
+- Use `vconv` when numeric parsing is one part of broader loose type conversion.
+- Use `vform` when numbers need request validation, ranges, or custom predicates.
+- Use `vjson` when numeric behavior is tied to JSON payload parsing or fixture formatting.
+
 ## Benchmarks and trade-offs
 
 - Generic aggregate helpers are concise and fast for small slices, but large datasets may benefit from streaming aggregation to avoid holding all values in memory.

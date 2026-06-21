@@ -32,6 +32,12 @@ Choose the filter by how you size the set, how many hash functions you need, and
 - Avoid package-level defaults for tenant-specific or request-specific filters; construct independent filters with explicit sizing.
 - Avoid custom hash functions unless you can test distribution with representative input data.
 
+## Related packages
+
+- Use `vhash` when you need standalone non-cryptographic hash helpers outside a Bloom filter.
+- Use `vcache` when membership checks should be paired with bounded in-memory value storage.
+- Use `vset` when exact membership, deletion, and iteration are required instead of probabilistic checks.
+
 ## Benchmarks and trade-offs
 
 Benchmark candidate filters with realistic key counts, key shapes, and false-positive expectations:

@@ -149,6 +149,12 @@ func main() {
 - Use SAX helpers instead of tree parsing for very large documents or streams that do not need random node access.
 - Avoid XPath with untrusted user-supplied expressions unless the expression language is constrained by the caller.
 
+## Related packages
+
+- Use `vjson` when XML data must be bridged into JSON-shaped access or serialized back from JSON objects.
+- Use `vfile` when XML input/output paths need filesystem policy or temporary-file handling.
+- Use `vbean` when parsed XML data should be bound into typed structs after validation.
+
 ## Benchmarks and trade-offs
 
 - Tree parsing makes traversal and modification simple, but it holds the whole document in memory. SAX reading reduces memory pressure for large inputs.

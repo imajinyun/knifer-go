@@ -152,6 +152,12 @@ make agent-check
 make agent-security-check
 ```
 
+## Related packages
+
+- Use `vssh` when file transfer should run over SSH/SFTP instead of FTP or FTPS.
+- Use `vfile` when downloaded paths, temporary files, or local filesystem policy need validation.
+- Use `vlog` and `verr` when transfer failures need structured diagnostics and error wrapping.
+
 ## Benchmarks and trade-offs
 
 - Request validation and defensive copying make provider boundaries safer and more testable, with small overhead compared with real network calls.

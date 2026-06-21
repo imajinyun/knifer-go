@@ -321,6 +321,12 @@ func main() {
 - Use server-side session/rate-limit controls for abuse prevention; captchas alone are not an authorization or anti-fraud system.
 - Avoid QR logo embedding when the code must be read under poor lighting, damaged print, or very small display sizes.
 
+## Related packages
+
+- Use `vfile` when image paths, temporary files, or directory traversal need filesystem policy checks.
+- Use `vhttp` or `vresty` when images are fetched from remote URLs before processing.
+- Use `vrand` when captcha or placeholder generation requires random bytes or deterministic test sources.
+
 ## Benchmarks and trade-offs
 
 - `Info` is cheaper than full decode/encode paths because it only reads metadata. Use it for validation before expensive work.

@@ -174,6 +174,12 @@ func main() {
 }
 ```
 
+## Related packages
+
+- Use `vset` when uniqueness and membership are more important than order or duplicate preservation.
+- Use `vmap` when slice elements should be grouped, indexed, or transformed into keyed data.
+- Use `vjob` when slice processing needs batching, sharding, or merge callbacks.
+
 ## Benchmarks and trade-offs
 
 Run the focused slice benchmark suite when changing collection-heavy code:

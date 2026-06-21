@@ -237,6 +237,12 @@ func main() {
 - Use a dedicated MIME library when you need nonstandard multipart structures not covered by the facade options.
 - Do not use quick-send helpers for tests or libraries that must not perform network I/O; inject a sender provider or build messages only.
 
+## Related packages
+
+- Use `vtpl` when email bodies need reusable HTML or text templates.
+- Use `vfile` when attachments or generated message files require path and filesystem policy checks.
+- Use `vconf` when SMTP accounts, TLS policy, or sender defaults come from layered configuration.
+
 ## Benchmarks and trade-offs
 
 - One-shot `SendText` and `SendHTML` are concise but reconnect for each message. Reusing `Client.Dial` reduces SMTP handshake overhead for batches.

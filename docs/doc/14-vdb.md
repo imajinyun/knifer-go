@@ -165,6 +165,12 @@ func main() {
 
 Use `IsSafeIdentifier` only for guardrails around trusted identifier inputs. Values should still go through placeholders instead of string concatenation.
 
+## Related packages
+
+- Use `vconf` when database connection settings come from layered configuration.
+- Use `vjson` when query results or fixtures need JSON encoding and inspection.
+- Use `verr` and `vlog` when database errors need wrapping and structured diagnostics.
+
 ## Benchmarks and trade-offs
 
 Run the focused SQL builder benchmarks when changing query construction behavior:

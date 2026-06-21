@@ -41,6 +41,12 @@ Choose the helper that matches the archive operation you are performing: create,
 - Avoid extracting archives into application-owned directories that also contain unrelated state; use a temporary or dedicated destination first.
 - Avoid whole-entry reads for unbounded entries; stream with `Get` or inspect metadata before loading content into memory.
 
+## Related packages
+
+- Use `vfile` for ordinary filesystem path, temp-file, directory, and locking helpers outside archive workflows.
+- Use `vcsv`, `vpoi`, or `vxml` when archive entries contain structured tabular or XML data that must be parsed after extraction.
+- Use `vcrypto` when archive workflows need separate hashing, encryption, or integrity verification policy.
+
 ## Benchmarks and trade-offs
 
 Use package benchmarks and examples as local baselines for archive convenience overhead:

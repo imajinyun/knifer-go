@@ -28,6 +28,12 @@ Choose `vbool` when a named helper makes a boolean operation easier to pass, tes
 - Use explicit enums or typed states when a value has more than two meaningful states.
 - Avoid `ToInt` when the destination protocol expects strings such as `true`/`false`, `yes`/`no`, or domain-specific status values.
 
+## Related packages
+
+- Use `vconv` when boolean parsing is part of a broader loose-conversion workflow.
+- Use `vform` when boolean values need validation alongside other request fields.
+- Use `vjson` when boolean defaults or checks are driven by JSON payloads.
+
 ## Benchmarks and trade-offs
 
 Boolean helpers are tiny wrappers; readability is usually the only reason to choose them over operators. Measure only if a helper appears in a hot generic loop:

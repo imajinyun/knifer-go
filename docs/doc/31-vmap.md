@@ -184,6 +184,12 @@ func main() {
 }
 ```
 
+## Related packages
+
+- Use `vslice` when order, duplicates, or indexed collection operations matter.
+- Use `vset` when exact membership and uniqueness are the main requirement.
+- Use `vbean` when map-shaped data needs to be bound into typed structs.
+
 ## Benchmarks and trade-offs
 
 Run the focused map benchmark suite when changing collection-heavy code:

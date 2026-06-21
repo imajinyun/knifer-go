@@ -108,6 +108,12 @@ func main() {
 - Avoid generic runtime masking when a field has a regulated format with a specific redaction policy.
 - Do not use masked values as stable security identifiers unless collision and linkability risks are acceptable.
 
+## Related packages
+
+- Use `vstr` when masking depends on trimming, substring handling, or other text normalization.
+- Use `vident` when identity documents should be validated or parsed before redaction.
+- Use `vlog` when redacted values are emitted through application diagnostics.
+
 ## Benchmarks and trade-offs
 
 - Explicit helpers are simple and cheap string transformations suitable for logs and UI rendering.

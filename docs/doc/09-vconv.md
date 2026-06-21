@@ -30,6 +30,12 @@ Choose the conversion family by how much ambiguity the caller can tolerate.
 - Use domain-specific validators before conversion when input carries business meaning such as currency, age, or identifiers.
 - Avoid permissive conversion for authorization, quota, payment, or security policy decisions.
 
+## Related packages
+
+- Use `vbean` when scalar conversions are part of struct-to-struct or map-to-struct binding.
+- Use `vnum` when numeric parsing needs decimal precision, rounding, or expression support.
+- Use `vdate` when string conversion involves calendar parsing, formatting, or timezone rules.
+
 ## Benchmarks and trade-offs
 
 Benchmark conversion paths when they sit in hot deserialization or logging loops:

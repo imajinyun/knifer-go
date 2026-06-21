@@ -32,6 +32,12 @@ Choose the helper by the mapping direction and how much conversion metadata the 
 - Use typed constructors instead of generic map-to-struct mapping for library APIs and domain objects with invariants.
 - Avoid reflection-based mapping in hot paths until it has been benchmarked against direct typed code.
 
+## Related packages
+
+- Use `vconv` for explicit scalar conversions before or after struct mapping.
+- Use `vmap` when the source data is map-shaped and does not need struct binding.
+- Use `vjson` when the mapping boundary starts from JSON payloads or fixtures.
+
 ## Benchmarks and trade-offs
 
 Use the bean benchmark suite to measure reflection and conversion overhead on your machine:

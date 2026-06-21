@@ -122,6 +122,12 @@ func main() {
 - Avoid `DumpSystemInfo` in user-facing responses or public bug reports unless sensitive fields are reviewed.
 - Do not use cached singleton helpers when tests require fresh values after changing provider state; use `WithOptions` helpers instead.
 
+## Related packages
+
+- Use `vcli` when system information must be gathered from external commands with timeouts and captured output.
+- Use `vconf` when system-derived defaults should be merged with files, environment variables, or remote config.
+- Use `vlog` when host, runtime, or process details are emitted as diagnostics.
+
 ## Benchmarks and trade-offs
 
 - Cached host, OS, user, and Go helpers reduce repeated system calls but can return stale values after environment or working-directory changes.

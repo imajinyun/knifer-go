@@ -34,6 +34,20 @@ Start with the helper that matches the boundary you are crossing: process execut
 - Treat `ExecResult.Stderr` as diagnostic output. Keep machine-readable output on stdout and errors/logs on stderr.
 - Capture flag and command output with `WithFlagOutput`, `WithStdout`, and `WithStderr` instead of writing directly to process-global streams.
 
+## When not to use vcli
+
+- Use Cobra, Viper, or another CLI framework when the command surface needs completions, persistent flags, config-file binding, aliases, plugin loading, or generated command documentation.
+- Use `os/exec` directly when you need low-level process control, custom pipes, streaming I/O, process groups, or platform-specific attributes.
+- Avoid shell execution for untrusted input. If shell features are required, build and review the shell boundary explicitly instead of hiding it behind a helper.
+- Use dedicated terminal UI, table, or color libraries when rich interactive output is a primary feature.
+- Avoid external command execution in hot paths or request handlers unless timeout, output bounds, cancellation, and failure policy are explicit.
+
+## Related packages
+
+- Use `vconf` when CLI flags need to merge with files, environment variables, or remote configuration.
+- Use `vlog` when command diagnostics need structured logging rather than plain stderr text.
+- Use `verr` when command failures need wrapped errors, panic recovery, or aggregation.
+
 ## Benchmarks and trade-offs
 
 Use focused benchmarks to compare command routing, flag parsing, output capture, and injected-runner overhead:

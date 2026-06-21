@@ -32,6 +32,12 @@ Choose helpers by the trust boundary: token creation, signature verification, cl
 - Do not use JWT payloads as encrypted storage. Add encryption separately or keep sensitive state server-side.
 - Do not accept tokens from unknown issuers just because the signature verifies; application claim policy still belongs at the boundary.
 
+## Related packages
+
+- Use `vcrypto` when JWT keys, signatures, or hashing need lower-level cryptographic helpers.
+- Use `vrand` when generating secure token IDs, nonces, or secret material.
+- Use `vjson` when custom claims need JSON fixture generation or inspection in tests.
+
 ## Benchmarks and trade-offs
 
 Measure signing, parsing, verification, and date validation with the JWT benchmarks before choosing an algorithm for a hot path:

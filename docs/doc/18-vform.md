@@ -121,6 +121,12 @@ func main() {
 - Use authoritative external services when email, phone, or identity ownership must be verified.
 - Use numeric parsers such as `vnum` when the task is converting values and reporting parse errors rather than checking string shape.
 
+## Related packages
+
+- Use `vbean` when validated inputs need to be bound into typed structs or copied between DTOs.
+- Use `vnum` when numeric fields need parsing, decimal precision, rounding, or range calculations.
+- Use `vregex` when custom validation predicates rely on reviewed pattern matching.
+
 ## Benchmarks and trade-offs
 
 - Predicate helpers are cheap and dependency-light, which fits per-field validation in handlers and import pipelines.

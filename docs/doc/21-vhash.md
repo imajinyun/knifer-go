@@ -30,6 +30,12 @@ Choose a hash by compatibility requirements first, then by output width and coll
 - Use `hash/maphash` for process-local randomized hashing where persistence and cross-process stability are not required.
 - Avoid changing algorithms for data already partitioned, stored, or routed by old hash values unless you have a migration plan.
 
+## Related packages
+
+- Use `vcrypto` when the hash must be cryptographic or used for integrity, signatures, or authentication.
+- Use `vblf` when hash functions are part of probabilistic set membership checks.
+- Use `vcodec` when hash bytes need hex, Base64, or URL-safe representation.
+
 ## Benchmarks and trade-offs
 
 Benchmark with representative key lengths and distributions before choosing a hash for hot bucketing paths:

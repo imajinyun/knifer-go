@@ -36,6 +36,12 @@ Start with `encoding/json` when you need decoder-level control. Use `vjson` when
 - Avoid whole-document helpers for very large or unbounded payloads; stream and bound input size first.
 - Use XML-specific parsers and validators when XML semantics, namespaces, attributes, or entity policy matter beyond a small JSON bridge.
 
+## Related packages
+
+- Use `vbean` when decoded JSON needs to be copied or bound into typed structs.
+- Use `vconf` when JSON is one configuration format among YAML, TOML, files, or remote sources.
+- Use `vxml` when XML semantics, namespaces, attributes, or streaming behavior matter beyond JSON bridging.
+
 ## Benchmarks and trade-offs
 
 Use the JSON benchmark suite to measure helper overhead and conversion cost on your machine:

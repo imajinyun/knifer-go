@@ -50,6 +50,12 @@ The suite uses `httptest.Server` and temporary files only. It covers simple GET 
 
 Safe APIs may add validation overhead. Use the benchmark commands in this document to measure the trade-off on your workload.
 
+## Related packages
+
+- Use `vresty` when the project standard is Resty clients, middleware, or fluent request configuration.
+- Use `vurl` for URL parsing, normalization, query construction, and safety checks without sending a request.
+- Use `vnet` when request policy depends on IP, DNS, port, or private-network classification helpers.
+
 ## When not to use vhttp
 
 - Use `net/http` directly when you need full transport tuning, custom redirect behavior, streaming request/response bodies, connection pooling details, or middleware integration.

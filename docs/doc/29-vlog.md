@@ -102,6 +102,12 @@ func main() {
 - Avoid package-level static helpers in reusable libraries that must not change application logging policy.
 - Avoid colored console output when logs are parsed by machines unless the output sink explicitly supports ANSI escapes.
 
+## Related packages
+
+- Use `verr` when logs should include wrapped errors, stack capture, panic recovery, or collected failures.
+- Use `vcli` when command-line tools need deterministic stdout/stderr capture alongside logging.
+- Use `vjson` when structured log payloads or fixtures need JSON formatting and inspection.
+
 ## Benchmarks and trade-offs
 
 - Cached `Logger` lookups trade a small amount of package-level state for lower allocation and construction cost on repeated named logging.

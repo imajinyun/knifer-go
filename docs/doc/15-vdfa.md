@@ -33,6 +33,12 @@ Choose the helper by matcher ownership, input shape, and whether you need detect
 - Avoid `FilterAny` for values that cannot safely round-trip through JSON or that contain fields that should not be rewritten.
 - Avoid async initialization unless the application has a clear readiness gate.
 
+## Related packages
+
+- Use `vstr` when the task is general string normalization, trimming, or similarity rather than word filtering.
+- Use `vregex` when pattern-based extraction or replacement is more appropriate than dictionary matching.
+- Use `vtok` when text should be tokenized or ranked by an injected NLP provider.
+
 ## Benchmarks and trade-offs
 
 Use local benchmarks to compare dictionary size, text length, matching mode, and JSON filtering overhead:

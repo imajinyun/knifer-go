@@ -147,6 +147,12 @@ make agent-check
 make agent-security-check
 ```
 
+## Related packages
+
+- Use `vhttp` or `vresty` when an AI provider adapter needs HTTP transport helpers.
+- Use `vjson` when provider payloads need JSON formatting, inspection, or fixture generation.
+- Use `verr` and `vlog` when adapter failures need structured error handling and diagnostics.
+
 ## Benchmarks and trade-offs
 
 - Provider-neutral validation and defensive request shape checks are tiny compared with real model latency, but they keep tests and adapter contracts stable.

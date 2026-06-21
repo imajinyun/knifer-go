@@ -55,6 +55,12 @@ resp := vresty.GetSafe("https://api.example.com/users",
 ).Execute()
 ```
 
+## Related packages
+
+- Use `vhttp` for dependency-light HTTP helpers built around `net/http` rather than Resty clients.
+- Use `vurl` for URL parsing, normalization, and SSRF-oriented policy before issuing requests.
+- Use `vjson` when request or response payload fixtures need JSON formatting and path inspection.
+
 ## Benchmarks and trade-offs
 
 Use the HTTP benchmark suite to measure the convenience and safety overhead on your machine:

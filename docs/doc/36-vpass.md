@@ -81,6 +81,12 @@ func main() {
 - Avoid treating `IsStrong` as proof that a password is safe for every account or threat model.
 - Do not use strength scoring for API keys or generated tokens; use entropy and randomness requirements instead.
 
+## Related packages
+
+- Use `vcrypto` when password workflows need dedicated hashing, key derivation, or cryptographic verification.
+- Use `vrand` when generating secure temporary passwords, salts, or reset token bytes.
+- Use `vform` when password strength checks are part of a larger signup or credential validation form.
+
 ## Benchmarks and trade-offs
 
 - `Score`, `StrengthOf`, `IsStrong`, and `IsWeak` are convenience wrappers around analysis-style logic, so call `Analyze` once if a flow needs multiple fields.

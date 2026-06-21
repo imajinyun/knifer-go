@@ -130,6 +130,12 @@ func main() {
 - Use `sync.Mutex` or `sync.RWMutex` when protecting shared memory rather than limiting concurrent work.
 - Use distributed locks or rate limiters when concurrency must be coordinated across processes.
 
+## Related packages
+
+- Use `vjob` when permit-limited work is naturally expressed as slice, map-key, or range batches.
+- Use `vcron` when concurrency-limited work should be scheduled on recurring wall-clock intervals.
+- Use `verr` when worker failures need aggregation or panic recovery.
+
 ## Benchmarks and trade-offs
 
 - Weighted semaphores are more expressive than buffered channels but require careful release accounting.

@@ -31,6 +31,20 @@ Start with type/value inspection helpers, then move to field, method, constructi
 - Treat dynamic invocation errors as caller-visible validation failures; do not panic on mismatched argument counts or types.
 - Keep reflection helpers close to the adapter or framework boundary so ordinary business logic remains typed and easy to refactor.
 
+## Related packages
+
+- Use `vobj` when object checks, defaults, comparison, or deep-copy helpers are enough without dynamic invocation.
+- Use `vbean` when reflection is only needed to copy values between structs or maps.
+- Use `vconv` when dynamic values need explicit scalar conversion after reflection lookup.
+
+## When not to use vref
+
+- Use ordinary typed Go code when types, fields, methods, or constructors are known at compile time.
+- Use interfaces, generics, or small adapter functions when they preserve compile-time checks and keep call sites readable.
+- Avoid unsafe field access in normal application paths; prefer exported fields, methods, or explicit test-only helpers.
+- Avoid dynamic invocation for authorization, billing, quota, or other correctness-critical decisions unless inputs and errors are validated explicitly.
+- Avoid reflection-heavy hot paths until metadata caching and typed alternatives have been benchmarked with representative data.
+
 ## Benchmarks and trade-offs
 
 Benchmark reflection-heavy adapters with the same struct shapes, field counts, and method signatures used in production:

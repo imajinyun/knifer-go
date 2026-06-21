@@ -31,6 +31,12 @@ Choose the helper by whether you need ordering, a single expression, or a set of
 - Use feature flags or server-side rollout systems when version checks are only one part of a deployment decision.
 - Avoid loose version matching for security patch enforcement unless the accepted grammar is tested and reviewed.
 
+## Related packages
+
+- Use `vstr` when version strings first need trimming, splitting, or normalization.
+- Use `vconv` when version values are mixed with broader loose conversion workflows.
+- Use `vconf` when version constraints come from layered configuration or release policy files.
+
 ## Benchmarks and trade-offs
 
 Version helpers are usually used at startup, configuration load, or rollout boundaries. Benchmark only if matching is in a hot request path:

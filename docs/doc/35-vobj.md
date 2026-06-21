@@ -32,6 +32,12 @@ Choose helpers by whether you need nil/empty checks, generic pointer handling, c
 - Use domain-specific copy constructors for values with locks, file handles, network clients, contexts, or other non-serializable resources.
 - Avoid generic emptiness checks in validation rules where each field's zero value has different meaning.
 
+## Related packages
+
+- Use `vref` when object inspection requires reflection, dynamic fields, or method invocation.
+- Use `vbean` when object values need struct-to-struct or map-to-struct copying.
+- Use `vjson` when deep copy or comparison workflows rely on serialization boundaries.
+
 ## Benchmarks and trade-offs
 
 Benchmark object helpers in hot paths, especially collection scans and serialization-based cloning:

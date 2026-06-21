@@ -32,6 +32,12 @@ Choose ID helpers by the property you need: randomness, compactness, sortability
 - Avoid time-bearing IDs when creation-time or ordering metadata would disclose sensitive business information.
 - Avoid package-level Snowflake defaults in multi-tenant libraries; construct and pass explicit generators instead.
 
+## Related packages
+
+- Use `vrand` when identifiers must be backed by secure random bytes or deterministic pseudo-random test sources.
+- Use `vcodec` when IDs need Base64, hex, or URL-safe encoding for transport.
+- Use `vcrypto` when identifiers are tied to signing, MACs, or cryptographic verification.
+
 ## Benchmarks and trade-offs
 
 Benchmark ID generation under representative concurrency and collision requirements:

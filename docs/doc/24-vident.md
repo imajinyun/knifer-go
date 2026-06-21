@@ -32,6 +32,12 @@ Choose helpers by document type and by whether you need validation, derived fiel
 - Use domain-specific validation when product policy accepts only one region or one document class.
 - Avoid storing raw IDs if masked, hashed, encrypted, or tokenized forms satisfy the workflow.
 
+## Related packages
+
+- Use `vform` when identity documents are one field in a larger validation workflow.
+- Use `vstr` when input normalization, trimming, or masking-adjacent string cleanup is needed first.
+- Use `vmask` when validated identity data must be redacted for logs, UI, or diagnostics.
+
 ## Benchmarks and trade-offs
 
 Validation and parsing are mostly string operations, but batch imports should still measure matcher and birth-date parsing costs:

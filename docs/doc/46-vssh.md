@@ -175,6 +175,12 @@ make agent-check
 make agent-security-check
 ```
 
+## Related packages
+
+- Use `vftp` when file transfer should use FTP/FTPS rather than SSH/SFTP.
+- Use `vcli` when local command execution is enough and no remote SSH transport is required.
+- Use `vfile` when transferred files need local path, temp-file, or filesystem policy checks.
+
 ## Benchmarks and trade-offs
 
 - The facade adds request validation, defensive copying, and limit checks around provider calls. That overhead is small for network-bound operations but visible in microbenchmarks.

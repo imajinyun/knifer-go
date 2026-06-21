@@ -35,6 +35,12 @@ Choose the helper that makes the filesystem side effect explicit. Use temporary 
 - Use streaming APIs instead of whole-file helpers for large, remote, or attacker-controlled content.
 - Avoid mutating package-level or shared filesystem locations in reusable libraries; accept explicit paths or injected provider functions.
 
+## Related packages
+
+- Use `vzip` when filesystem work crosses into archive creation, extraction, or zip-entry path policy.
+- Use `vcsv` or `vpoi` when files contain tabular data that needs CSV or XLSX parsing.
+- Use `vurl` when file paths are derived from URLs or need URL-specific normalization first.
+
 ## Benchmarks and trade-offs
 
 Use the focused file benchmarks to compare whole-file, chunked, copy, and option-provider paths on your machine:

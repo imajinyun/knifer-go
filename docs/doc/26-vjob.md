@@ -155,6 +155,12 @@ func main() {
 }
 ```
 
+## Related packages
+
+- Use `vcron` when work should run on recurring wall-clock schedules instead of finite batches.
+- Use `vsem` when concurrent workers need weighted permit limits or cancellation-aware throttling.
+- Use `vlog` and `verr` when batch failures need structured diagnostics and aggregation.
+
 ## Benchmarks and trade-offs
 
 Run focused job tests before changing scheduler behavior:

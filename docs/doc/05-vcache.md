@@ -127,6 +127,12 @@ func main() {
 }
 ```
 
+## Related packages
+
+- Use `vcron` when cache refresh or cleanup should run on a recurring wall-clock schedule.
+- Use `vjob` when cache warming or invalidation can be batched across keys or shards.
+- Use `vmap` when ordinary map transformations are enough and eviction policy is unnecessary.
+
 ## Benchmarks and trade-offs
 
 Run focused cache tests before and after changing eviction behavior:

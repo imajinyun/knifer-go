@@ -32,6 +32,12 @@
 - Use a key-management service, HSM, or secret manager when key generation, storage, rotation, and audit must be centrally controlled.
 - Do not use encryption helpers as a substitute for authentication, authorization, replay protection, or access-control policy.
 
+## Related packages
+
+- Use `vrand` to generate secure bytes for keys, salts, nonces, and tokens before encoding them.
+- Use `vcodec` when encrypted, signed, or hashed bytes need Base64, hex, or URL-safe representation.
+- Use `vhash` only for non-cryptographic hash use cases where collision resistance is not required.
+
 ## Benchmarks and trade-offs
 
 Measure crypto helper overhead locally with the focused benchmark suite:

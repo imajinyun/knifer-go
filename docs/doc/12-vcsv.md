@@ -106,6 +106,12 @@ func main() {
 - Use a typed decoder with explicit validation when CSV input is an external contract with required fields and domain rules.
 - Avoid map conversion when duplicate headers or strict column ordering are part of the data contract.
 
+## Related packages
+
+- Use `vpoi` when the workflow requires XLSX worksheets, workbook metadata, or in-memory spreadsheet export.
+- Use `vfile` when CSV paths, temporary files, or directory traversal need filesystem policy checks.
+- Use `vbean` when CSV records need to be mapped into typed structs after parsing.
+
 ## Benchmarks and trade-offs
 
 - `Read` and `ReadString` are simple but allocate the full `[][]string`. `ForEach` trades convenience for lower peak memory.

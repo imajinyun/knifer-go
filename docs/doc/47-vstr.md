@@ -25,6 +25,12 @@ Start with the smallest helper that matches the text task: normalization, extrac
 - Keep naming-style conversion close to the protocol or schema that requires it so casing rules remain reviewable.
 - Be explicit about trimming and separator rules; subtle whitespace assumptions are a common source of bugs.
 
+## Related packages
+
+- Use `vregex` when matching, capture groups, or replacement require reviewed regular expressions.
+- Use `vdfa` when text filtering should use dictionary-based word matching.
+- Use `vtok` or `vhan` when text processing depends on injected NLP, tokenization, or pinyin providers.
+
 ## When not to use vstr
 
 - Use the standard `strings`, `unicode`, or `html` packages directly when they express the operation clearly and no facade helper improves readability.

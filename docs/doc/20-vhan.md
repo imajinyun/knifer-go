@@ -29,6 +29,14 @@ Choose helpers by whether you want a reusable client, a one-off provider call, o
 - Test with fake providers to keep examples deterministic and avoid hidden dictionary or network dependencies.
 - Preserve defensive-copy expectations: callers and providers should not rely on shared slices or maps.
 
+## When not to use vhan
+
+- Use a dedicated pinyin or NLP library directly when you need built-in dictionaries, segmentation, polyphone disambiguation, phrase ranking, or locale-specific romanization.
+- Use provider APIs directly when provider-specific options, batch operations, streaming, model loading, or diagnostics are central to the workflow.
+- Avoid treating initials or pinyin output as stable identifiers unless provider behavior, dictionary version, and normalization rules are part of the data contract.
+- Avoid sending unbounded or sensitive user text to remote providers without input limits, cancellation, logging policy, and privacy review.
+- Use simple hand-written mappings when the conversion domain is tiny, fixed, and easier to review than a provider adapter.
+
 ## Provider injection
 
 `vhan` has no built-in pinyin provider. It does not import dictionaries, read environment variables, open network connections, or read local files. Tests and applications provide behavior by implementing `Provider`.
@@ -106,6 +114,12 @@ fmt.Println(response.Output)
 `vhan` treats input text, tone style, separators, and input size as validation inputs only. It does not load dictionaries, tokenize text, normalize language variants, resolve polyphones, call remote services, read local files, log input text, or maintain hidden global provider state. Providers are responsible for dictionary selection, phrase ranking, heteronym behavior, segmentation, caching, tracing, and deployment-specific privacy controls.
 
 Requests and responses are defensively copied around provider calls so callers and providers can mutate their own values without sharing slices or maps unexpectedly.
+
+## Related packages
+
+- Use `vtok` when Chinese or mixed-language text needs tokenization or keyword extraction rather than pinyin conversion.
+- Use `vstr` when the task is general string normalization, trimming, or similarity scoring.
+- Use `vai` when pinyin conversion is delegated to an AI/provider adapter with request validation.
 
 ## Benchmarks and trade-offs
 

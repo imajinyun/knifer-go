@@ -163,6 +163,12 @@ func main() {
 }
 ```
 
+## Related packages
+
+- Use `vurl` when network checks start from URLs rather than host, IP, or port values.
+- Use `vhttp` or `vresty` when network policy is part of outbound HTTP requests.
+- Use `vssh` or `vftp` when connectivity checks are tied to transfer protocols.
+
 ## Benchmarks and trade-offs
 
 Network behavior depends on DNS, kernel state, local listeners, and remote peers, so cookbook examples prefer deterministic provider injection over universal throughput claims. Use the package tests as the local regression gate:

@@ -135,6 +135,12 @@ func main() {
 }
 ```
 
+## Related packages
+
+- Use `vnet` when socket behavior depends on host, port, IP, or network-boundary checks.
+- Use `vhttp` or `vresty` when the protocol is HTTP and request/response helpers are more appropriate.
+- Use `vcli` when socket diagnostics are driven by external command execution in tools.
+
 ## Benchmarks and trade-offs
 
 Socket throughput and latency depend on kernel buffers, scheduling, network path, and protocol framing, so the cookbook does not publish universal benchmark numbers. Use deterministic tests for facade behavior:

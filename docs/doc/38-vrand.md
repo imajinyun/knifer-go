@@ -28,6 +28,12 @@ Choose helpers by whether the value is security-sensitive or only needs pseudo-r
 - Check secure-random errors and fail closed if the operating system randomness source is unavailable.
 - Consider entropy length explicitly: 16 bytes can be enough for many identifiers, while long-lived keys or tokens often need 32 bytes or more.
 
+## Related packages
+
+- Use `vcrypto` when random bytes feed keys, salts, nonces, signatures, or encryption workflows.
+- Use `vcodec` when random bytes need hex, Base64, or URL-safe representation.
+- Use `vid` when random material should become application identifiers rather than raw bytes.
+
 ## When not to use vrand
 
 - Use `SecureBytes` rather than pseudo-random string or number helpers for secrets, credentials, bearer tokens, nonces, salts, and keys.

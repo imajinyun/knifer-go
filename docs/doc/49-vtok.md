@@ -30,6 +30,20 @@ Choose helpers by whether you want a reusable client, a one-off provider call, t
 - Test with fake providers to keep examples deterministic and independent of dictionary/model versions.
 - Do not treat keyword scores as comparable across providers unless the provider contract guarantees it.
 
+## Related packages
+
+- Use `vhan` when Chinese text should be converted to pinyin or initials instead of tokenized.
+- Use `vstr` when simple string normalization, splitting, or similarity checks are sufficient.
+- Use `vai` when tokenization or keyword extraction is delegated to an AI/provider adapter.
+
+## When not to use vtok
+
+- Use a dedicated tokenizer, search, or NLP library directly when you need dictionaries, language detection, synonym expansion, stop-word management, model loading, or streaming text processing.
+- Use provider APIs directly when provider-specific ranking, batch operations, diagnostics, or model configuration are central to the workflow.
+- Avoid using token boundaries or keyword scores as durable identifiers unless provider behavior and versioning are part of the data contract.
+- Avoid sending unbounded or sensitive documents to remote providers without input limits, cancellation, logging policy, and privacy review.
+- Use simpler `strings` or `regexp` helpers when the task is fixed delimiter splitting, exact matching, or small deterministic extraction.
+
 ## Provider injection
 
 `vtok` has no built-in tokenizer provider. It does not import dictionaries, read environment variables, open network connections, or read local files. Tests and applications provide behavior by implementing `Provider`.

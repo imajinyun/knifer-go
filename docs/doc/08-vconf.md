@@ -35,6 +35,12 @@ Choose the helper by source format, layering needs, and how strictly configurati
 - Avoid remote loading for untrusted URLs unless `LoadRemoteSafeWithOptions` and an explicit URL policy cover the boundary.
 - Avoid file watching when reload callbacks cannot be made idempotent or when partial writes would leave the application in an unsafe state.
 
+## Related packages
+
+- Use `vfile` when configuration loading first requires safe path or filesystem handling.
+- Use `vjson` when JSON configuration needs direct formatting, inspection, or path access.
+- Use `vbean` and `vform` when decoded configuration must be bound and validated explicitly.
+
 ## Benchmarks and trade-offs
 
 Use local benchmarks to compare parsing, binding, schema validation, environment expansion, and safe remote-loading overhead:

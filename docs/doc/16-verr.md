@@ -162,6 +162,12 @@ func main() {
 - Use the application's observability stack directly when logs, traces, and metrics already have a structured error contract.
 - Avoid `MustExit` in libraries; return errors so callers decide whether to panic, retry, or continue.
 
+## Related packages
+
+- Use `vlog` when errors should be emitted through named loggers, custom outputs, or structured log flows.
+- Use `vjson` when error payloads need JSON formatting for tests, APIs, or diagnostics.
+- Use `vhttp` or `vresty` when wrapped errors originate from HTTP client boundaries.
+
 ## Benchmarks and trade-offs
 
 - Stack capture is useful for diagnostics but allocates and walks runtime metadata. Capture stacks at error boundaries, not on every successful operation.
