@@ -2,6 +2,15 @@
 
 `vhttp` provides chained HTTP requests, shortcut GET/POST/download helpers, response saving, global/client configuration, safe URL validation, and simple HTTP server wrappers.
 
+## Recommended HTTP entry points
+
+| Scenario | Recommended package | Recommended API family | Why |
+| --- | --- | --- | --- |
+| Standard-library style request | `vhttp` | `Get`, `Post`, request builders | Keeps dependencies light and behavior explicit. |
+| Resty-based fluent client | `vresty` | client/request helpers | Uses Resty ergonomics while keeping go-knifer safety docs. |
+| Untrusted URL | `vhttp`/`vresty` plus safe APIs | `Safe`/`E` variants | Applies validation and explicit errors before network access. |
+| File download | `vhttp`/`vresty` safe download helpers | `DownloadFileSafe` family | Keeps path and transfer risks visible. |
+
 ## Send chained requests
 
 ```go

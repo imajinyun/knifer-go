@@ -28,6 +28,12 @@
 - [ ] I ran `bash bin/check_arch.sh`.
 - [ ] I ran `golangci-lint run ./...`.
 - [ ] I updated `CHANGELOG.md` for user-visible changes.
+- [ ] Public facade API changed and `UPDATE_API=1 make api-check` was run.
+- [ ] Examples were added or updated for reader-facing APIs.
+- [ ] Package quickstart docs were updated for behavior changes.
+- [ ] `make docs-check` and `make tools-check` pass.
+- [ ] Security-sensitive behavior was reviewed for safe defaults and secret leakage.
+- [ ] Benchmarks were added or updated for performance-sensitive changes.
 
 ## Validation
 

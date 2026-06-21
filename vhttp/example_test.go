@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -211,6 +213,19 @@ func ExampleNewRequest() {
 	// Output: TRACE <nil>
 }
 
+func ExampleNewRequest_customHeader() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(r.Header.Get("X-Trace")))
+	}))
+	defer server.Close()
+
+	resp := vhttp.NewRequest(vhttp.MethodGet, server.URL).
+		Header("X-Trace", "reader-facing").
+		Execute()
+	fmt.Println(resp.Body(), resp.Err())
+	// Output: reader-facing <nil>
+}
+
 func ExampleNewSafeRequest() {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(r.Method))
@@ -342,6 +357,24 @@ func ExampleDownloadSafe() {
 	}))
 	fmt.Println(n, buf.String(), err)
 	// Output: 4 safe <nil>
+}
+
+func ExampleDownloadFileSafe() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("safe-file"))
+	}))
+	defer server.Close()
+
+	dir, _ := os.MkdirTemp("", "vhttp-safe-download-*")
+	defer os.RemoveAll(dir)
+	dest := filepath.Join(dir, "download.txt")
+	n, err := vhttp.DownloadFileSafeWithOptions(server.URL, dest,
+		[]vhttp.RequestOption{vhttp.WithURLPolicy(vhttp.URLPolicy{AllowedSchemes: []string{"http"}, RejectPrivate: false})},
+		vhttp.WithSaveOverwrite(true),
+	)
+	data, _ := os.ReadFile(dest)
+	fmt.Println(n, string(data), err)
+	// Output: 9 safe-file <nil>
 }
 
 func ExampleWithHeader() {

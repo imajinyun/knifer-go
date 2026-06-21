@@ -1,4 +1,4 @@
-.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check test test-race coverage-profile coverage-report coverage-check api-check tools-check tools-gen tools-report ai-context-check ci-workflow-check docs-gen docs-check generate mod-verify tidy-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke check ci-test
+.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check test test-race race-test shuffle-test coverage-profile coverage-report coverage-check api-check tools-check tools-gen tools-report ai-context-check ci-workflow-check docs-gen docs-check generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -15,6 +15,8 @@ help:
 	@echo "Targets:"
 	@echo "  test            Run unit tests"
 	@echo "  test-race       Run race/shuffle tests and write coverage"
+	@echo "  race-test       Run race-enabled tests"
+	@echo "  shuffle-test    Run order-shuffled tests"
 	@echo "  coverage-profile Generate race/shuffle coverage profile"
 	@echo "  coverage-report  Print function coverage from COVERAGE_FILE"
 	@echo "  coverage-check  Enforce repository and package coverage gates"
@@ -38,6 +40,7 @@ help:
 	@echo "  agent-security-check Run AI/Agent security validation gates"
 	@echo "  ci-agent-governance Run CI Agent governance policy/evidence gates"
 	@echo "  generate        Run go:generate directives (API snapshot, code gen)"
+	@echo "  mod-check       Verify go.mod and go.sum are tidy"
 	@echo "  api-check       Verify exported API snapshot is current"
 	@echo "  tools-check     Verify machine-readable tools catalog is current"
 	@echo "  tools-gen       Regenerate machine-readable tools catalog"
@@ -107,6 +110,12 @@ test:
 test-race:
 	$(GO) test -race -shuffle=on -coverprofile=$(COVERAGE_FILE) $(PKGS)
 
+race-test:
+	$(GO) test -race $(PKGS)
+
+shuffle-test:
+	$(GO) test -shuffle=on $(PKGS)
+
 coverage-profile: test-race
 
 coverage-report:
@@ -145,6 +154,8 @@ mod-verify:
 tidy-check:
 	$(GO) mod tidy
 	git diff --exit-code -- go.mod go.sum
+
+mod-check: tidy-check
 
 diff-whitespace:
 	git diff --check

@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 54,
     "function_count": 2604,
-    "functions_with_examples": 969,
+    "functions_with_examples": 971,
     "context_aware_functions": 36,
     "returns_error_functions": 603,
     "variadic_functions": 776,
@@ -13970,8 +13970,8 @@
       "synopsis": "Package vhttp provides public APIs for HTTP utilities.",
       "summary": {
         "function_count": 161,
-        "functions_with_examples": 51,
-        "example_coverage_percent": 31.7,
+        "functions_with_examples": 52,
+        "example_coverage_percent": 32.3,
         "synopsis_sources": {
           "empty": 0,
           "facade": 156,
@@ -14384,7 +14384,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleDownloadFileSafe"
+          ]
         },
         {
           "name": "DownloadFileSafeWithOptions",
@@ -15448,7 +15451,8 @@
           "context_aware": false,
           "variadic": true,
           "examples": [
-            "ExampleNewRequest"
+            "ExampleNewRequest",
+            "ExampleNewRequest_customHeader"
           ]
         },
         {
@@ -41743,8 +41747,8 @@
       "synopsis": "Package vresty provides convenient HTTP client wrappers backed by resty.",
       "summary": {
         "function_count": 120,
-        "functions_with_examples": 73,
-        "example_coverage_percent": 60.8,
+        "functions_with_examples": 74,
+        "example_coverage_percent": 61.7,
         "synopsis_sources": {
           "empty": 0,
           "facade": 120,
@@ -42080,7 +42084,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleDownloadFileSafe"
+          ]
         },
         {
           "name": "DownloadFileSafeWithOptions",
@@ -42897,7 +42904,8 @@
           "context_aware": false,
           "variadic": true,
           "examples": [
-            "ExampleNewClient"
+            "ExampleNewClient",
+            "ExampleNewClient_timeout"
           ]
         },
         {

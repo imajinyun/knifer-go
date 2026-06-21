@@ -2,6 +2,15 @@
 
 `vresty` is a resty-based HTTP client facade that provides chained requests, shortcut GET/POST helpers, response reads, downloads, safe URL validation, and global configuration.
 
+## Recommended HTTP entry points
+
+| Scenario | Recommended package | Recommended API family | Why |
+| --- | --- | --- | --- |
+| Standard-library style request | `vhttp` | `Get`, `Post`, request builders | Keeps dependencies light and behavior explicit. |
+| Resty-based fluent client | `vresty` | client/request helpers | Uses Resty ergonomics while keeping go-knifer safety docs. |
+| Untrusted URL | `vhttp`/`vresty` plus safe APIs | `Safe`/`E` variants | Applies validation and explicit errors before network access. |
+| File download | `vhttp`/`vresty` safe download helpers | `DownloadFileSafe` family | Keeps path and transfer risks visible. |
+
 ## Send simple GET requests
 
 ```go

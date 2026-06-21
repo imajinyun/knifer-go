@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/go-knifer` |
 | Packages | 54 |
 | Functions | 2604 |
-| Functions with examples | 969 |
+| Functions with examples | 971 |
 | Context-aware functions | 36 |
 | Functions returning error | 603 |
 | Variadic functions | 776 |
@@ -898,7 +898,7 @@ Import path: `github.com/imajinyun/go-knifer/vhttp`
 
 Package vhttp provides public APIs for HTTP utilities.
 
-Quality: 161 functions · 51 with examples · 31.7% example coverage · synopsis sources: facade=156, internal=5, empty=0
+Quality: 161 functions · 52 with examples · 32.3% example coverage · synopsis sources: facade=156, internal=5, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -920,7 +920,7 @@ Quality: 161 functions · 51 with examples · 31.7% example coverage · synopsis
 | `DownloadBytesEWithOptions` | `func DownloadBytesEWithOptions(rawURL string, opts ...RequestOption) ([]byte, error)` | DownloadBytesEWithOptions downloads and returns bytes with per-request options or an error. | facade | `ExampleDownloadBytesEWithOptions` |
 | `DownloadBytesSafeE` | `func DownloadBytesSafeE(rawURL string, opts ...RequestOption) ([]byte, error)` | DownloadBytesSafeE downloads and returns bytes with SSRF-oriented safety checks enabled. | facade | — |
 | `DownloadFile` | `func DownloadFile(rawURL string, dest string, opts ...SaveOption) (int64, error)` | DownloadFile downloads rawURL to dest. | facade | — |
-| `DownloadFileSafe` | `func DownloadFileSafe(rawURL string, dest string, opts ...SaveOption) (int64, error)` | DownloadFileSafe downloads rawURL to dest with SSRF-oriented safety checks enabled. | facade | — |
+| `DownloadFileSafe` | `func DownloadFileSafe(rawURL string, dest string, opts ...SaveOption) (int64, error)` | DownloadFileSafe downloads rawURL to dest with SSRF-oriented safety checks enabled. | facade | `ExampleDownloadFileSafe` |
 | `DownloadFileSafeWithOptions` | `func DownloadFileSafeWithOptions(rawURL string, dest string, requestOpts []RequestOption, saveOpts ...SaveOption) (int64, error)` | DownloadFileSafeWithOptions downloads rawURL to dest with SSRF-oriented safety checks enabled. | facade | — |
 | `DownloadFileWithOptions` | `func DownloadFileWithOptions(rawURL string, dest string, requestOpts []RequestOption, saveOpts ...SaveOption) (int64, error)` | DownloadFileWithOptions downloads rawURL to dest with per-request and per-save options. | facade | — |
 | `DownloadSafe` | `func DownloadSafe(rawURL string, w io.Writer, opts ...RequestOption) (int64, error)` | DownloadSafe downloads rawURL into w with SSRF-oriented safety checks enabled. | facade | `ExampleDownloadSafe` |
@@ -969,7 +969,7 @@ Quality: 161 functions · 51 with examples · 31.7% example coverage · synopsis
 | `NewErrorWithCode` | `func NewErrorWithCode(code knifer.ErrCode, msg string, cause error) *Error` | NewErrorWithCode creates an HTTP error with an explicit go-knifer code. | facade | — |
 | `NewIsolatedClient` | `func NewIsolatedClient(opts ...ClientOption) *Client` | NewIsolatedClient creates a request factory without reading package-level global defaults. | facade | — |
 | `NewIsolatedRequest` | `func NewIsolatedRequest(method Method, rawURL string, opts ...RequestOption) *Request` | NewIsolatedRequest creates a request without reading package-level global defaults. | facade | — |
-| `NewRequest` | `func NewRequest(method Method, rawURL string, opts ...RequestOption) *Request` | NewRequest creates a request by method. | facade | `ExampleNewRequest` |
+| `NewRequest` | `func NewRequest(method Method, rawURL string, opts ...RequestOption) *Request` | NewRequest creates a request by method. | facade | `ExampleNewRequest`, `ExampleNewRequest_customHeader` |
 | `NewRequestWithConfig` | `func NewRequestWithConfig(method Method, rawURL string, cfg GlobalConfig, opts ...RequestOption) *Request` | NewRequestWithConfig creates a request from an explicit global configuration snapshot. | facade | — |
 | `NewSafeRequest` | `func NewSafeRequest(method Method, rawURL string, opts ...RequestOption) *Request` | NewSafeRequest creates a request with SSRF-oriented safety checks enabled. | facade | `ExampleNewSafeRequest` |
 | `NewSimpleServer` | `func NewSimpleServer(port int) *SimpleServer` | NewSimpleServer creates a simple HTTP server on port. | facade | — |
@@ -2375,7 +2375,7 @@ Import path: `github.com/imajinyun/go-knifer/vresty`
 
 Package vresty provides convenient HTTP client wrappers backed by resty.
 
-Quality: 120 functions · 73 with examples · 60.8% example coverage · synopsis sources: facade=120, internal=0, empty=0
+Quality: 120 functions · 74 with examples · 61.7% example coverage · synopsis sources: facade=120, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -2393,7 +2393,7 @@ Quality: 120 functions · 73 with examples · 60.8% example coverage · synopsis
 | `DownloadBytesEWithOptions` | `func DownloadBytesEWithOptions(rawURL string, opts ...RequestOption) ([]byte, error)` | DownloadBytesEWithOptions downloads and returns bytes with per-request options or an error. | facade | `ExampleDownloadBytesEWithOptions` |
 | `DownloadBytesSafeE` | `func DownloadBytesSafeE(rawURL string, opts ...RequestOption) ([]byte, error)` | DownloadBytesSafeE downloads and returns bytes with SSRF-oriented safety checks enabled. | facade | `ExampleDownloadBytesSafeE` |
 | `DownloadFile` | `func DownloadFile(rawURL string, dest string, opts ...SaveOption) (int64, error)` | DownloadFile downloads rawURL to dest. | facade | `ExampleDownloadFile` |
-| `DownloadFileSafe` | `func DownloadFileSafe(rawURL string, dest string, opts ...SaveOption) (int64, error)` | DownloadFileSafe downloads rawURL to dest with SSRF-oriented safety checks enabled. | facade | — |
+| `DownloadFileSafe` | `func DownloadFileSafe(rawURL string, dest string, opts ...SaveOption) (int64, error)` | DownloadFileSafe downloads rawURL to dest with SSRF-oriented safety checks enabled. | facade | `ExampleDownloadFileSafe` |
 | `DownloadFileSafeWithOptions` | `func DownloadFileSafeWithOptions(rawURL string, dest string, requestOpts []RequestOption, saveOpts ...SaveOption) (int64, error)` | DownloadFileSafeWithOptions downloads rawURL to dest with SSRF-oriented safety checks enabled. | facade | — |
 | `DownloadFileWithOptions` | `func DownloadFileWithOptions(rawURL string, dest string, requestOpts []RequestOption, saveOpts ...SaveOption) (int64, error)` | DownloadFileWithOptions downloads rawURL to dest with per-request and per-save options. | facade | `ExampleDownloadFileWithOptions` |
 | `DownloadSafe` | `func DownloadSafe(rawURL string, w io.Writer, opts ...RequestOption) (int64, error)` | DownloadSafe downloads rawURL into w with SSRF-oriented safety checks enabled. | facade | `ExampleDownloadSafe` |
@@ -2428,7 +2428,7 @@ Quality: 120 functions · 73 with examples · 60.8% example coverage · synopsis
 | `IsFormURLEncoded` | `func IsFormURLEncoded(contentType string) bool` | IsFormURLEncoded reports whether the value is application/x-www-form-urlencoded. | facade | `ExampleIsFormURLEncoded` |
 | `IsHTTP` | `func IsHTTP(rawURL string) bool` | IsHTTP reports whether the given URL is http. | facade | `ExampleIsHTTP` |
 | `IsHTTPS` | `func IsHTTPS(rawURL string) bool` | IsHTTPS reports whether the given URL is https. | facade | `ExampleIsHTTPS` |
-| `NewClient` | `func NewClient(opts ...ClientOption) *Client` | NewClient creates a request factory using the current global configuration snapshot. | facade | `ExampleNewClient` |
+| `NewClient` | `func NewClient(opts ...ClientOption) *Client` | NewClient creates a request factory using the current global configuration snapshot. | facade | `ExampleNewClient`, `ExampleNewClient_timeout` |
 | `NewClientWithConfig` | `func NewClientWithConfig(cfg GlobalConfig, opts ...RequestOption) *Client` | NewClientWithConfig creates a request factory from an explicit configuration snapshot. | facade | `ExampleNewClientWithConfig` |
 | `NewHTTPError` | `func NewHTTPError(msg string, cause error) *Error` | NewHTTPError creates an HTTP error. | facade | `ExampleNewHTTPError` |
 | `NewIsolatedClient` | `func NewIsolatedClient(opts ...ClientOption) *Client` | NewIsolatedClient creates a request factory without reading package-level global defaults. | facade | `ExampleNewIsolatedClient` |

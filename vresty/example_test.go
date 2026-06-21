@@ -272,6 +272,23 @@ func ExampleNewClient() {
 	// Output: default <nil>
 }
 
+func ExampleNewClient_timeout() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(r.Header.Get("X-Timeout-Client")))
+	}))
+	defer server.Close()
+
+	client := vresty.NewClient(
+		vresty.WithClientRequestOptions(
+			vresty.WithTimeout(time.Second),
+			vresty.WithHeader("X-Timeout-Client", "configured"),
+		),
+	)
+	resp := client.Get(server.URL).Execute()
+	fmt.Println(resp.Body(), resp.Err())
+	// Output: configured <nil>
+}
+
 func ExampleNewIsolatedClient() {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte(r.Header.Get("X-Client")))
@@ -431,6 +448,24 @@ func ExampleDownloadSafe() {
 	// Output: 4 safe <nil>
 }
 
+func ExampleDownloadFileSafe() {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("safe-file"))
+	}))
+	defer server.Close()
+
+	dir, _ := os.MkdirTemp("", "vresty-safe-download-*")
+	defer os.RemoveAll(dir)
+	dest := filepath.Join(dir, "download.txt")
+	n, err := vresty.DownloadFileSafeWithOptions(server.URL, dest,
+		[]vresty.RequestOption{vresty.WithURLPolicy(vresty.URLPolicy{AllowedSchemes: []string{"http"}, RejectPrivate: false})},
+		vresty.WithSaveOverwrite(true),
+	)
+	data, _ := os.ReadFile(dest)
+	fmt.Println(n, string(data), err)
+	// Output: 9 safe-file <nil>
+}
+
 func ExampleDownloadBytesE() {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("bytes"))
@@ -440,6 +475,23 @@ func ExampleDownloadBytesE() {
 	body, err := vresty.DownloadBytesE(server.URL)
 	fmt.Println(string(body), err)
 	// Output: bytes <nil>
+}
+
+func ExampleResponse_Result() {
+	type payload struct {
+		OK bool `json:"ok"`
+	}
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"ok":true}`))
+	}))
+	defer server.Close()
+
+	resp := vresty.Get(server.URL).Result(&payload{}).Execute()
+	result := resp.Result().(*payload)
+	fmt.Println(result.OK, resp.Err())
+	// Output: true <nil>
 }
 
 func ExampleDownloadBytesEWithOptions() {

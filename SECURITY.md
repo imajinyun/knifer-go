@@ -5,6 +5,11 @@
 `go-knifer` follows semantic versioning. Security fixes are provided for the
 latest minor release on the current major version.
 
+Weakening a documented security default in a public `v*` facade is treated as a
+breaking change. Security deprecations must name the safer replacement, stay
+available for at least two minor releases when safe to do so, and be recorded in
+release notes before removal.
+
 | Version | Supported |
 | --- | --- |
 | `v0.x` latest | Yes |

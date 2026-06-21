@@ -19,6 +19,7 @@
 - [🧭 Find by scenario](#find-by-scenario)
 - [🧩 Package catalog](#package-catalog)
 - [🏗️ Architecture](#architecture)
+- [🔒 API compatibility policy](#api-compatibility-policy)
 - [✅ Recommended APIs](#recommended-apis)
 - [📖 Documentation](#documentation)
 - [📦 Build and test](#build-and-test)
@@ -95,6 +96,22 @@ Not sure which package to import? Start from what you want to do:
 Application code should import public `v*` packages. `internal/*` packages are implementation details and can evolve without exposing every helper as public API.
 
 For domain boundary rules, provider-injection patterns, API compatibility policy, error contracts, and safety defaults, see [Architecture and package boundaries](./docs/doc/README.md#architecture-and-package-boundaries).
+
+<a id="api-compatibility-policy"></a>
+
+## 🔒 API compatibility policy
+
+`go-knifer` treats top-level `v*` facade packages as the public API boundary. The generated API snapshot in [`docs/api/exports.txt`](./docs/api/exports.txt) is reviewed with public API changes so upgrade risk is visible before release.
+
+| Stability level | Applies to | Compatibility promise |
+| --- | --- | --- |
+| Stable | Exported names in `v*` facade packages and `docs/api/exports.txt` | No breaking change without a documented migration path and release note. |
+| Internal | `internal/*` implementation packages | May change without public compatibility guarantees. |
+| Experimental | Newly introduced provider contracts or adapter packages marked experimental in docs | May change before being promoted to Stable; migration notes are still required. |
+
+A breaking change includes removing or renaming an exported facade API, changing a public function signature, changing exported type field semantics, changing sentinel error matching behavior, weakening a documented security default, or changing generated API snapshot content without release notes.
+
+Deprecated APIs stay available for at least two minor releases. Every deprecation must name the replacement API, explain the migration, and appear in release notes before removal.
 
 <a id="recommended-apis"></a>
 

@@ -9,6 +9,7 @@
 - [📝 Quickstart documents](#quickstart-documents)
 - [🧭 Sprint direction](#sprint-direction)
 - [🏗️ Architecture and package boundaries](#architecture-and-package-boundaries)
+- [🔒 API compatibility, deprecation, and releases](#api-compatibility-deprecation-and-releases)
 - [✅ Recommended API entry points](#recommended-api-entry-points)
 - [📦 Build, test, and release workflow](#build-test-and-release-workflow)
 - [🛡️ Governance](#governance)
@@ -127,6 +128,41 @@ API compatibility:
 - `make api-check` regenerates a temporary snapshot and compares it with the checked-in file.
 - When a public API change is intentional, run `UPDATE_API=1 make api-check` and review the snapshot diff together with the implementation change.
 - API additions, removals, and renames should also be reflected in package `doc.go` comments, examples, and the changelog before tagging a release.
+
+<a id="api-compatibility-deprecation-and-releases"></a>
+
+## 🔒 API compatibility, deprecation, and releases
+
+The compatibility policy applies to the public facade layer, not to implementation-only packages. Review [`../api/exports.txt`](../api/exports.txt) with each intentional public API change.
+
+| Stability level | Applies to | Compatibility promise |
+| --- | --- | --- |
+| Stable | Exported names in `v*` facade packages and `docs/api/exports.txt` | No breaking change without a documented migration path and release note. |
+| Internal | `internal/*` implementation packages | May change without public compatibility guarantees. |
+| Experimental | Newly introduced provider contracts or adapter packages marked experimental in docs | May change before being promoted to Stable; migration notes are still required. |
+
+A breaking change includes:
+
+- Removing or renaming an exported facade API.
+- Changing a public function signature.
+- Changing exported type field semantics.
+- Changing sentinel error matching behavior.
+- Weakening a documented security default.
+- Changing generated API snapshot content without release notes.
+
+Deprecated APIs stay available for at least two minor releases. Every deprecation must name the replacement API, explain the migration, and appear in release notes before removal.
+
+Release notes should keep user-visible changes grouped with this structure:
+
+```markdown
+## Added
+## Changed
+## Deprecated
+## Removed
+## Fixed
+## Security
+## Migration
+```
 
 Configurable APIs and provider injection:
 

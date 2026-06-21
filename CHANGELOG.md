@@ -9,6 +9,11 @@ subpackage APIs are treated as the compatibility boundary.
 
 ### Governance
 
+- Defined public API stability levels for stable `v*` facades, internal
+  implementation packages, and experimental provider or adapter contracts.
+- Documented breaking-change rules, the two-minor-release deprecation window,
+  and the required release note sections for user-visible changes and
+  migrations.
 - Added a repository security policy for private vulnerability reporting,
   supported versions, and security-sensitive package review areas.
 - Added a coverage gate script so CI can enforce a measurable test baseline.
