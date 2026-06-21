@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 54,
     "function_count": 2604,
-    "functions_with_examples": 972,
+    "functions_with_examples": 982,
     "context_aware_functions": 36,
     "returns_error_functions": 603,
     "variadic_functions": 776,
@@ -2440,8 +2440,8 @@
       "synopsis": "Package vcli provides public APIs for lightweight command-line helpers.",
       "summary": {
         "function_count": 15,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 33.3,
+        "functions_with_examples": 15,
+        "example_coverage_percent": 100,
         "synopsis_sources": {
           "empty": 0,
           "facade": 15,
@@ -2500,7 +2500,8 @@
           "context_aware": false,
           "variadic": true,
           "examples": [
-            "ExampleNewFlagParser"
+            "ExampleNewFlagParser",
+            "ExampleNewFlagParser_withUsageOutput"
           ]
         },
         {
@@ -2532,7 +2533,10 @@
           ],
           "returns_error": true,
           "context_aware": true,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleOutput"
+          ]
         },
         {
           "name": "RenderHelp",
@@ -2590,7 +2594,8 @@
           "context_aware": true,
           "variadic": true,
           "examples": [
-            "ExampleRun"
+            "ExampleRun",
+            "ExampleRun_withOptions"
           ]
         },
         {
@@ -2609,7 +2614,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithColorMode"
+          ]
         },
         {
           "name": "WithDir",
@@ -2627,7 +2635,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithDir"
+          ]
         },
         {
           "name": "WithEnv",
@@ -2645,7 +2656,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithEnv"
+          ]
         },
         {
           "name": "WithFlagOutput",
@@ -2663,7 +2677,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithFlagOutput"
+          ]
         },
         {
           "name": "WithMaxOutputBytes",
@@ -2681,7 +2698,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithMaxOutputBytes"
+          ]
         },
         {
           "name": "WithRunner",
@@ -2699,7 +2719,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithRunner"
+          ]
         },
         {
           "name": "WithStderr",
@@ -2717,7 +2740,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithStderr"
+          ]
         },
         {
           "name": "WithStdin",
@@ -2735,7 +2761,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithStdin"
+          ]
         },
         {
           "name": "WithStdout",
@@ -2753,7 +2782,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithStdout"
+          ]
         },
         {
           "name": "WithTimeout",

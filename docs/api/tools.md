@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/go-knifer` |
 | Packages | 54 |
 | Functions | 2604 |
-| Functions with examples | 972 |
+| Functions with examples | 982 |
 | Context-aware functions | 36 |
 | Functions returning error | 603 |
 | Variadic functions | 776 |
@@ -199,24 +199,24 @@ Import path: `github.com/imajinyun/go-knifer/vcli`
 
 Package vcli provides public APIs for lightweight command-line helpers.
 
-Quality: 15 functions · 5 with examples · 33.3% example coverage · synopsis sources: facade=15, internal=0, empty=0
+Quality: 15 functions · 15 with examples · 100.0% example coverage · synopsis sources: facade=15, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
 | `Colorize` | `func Colorize(text string, color Color, opts ...ColorOption) string` | Colorize wraps text in ANSI escape codes when enabled. | facade | `ExampleColorize` |
-| `NewFlagParser` | `func NewFlagParser(name string, opts ...FlagParserOption) *FlagParser` | NewFlagParser creates a flag parser for one command. | facade | `ExampleNewFlagParser` |
-| `Output` | `func Output(ctx context.Context, name string, args []string, opts ...ExecOption) (string, error)` | Output executes name with args and returns stdout. | facade | — |
+| `NewFlagParser` | `func NewFlagParser(name string, opts ...FlagParserOption) *FlagParser` | NewFlagParser creates a flag parser for one command. | facade | `ExampleNewFlagParser`, `ExampleNewFlagParser_withUsageOutput` |
+| `Output` | `func Output(ctx context.Context, name string, args []string, opts ...ExecOption) (string, error)` | Output executes name with args and returns stdout. | facade | `ExampleOutput` |
 | `RenderHelp` | `func RenderHelp(cmd *Command, opts ...ColorOption) string` | RenderHelp returns deterministic help text for cmd. | facade | `ExampleRenderHelp` |
-| `Run` | `func Run(ctx context.Context, name string, args []string, opts ...ExecOption) (ExecResult, error)` | Run executes name with args using context-aware process handling. | facade | `ExampleRun` |
-| `WithColorMode` | `func WithColorMode(mode ColorMode) ColorOption` | WithColorMode sets ANSI color behavior. | facade | — |
-| `WithDir` | `func WithDir(dir string) ExecOption` | WithDir sets the working directory for the command. | facade | — |
-| `WithEnv` | `func WithEnv(env []string) ExecOption` | WithEnv appends environment entries for the command. | facade | — |
-| `WithFlagOutput` | `func WithFlagOutput(w io.Writer) FlagParserOption` | WithFlagOutput sets where parser usage text is written. | facade | — |
-| `WithMaxOutputBytes` | `func WithMaxOutputBytes(n int64) ExecOption` | WithMaxOutputBytes limits captured stdout and stderr bytes. | facade | — |
-| `WithRunner` | `func WithRunner(r Runner) ExecOption` | WithRunner sets the process runner used by Run and Output. | facade | — |
-| `WithStderr` | `func WithStderr(w io.Writer) ExecuteOption` | WithStderr sets command stderr. | facade | — |
-| `WithStdin` | `func WithStdin(r io.Reader) ExecOption` | WithStdin sets the stdin reader for the command. | facade | — |
-| `WithStdout` | `func WithStdout(w io.Writer) ExecuteOption` | WithStdout sets command stdout. | facade | — |
+| `Run` | `func Run(ctx context.Context, name string, args []string, opts ...ExecOption) (ExecResult, error)` | Run executes name with args using context-aware process handling. | facade | `ExampleRun`, `ExampleRun_withOptions` |
+| `WithColorMode` | `func WithColorMode(mode ColorMode) ColorOption` | WithColorMode sets ANSI color behavior. | facade | `ExampleWithColorMode` |
+| `WithDir` | `func WithDir(dir string) ExecOption` | WithDir sets the working directory for the command. | facade | `ExampleWithDir` |
+| `WithEnv` | `func WithEnv(env []string) ExecOption` | WithEnv appends environment entries for the command. | facade | `ExampleWithEnv` |
+| `WithFlagOutput` | `func WithFlagOutput(w io.Writer) FlagParserOption` | WithFlagOutput sets where parser usage text is written. | facade | `ExampleWithFlagOutput` |
+| `WithMaxOutputBytes` | `func WithMaxOutputBytes(n int64) ExecOption` | WithMaxOutputBytes limits captured stdout and stderr bytes. | facade | `ExampleWithMaxOutputBytes` |
+| `WithRunner` | `func WithRunner(r Runner) ExecOption` | WithRunner sets the process runner used by Run and Output. | facade | `ExampleWithRunner` |
+| `WithStderr` | `func WithStderr(w io.Writer) ExecuteOption` | WithStderr sets command stderr. | facade | `ExampleWithStderr` |
+| `WithStdin` | `func WithStdin(r io.Reader) ExecOption` | WithStdin sets the stdin reader for the command. | facade | `ExampleWithStdin` |
+| `WithStdout` | `func WithStdout(w io.Writer) ExecuteOption` | WithStdout sets command stdout. | facade | `ExampleWithStdout` |
 | `WithTimeout` | `func WithTimeout(d time.Duration) ExecOption` | WithTimeout applies a child context timeout around command execution. | facade | `ExampleWithTimeout` |
 
 ### vcodec
