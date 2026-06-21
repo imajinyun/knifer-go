@@ -67,15 +67,6 @@ jobs:
       - name: Run CI test gates
         run: make ci-test COVERAGE_FILE=coverage.out
 
-      - name: Run race tests
-        run: make race-test
-
-      - name: Run shuffled tests
-        run: make shuffle-test
-
-      - name: Verify go.mod and go.sum are tidy
-        run: make mod-check
-
       - name: Upload coverage
         uses: actions/upload-artifact@v7
         with:

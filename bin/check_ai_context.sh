@@ -63,6 +63,70 @@ def require_enum(value, path, allowed):
     return value
 
 
+def validate_json_schema(schema, instance, path="ai-context.json"):
+    schema_type = schema.get("type")
+    if schema_type == "object":
+        if not isinstance(instance, dict):
+            add_error(f"{path} must be an object")
+            return
+        for key in schema.get("required", []):
+            if key not in instance:
+                add_error(f"{path}.{key} is required by ai-context.schema.json")
+        properties = schema.get("properties", {})
+        additional = schema.get("additionalProperties", True)
+        for key, value in instance.items():
+            child_path = f"{path}.{key}"
+            if key in properties:
+                validate_json_schema(resolve_schema(properties[key]), value, child_path)
+            elif isinstance(additional, dict):
+                validate_json_schema(resolve_schema(additional), value, child_path)
+            elif additional is False:
+                add_error(f"{child_path} is not allowed by ai-context.schema.json")
+    elif schema_type == "array":
+        if not isinstance(instance, list):
+            add_error(f"{path} must be a list")
+            return
+        minimum = schema.get("minItems")
+        if minimum is not None and len(instance) < minimum:
+            add_error(f"{path} must contain at least {minimum} item(s)")
+        if schema.get("uniqueItems") and len(instance) != len(set(instance)):
+            add_error(f"{path} must contain unique items")
+        items_schema = resolve_schema(schema.get("items", {}))
+        for index, item in enumerate(instance):
+            validate_json_schema(items_schema, item, f"{path}[{index}]")
+    elif schema_type == "string":
+        if not isinstance(instance, str):
+            add_error(f"{path} must be a string")
+        elif schema.get("minLength", 0) and len(instance) < schema["minLength"]:
+            add_error(f"{path} must be a non-empty string")
+    elif schema_type == "boolean":
+        if not isinstance(instance, bool):
+            add_error(f"{path} must be a boolean")
+    elif schema_type == "number":
+        if not isinstance(instance, (int, float)) or isinstance(instance, bool):
+            add_error(f"{path} must be a number")
+            return
+        if "exclusiveMinimum" in schema and not instance > schema["exclusiveMinimum"]:
+            add_error(f"{path} must be greater than {schema['exclusiveMinimum']}")
+        if "maximum" in schema and not instance <= schema["maximum"]:
+            add_error(f"{path} must be no more than {schema['maximum']}")
+    if "enum" in schema and instance not in schema["enum"]:
+        add_error(f"{path} must be one of: {', '.join(schema['enum'])}")
+
+
+schema_data = None
+
+
+def resolve_schema(schema):
+    ref = schema.get("$ref") if isinstance(schema, dict) else None
+    if not ref:
+        return schema
+    if not ref.startswith("#/$defs/"):
+        add_error(f"unsupported schema reference {ref!r}")
+        return {}
+    return schema_data.get("$defs", {}).get(ref.removeprefix("#/$defs/"), {})
+
+
 try:
     with open(ai_context, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -76,6 +140,19 @@ except json.JSONDecodeError as exc:
 data = require_mapping(data, "ai-context.json")
 
 require_string(data.get("schema_version"), "schema_version")
+
+schema_ref = require_string(data.get("$schema"), "$schema")
+if schema_ref:
+    schema_path = os.path.normpath(os.path.join(root_dir, schema_ref))
+    if not os.path.exists(schema_path):
+        add_error(f"$schema references missing file {schema_ref!r}")
+    else:
+        try:
+            with open(schema_path, "r", encoding="utf-8") as f:
+                schema_data = json.load(f)
+            validate_json_schema(schema_data, data)
+        except json.JSONDecodeError as exc:
+            add_error(f"invalid schema file {schema_ref!r}: {exc}")
 
 project = require_mapping(data.get("project"), "project")
 for key in ("name", "module", "language", "go_version", "layout"):
@@ -193,6 +270,9 @@ for key in ("install", "uninstall", "pre_commit", "pre_push"):
     require_string(git_hooks.get(key), f"git_hooks.{key}")
 
 ci_workflows = require_mapping(data.get("ci_workflows"), "ci_workflows")
+tool_versions = require_mapping(ci_workflows.get("tool_versions"), "ci_workflows.tool_versions")
+go_1_25_patch = require_string(tool_versions.get("go_1_25_patch"), "ci_workflows.tool_versions.go_1_25_patch")
+golangci_lint_version = require_string(tool_versions.get("golangci_lint"), "ci_workflows.tool_versions.golangci_lint")
 github_actions = require_mapping(ci_workflows.get("github_actions"), "ci_workflows.github_actions")
 for name, workflow in sorted(github_actions.items()):
     if not command_name_pattern.match(name):
@@ -234,6 +314,17 @@ for name, workflow in sorted(github_actions.items()):
     for required_text in required_commands + required_env + required_artifacts:
         if workflow_text and required_text not in workflow_text:
             add_error(f"ci_workflows.github_actions.{name} workflow must contain {required_text!r}")
+    if workflow_text and go_1_25_patch and name in {"go", "release"}:
+        if "GO_1_25_PATCH_VERSION" not in workflow_text or go_1_25_patch not in workflow_text:
+            add_error(f"ci_workflows.github_actions.{name} must use declared Go patch version {go_1_25_patch!r}")
+    if workflow_text and golangci_lint_version and name == "go":
+        if "GOLANGCI_LINT_VERSION" not in workflow_text or golangci_lint_version not in workflow_text:
+            add_error(f"ci_workflows.github_actions.{name} must use declared golangci-lint version {golangci_lint_version!r}")
+    if workflow_text and name == "go":
+        duplicate_steps = ["make race-test", "make shuffle-test", "make mod-check"]
+        for duplicate_step in duplicate_steps:
+            if duplicate_step in workflow_text:
+                add_error(f"ci_workflows.github_actions.{name} should not duplicate ci-test sub-step {duplicate_step!r}")
 
 architecture_rules = require_string_list(data.get("architecture_rules"), "architecture_rules")
 if len(architecture_rules) < 5:
@@ -267,11 +358,21 @@ for name, artifact in sorted(generated_artifacts.items()):
 
 coverage_gates = require_mapping(data.get("coverage_gates"), "coverage_gates")
 repository_threshold = require_number(coverage_gates.get("repository_threshold"), "coverage_gates.repository_threshold")
+security_sensitive_min_threshold = coverage_gates.get("security_sensitive_min_threshold")
+if security_sensitive_min_threshold is not None:
+    security_sensitive_min_threshold = require_number(
+        security_sensitive_min_threshold,
+        "coverage_gates.security_sensitive_min_threshold",
+    )
 package_thresholds = require_mapping(coverage_gates.get("package_thresholds"), "coverage_gates.package_thresholds")
 
 module_path = project.get("module")
 if repository_threshold <= 0 or repository_threshold > 100:
     add_error("coverage_gates.repository_threshold must be greater than 0 and no more than 100")
+if security_sensitive_min_threshold is not None and (
+    security_sensitive_min_threshold <= 0 or security_sensitive_min_threshold > 100
+):
+    add_error("coverage_gates.security_sensitive_min_threshold must be greater than 0 and no more than 100")
 for package_path, threshold in sorted(package_thresholds.items()):
     require_string(package_path, f"coverage_gates.package_thresholds.{package_path}")
     threshold = require_number(threshold, f"coverage_gates.package_thresholds.{package_path}")
@@ -314,6 +415,31 @@ security_sensitive = set(require_string_list(data.get("security_sensitive_packag
 unknown_security_sensitive = sorted(security_sensitive - declared_facades)
 if unknown_security_sensitive:
     add_error("security_sensitive_packages contains unknown package(s): " + ", ".join(unknown_security_sensitive))
+
+security_domains = require_mapping(data.get("security_domains", {}), "security_domains")
+declared_security_domain_packages = set()
+for name, domain in sorted(security_domains.items()):
+    if not command_name_pattern.match(name):
+        add_error(f"security_domains.{name} must use snake_case")
+    domain = require_mapping(domain, f"security_domains.{name}")
+    packages = set(require_string_list(domain.get("packages"), f"security_domains.{name}.packages"))
+    threats = require_string_list(domain.get("threats"), f"security_domains.{name}.threats")
+    review_focus = require_string_list(
+        domain.get("required_review_focus"),
+        f"security_domains.{name}.required_review_focus",
+    )
+    declared_security_domain_packages.update(packages)
+    unknown_packages = sorted(packages - declared_facades)
+    if unknown_packages:
+        add_error(f"security_domains.{name}.packages contains unknown package(s): " + ", ".join(unknown_packages))
+    if not threats:
+        add_error(f"security_domains.{name}.threats must not be empty")
+    if not review_focus:
+        add_error(f"security_domains.{name}.required_review_focus must not be empty")
+
+missing_domain_packages = sorted(security_sensitive - declared_security_domain_packages)
+if security_sensitive and missing_domain_packages:
+    add_error("security_domains does not classify security-sensitive package(s): " + ", ".join(missing_domain_packages))
 
 if errors:
     for error in errors:

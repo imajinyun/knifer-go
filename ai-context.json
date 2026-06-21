@@ -1,4 +1,5 @@
 {
+  "$schema": "./ai-context.schema.json",
   "schema_version": "1.0",
   "project": {
     "name": "go-knifer",
@@ -158,6 +159,15 @@
       "risk_level": "medium",
       "creates_artifacts": ["/tmp/go-knifer-coverage.out"],
       "notes": "Release readiness gate; runs full local checks plus CI workflow governance validation."
+    },
+    "release_notes_check": {
+      "cmd": "make release-notes-check",
+      "safe_for_agent_auto_run": true,
+      "writes_workspace": false,
+      "writes_git_config": false,
+      "network_required": false,
+      "risk_level": "low",
+      "notes": "Validates CHANGELOG.md release-note structure and, when RELEASE_VERSION is set, verifies the tagged version has explicit release notes."
     },
     "coverage_profile": {
       "cmd": "make coverage-profile COVERAGE_FILE=/tmp/go-knifer-coverage.out",
@@ -379,6 +389,10 @@
     "pre_push": "make full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out"
   },
   "ci_workflows": {
+    "tool_versions": {
+      "go_1_25_patch": "1.25.11",
+      "golangci_lint": "v2.12.2"
+    },
     "github_actions": {
       "go": {
         "path": ".github/workflows/go.yml",
@@ -428,6 +442,7 @@
   },
   "coverage_gates": {
     "repository_threshold": 75.2,
+    "security_sensitive_min_threshold": 80.0,
     "package_thresholds": {
       "github.com/imajinyun/go-knifer/vbean": 90.0,
       "github.com/imajinyun/go-knifer/vcache": 90.0,
@@ -528,5 +543,37 @@
     "vai",
     "vftp",
     "vssh"
-  ]
+  ],
+  "security_domains": {
+    "network_clients": {
+      "packages": ["vhttp", "vresty", "vurl"],
+      "threats": ["SSRF", "open redirects", "unbounded response reads", "unsafe downloads"],
+      "required_review_focus": ["URL policy allow-lists", "timeouts", "redirect behavior", "response and download size limits"]
+    },
+    "configuration_and_ai": {
+      "packages": ["vconf", "vai"],
+      "threats": ["remote configuration SSRF", "secret disclosure", "prompt or provider input abuse", "unbounded reads"],
+      "required_review_focus": ["trusted source boundaries", "redaction", "provider injection", "read limits"]
+    },
+    "filesystem_and_archives": {
+      "packages": ["vfile", "vzip"],
+      "threats": ["path traversal", "zip slip", "unsafe overwrite", "archive decompression exhaustion"],
+      "required_review_focus": ["destination scoping", "permission and overwrite options", "size limits", "temporary-directory isolation"]
+    },
+    "crypto_identity_randomness": {
+      "packages": ["vcrypto", "vjwt", "vrand", "vid"],
+      "threats": ["weak randomness", "key or token misuse", "signature validation bypass", "identifier predictability"],
+      "required_review_focus": ["crypto/rand use", "algorithm allow-lists", "key handling", "error propagation"]
+    },
+    "data_and_cli_boundaries": {
+      "packages": ["vdb", "vcli"],
+      "threats": ["SQL injection", "unsafe command execution", "argument injection", "transaction misuse"],
+      "required_review_focus": ["parameterized SQL", "mutation guards", "exec argument separation", "context and timeout handling"]
+    },
+    "remote_file_transports": {
+      "packages": ["vftp", "vssh"],
+      "threats": ["credential exposure", "remote path traversal", "unbounded transfer", "host verification mistakes"],
+      "required_review_focus": ["credential redaction", "path validation", "transfer limits", "provider-backed tests"]
+    }
+  }
 }

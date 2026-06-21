@@ -33,6 +33,7 @@ def has_statement_source(package_dir):
 
 coverage_gates = data["coverage_gates"]
 repository_threshold = coverage_gates["repository_threshold"]
+security_sensitive_min_threshold = coverage_gates.get("security_sensitive_min_threshold", 0)
 package_thresholds = " ".join(
     f"{package_path}={threshold:.1f}"
     for package_path, threshold in coverage_gates["package_thresholds"].items()
@@ -51,14 +52,15 @@ for package in data["security_sensitive_packages"]:
     if internal and has_statement_source(internal):
         security_sensitive_paths.add(f"{module}/{internal}")
 security_sensitive_paths = " ".join(sorted(security_sensitive_paths))
-print(f"{repository_threshold:.1f}|{package_thresholds}|{security_sensitive_paths}")
+print(f"{repository_threshold:.1f}|{package_thresholds}|{security_sensitive_paths}|{security_sensitive_min_threshold:.1f}")
 PY
 )"
 
-IFS='|' read -r metadata_threshold metadata_package_thresholds metadata_security_sensitive_paths <<<"${coverage_config}"
+IFS='|' read -r metadata_threshold metadata_package_thresholds metadata_security_sensitive_paths metadata_security_sensitive_min_threshold <<<"${coverage_config}"
 threshold="${COVERAGE_THRESHOLD:-${metadata_threshold}}"
 package_thresholds="${PACKAGE_COVERAGE_THRESHOLDS:-${metadata_package_thresholds}}"
 security_sensitive_paths="${SECURITY_SENSITIVE_COVERAGE_PATHS:-${metadata_security_sensitive_paths}}"
+security_sensitive_min_threshold="${SECURITY_SENSITIVE_MIN_COVERAGE_THRESHOLD:-${metadata_security_sensitive_min_threshold}}"
 
 if [ ! -f "${coverage_file}" ]; then
 	echo "COVERAGE CHECK ERROR: ${coverage_file} does not exist" >&2
@@ -132,6 +134,7 @@ if [ -z "${security_sensitive_paths}" ]; then
 fi
 
 missing_security_sensitive_paths=""
+below_threshold_security_sensitive_paths=""
 security_sensitive_count=0
 for package_path in ${security_sensitive_paths}; do
 	package_total="$(
@@ -159,6 +162,10 @@ for package_path in ${security_sensitive_paths}; do
 "
 	else
 		security_sensitive_count=$((security_sensitive_count + 1))
+		if awk -v total="${package_total}" -v threshold="${security_sensitive_min_threshold}" 'BEGIN { exit !(threshold + 0 > 0 && total + 0 < threshold + 0) }'; then
+			below_threshold_security_sensitive_paths="${below_threshold_security_sensitive_paths}${package_path} coverage ${package_total}% is below required ${security_sensitive_min_threshold}%
+"
+		fi
 	fi
 done
 
@@ -170,4 +177,16 @@ if [ -n "${missing_security_sensitive_paths}" ]; then
 	exit 2
 fi
 
-echo "security-sensitive coverage data present for ${security_sensitive_count} package path(s)"
+if [ -n "${below_threshold_security_sensitive_paths}" ]; then
+	echo "COVERAGE CHECK ERROR: security-sensitive package(s) are below coverage threshold:" >&2
+	printf '%s' "${below_threshold_security_sensitive_paths}" | while IFS= read -r message; do
+		[ -z "${message}" ] || echo "  - ${message}" >&2
+	done
+	exit 1
+fi
+
+if awk -v threshold="${security_sensitive_min_threshold}" 'BEGIN { exit !(threshold + 0 > 0) }'; then
+	echo "security-sensitive coverage data present for ${security_sensitive_count} package path(s), all at or above ${security_sensitive_min_threshold}%"
+else
+	echo "security-sensitive coverage data present for ${security_sensitive_count} package path(s)"
+fi

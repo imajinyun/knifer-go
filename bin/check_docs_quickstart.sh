@@ -57,6 +57,8 @@ required_literal_sections = [
 ]
 
 checklist_pattern = re.compile(r"^## .*checklist$|^## Safety notes$", re.MULTILINE)
+go_fence_pattern = re.compile(r"```go\n(.*?)\n```", re.DOTALL)
+related_package_pattern = re.compile(r"^- Use `v[a-z0-9]+` ", re.MULTILINE)
 
 for entry in public_facades:
     package = entry.get("package")
@@ -88,6 +90,12 @@ for entry in public_facades:
         if section not in text:
             add_error(f"{filename} is missing required section {section!r}")
 
+    if not related_package_pattern.search(text):
+        add_error(f"{filename} must include at least one related-package bullet using 'Use `v...`'")
+
+    if "Prefer" not in text and "Use" not in text:
+        add_error(f"{filename} helper guidance must include explicit use/prefer wording")
+
     if not re.search(r"^## When not to use", text, flags=re.MULTILINE):
         add_error(f"{filename} is missing required section '## When not to use ...'")
 
@@ -96,6 +104,13 @@ for entry in public_facades:
 
     if text.count("```") % 2 != 0:
         add_error(f"{filename} has unbalanced fenced code blocks")
+
+    go_blocks = go_fence_pattern.findall(text)
+    if go_blocks and not any(
+        "package main" in block and f"github.com/imajinyun/go-knifer/{package}" in block
+        for block in go_blocks
+    ):
+        add_error(f"{filename} must include at least one runnable package main example that imports {package}")
 
     if index_text and f"]({filename})" not in index_text:
         add_error(f"docs/doc/README.md does not link to {filename}")

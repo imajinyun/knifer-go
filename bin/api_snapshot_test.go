@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -150,4 +151,96 @@ func writeTestFile(t *testing.T, root, name, content string) {
 	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
 		t.Fatalf("WriteFile() error = %v", err)
 	}
+}
+
+func TestCheckReleaseNotesAcceptsVersionedRelease(t *testing.T) {
+	changelog := writeGovernanceFixture(t, `# Changelog
+
+## Unreleased
+
+## 1.2.3
+
+### Governance
+
+- Added a release-note gate.
+`)
+
+	output, err := runReleaseNotesCheck(t, changelog, "1.2.3")
+	if err != nil {
+		t.Fatalf("check_release_notes.sh failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "release notes are valid for 1.2.3") {
+		t.Fatalf("unexpected output:\n%s", output)
+	}
+}
+
+func TestCheckReleaseNotesRejectsUnmovedUnreleasedEntries(t *testing.T) {
+	changelog := writeGovernanceFixture(t, `# Changelog
+
+## Unreleased
+
+### Governance
+
+- This still needs to be moved.
+
+## 1.2.3
+
+### Governance
+
+- Added a release-note gate.
+`)
+
+	output, err := runReleaseNotesCheck(t, changelog, "1.2.3")
+	if err == nil {
+		t.Fatalf("check_release_notes.sh unexpectedly succeeded:\n%s", output)
+	}
+	if !strings.Contains(output, "still has entries under Unreleased") {
+		t.Fatalf("expected unmoved Unreleased error, got:\n%s", output)
+	}
+}
+
+func TestCheckReleaseNotesAcceptsStructureWithoutReleaseVersion(t *testing.T) {
+	changelog := writeGovernanceFixture(t, `# Changelog
+
+## Unreleased
+
+### Governance
+
+- Work in progress is allowed before a release version is selected.
+`)
+
+	output, err := runReleaseNotesCheck(t, changelog, "")
+	if err != nil {
+		t.Fatalf("check_release_notes.sh failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "release notes structure is valid") {
+		t.Fatalf("unexpected output:\n%s", output)
+	}
+}
+
+func runReleaseNotesCheck(t *testing.T, changelog, version string) (string, error) {
+	t.Helper()
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Getwd() error = %v", err)
+	}
+	root := filepath.Dir(wd)
+	args := []string{filepath.Join(root, "bin/check_release_notes.sh")}
+	if version != "" {
+		args = append(args, version)
+	}
+	cmd := exec.Command("bash", args...)
+	cmd.Dir = root
+	cmd.Env = append(os.Environ(), "CHANGELOG_FILE="+changelog)
+	combined, err := cmd.CombinedOutput()
+	return string(combined), err
+}
+
+func writeGovernanceFixture(t *testing.T, content string) string {
+	t.Helper()
+	path := filepath.Join(t.TempDir(), "CHANGELOG.md")
+	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
+		t.Fatalf("WriteFile() error = %v", err)
+	}
+	return path
 }

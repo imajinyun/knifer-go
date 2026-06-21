@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/imajinyun/go-knifer/ai-context.schema.json",
+  "title": "go-knifer AI context metadata",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project",
+    "commands",
+    "change_type_policies",
+    "git_hooks",
+    "ci_workflows",
+    "architecture_rules",
+    "generated_artifacts",
+    "coverage_gates",
+    "public_facades",
+    "security_sensitive_packages"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema_version": { "type": "string", "minLength": 1 },
+    "project": {
+      "type": "object",
+      "required": ["name", "module", "language", "go_version", "layout"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "module": { "type": "string", "minLength": 1 },
+        "language": { "type": "string", "minLength": 1 },
+        "go_version": { "type": "string", "minLength": 1 },
+        "layout": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "commands": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/command" }
+    },
+    "change_type_policies": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/change_type_policy" }
+    },
+    "git_hooks": {
+      "type": "object",
+      "required": ["optional", "install", "uninstall", "pre_commit", "pre_push"],
+      "properties": {
+        "optional": { "type": "boolean" },
+        "install": { "type": "string", "minLength": 1 },
+        "uninstall": { "type": "string", "minLength": 1 },
+        "pre_commit": { "type": "string", "minLength": 1 },
+        "pre_push": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "ci_workflows": {
+      "type": "object",
+      "required": ["github_actions", "tool_versions"],
+      "properties": {
+        "github_actions": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "$ref": "#/$defs/github_action_workflow" }
+        },
+        "tool_versions": {
+          "type": "object",
+          "required": ["go_1_25_patch", "golangci_lint"],
+          "properties": {
+            "go_1_25_patch": { "type": "string", "minLength": 1 },
+            "golangci_lint": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "architecture_rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "generated_artifacts": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/generated_artifact" }
+    },
+    "coverage_gates": {
+      "type": "object",
+      "required": ["repository_threshold", "package_thresholds"],
+      "properties": {
+        "repository_threshold": { "type": "number", "exclusiveMinimum": 0, "maximum": 100 },
+        "security_sensitive_min_threshold": { "type": "number", "exclusiveMinimum": 0, "maximum": 100 },
+        "package_thresholds": {
+          "type": "object",
+          "additionalProperties": { "type": "number", "exclusiveMinimum": 0, "maximum": 100 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "public_facades": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/public_facade" }
+    },
+    "security_sensitive_packages": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "security_domains": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/security_domain" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "command": {
+      "type": "object",
+      "required": ["cmd", "safe_for_agent_auto_run", "writes_workspace", "writes_git_config", "network_required", "risk_level", "notes"],
+      "properties": {
+        "cmd": { "type": "string", "minLength": 1 },
+        "safe_for_agent_auto_run": { "type": "boolean" },
+        "requires_user_consent": { "type": "boolean" },
+        "writes_workspace": { "type": "boolean" },
+        "writes_git_config": { "type": "boolean" },
+        "network_required": { "type": "boolean" },
+        "risk_level": { "enum": ["low", "medium", "high", "forbidden_for_agent"] },
+        "writes_files": { "$ref": "#/$defs/string_array" },
+        "creates_artifacts": { "$ref": "#/$defs/string_array" },
+        "reads_artifacts": { "$ref": "#/$defs/string_array" },
+        "notes": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "change_type_policy": {
+      "type": "object",
+      "required": ["required_commands", "coverage_required", "security_review_required", "notes"],
+      "properties": {
+        "required_commands": { "$ref": "#/$defs/string_array" },
+        "requires_user_consent_commands": { "$ref": "#/$defs/string_array" },
+        "coverage_required": { "type": "boolean" },
+        "security_review_required": { "type": "boolean" },
+        "notes": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "github_action_workflow": {
+      "type": "object",
+      "required": ["path", "required_jobs", "agent_governance"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "required_jobs": { "$ref": "#/$defs/string_array" },
+        "agent_governance": {
+          "type": "object",
+          "required": ["required_commands", "required_env", "required_artifacts"],
+          "properties": {
+            "required_commands": { "$ref": "#/$defs/string_array" },
+            "required_env": { "$ref": "#/$defs/string_array" },
+            "required_artifacts": { "$ref": "#/$defs/string_array" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "generated_artifact": {
+      "type": "object",
+      "required": ["path", "generator_command", "check_command"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "generator_command": { "type": "string", "minLength": 1 },
+        "check_command": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "public_facade": {
+      "type": "object",
+      "required": ["package", "domain", "internal"],
+      "properties": {
+        "package": { "type": "string", "minLength": 1 },
+        "domain": { "type": "string", "minLength": 1 },
+        "internal": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "security_domain": {
+      "type": "object",
+      "required": ["packages", "threats", "required_review_focus"],
+      "properties": {
+        "packages": { "$ref": "#/$defs/string_array" },
+        "threats": { "$ref": "#/$defs/string_array" },
+        "required_review_focus": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "string_array": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

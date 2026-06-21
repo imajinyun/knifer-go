@@ -1,4 +1,4 @@
-.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check test test-race race-test shuffle-test coverage-profile coverage-report coverage-check api-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check docs-gen docs-check generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke check ci-test
+.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check test test-race race-test shuffle-test coverage-profile coverage-report coverage-check release-notes-check api-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check docs-gen docs-check generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -20,6 +20,7 @@ help:
 	@echo "  coverage-profile Generate race/shuffle coverage profile"
 	@echo "  coverage-report  Print function coverage from COVERAGE_FILE"
 	@echo "  coverage-check  Enforce repository and package coverage gates"
+	@echo "  release-notes-check Verify changelog release-note readiness"
 	@echo "  bench-core      Run core benchmark baselines"
 	@echo "  bench-facade    Run facade benchmark baselines"
 	@echo "  bench-codec     Run JSON/XML benchmark baselines"
@@ -126,6 +127,9 @@ coverage-report:
 coverage-check:
 	bash bin/check_coverage.sh $(COVERAGE_FILE)
 
+release-notes-check:
+	bash bin/check_release_notes.sh
+
 api-check:
 	bash bin/check_api_compat.sh
 
@@ -188,7 +192,7 @@ security-check: lint govulncheck
 
 full-check: worktree-check mod-verify vet arch test-race coverage-check api-check docs-check ai-context-check lint govulncheck diff-whitespace
 
-release-check: full-check ci-workflow-check
+release-check: release-notes-check full-check ci-workflow-check
 
 agent-check: quick-check change-policy-check security-sensitive-diff
 
