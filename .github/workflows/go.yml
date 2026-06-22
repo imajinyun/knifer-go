@@ -115,6 +115,24 @@ jobs:
       - name: Run vulnerability gate
         run: make govulncheck
 
+  benchmark-smoke:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_1_25_PATCH_VERSION }}
+          cache: true
+
+      - name: Run benchmark smoke gate
+        run: make bench-smoke
+
   codeql:
     runs-on: ubuntu-latest
     timeout-minutes: 15

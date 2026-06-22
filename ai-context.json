@@ -333,6 +333,15 @@
       "network_required": false,
       "risk_level": "low",
       "notes": "Runs JSON/XML benchmark baselines; output is evidence, not a performance claim."
+    },
+    "bench_smoke": {
+      "cmd": "make bench-smoke",
+      "safe_for_agent_auto_run": true,
+      "writes_workspace": false,
+      "writes_git_config": false,
+      "network_required": false,
+      "risk_level": "low",
+      "notes": "Runs the short benchmark health gate used by CI and release workflows. Output is evidence, not a performance claim."
     }
   },
   "change_type_policies": {
@@ -396,7 +405,7 @@
     "github_actions": {
       "go": {
         "path": ".github/workflows/go.yml",
-        "required_jobs": ["agent-governance", "test", "lint", "govulncheck", "codeql"],
+        "required_jobs": ["agent-governance", "test", "lint", "govulncheck", "benchmark-smoke", "codeql"],
         "agent_governance": {
           "required_commands": ["make ci-agent-governance"],
           "required_env": ["AGENT_CHANGE_BASE_REF", "AGENT_EVIDENCE_FILE"],
@@ -407,7 +416,7 @@
         "path": ".github/workflows/release.yml",
         "required_jobs": ["release"],
         "agent_governance": {
-          "required_commands": ["make release-check"],
+          "required_commands": ["make release-check", "make bench-smoke"],
           "required_env": [],
           "required_artifacts": []
         }

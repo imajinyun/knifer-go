@@ -43,6 +43,9 @@ jobs:
       - name: Verify release gates
         run: make release-check COVERAGE_FILE=/tmp/go-knifer-release-coverage.out
 
+      - name: Verify benchmark smoke gate
+        run: make bench-smoke
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
