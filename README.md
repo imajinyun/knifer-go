@@ -138,6 +138,15 @@ Comparison entry points:
 - Crypto: [`vcrypto`](docs/doc/11-vcrypto.md) documents the boundary between recommended helpers and direct standard-library control.
 - JSON/file: [`vjson`](docs/doc/27-vjson.md) documents when to use `encoding/json` directly; [`vfile`](docs/doc/17-vfile.md) documents filesystem safety guidance.
 
+API selection rules:
+
+| If your input... | Prefer | Avoid |
+| --- | --- | --- |
+| Crosses a trust boundary such as HTTP, filesystem, ZIP, config, SQL, CLI, or credentials | `Safe`, `E`, or `WithOptions` variants that return explicit errors and expose limits/policies | Convenience helpers that hide errors or rely on package-level defaults |
+| Is already trusted and the failure mode is acceptable as a zero/default value | Plain convenience helpers such as `vconv.ToString`, `vstr.IsBlank`, or `vnum.Sum` | Adding context/error plumbing to pure in-memory transformations |
+| May block, allocate heavily, perform IO, or call a provider | Context-aware APIs or provider-injected clients/options where available | Global mutation, unbounded reads, or implicit external calls |
+| Needs a new domain behavior | Implement in the focused package first, then wrap from `vobj` only when useful | Adding cross-domain logic directly to broad convenience facades |
+
 <a id="find-by-scenario"></a>
 
 ## 🧭 Find by scenario
@@ -200,6 +209,11 @@ Deprecated APIs stay available for at least two minor releases. Every deprecatio
 ## ✅ Recommended APIs
 
 For new code, prefer explicit-error and safe variants when inputs cross a trust boundary:
+
+- Use `Safe` variants when the operation touches an untrusted URL, path, archive entry, remote configuration source, or download target.
+- Use `E` variants when conversion, parsing, decoding, IO, or request execution can fail and the caller needs to distinguish failure from an empty/default value.
+- Use non-`E` convenience helpers only when inputs are trusted and zero/default fallback is an intentional compatibility choice.
+- Use `WithOptions` / `WithXxx` variants when resource limits, providers, clocks, filesystem hooks, or network policies must be visible at the call site.
 
 | Scenario | Recommended API |
 | --- | --- |

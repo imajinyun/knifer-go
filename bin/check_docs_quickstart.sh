@@ -59,6 +59,20 @@ required_literal_sections = [
 checklist_pattern = re.compile(r"^## .*checklist$|^## Safety notes$", re.MULTILINE)
 go_fence_pattern = re.compile(r"```go\n(.*?)\n```", re.DOTALL)
 related_package_pattern = re.compile(r"^- Use `v[a-z0-9]+` ", re.MULTILINE)
+package_main_pattern = re.compile(r"^package\s+main\b", re.MULTILINE)
+import_block_pattern = re.compile(r"import\s*\((.*?)\)", re.DOTALL)
+single_import_pattern = re.compile(r"import\s+\"([^\"]+)\"")
+
+
+def collect_imports(block):
+    imports = set(single_import_pattern.findall(block))
+    for import_block in import_block_pattern.findall(block):
+        for line in import_block.splitlines():
+            line = line.strip()
+            match = re.search(r'"([^"]+)"', line)
+            if match:
+                imports.add(match.group(1))
+    return imports
 
 for entry in public_facades:
     package = entry.get("package")
@@ -106,11 +120,26 @@ for entry in public_facades:
         add_error(f"{filename} has unbalanced fenced code blocks")
 
     go_blocks = go_fence_pattern.findall(text)
-    if go_blocks and not any(
-        "package main" in block and f"github.com/imajinyun/go-knifer/{package}" in block
+    runnable_blocks = [
+        block
         for block in go_blocks
-    ):
+        if package_main_pattern.search(block)
+    ]
+    runnable_facade_blocks = [
+        block
+        for block in runnable_blocks
+        if f"github.com/imajinyun/go-knifer/{package}" in collect_imports(block)
+    ]
+    if go_blocks and not runnable_facade_blocks:
         add_error(f"{filename} must include at least one runnable package main example that imports {package}")
+    for block_index, block in enumerate(runnable_facade_blocks, start=1):
+        if "func main()" not in block:
+            add_error(f"{filename} runnable facade example {block_index} must define func main()")
+    if runnable_facade_blocks and not any(
+        "fmt.Println" in block or "fmt.Printf" in block or "panic(err)" in block
+        for block in runnable_facade_blocks
+    ):
+        add_error(f"{filename} must include at least one runnable facade example with observable output or explicit error handling")
 
     if index_text and f"]({filename})" not in index_text:
         add_error(f"docs/doc/README.md does not link to {filename}")

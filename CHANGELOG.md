@@ -84,10 +84,12 @@ subpackage APIs are treated as the compatibility boundary.
 ### Quality targets
 
 - Current coverage gate baseline: 75.2%.
-- Current security-sensitive package gates: `vhttp` >= 75%, `vresty` >= 65%,
-  `vconf` >= 75%, `vzip` >= 80%, `vcrypto` >= 70%, `vurl` >= 80%,
-  `vfile` >= 85%, `internal/httpx/http` >= 75%, and
-  `internal/httpx/resty` >= 75%, and `internal/httpx/internal/shared` >= 80%.
+- Current security-sensitive package minimum: every security-sensitive package
+  path that contains statements must have coverage profile data and meet at
+  least 80% statement coverage.
+- Package-specific gates may be higher than the security-sensitive minimum for
+  mature packages; when a package-specific gate is lower, the 80% security
+  minimum still wins for security-sensitive paths.
 - Near-term target: 75% total statement coverage.
 - Longer-term target: 80% total statement coverage, with priority on public
   facade packages and security-sensitive packages.

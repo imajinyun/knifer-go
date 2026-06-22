@@ -245,6 +245,13 @@ Security-sensitive helpers expose only the currently recommended public API surf
 
 Use these APIs for new code. Request helpers that can fail return errors explicitly instead of swallowing failures.
 
+Selection rules:
+
+- Prefer `Safe` helpers when a URL, path, archive entry, remote configuration source, download target, SQL fragment, command argument, token, or credential crosses a trust boundary.
+- Prefer `E` helpers when parsing, conversion, request execution, decoding, filesystem work, or provider calls can fail and callers need to distinguish failure from an empty/default value.
+- Use non-`E` helpers only when inputs are already trusted and a zero/default fallback is intentional for compatibility or concise pure transformations.
+- Prefer `WithOptions` or `WithXxx` helpers when limits, providers, clocks, filesystem hooks, DB openers, HTTP clients, or network policies must be reviewable at the call site.
+
 | Scenario | Recommended API |
 | --- | --- |
 | Build a trusted standard-library HTTP request | `vhttp.Get`, `vhttp.Post`, `vhttp.NewRequest` |
@@ -259,6 +266,20 @@ Use these APIs for new code. Request helpers that can fail return errors explici
 | Load remote configuration from a trust boundary | `vconf.LoadRemoteSafe` or `vconf.LoadRemoteSafeWithOptions` |
 | Use a provider-injected FTP contract without adding a network client dependency | `vftp.New`, `vftp.List`, `vftp.Download`, `vftp.Upload` |
 | Use a provider-injected SSH/SFTP contract without adding a network client dependency | `vssh.New`, `vssh.Run`, `vssh.List`, `vssh.Download`, `vssh.Upload` |
+
+### API choice matrix
+
+| Need | Start with | Use instead when |
+| --- | --- | --- |
+| HTTP request helpers with standard-library semantics | `vhttp` | Use `vresty` when Resty chaining is already part of the application; use `vurl` when no request should be sent yet. |
+| URL parsing, normalization, query strings, safe URL opening, or content-length probing | `vurl` | Use `vhttp` or `vresty` only after the caller needs an HTTP request/response workflow. |
+| Resty-style fluent request construction | `vresty` | Use `vhttp` when minimizing dependencies or matching `net/http` behavior is more important than fluent chaining. |
+| Security-oriented digests, HMAC, AES-GCM, RSA, PEM, X.509, or parameter signing | `vcrypto` | Use `vhash` for non-cryptographic hashes and checksums that must not be used as security controls. |
+| JSON object/array/path convenience helpers | `vjson` | Use `encoding/json` directly for streaming/token-level control; use `vxml` for XML-specific tree/namespace workflows. |
+| Struct/map property mapping | `vbean` | Use `vobj` only for object-level convenience wrappers; implement new domain logic in the focused package first. |
+| File reads, writes, temp paths, locks, and provider-backed filesystem tests | `vfile` | Use `vzip` for archive entry creation/extraction; use `vurl` for remote URL resource checks. |
+| Generated IDs such as UUID, Snowflake, and NanoId | `vid` | Use `vident` for legal identity number parsing/validation, not generated service identifiers. |
+| Provider-neutral AI, FTP, SSH/SFTP, pinyin, or tokenization contracts | `vai`, `vftp`, `vssh`, `vhan`, `vtok` | Use a dedicated provider/client package outside core when real network clients, credentials, dictionaries, or NLP engines are required. |
 
 <a id="build-test-and-release-workflow"></a>
 

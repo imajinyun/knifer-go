@@ -45,6 +45,31 @@ func ExampleNewFuncFilter() {
 	// Output: true
 }
 
+func ExampleNewFuncFilterWithMachineNumE() {
+	filter, err := vblf.NewFuncFilterWithMachineNumE(1000, vblf.BloomMachine64, func(s string) int64 {
+		return int64(vblf.JavaDefaultHash(s))
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(filter.Add("hello"))
+	fmt.Println(filter.Add("hello"))
+	fmt.Println(filter.Contains("hello"))
+	// Output:
+	// true
+	// false
+	// true
+}
+
+func ExampleNewDefaultFilter() {
+	filter := vblf.NewDefaultFilter(1000)
+	filter.Add("go-knifer")
+
+	fmt.Println(filter.Contains("go-knifer"))
+	// Output: true
+}
+
 func ExampleNewLongMap() {
 	m := vblf.NewLongMap(100)
 	m.Add(7)

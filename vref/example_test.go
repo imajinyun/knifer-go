@@ -6,6 +6,14 @@ import (
 	"github.com/imajinyun/go-knifer/vref"
 )
 
+type exampleUser struct {
+	Name string
+}
+
+func (u exampleUser) Greet(prefix string) string {
+	return prefix + ", " + u.Name
+}
+
 func ExampleTypeOf() {
 	t := vref.TypeOf("hello")
 	fmt.Println(t.Name())
@@ -22,19 +30,12 @@ func ExampleIsNil() {
 }
 
 func ExampleGetFieldValue() {
-	type User struct {
-		Name string
-	}
-
-	fmt.Println(vref.GetFieldValue(User{Name: "Alice"}, "Name"))
+	fmt.Println(vref.GetFieldValue(exampleUser{Name: "Alice"}, "Name"))
 	// Output: Alice
 }
 
 func ExampleSetFieldValue() {
-	type User struct {
-		Name string
-	}
-	user := User{Name: "Alice"}
+	user := exampleUser{Name: "Alice"}
 
 	err := vref.SetFieldValue(&user, "Name", "Bob")
 
@@ -55,4 +56,19 @@ func ExampleInvokeFunc() {
 	// Output:
 	// 5
 	// <nil>
+}
+
+func ExampleInvoke() {
+	result, err := vref.Invoke(&exampleUser{Name: "Alice"}, "Greet", "hello")
+
+	fmt.Println(result)
+	fmt.Println(err)
+	// Output:
+	// hello, Alice
+	// <nil>
+}
+
+func ExampleGetPublicFieldNames() {
+	fmt.Println(vref.GetPublicFieldNames(exampleUser{}))
+	// Output: [Name]
 }

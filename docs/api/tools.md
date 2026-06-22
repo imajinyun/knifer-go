@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/go-knifer` |
 | Packages | 54 |
 | Functions | 2604 |
-| Functions with examples | 990 |
+| Functions with examples | 998 |
 | Context-aware functions | 36 |
 | Functions returning error | 603 |
 | Variadic functions | 776 |
@@ -78,7 +78,7 @@ Import path: `github.com/imajinyun/go-knifer/vblf`
 
 Package vblf provides public APIs for Bloom filter utilities.
 
-Quality: 60 functions · 5 with examples · 8.3% example coverage · synopsis sources: facade=60, internal=0, empty=0
+Quality: 60 functions · 7 with examples · 11.7% example coverage · synopsis sources: facade=60, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -111,13 +111,13 @@ Quality: 60 functions · 5 with examples · 8.3% example coverage · synopsis so
 | `NewBitSetBloomFilterWithOptions` | `func NewBitSetBloomFilterWithOptions(opts ...BitSetBloomFilterOption) *BitSetBloomFilter` | NewBitSetBloomFilterWithOptions creates a bitset bloom filter with options. | facade | — |
 | `NewBitSetBloomFilterWithOptionsE` | `func NewBitSetBloomFilterWithOptionsE(opts ...BitSetBloomFilterOption) (*BitSetBloomFilter, error)` | NewBitSetBloomFilterWithOptionsE creates a bitset bloom filter with options and returns validation errors. | facade | — |
 | `NewDefaultBloomFilter` | `func NewDefaultBloomFilter(maxValue int64) *FuncFilter` | NewDefaultBloomFilter creates a default bloom filter. | facade | — |
-| `NewDefaultFilter` | `func NewDefaultFilter(maxValue int64) *FuncFilter` | NewDefaultFilter delegates to the internal bloomfilter implementation. | facade | — |
+| `NewDefaultFilter` | `func NewDefaultFilter(maxValue int64) *FuncFilter` | NewDefaultFilter delegates to the internal bloomfilter implementation. | facade | `ExampleNewDefaultFilter` |
 | `NewELFFilter` | `func NewELFFilter(maxValue int64) *FuncFilter` | NewELFFilter delegates to the internal bloomfilter implementation. | facade | — |
 | `NewFNVFilter` | `func NewFNVFilter(maxValue int64) *FuncFilter` | NewFNVFilter delegates to the internal bloomfilter implementation. | facade | — |
 | `NewFuncFilter` | `func NewFuncFilter(maxValue int64, hashFunc HashFunc) *FuncFilter` | NewFuncFilter creates a function-backed bloom filter. | facade | `ExampleNewFuncFilter` |
 | `NewFuncFilterE` | `func NewFuncFilterE(maxValue int64, hashFunc HashFunc) (*FuncFilter, error)` | NewFuncFilterE creates a function-backed bloom filter and returns validation errors. | facade | — |
 | `NewFuncFilterWithMachineNum` | `func NewFuncFilterWithMachineNum(maxValue int64, machineNum int, hashFunc HashFunc) *FuncFilter` | NewFuncFilterWithMachineNum delegates to the internal bloomfilter implementation. | facade | — |
-| `NewFuncFilterWithMachineNumE` | `func NewFuncFilterWithMachineNumE(maxValue int64, machineNum int, hashFunc HashFunc) (*FuncFilter, error)` | NewFuncFilterWithMachineNumE delegates to the internal bloomfilter implementation. | facade | — |
+| `NewFuncFilterWithMachineNumE` | `func NewFuncFilterWithMachineNumE(maxValue int64, machineNum int, hashFunc HashFunc) (*FuncFilter, error)` | NewFuncFilterWithMachineNumE delegates to the internal bloomfilter implementation. | facade | `ExampleNewFuncFilterWithMachineNumE` |
 | `NewFuncFilterWithOptions` | `func NewFuncFilterWithOptions(opts ...FuncFilterOption) *FuncFilter` | NewFuncFilterWithOptions creates a function-backed bloom filter with options. | facade | — |
 | `NewFuncFilterWithOptionsE` | `func NewFuncFilterWithOptionsE(opts ...FuncFilterOption) (*FuncFilter, error)` | NewFuncFilterWithOptionsE creates a function-backed bloom filter with options and returns validation errors. | facade | — |
 | `NewHfFilter` | `func NewHfFilter(maxValue int64) *FuncFilter` | NewHfFilter delegates to the internal bloomfilter implementation. | facade | — |
@@ -2197,7 +2197,7 @@ Import path: `github.com/imajinyun/go-knifer/vref`
 
 Package vref provides public APIs for reflection utilities.
 
-Quality: 67 functions · 5 with examples · 7.5% example coverage · synopsis sources: facade=5, internal=62, empty=0
+Quality: 67 functions · 7 with examples · 10.4% example coverage · synopsis sources: facade=5, internal=62, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -2221,7 +2221,7 @@ Quality: 67 functions · 5 with examples · 7.5% example coverage · synopsis so
 | `GetMethodOfObj` | `func GetMethodOfObj(obj any, methodName string, args ...any) (reflect.Method, bool)` | GetMethodOfObj returns a method by inferring parameter types from args. | internal | — |
 | `GetMethods` | `func GetMethods(target any, filters ...MethodFilter) []reflect.Method` | GetMethods returns all exported methods after filtering. | internal | — |
 | `GetMethodsDirectly` | `func GetMethodsDirectly(target any, withSupers bool, withMethodFromObject bool) []reflect.Method` | GetMethodsDirectly returns methods on target. | internal | — |
-| `GetPublicFieldNames` | `func GetPublicFieldNames(target any) []string` | GetPublicFieldNames returns exported field names from a struct type. | internal | — |
+| `GetPublicFieldNames` | `func GetPublicFieldNames(target any) []string` | GetPublicFieldNames returns exported field names from a struct type. | internal | `ExampleGetPublicFieldNames` |
 | `GetPublicMethod` | `func GetPublicMethod(target any, methodName string, paramTypes ...reflect.Type) (reflect.Method, bool)` | GetPublicMethod returns an exported method by name and optional parameter types. | internal | — |
 | `GetPublicMethodNames` | `func GetPublicMethodNames(target any) []string` | GetPublicMethodNames returns exported method names. | internal | — |
 | `GetPublicMethods` | `func GetPublicMethods(target any, filters ...MethodFilter) []reflect.Method` | GetPublicMethods returns exported methods after filtering. | internal | — |
@@ -2231,7 +2231,7 @@ Quality: 67 functions · 5 with examples · 7.5% example coverage · synopsis so
 | `ImplementsError` | `func ImplementsError(typ reflect.Type) bool` | ImplementsError reports whether typ implements error. | internal | — |
 | `IndirectType` | `func IndirectType(typ reflect.Type) reflect.Type` | IndirectType unwraps pointers from typ. | internal | — |
 | `IndirectValue` | `func IndirectValue(value reflect.Value) reflect.Value` | IndirectValue unwraps pointers and interfaces from value. | internal | — |
-| `Invoke` | `func Invoke(obj any, methodName string, args ...any) (any, error)` | Invoke invokes a method by name on obj. | internal | — |
+| `Invoke` | `func Invoke(obj any, methodName string, args ...any) (any, error)` | Invoke invokes a method by name on obj. | internal | `ExampleInvoke` |
 | `InvokeFunc` | `func InvokeFunc(fn any, args ...any) (any, error)` | InvokeFunc invokes a function with best-effort argument conversion. | internal | `ExampleInvokeFunc` |
 | `InvokeMethod` | `func InvokeMethod(obj any, method reflect.Method, args ...any) (any, error)` | InvokeMethod invokes a reflect method. | internal | — |
 | `InvokeRaw` | `func InvokeRaw(fn any, args ...any) (any, error)` | InvokeRaw invokes fn without name lookup. | internal | — |
@@ -2540,7 +2540,7 @@ Import path: `github.com/imajinyun/go-knifer/vskt`
 
 Package vskt provides public APIs for socket utilities.
 
-Quality: 50 functions · 5 with examples · 10.0% example coverage · synopsis sources: facade=50, internal=0, empty=0
+Quality: 50 functions · 6 with examples · 12.0% example coverage · synopsis sources: facade=50, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -2593,7 +2593,7 @@ Quality: 50 functions · 5 with examples · 10.0% example coverage · synopsis s
 | `WithThreadPoolSizeFunc` | `func WithThreadPoolSizeFunc(f func() int) ConfigOption` | WithThreadPoolSizeFunc sets the configured server handler concurrency limit from a provider. | facade | — |
 | `WithWriteBufferSize` | `func WithWriteBufferSize(n int) ConfigOption` | WithWriteBufferSize sets the write buffer size. | facade | — |
 | `WithWriteTimeout` | `func WithWriteTimeout(ms int64) ConfigOption` | WithWriteTimeout sets the write timeout in milliseconds. | facade | — |
-| `WrapSocketError` | `func WrapSocketError(err error, msg string) *SocketRuntimeError` | WrapSocketError delegates to the internal socketx implementation. | facade | — |
+| `WrapSocketError` | `func WrapSocketError(err error, msg string) *SocketRuntimeError` | WrapSocketError delegates to the internal socketx implementation. | facade | `ExampleWrapSocketError` |
 
 ### vslice
 
@@ -2672,7 +2672,7 @@ Import path: `github.com/imajinyun/go-knifer/vstr`
 
 Package vstr provides public APIs for string and text utilities.
 
-Quality: 64 functions · 5 with examples · 7.8% example coverage · synopsis sources: facade=0, internal=64, empty=0
+Quality: 64 functions · 8 with examples · 12.5% example coverage · synopsis sources: facade=0, internal=64, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -2680,7 +2680,7 @@ Quality: 64 functions · 5 with examples · 7.8% example coverage · synopsis so
 | `AddSuffixIfNot` | `func AddSuffixIfNot(s string, suffix string) string` | AddSuffixIfNot adds suffix when it is not already present. | internal | — |
 | `AntPathMatch` | `func AntPathMatch(pattern string, path string) bool` | AntPathMatch reports whether path matches an Ant-style pattern using "/" as separator. | internal | — |
 | `AntPathMatchWithSeparator` | `func AntPathMatchWithSeparator(pattern string, path string, separator string) bool` | AntPathMatchWithSeparator reports whether path matches an Ant-style pattern. | internal | — |
-| `Contains` | `func Contains(s string, sub string) bool` | Contains reports whether s contains sub. | internal | — |
+| `Contains` | `func Contains(s string, sub string) bool` | Contains reports whether s contains sub. | internal | `ExampleContains` |
 | `ContainsAll` | `func ContainsAll(s string, subs ...string) bool` | ContainsAll reports whether s contains all candidate substrings. | internal | — |
 | `ContainsAny` | `func ContainsAny(s string, subs ...string) bool` | ContainsAny reports whether s contains any candidate substring. | internal | — |
 | `ContainsEmoji` | `func ContainsEmoji(s string) bool` | ContainsEmoji reports whether s contains emoji-like runes. | internal | — |
@@ -2723,7 +2723,7 @@ Quality: 64 functions · 5 with examples · 7.8% example coverage · synopsis so
 | `RuneLen` | `func RuneLen(s string) int` | RuneLen returns the number of runes in s. | internal | — |
 | `SimHash` | `func SimHash(text string) uint64` | SimHash returns a deterministic 64-bit SimHash for text. | internal | — |
 | `Split` | `func Split(s string, sep string) []string` | Split splits s by sep and returns an empty slice for an empty input string. | internal | — |
-| `SplitTrim` | `func SplitTrim(s string, sep string) []string` | SplitTrim splits s, trims each part, and drops blank parts. | internal | — |
+| `SplitTrim` | `func SplitTrim(s string, sep string) []string` | SplitTrim splits s, trims each part, and drops blank parts. | internal | `ExampleSplitTrim` |
 | `StartsWith` | `func StartsWith(s string, prefix string) bool` | StartsWith reports whether s starts with prefix. | internal | — |
 | `Sub` | `func Sub(s string, fromIndex int, toIndex int) string` | Sub returns a substring by rune indexes and supports negative indexes from the end. | internal | `ExampleSub` |
 | `SubAfter` | `func SubAfter(s string, sep string, isLastSeparator bool) string` | SubAfter returns the text after sep. | internal | — |
@@ -2732,7 +2732,7 @@ Quality: 64 functions · 5 with examples · 7.8% example coverage · synopsis so
 | `ToKebabCase` | `func ToKebabCase(s string) string` | ToKebabCase converts camel case or separators to kebab case, for example HelloWorld -> hello-world. | internal | — |
 | `ToPascalCase` | `func ToPascalCase(s string) string` | ToPascalCase converts separators to upper camel case, for example hello_world -> HelloWorld. | internal | — |
 | `ToUnderlineCase` | `func ToUnderlineCase(s string) string` | ToUnderlineCase converts camel case or separators to snake case, for example HelloWorld -> hello_world. | internal | `ExampleToUnderlineCase` |
-| `Trim` | `func Trim(s string) string` | Trim removes leading and trailing white space. | internal | — |
+| `Trim` | `func Trim(s string) string` | Trim removes leading and trailing white space. | internal | `ExampleTrim` |
 | `TrimEnd` | `func TrimEnd(s string) string` | TrimEnd removes trailing white space. | internal | — |
 | `TrimStart` | `func TrimStart(s string) string` | TrimStart removes leading white space. | internal | — |
 | `TrimToEmpty` | `func TrimToEmpty(s string) string` | TrimToEmpty removes leading and trailing white space. | internal | — |

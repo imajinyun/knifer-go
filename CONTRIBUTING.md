@@ -150,8 +150,11 @@ not add a second logging abstraction.
 - Run the full suite before pushing: `go test ./...`.
 - Public facade and security-sensitive packages should include tests for common
   usage, invalid input, and error classification.
-- Coverage is checked from `coverage.out`; keep the repository baseline passing
-  and raise `COVERAGE_THRESHOLD` only after adding tests that support it.
+- Coverage is checked from `coverage.out`; keep the repository baseline passing.
+  Security-sensitive packages declared in `ai-context.json` must have fresh
+  coverage profile data and meet the configured security-sensitive minimum even
+  when an older package-specific gate is lower.
+- Raise coverage thresholds only after adding tests that support the new gate.
 - Prefer `make check` for local stability validation so vet, architecture,
   race/shuffle tests, coverage, lint, and vulnerability checks stay in one
   documented path.

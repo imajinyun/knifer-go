@@ -2,6 +2,7 @@ package vskt_test
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 
 	"github.com/imajinyun/go-knifer/vskt"
@@ -35,6 +36,17 @@ func ExampleNewSocketErrorMsg() {
 
 	fmt.Println(err.Error())
 	// Output: connection reset
+}
+
+func ExampleWrapSocketError() {
+	cause := errors.New("dial failed")
+	err := vskt.WrapSocketError(cause, "connect")
+
+	fmt.Println(err.Error())
+	fmt.Println(errors.Is(err, cause))
+	// Output:
+	// connect: dial failed
+	// true
 }
 
 func ExampleFuncDecoder() {

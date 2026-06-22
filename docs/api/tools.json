@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 54,
     "function_count": 2604,
-    "functions_with_examples": 990,
+    "functions_with_examples": 998,
     "context_aware_functions": 36,
     "returns_error_functions": 603,
     "variadic_functions": 776,
@@ -691,8 +691,8 @@
       "synopsis": "Package vblf provides public APIs for Bloom filter utilities.",
       "summary": {
         "function_count": 60,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 8.3,
+        "functions_with_examples": 7,
+        "example_coverage_percent": 11.7,
         "synopsis_sources": {
           "empty": 0,
           "facade": 60,
@@ -1285,7 +1285,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewDefaultFilter"
+          ]
         },
         {
           "name": "NewELFFilter",
@@ -1422,7 +1425,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewFuncFilterWithMachineNumE"
+          ]
         },
         {
           "name": "NewFuncFilterWithOptions",
@@ -38109,8 +38115,8 @@
       "synopsis": "Package vref provides public APIs for reflection utilities.",
       "summary": {
         "function_count": 67,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 7.5,
+        "functions_with_examples": 7,
+        "example_coverage_percent": 10.4,
         "synopsis_sources": {
           "empty": 0,
           "facade": 5,
@@ -38586,7 +38592,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetPublicFieldNames"
+          ]
         },
         {
           "name": "GetPublicMethod",
@@ -38792,7 +38801,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleInvoke"
+          ]
         },
         {
           "name": "InvokeFunc",
@@ -44720,8 +44732,8 @@
       "synopsis": "Package vskt provides public APIs for socket utilities.",
       "summary": {
         "function_count": 50,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 10,
+        "functions_with_examples": 6,
+        "example_coverage_percent": 12,
         "synopsis_sources": {
           "empty": 0,
           "facade": 50,
@@ -45792,7 +45804,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWrapSocketError"
+          ]
         }
       ]
     },
@@ -46964,8 +46979,8 @@
       "synopsis": "Package vstr provides public APIs for string and text utilities.",
       "summary": {
         "function_count": 64,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 7.8,
+        "functions_with_examples": 8,
+        "example_coverage_percent": 12.5,
         "synopsis_sources": {
           "empty": 0,
           "facade": 0,
@@ -47085,7 +47100,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleContains"
+          ]
         },
         {
           "name": "ContainsAll",
@@ -47965,7 +47983,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSplitTrim"
+          ]
         },
         {
           "name": "StartsWith",
@@ -48164,7 +48185,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleTrim"
+          ]
         },
         {
           "name": "TrimEnd",

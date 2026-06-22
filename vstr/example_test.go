@@ -24,6 +24,24 @@ func ExampleIsBlank() {
 	// false
 }
 
+func ExampleTrim() {
+	fmt.Println(vstr.Trim("  go knifer  "))
+	// Output: go knifer
+}
+
+func ExampleContains() {
+	fmt.Println(vstr.Contains("go knifer", "knife"))
+	fmt.Println(vstr.ContainsIgnoreCase("Go Knifer", "go"))
+	// Output:
+	// true
+	// true
+}
+
+func ExampleSplitTrim() {
+	fmt.Println(vstr.SplitTrim(" api, docs, tests ", ","))
+	// Output: [api docs tests]
+}
+
 func ExampleReverse() {
 	fmt.Println(vstr.Reverse("你好"))
 	// Output: 好你
