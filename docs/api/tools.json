@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 54,
     "function_count": 2604,
-    "functions_with_examples": 1048,
+    "functions_with_examples": 1076,
     "context_aware_functions": 36,
     "returns_error_functions": 603,
     "variadic_functions": 776,
@@ -3931,8 +3931,8 @@
       "synopsis": "Package vconv provides public APIs for permissive type conversion.",
       "summary": {
         "function_count": 35,
-        "functions_with_examples": 7,
-        "example_coverage_percent": 20,
+        "functions_with_examples": 14,
+        "example_coverage_percent": 40,
         "synopsis_sources": {
           "empty": 0,
           "facade": 0,
@@ -3981,7 +3981,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleToBoolDefault"
+          ]
         },
         {
           "name": "ToBoolDefaultWithOptions",
@@ -4052,7 +4055,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleToBoolEWithOptions"
+          ]
         },
         {
           "name": "ToBoolWithOptions",
@@ -4135,7 +4141,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleToFloat64"
+          ]
         },
         {
           "name": "ToFloat64Default",
@@ -4157,7 +4166,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleToFloat64Default"
+          ]
         },
         {
           "name": "ToFloat64DefaultWithOptions",
@@ -4495,7 +4507,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleToIntEWithOptions"
+          ]
         },
         {
           "name": "ToIntWithOptions",
@@ -4560,7 +4575,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleToStringDefault"
+          ]
         },
         {
           "name": "ToStringDefaultWithOptions",
@@ -4608,7 +4626,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleToStringWithOptions"
+          ]
         },
         {
           "name": "WithBoolParser",
@@ -8105,8 +8126,8 @@
       "synopsis": "Package vdate provides public APIs for date/time utilities.",
       "summary": {
         "function_count": 29,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 17.2,
+        "functions_with_examples": 16,
+        "example_coverage_percent": 55.2,
         "synopsis_sources": {
           "empty": 0,
           "facade": 0,
@@ -8151,7 +8172,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleBeginOfMonth"
+          ]
         },
         {
           "name": "BeginOfYear",
@@ -8169,7 +8193,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleBeginOfYear"
+          ]
         },
         {
           "name": "BetweenDays",
@@ -8212,7 +8239,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleEndOfDay"
+          ]
         },
         {
           "name": "EndOfMonth",
@@ -8251,7 +8281,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleEndOfYear"
+          ]
         },
         {
           "name": "Format",
@@ -8273,7 +8306,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleFormat"
+          ]
         },
         {
           "name": "FormatDateOnly",
@@ -8352,7 +8388,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsSameDay"
+          ]
         },
         {
           "name": "Now",
@@ -8429,7 +8468,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleOffsetHour"
+          ]
         },
         {
           "name": "OffsetMinute",
@@ -8473,7 +8515,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleOffsetMonth"
+          ]
         },
         {
           "name": "OffsetSecond",
@@ -8536,7 +8581,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParse"
+          ]
         },
         {
           "name": "ParseLayout",
@@ -8559,7 +8607,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseLayout"
+          ]
         },
         {
           "name": "ParseLayoutWithOptions",
@@ -8639,7 +8690,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleTodayWithOptions"
+          ]
         },
         {
           "name": "WithClock",
@@ -47129,8 +47183,8 @@
       "synopsis": "Package vstr provides public APIs for string and text utilities.",
       "summary": {
         "function_count": 64,
-        "functions_with_examples": 8,
-        "example_coverage_percent": 12.5,
+        "functions_with_examples": 18,
+        "example_coverage_percent": 28.1,
         "synopsis_sources": {
           "empty": 0,
           "facade": 0,
@@ -47158,7 +47212,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleAddPrefixIfNot"
+          ]
         },
         {
           "name": "AddSuffixIfNot",
@@ -47180,7 +47237,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleAddSuffixIfNot"
+          ]
         },
         {
           "name": "AntPathMatch",
@@ -47202,7 +47262,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleAntPathMatch"
+          ]
         },
         {
           "name": "AntPathMatchWithSeparator",
@@ -47228,7 +47291,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleAntPathMatchWithSeparator"
+          ]
         },
         {
           "name": "Contains",
@@ -47483,7 +47549,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleEscapeUnicode"
+          ]
         },
         {
           "name": "Format",
@@ -47505,7 +47574,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleFormat"
+          ]
         },
         {
           "name": "HammingDistance64",
@@ -47786,7 +47858,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleJaccardSimilarity"
+          ]
         },
         {
           "name": "Length",
@@ -47804,7 +47879,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleLength"
+          ]
         },
         {
           "name": "LevenshteinDistance",
@@ -47874,7 +47952,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNGramSimilarity"
+          ]
         },
         {
           "name": "PadLeft",
@@ -47988,7 +48069,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleRemovePrefix"
+          ]
         },
         {
           "name": "RemoveSuffix",

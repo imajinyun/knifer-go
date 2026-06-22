@@ -3,6 +3,7 @@ package vconv_test
 import (
 	"errors"
 	"fmt"
+	"strconv"
 
 	knifer "github.com/imajinyun/go-knifer"
 	"github.com/imajinyun/go-knifer/vconv"
@@ -66,4 +67,68 @@ func ExampleToBoolE() {
 	// false
 	// true
 	// true
+}
+
+func ExampleToStringWithOptions() {
+	formatter := func(v bool) string {
+		if v {
+			return "enabled"
+		}
+		return "disabled"
+	}
+
+	fmt.Println(vconv.ToStringWithOptions(true, vconv.WithFormatBoolFunc(formatter)))
+	// Output: enabled
+}
+
+func ExampleToStringDefault() {
+	fmt.Println(vconv.ToStringDefault(nil, "unknown"))
+	// Output: unknown
+}
+
+func ExampleToFloat64() {
+	fmt.Printf("%.2f\n", vconv.ToFloat64("3.14"))
+	fmt.Printf("%.2f\n", vconv.ToFloat64(true))
+	// Output:
+	// 3.14
+	// 1.00
+}
+
+func ExampleToFloat64Default() {
+	fmt.Println(vconv.ToFloat64Default("not-a-number", -1.5))
+	// Output: -1.5
+}
+
+func ExampleToBoolDefault() {
+	fmt.Println(vconv.ToBoolDefault("maybe", true))
+	// Output: true
+}
+
+func ExampleToIntEWithOptions() {
+	parser := func(s string, base, bitSize int) (int64, error) {
+		if s == "max" {
+			return 99, nil
+		}
+		return strconv.ParseInt(s, base, bitSize)
+	}
+
+	value, err := vconv.ToIntEWithOptions("max", vconv.WithParseIntFunc(parser))
+	fmt.Println(value)
+	fmt.Println(err)
+	// Output:
+	// 99
+	// <nil>
+}
+
+func ExampleToBoolEWithOptions() {
+	parser := func(s string) (bool, error) {
+		return s == "YES", nil
+	}
+
+	value, err := vconv.ToBoolEWithOptions("YES", vconv.WithBoolParser(parser))
+	fmt.Println(value)
+	fmt.Println(err)
+	// Output:
+	// true
+	// <nil>
 }

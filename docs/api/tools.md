@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/go-knifer` |
 | Packages | 54 |
 | Functions | 2604 |
-| Functions with examples | 1048 |
+| Functions with examples | 1076 |
 | Context-aware functions | 36 |
 | Functions returning error | 603 |
 | Variadic functions | 776 |
@@ -299,20 +299,20 @@ Import path: `github.com/imajinyun/go-knifer/vconv`
 
 Package vconv provides public APIs for permissive type conversion.
 
-Quality: 35 functions · 7 with examples · 20.0% example coverage · synopsis sources: facade=0, internal=35, empty=0
+Quality: 35 functions · 14 with examples · 40.0% example coverage · synopsis sources: facade=0, internal=35, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
 | `ToBool` | `func ToBool(v any) bool` | ToBool converts a value to bool and returns false on failure. | internal | `ExampleToBool` |
-| `ToBoolDefault` | `func ToBoolDefault(v any, def bool) bool` | ToBoolDefault converts a value to bool and returns def on failure. | internal | — |
+| `ToBoolDefault` | `func ToBoolDefault(v any, def bool) bool` | ToBoolDefault converts a value to bool and returns def on failure. | internal | `ExampleToBoolDefault` |
 | `ToBoolDefaultWithOptions` | `func ToBoolDefaultWithOptions(v any, def bool, opts ...Option) bool` | ToBoolDefaultWithOptions converts a value to bool using per-call options and returns def on failure. | internal | — |
 | `ToBoolE` | `func ToBoolE(v any) (bool, error)` | ToBoolE converts a value to bool and returns an error on failure. | internal | `ExampleToBoolE` |
-| `ToBoolEWithOptions` | `func ToBoolEWithOptions(v any, opts ...Option) (bool, error)` | ToBoolEWithOptions converts a value to bool using per-call options and returns an error on failure. | internal | — |
+| `ToBoolEWithOptions` | `func ToBoolEWithOptions(v any, opts ...Option) (bool, error)` | ToBoolEWithOptions converts a value to bool using per-call options and returns an error on failure. | internal | `ExampleToBoolEWithOptions` |
 | `ToBoolWithOptions` | `func ToBoolWithOptions(v any, opts ...Option) bool` | ToBoolWithOptions converts a value to bool using per-call options and returns false on failure. | internal | — |
 | `ToBytes` | `func ToBytes(v any) []byte` | ToBytes converts a value to bytes; strings are converted directly and other values use ToString. | internal | `ExampleToBytes` |
 | `ToBytesWithOptions` | `func ToBytesWithOptions(v any, opts ...Option) []byte` | ToBytesWithOptions converts a value to bytes using per-call options. | internal | — |
-| `ToFloat64` | `func ToFloat64(v any) float64` | ToFloat64 converts a value to float64 and returns 0 on failure. | internal | — |
-| `ToFloat64Default` | `func ToFloat64Default(v any, def float64) float64` | ToFloat64Default converts a value to float64 and returns def on failure. | internal | — |
+| `ToFloat64` | `func ToFloat64(v any) float64` | ToFloat64 converts a value to float64 and returns 0 on failure. | internal | `ExampleToFloat64` |
+| `ToFloat64Default` | `func ToFloat64Default(v any, def float64) float64` | ToFloat64Default converts a value to float64 and returns def on failure. | internal | `ExampleToFloat64Default` |
 | `ToFloat64DefaultWithOptions` | `func ToFloat64DefaultWithOptions(v any, def float64, opts ...Option) float64` | ToFloat64DefaultWithOptions converts a value to float64 using per-call options and returns def on failure. | internal | — |
 | `ToFloat64E` | `func ToFloat64E(v any) (float64, error)` | ToFloat64E converts a value to float64 and returns an error on failure. | internal | — |
 | `ToFloat64EWithOptions` | `func ToFloat64EWithOptions(v any, opts ...Option) (float64, error)` | ToFloat64EWithOptions converts a value to float64 using per-call options and returns an error on failure. | internal | — |
@@ -327,12 +327,12 @@ Quality: 35 functions · 7 with examples · 20.0% example coverage · synopsis s
 | `ToIntDefault` | `func ToIntDefault(v any, def int) int` | ToIntDefault converts a value to int and returns def on failure. | internal | `ExampleToIntDefault` |
 | `ToIntDefaultWithOptions` | `func ToIntDefaultWithOptions(v any, def int, opts ...Option) int` | ToIntDefaultWithOptions converts a value to int using per-call options and returns def on failure. | internal | — |
 | `ToIntE` | `func ToIntE(v any) (int, error)` | ToIntE converts a value to int and returns an error on failure. | internal | — |
-| `ToIntEWithOptions` | `func ToIntEWithOptions(v any, opts ...Option) (int, error)` | ToIntEWithOptions converts a value to int using per-call options and returns an error on failure. | internal | — |
+| `ToIntEWithOptions` | `func ToIntEWithOptions(v any, opts ...Option) (int, error)` | ToIntEWithOptions converts a value to int using per-call options and returns an error on failure. | internal | `ExampleToIntEWithOptions` |
 | `ToIntWithOptions` | `func ToIntWithOptions(v any, opts ...Option) int` | ToIntWithOptions converts a value to int using per-call options and returns 0 on failure. | internal | — |
 | `ToString` | `func ToString(v any) string` | ToString converts any value to a string; nil becomes an empty string. | internal | `ExampleToString` |
-| `ToStringDefault` | `func ToStringDefault(v any, def string) string` | ToStringDefault converts a value to a string and returns def when the value is nil. | internal | — |
+| `ToStringDefault` | `func ToStringDefault(v any, def string) string` | ToStringDefault converts a value to a string and returns def when the value is nil. | internal | `ExampleToStringDefault` |
 | `ToStringDefaultWithOptions` | `func ToStringDefaultWithOptions(v any, def string, opts ...Option) string` | ToStringDefaultWithOptions converts a value to a string using per-call options and returns def when nil. | internal | — |
-| `ToStringWithOptions` | `func ToStringWithOptions(v any, opts ...Option) string` | ToStringWithOptions converts any value to a string using per-call options. | internal | — |
+| `ToStringWithOptions` | `func ToStringWithOptions(v any, opts ...Option) string` | ToStringWithOptions converts any value to a string using per-call options. | internal | `ExampleToStringWithOptions` |
 | `WithBoolParser` | `func WithBoolParser(parser func(string) (bool, error)) Option` | WithBoolParser sets the parser used for string-to-bool conversion. | internal | — |
 | `WithFormatBoolFunc` | `func WithFormatBoolFunc(formatter func(bool) string) Option` | WithFormatBoolFunc sets the formatter used for bool-to-string conversion. | internal | — |
 | `WithFormatFloatFunc` | `func WithFormatFloatFunc(formatter func(float64, byte, int, int) string) Option` | WithFormatFloatFunc sets the formatter used for float-to-string conversion. | internal | — |
@@ -523,36 +523,36 @@ Import path: `github.com/imajinyun/go-knifer/vdate`
 
 Package vdate provides public APIs for date/time utilities.
 
-Quality: 29 functions · 5 with examples · 17.2% example coverage · synopsis sources: facade=0, internal=29, empty=0
+Quality: 29 functions · 16 with examples · 55.2% example coverage · synopsis sources: facade=0, internal=29, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
 | `BeginOfDay` | `func BeginOfDay(t time.Time) time.Time` | BeginOfDay returns midnight at the beginning of t's day. | internal | `ExampleBeginOfDay` |
-| `BeginOfMonth` | `func BeginOfMonth(t time.Time) time.Time` | BeginOfMonth returns the first instant of t's month. | internal | — |
-| `BeginOfYear` | `func BeginOfYear(t time.Time) time.Time` | BeginOfYear returns the first instant of t's year. | internal | — |
+| `BeginOfMonth` | `func BeginOfMonth(t time.Time) time.Time` | BeginOfMonth returns the first instant of t's month. | internal | `ExampleBeginOfMonth` |
+| `BeginOfYear` | `func BeginOfYear(t time.Time) time.Time` | BeginOfYear returns the first instant of t's year. | internal | `ExampleBeginOfYear` |
 | `BetweenDays` | `func BetweenDays(a time.Time, b time.Time) int` | BetweenDays returns the absolute whole-day distance between two times. | internal | `ExampleBetweenDays` |
-| `EndOfDay` | `func EndOfDay(t time.Time) time.Time` | EndOfDay returns the last nanosecond of t's day. | internal | — |
+| `EndOfDay` | `func EndOfDay(t time.Time) time.Time` | EndOfDay returns the last nanosecond of t's day. | internal | `ExampleEndOfDay` |
 | `EndOfMonth` | `func EndOfMonth(t time.Time) time.Time` | EndOfMonth returns the last nanosecond of t's month. | internal | `ExampleEndOfMonth` |
-| `EndOfYear` | `func EndOfYear(t time.Time) time.Time` | EndOfYear returns the last nanosecond of t's year. | internal | — |
-| `Format` | `func Format(t time.Time, layout string) string` | FormatDate formats t with layout. | internal | — |
+| `EndOfYear` | `func EndOfYear(t time.Time) time.Time` | EndOfYear returns the last nanosecond of t's year. | internal | `ExampleEndOfYear` |
+| `Format` | `func Format(t time.Time, layout string) string` | FormatDate formats t with layout. | internal | `ExampleFormat` |
 | `FormatDateOnly` | `func FormatDateOnly(t time.Time) string` | FormatDateOnly formats t as yyyy-MM-dd. | internal | — |
 | `FormatNorm` | `func FormatNorm(t time.Time) string` | FormatDateNorm formats t as yyyy-MM-dd HH:mm:ss. | internal | `ExampleFormatNorm` |
 | `FormatTimeOnly` | `func FormatTimeOnly(t time.Time) string` | FormatTimeOnly formats t as HH:mm:ss. | internal | — |
-| `IsSameDay` | `func IsSameDay(a time.Time, b time.Time) bool` | IsSameDay reports whether two times fall on the same calendar day. | internal | — |
+| `IsSameDay` | `func IsSameDay(a time.Time, b time.Time) bool` | IsSameDay reports whether two times fall on the same calendar day. | internal | `ExampleIsSameDay` |
 | `Now` | `func Now() time.Time` | Now returns the current local time. | internal | — |
 | `NowWithOptions` | `func NowWithOptions(opts ...NowOption) time.Time` | NowWithOptions returns the current time using options. | internal | — |
 | `OffsetDay` | `func OffsetDay(t time.Time, days int) time.Time` | OffsetDay offsets t by days. | internal | `ExampleOffsetDay` |
-| `OffsetHour` | `func OffsetHour(t time.Time, hours int) time.Time` | OffsetHour offsets t by hours. | internal | — |
+| `OffsetHour` | `func OffsetHour(t time.Time, hours int) time.Time` | OffsetHour offsets t by hours. | internal | `ExampleOffsetHour` |
 | `OffsetMinute` | `func OffsetMinute(t time.Time, minutes int) time.Time` | OffsetMinute offsets t by minutes. | internal | — |
-| `OffsetMonth` | `func OffsetMonth(t time.Time, months int) time.Time` | OffsetMonth offsets t by months. | internal | — |
+| `OffsetMonth` | `func OffsetMonth(t time.Time, months int) time.Time` | OffsetMonth offsets t by months. | internal | `ExampleOffsetMonth` |
 | `OffsetSecond` | `func OffsetSecond(t time.Time, seconds int) time.Time` | OffsetSecond offsets t by seconds. | internal | — |
 | `OffsetYear` | `func OffsetYear(t time.Time, years int) time.Time` | OffsetYear offsets t by years. | internal | — |
-| `Parse` | `func Parse(s string) (time.Time, error)` | ParseDate parses common date/time formats in the local time zone. | internal | — |
-| `ParseLayout` | `func ParseLayout(s string, layout string) (time.Time, error)` | ParseDateLayout parses s with the specified Go layout in the local time zone. | internal | — |
+| `Parse` | `func Parse(s string) (time.Time, error)` | ParseDate parses common date/time formats in the local time zone. | internal | `ExampleParse` |
+| `ParseLayout` | `func ParseLayout(s string, layout string) (time.Time, error)` | ParseDateLayout parses s with the specified Go layout in the local time zone. | internal | `ExampleParseLayout` |
 | `ParseLayoutWithOptions` | `func ParseLayoutWithOptions(s string, layout string, opts ...ParseOption) (time.Time, error)` | ParseDateLayoutWithOptions parses s with the specified Go layout and explicit options. | internal | — |
 | `ParseWithOptions` | `func ParseWithOptions(s string, opts ...ParseOption) (time.Time, error)` | ParseDateWithOptions parses common date/time formats with explicit options. | internal | — |
 | `Today` | `func Today() time.Time` | Today returns the start of the current day. | internal | — |
-| `TodayWithOptions` | `func TodayWithOptions(opts ...NowOption) time.Time` | TodayWithOptions returns the start of the current day using options. | internal | — |
+| `TodayWithOptions` | `func TodayWithOptions(opts ...NowOption) time.Time` | TodayWithOptions returns the start of the current day using options. | internal | `ExampleTodayWithOptions` |
 | `WithClock` | `func WithClock(clock func() time.Time) NowOption` | WithClock sets the time source used by NowWithOptions and TodayWithOptions. | internal | — |
 | `WithLocation` | `func WithLocation(location *time.Location) ParseOption` | WithLocation sets the time zone used when parsing layouts without zone information. | internal | — |
 | `WithParseInLocationFunc` | `func WithParseInLocationFunc(parser func(layout string, value string, location *time.Location) (time.Time, error)) ParseOption` | WithParseInLocationFunc sets the parser used for layout-based date parsing. | internal | — |
@@ -2672,14 +2672,14 @@ Import path: `github.com/imajinyun/go-knifer/vstr`
 
 Package vstr provides public APIs for string and text utilities.
 
-Quality: 64 functions · 8 with examples · 12.5% example coverage · synopsis sources: facade=0, internal=64, empty=0
+Quality: 64 functions · 18 with examples · 28.1% example coverage · synopsis sources: facade=0, internal=64, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
-| `AddPrefixIfNot` | `func AddPrefixIfNot(s string, prefix string) string` | AddPrefixIfNot adds prefix when it is not already present. | internal | — |
-| `AddSuffixIfNot` | `func AddSuffixIfNot(s string, suffix string) string` | AddSuffixIfNot adds suffix when it is not already present. | internal | — |
-| `AntPathMatch` | `func AntPathMatch(pattern string, path string) bool` | AntPathMatch reports whether path matches an Ant-style pattern using "/" as separator. | internal | — |
-| `AntPathMatchWithSeparator` | `func AntPathMatchWithSeparator(pattern string, path string, separator string) bool` | AntPathMatchWithSeparator reports whether path matches an Ant-style pattern. | internal | — |
+| `AddPrefixIfNot` | `func AddPrefixIfNot(s string, prefix string) string` | AddPrefixIfNot adds prefix when it is not already present. | internal | `ExampleAddPrefixIfNot` |
+| `AddSuffixIfNot` | `func AddSuffixIfNot(s string, suffix string) string` | AddSuffixIfNot adds suffix when it is not already present. | internal | `ExampleAddSuffixIfNot` |
+| `AntPathMatch` | `func AntPathMatch(pattern string, path string) bool` | AntPathMatch reports whether path matches an Ant-style pattern using "/" as separator. | internal | `ExampleAntPathMatch` |
+| `AntPathMatchWithSeparator` | `func AntPathMatchWithSeparator(pattern string, path string, separator string) bool` | AntPathMatchWithSeparator reports whether path matches an Ant-style pattern. | internal | `ExampleAntPathMatchWithSeparator` |
 | `Contains` | `func Contains(s string, sub string) bool` | Contains reports whether s contains sub. | internal | `ExampleContains` |
 | `ContainsAll` | `func ContainsAll(s string, subs ...string) bool` | ContainsAll reports whether s contains all candidate substrings. | internal | — |
 | `ContainsAny` | `func ContainsAny(s string, subs ...string) bool` | ContainsAny reports whether s contains any candidate substring. | internal | — |
@@ -2691,8 +2691,8 @@ Quality: 64 functions · 8 with examples · 12.5% example coverage · synopsis s
 | `EndsWith` | `func EndsWith(s string, suffix string) bool` | EndsWith reports whether s ends with suffix. | internal | — |
 | `EqualsIgnoreCase` | `func EqualsIgnoreCase(a string, b string) bool` | EqualsIgnoreCase compares strings case-insensitively. | internal | — |
 | `EscapeHTML` | `func EscapeHTML(s string) string` | EscapeHTML escapes common HTML-sensitive characters without depending on the HTTP package. | internal | — |
-| `EscapeUnicode` | `func EscapeUnicode(s string) string` | EscapeUnicode escapes non-ASCII runes as Java-style \\uXXXX sequences. | internal | — |
-| `Format` | `func Format(template string, args ...any) string` | Format mimics the utility toolkit StrUtil.format by replacing {} placeholders in order. | internal | — |
+| `EscapeUnicode` | `func EscapeUnicode(s string) string` | EscapeUnicode escapes non-ASCII runes as Java-style \\uXXXX sequences. | internal | `ExampleEscapeUnicode` |
+| `Format` | `func Format(template string, args ...any) string` | Format mimics the utility toolkit StrUtil.format by replacing {} placeholders in order. | internal | `ExampleFormat` |
 | `HammingDistance64` | `func HammingDistance64(a uint64, b uint64) int` | HammingDistance64 returns the number of different bits between a and b. | internal | — |
 | `HasBlank` | `func HasBlank(strs ...string) bool` | HasBlank reports whether any string is blank. | internal | — |
 | `HasEmpty` | `func HasEmpty(strs ...string) bool` | HasEmpty reports whether any string is empty. | internal | — |
@@ -2707,16 +2707,16 @@ Quality: 64 functions · 8 with examples · 12.5% example coverage · synopsis s
 | `IsLetterOrDigit` | `func IsLetterOrDigit(r rune) bool` | IsLetterOrDigit reports whether r is a Unicode letter or digit. | internal | — |
 | `IsNotBlank` | `func IsNotBlank(s string) bool` | IsNotBlank reports whether s is not blank. | internal | — |
 | `IsNotEmpty` | `func IsNotEmpty(s string) bool` | IsNotEmpty reports whether s is not empty. | internal | — |
-| `JaccardSimilarity` | `func JaccardSimilarity(a string, b string) float64` | JaccardSimilarity returns the Jaccard similarity of two strings by rune set. | internal | — |
-| `Length` | `func Length(s string) int` | Length returns the number of runes in s. | internal | — |
+| `JaccardSimilarity` | `func JaccardSimilarity(a string, b string) float64` | JaccardSimilarity returns the Jaccard similarity of two strings by rune set. | internal | `ExampleJaccardSimilarity` |
+| `Length` | `func Length(s string) int` | Length returns the number of runes in s. | internal | `ExampleLength` |
 | `LevenshteinDistance` | `func LevenshteinDistance(a string, b string) int` | LevenshteinDistance returns the Unicode-aware edit distance between a and b. | internal | — |
 | `LevenshteinSimilarity` | `func LevenshteinSimilarity(a string, b string) float64` | LevenshteinSimilarity returns a normalized similarity score in [0, 1]. | internal | — |
-| `NGramSimilarity` | `func NGramSimilarity(a string, b string, n int) float64` | NGramSimilarity returns the Jaccard similarity of rune n-gram sets. | internal | — |
+| `NGramSimilarity` | `func NGramSimilarity(a string, b string, n int) float64` | NGramSimilarity returns the Jaccard similarity of rune n-gram sets. | internal | `ExampleNGramSimilarity` |
 | `PadLeft` | `func PadLeft(s string, length int, pad rune) string` | PadLeft pads s on the left to the requested rune length. | internal | — |
 | `PadRight` | `func PadRight(s string, length int, pad rune) string` | PadRight pads s on the right to the requested rune length. | internal | — |
 | `RemoveEmoji` | `func RemoveEmoji(s string) string` | RemoveEmoji removes emoji-like runes from s, including variation-selector and zero-width-joiner based emoji sequences. | internal | — |
 | `RemoveEmojiWithOptions` | `func RemoveEmojiWithOptions(s string, opts ...EmojiOption) string` | RemoveEmojiWithOptions removes emoji-like runes from s with options. | internal | — |
-| `RemovePrefix` | `func RemovePrefix(s string, prefix string) string` | RemovePrefix removes prefix when present. | internal | — |
+| `RemovePrefix` | `func RemovePrefix(s string, prefix string) string` | RemovePrefix removes prefix when present. | internal | `ExampleRemovePrefix` |
 | `RemoveSuffix` | `func RemoveSuffix(s string, suffix string) string` | RemoveSuffix removes suffix when present. | internal | — |
 | `Repeat` | `func Repeat(s string, n int) string` | Repeat repeats s n times. | internal | — |
 | `Reverse` | `func Reverse(s string) string` | Reverse reverses a string by rune, preserving multi-byte characters. | internal | `ExampleReverse` |
