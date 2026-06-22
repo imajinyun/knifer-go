@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/go-knifer` |
 | Packages | 54 |
 | Functions | 2604 |
-| Functions with examples | 1013 |
+| Functions with examples | 1032 |
 | Context-aware functions | 36 |
 | Functions returning error | 603 |
 | Variadic functions | 776 |
@@ -250,7 +250,7 @@ Import path: `github.com/imajinyun/go-knifer/vconf`
 
 Package vconf provides configuration file reading and grouped configuration utilities.
 
-Quality: 38 functions · 5 with examples · 13.2% example coverage · synopsis sources: facade=38, internal=0, empty=0
+Quality: 38 functions · 8 with examples · 21.1% example coverage · synopsis sources: facade=38, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -266,12 +266,12 @@ Quality: 38 functions · 5 with examples · 13.2% example coverage · synopsis s
 | `LoadRemoteWithOptions` | `func LoadRemoteWithOptions(rawURL string, opts LoadOptions) (*Conf, error)` | LoadRemoteWithOptions loads configuration from an HTTP(S) URL with options. | facade | — |
 | `LoadWithOptions` | `func LoadWithOptions(path string, opts LoadOptions) (*Conf, error)` | LoadWithOptions reads and parses a configuration file with advanced options. | facade | — |
 | `Merge` | `func Merge(configs ...*Conf) *Conf` | Merge merges configurations in order. | facade | `ExampleMerge` |
-| `New` | `func New() *Conf` | New creates an empty Conf. | facade | — |
+| `New` | `func New() *Conf` | New creates an empty Conf. | facade | `ExampleNew` |
 | `Parse` | `func Parse(content string) (*Conf, error)` | Parse 解析 setting/properties 文本内容。Parse parses setting/properties content. | facade | `ExampleParse` |
 | `ParseByExt` | `func ParseByExt(path string, content []byte) (*Conf, error)` | ParseByExt parses content according to path extension. | facade | — |
-| `ParseByExtWithOptions` | `func ParseByExtWithOptions(path string, content []byte, opts ...ParseOption) (*Conf, error)` | ParseByExtWithOptions parses content according to path extension with custom providers. | facade | — |
+| `ParseByExtWithOptions` | `func ParseByExtWithOptions(path string, content []byte, opts ...ParseOption) (*Conf, error)` | ParseByExtWithOptions parses content according to path extension with custom providers. | facade | `ExampleParseByExtWithOptions` |
 | `ParseBytes` | `func ParseBytes(content []byte) (*Conf, error)` | ParseBytes 解析 setting/properties 字节内容。ParseBytes parses setting/properties content. | facade | `ExampleParseBytes` |
-| `ParseTOML` | `func ParseTOML(content string) (*Conf, error)` | ParseTOML parses common TOML key-value and section syntax into grouped configuration. | facade | — |
+| `ParseTOML` | `func ParseTOML(content string) (*Conf, error)` | ParseTOML parses common TOML key-value and section syntax into grouped configuration. | facade | `ExampleParseTOML` |
 | `ParseTOMLWithOptions` | `func ParseTOMLWithOptions(content string, opts ...ParseOption) (*Conf, error)` | ParseTOMLWithOptions parses common TOML syntax into grouped configuration with custom providers. | facade | — |
 | `ParseYAML` | `func ParseYAML(content string) (*Conf, error)` | ParseYAML 将简单 YAML 子集解析为分组配置。ParseYAML parses a small YAML subset into grouped configuration. | facade | `ExampleParseYAML` |
 | `ParseYAMLFull` | `func ParseYAMLFull(content string) (*Conf, error)` | ParseYAMLFull parses YAML using yaml.v3 and flattens nested objects into grouped keys. | facade | — |
@@ -625,7 +625,7 @@ Import path: `github.com/imajinyun/go-knifer/vdfa`
 
 Package vdfa exposes deterministic-finite-automaton text matching APIs.
 
-Quality: 41 functions · 5 with examples · 12.2% example coverage · synopsis sources: facade=41, internal=0, empty=0
+Quality: 41 functions · 9 with examples · 22.0% example coverage · synopsis sources: facade=41, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
@@ -639,14 +639,14 @@ Quality: 41 functions · 5 with examples · 12.2% example coverage · synopsis s
 | `FilterAny` | `func FilterAny[T any](value T, greedMatch bool, processor Processor) (T, error)` | FilterAny marshals value as JSON, filters matched text, and unmarshals it back. | facade | — |
 | `FilterAnyWithOptions` | `func FilterAnyWithOptions[T any](value T, greedMatch bool, processor Processor, opts ...MatcherOption) (T, error)` | FilterAnyWithOptions marshals value, filters matched text with the selected matcher, and unmarshals it back. | facade | — |
 | `FilterMode` | `func FilterMode(text string, greedMatch bool, processor Processor) string` | FilterMode replaces words found by the package-level matcher using processor. | facade | — |
-| `FilterModeWithOptions` | `func FilterModeWithOptions(text string, greedMatch bool, processor Processor, opts ...MatcherOption) string` | FilterModeWithOptions replaces words found by the selected matcher using processor. | facade | — |
+| `FilterModeWithOptions` | `func FilterModeWithOptions(text string, greedMatch bool, processor Processor, opts ...MatcherOption) string` | FilterModeWithOptions replaces words found by the selected matcher using processor. | facade | `ExampleFilterModeWithOptions` |
 | `FilterWithOptions` | `func FilterWithOptions(text string, opts ...MatcherOption) string` | FilterWithOptions replaces words found by the selected matcher. | facade | `ExampleFilterWithOptions` |
 | `GetFoundAll` | `func GetFoundAll(text string) []FoundWord` | GetFoundAll returns all found words from the package-level matcher. | facade | — |
 | `GetFoundAllAny` | `func GetFoundAllAny(value any) []FoundWord` | GetFoundAllAny marshals value as JSON and returns all found words. | facade | — |
 | `GetFoundAllAnyWithOptions` | `func GetFoundAllAnyWithOptions(value any, opts ...MatcherOption) []FoundWord` | GetFoundAllAnyWithOptions marshals value as JSON and returns all found words from the selected matcher. | facade | — |
 | `GetFoundAllMode` | `func GetFoundAllMode(text string, densityMatch bool, greedMatch bool) []FoundWord` | GetFoundAllMode returns all found words with dense and greedy matching controls. | facade | — |
 | `GetFoundAllModeWithOptions` | `func GetFoundAllModeWithOptions(text string, densityMatch bool, greedMatch bool, opts ...MatcherOption) []FoundWord` | GetFoundAllModeWithOptions returns all found words from the selected matcher with dense and greedy matching controls. | facade | — |
-| `GetFoundAllWithOptions` | `func GetFoundAllWithOptions(text string, opts ...MatcherOption) []FoundWord` | GetFoundAllWithOptions returns all found words from the selected matcher. | facade | — |
+| `GetFoundAllWithOptions` | `func GetFoundAllWithOptions(text string, opts ...MatcherOption) []FoundWord` | GetFoundAllWithOptions returns all found words from the selected matcher. | facade | `ExampleGetFoundAllWithOptions` |
 | `GetFoundFirst` | `func GetFoundFirst(text string) (FoundWord, bool)` | GetFoundFirst returns the first found word from the package-level matcher. | facade | — |
 | `GetFoundFirstAny` | `func GetFoundFirstAny(value any) (FoundWord, bool)` | GetFoundFirstAny marshals value as JSON and returns the first found word. | facade | — |
 | `GetFoundFirstAnyWithOptions` | `func GetFoundFirstAnyWithOptions(value any, opts ...MatcherOption) (FoundWord, bool)` | GetFoundFirstAnyWithOptions marshals value as JSON and returns the first found word from the selected matcher. | facade | — |
@@ -661,8 +661,8 @@ Quality: 41 functions · 5 with examples · 12.2% example coverage · synopsis s
 | `IsInited` | `func IsInited() bool` | IsInited reports whether the package-level matcher contains words. | facade | — |
 | `IsNotStopChar` | `func IsNotStopChar(r rune) bool` | IsNotStopChar reports whether r should participate in matching. | facade | — |
 | `IsStopChar` | `func IsStopChar(r rune) bool` | IsStopChar reports whether r should be ignored by the default matcher. | facade | — |
-| `NewWordTree` | `func NewWordTree() *WordTree` | NewWordTree creates an empty word tree using the default stop-rune filter. | facade | — |
-| `NewWordTreeWithOptions` | `func NewWordTreeWithOptions(opts ...WordTreeOption) *WordTree` | NewWordTreeWithOptions creates an empty word tree customized by options. | facade | — |
+| `NewWordTree` | `func NewWordTree() *WordTree` | NewWordTree creates an empty word tree using the default stop-rune filter. | facade | `ExampleNewWordTree` |
+| `NewWordTreeWithOptions` | `func NewWordTreeWithOptions(opts ...WordTreeOption) *WordTree` | NewWordTreeWithOptions creates an empty word tree customized by options. | facade | `ExampleNewWordTreeWithOptions` |
 | `ResetAsyncRunner` | `func ResetAsyncRunner()` | ResetAsyncRunner restores the default goroutine runner used by asynchronous initialization. | facade | — |
 | `SetCharFilter` | `func SetCharFilter(filter CharFilter)` | SetCharFilter sets the filter used by the package-level matcher. | facade | — |
 | `WithCharFilter` | `func WithCharFilter(filter CharFilter) WordTreeOption` | WithCharFilter sets the character filter used by a WordTree. | facade | — |
@@ -1134,27 +1134,27 @@ Import path: `github.com/imajinyun/go-knifer/vident`
 
 Package vident provides identity and legal identifier helpers.
 
-Quality: 48 functions · 5 with examples · 10.4% example coverage · synopsis sources: facade=48, internal=0, empty=0
+Quality: 48 functions · 11 with examples · 22.9% example coverage · synopsis sources: facade=48, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
 | `Age` | `func Age(idCard string) (int, bool)` | Age returns the current age encoded in idCard. | facade | — |
 | `AgeAt` | `func AgeAt(idCard string, at time.Time) (int, bool)` | AgeAt returns the age encoded in idCard at the specified time. | facade | `ExampleAgeAt` |
-| `AgeWithOptions` | `func AgeWithOptions(idCard string, opts ...AgeOption) (int, bool)` | AgeWithOptions returns the age encoded in idCard using custom time options. | facade | — |
+| `AgeWithOptions` | `func AgeWithOptions(idCard string, opts ...AgeOption) (int, bool)` | AgeWithOptions returns the age encoded in idCard using custom time options. | facade | `ExampleAgeWithOptions` |
 | `BirthDate` | `func BirthDate(idCard string) (time.Time, bool)` | BirthDate returns the birthday encoded in idCard. | facade | — |
 | `BirthDateWithOptions` | `func BirthDateWithOptions(idCard string, opts ...BirthOption) (time.Time, bool)` | BirthDateWithOptions returns the birthday encoded in idCard using custom parsing options. | facade | — |
 | `BirthString` | `func BirthString(idCard string) (string, bool)` | BirthString returns the birthday encoded in idCard as yyyyMMdd. | facade | `ExampleBirthString` |
 | `BirthStringWithOptions` | `func BirthStringWithOptions(idCard string, opts ...BirthOption) (string, bool)` | BirthStringWithOptions returns the birthday encoded in idCard as yyyyMMdd using custom parsing options. | facade | — |
-| `CheckCode18` | `func CheckCode18(code17 string) byte` | CheckCode18 returns the 18th check code for a 17-digit identity card body. | facade | — |
+| `CheckCode18` | `func CheckCode18(code17 string) byte` | CheckCode18 returns the 18th check code for a 17-digit identity card body. | facade | `ExampleCheckCode18` |
 | `CheckCode18WithOptions` | `func CheckCode18WithOptions(code17 string, opts ...IDCardOption) byte` | CheckCode18WithOptions returns the 18th check code for a 17-digit identity card body with options. | facade | — |
 | `CityCode` | `func CityCode(idCard string) (string, bool)` | CityCode returns the city-level code encoded in a 15- or 18-digit identity card number. | facade | — |
 | `Convert15To18` | `func Convert15To18(idCard string) (string, bool)` | Convert15To18 converts a 15-digit mainland China identity card number to 18 digits. | facade | `ExampleConvert15To18` |
 | `Convert15To18WithOptions` | `func Convert15To18WithOptions(idCard string, opts ...IDCardOption) (string, bool)` | Convert15To18WithOptions converts a 15-digit mainland China identity card number to 18 digits with options. | facade | — |
-| `Convert18To15` | `func Convert18To15(idCard string) (string, bool)` | Convert18To15 converts a valid 18-digit mainland China identity card number to 15 digits. | facade | — |
+| `Convert18To15` | `func Convert18To15(idCard string) (string, bool)` | Convert18To15 converts a valid 18-digit mainland China identity card number to 15 digits. | facade | `ExampleConvert18To15` |
 | `Convert18To15WithOptions` | `func Convert18To15WithOptions(idCard string, opts ...IDCardOption) (string, bool)` | Convert18To15WithOptions converts a valid 18-digit mainland China identity card number to 15 digits with options. | facade | — |
 | `Day` | `func Day(idCard string) (int, bool)` | Day returns the birth day encoded in idCard. | facade | — |
 | `DistrictCode` | `func DistrictCode(idCard string) (string, bool)` | DistrictCode returns the district-level code encoded in a 15- or 18-digit identity card number. | facade | — |
-| `GenderOf` | `func GenderOf(idCard string) (Gender, bool)` | GenderOf returns the gender encoded in a 15- or 18-digit identity card number. | facade | — |
+| `GenderOf` | `func GenderOf(idCard string) (Gender, bool)` | GenderOf returns the gender encoded in a 15- or 18-digit identity card number. | facade | `ExampleGenderOf` |
 | `Hide` | `func Hide(idCard string, start int, end int) string` | Hide replaces runes in [start, end) with '*'. | facade | `ExampleHide` |
 | `IsValidBirthday` | `func IsValidBirthday(s string) bool` | IsValidBirthday reports whether s is a valid yyyyMMdd date. | facade | — |
 | `IsValidBirthdayWithOptions` | `func IsValidBirthdayWithOptions(s string, opts ...BirthOption) bool` | IsValidBirthdayWithOptions reports whether s is a valid yyyyMMdd date using custom parsing options. | facade | — |
@@ -1172,9 +1172,9 @@ Quality: 48 functions · 5 with examples · 10.4% example coverage · synopsis s
 | `IsValidTWIDCardWithOptions` | `func IsValidTWIDCardWithOptions(idCard string, opts ...IDCardOption) bool` | IsValidTWIDCardWithOptions reports whether idCard is a valid Taiwan identity card number with options. | facade | — |
 | `Month` | `func Month(idCard string) (int, bool)` | Month returns the birth month encoded in idCard. | facade | — |
 | `ParseIDCard` | `func ParseIDCard(idCard string) (IDCardInfo, bool)` | ParseIDCard parses a valid 15- or 18-digit mainland China identity card number. | facade | `ExampleParseIDCard` |
-| `ParseRegionCard` | `func ParseRegionCard(idCard string) (RegionCardInfo, bool)` | ParseRegionCard validates a Hong Kong, Macau or Taiwan identity card number. | facade | — |
+| `ParseRegionCard` | `func ParseRegionCard(idCard string) (RegionCardInfo, bool)` | ParseRegionCard validates a Hong Kong, Macau or Taiwan identity card number. | facade | `ExampleParseRegionCard` |
 | `ParseRegionCardWithOptions` | `func ParseRegionCardWithOptions(idCard string, opts ...IDCardOption) (RegionCardInfo, bool)` | ParseRegionCardWithOptions validates a Hong Kong, Macau or Taiwan identity card number with options. | facade | — |
-| `Province` | `func Province(idCard string) (string, bool)` | Province returns the province name encoded in a 15- or 18-digit identity card number. | facade | — |
+| `Province` | `func Province(idCard string) (string, bool)` | Province returns the province name encoded in a 15- or 18-digit identity card number. | facade | `ExampleProvince` |
 | `ProvinceCode` | `func ProvinceCode(idCard string) (string, bool)` | ProvinceCode returns the province code encoded in a 15- or 18-digit identity card number. | facade | — |
 | `WithAgeClock` | `func WithAgeClock(clock func() time.Time) AgeOption` | WithAgeClock sets the clock used by AgeWithOptions. | facade | — |
 | `WithAgeTime` | `func WithAgeTime(at time.Time) AgeOption` | WithAgeTime sets the time used by AgeWithOptions. | facade | — |
@@ -2042,29 +2042,29 @@ Import path: `github.com/imajinyun/go-knifer/vobj`
 
 Package vobj provides object utilities.
 
-Quality: 49 functions · 5 with examples · 10.2% example coverage · synopsis sources: facade=49, internal=0, empty=0
+Quality: 49 functions · 11 with examples · 22.4% example coverage · synopsis sources: facade=49, internal=0, empty=0
 
 | Function | Signature | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- |
 | `Accept` | `func Accept[T any](source *T, consumer func(T))` | Accept calls consumer when source is not nil. | facade | — |
-| `Apply` | `func Apply[T any, R any](source *T, handle func(T) R) R` | Apply maps source when it is not nil; otherwise it returns the zero value. | facade | — |
-| `Clone` | `func Clone[T any](src T) (T, error)` | Clone creates a deep copy through gob serialization. | facade | — |
+| `Apply` | `func Apply[T any, R any](source *T, handle func(T) R) R` | Apply maps source when it is not nil; otherwise it returns the zero value. | facade | `ExampleApply` |
+| `Clone` | `func Clone[T any](src T) (T, error)` | Clone creates a deep copy through gob serialization. | facade | `ExampleClone` |
 | `CloneByStream` | `func CloneByStream[T any](src T) (T, error)` | CloneByStream creates a deep copy through gob serialization. | facade | — |
 | `CloneByStreamWithOptions` | `func CloneByStreamWithOptions[T any](src T, opts ...CodecOption) (T, error)` | CloneByStreamWithOptions creates a deep copy using per-call codec options. | facade | — |
 | `CloneIfPossible` | `func CloneIfPossible[T any](src T) T` | CloneIfPossible returns a cloned value when cloning succeeds, otherwise src. | facade | — |
 | `CloneIfPossibleWithOptions` | `func CloneIfPossibleWithOptions[T any](src T, opts ...CodecOption) T` | CloneIfPossibleWithOptions returns a cloned value using per-call codec options when cloning succeeds, otherwise src. | facade | — |
 | `CloneWithOptions` | `func CloneWithOptions[T any](src T, opts ...CodecOption) (T, error)` | CloneWithOptions creates a deep copy using per-call codec options. | facade | — |
-| `Compare` | `func Compare[T Ordered](a *T, b *T) int` | Compare compares two ordered values. | facade | — |
+| `Compare` | `func Compare[T Ordered](a *T, b *T) int` | Compare compares two ordered values. | facade | `ExampleCompare` |
 | `CompareNull` | `func CompareNull[T Ordered](a *T, b *T, nilGreater bool) int` | CompareNull compares two ordered values and controls nil ordering. | facade | — |
 | `Contains` | `func Contains(obj any, element any) bool` | Contains reports whether obj contains element. | facade | `ExampleContains` |
 | `DefaultIfNil` | `func DefaultIfNil[T any](object *T, defaultValue T) T` | DefaultIfNil returns defaultValue when object is nil. | facade | `ExampleDefaultIfNil` |
 | `DefaultIfNilApply` | `func DefaultIfNilApply[T any, R any](source *T, handle func(T) R, defaultValue R) R` | DefaultIfNilApply returns defaultValue when source is nil; otherwise it maps source. | facade | — |
 | `DefaultIfNilFunc` | `func DefaultIfNilFunc[T any](object *T, supplier func() T) T` | DefaultIfNilFunc returns a supplier value when object is nil. | facade | — |
-| `Deserialize` | `func Deserialize(data []byte, out any, acceptedTypes ...any) error` | Deserialize decodes gob data into out, which must be a pointer. | facade | — |
+| `Deserialize` | `func Deserialize(data []byte, out any, acceptedTypes ...any) error` | Deserialize decodes gob data into out, which must be a pointer. | facade | `ExampleDeserialize` |
 | `DeserializeTo` | `func DeserializeTo[T any](data []byte, acceptedTypes ...any) (T, error)` | DeserializeTo decodes gob data into a new value. | facade | — |
 | `DeserializeToWithOptions` | `func DeserializeToWithOptions[T any](data []byte, acceptedTypes []any, opts ...CodecOption) (T, error)` | DeserializeToWithOptions decodes data into a new value using per-call codec options. | facade | — |
 | `DeserializeWithOptions` | `func DeserializeWithOptions(data []byte, out any, acceptedTypes []any, opts ...CodecOption) error` | DeserializeWithOptions decodes data using per-call codec options. | facade | — |
-| `EmptyCount` | `func EmptyCount(values ...any) int` | EmptyCount counts nil or empty values. | facade | — |
+| `EmptyCount` | `func EmptyCount(values ...any) int` | EmptyCount counts nil or empty values. | facade | `ExampleEmptyCount` |
 | `Equal` | `func Equal(a any, b any) bool` | Equal reports whether a and b are equal. | facade | `ExampleEqual` |
 | `Equals` | `func Equals(a any, b any) bool` | Equals is an alias of Equal. | facade | — |
 | `HasEmpty` | `func HasEmpty(values ...any) bool` | HasEmpty reports whether any value is nil or empty. | facade | — |
@@ -2085,7 +2085,7 @@ Quality: 49 functions · 5 with examples · 10.2% example coverage · synopsis s
 | `NotEqual` | `func NotEqual(a any, b any) bool` | NotEqual reports whether a and b are not equal. | facade | — |
 | `Register` | `func Register(value any)` | Register records a concrete type for gob interface encoding. | facade | — |
 | `RegisterName` | `func RegisterName(name string, value any)` | RegisterName records a concrete type with a custom gob name. | facade | — |
-| `Serialize` | `func Serialize[T any](obj T) ([]byte, error)` | Serialize encodes obj with gob. | facade | — |
+| `Serialize` | `func Serialize[T any](obj T) ([]byte, error)` | Serialize encodes obj with gob. | facade | `ExampleSerialize` |
 | `SerializeOrNil` | `func SerializeOrNil[T any](obj T) []byte` | SerializeOrNil encodes obj with gob and returns nil when encoding fails. | facade | — |
 | `SerializeOrNilWithOptions` | `func SerializeOrNilWithOptions[T any](obj T, opts ...CodecOption) []byte` | SerializeOrNilWithOptions encodes obj using per-call codec options and returns nil when encoding fails. | facade | — |
 | `SerializeWithOptions` | `func SerializeWithOptions[T any](obj T, opts ...CodecOption) ([]byte, error)` | SerializeWithOptions encodes obj using per-call codec options. | facade | — |

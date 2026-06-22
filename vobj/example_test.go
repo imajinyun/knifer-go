@@ -6,6 +6,11 @@ import (
 	"github.com/imajinyun/go-knifer/vobj"
 )
 
+type exampleObject struct {
+	Name   string
+	Scores []int
+}
+
 func ExampleEqual() {
 	fmt.Println(vobj.Equal(42, 42))
 	fmt.Println(vobj.Equal(42, 43))
@@ -45,4 +50,90 @@ func ExampleDefaultIfNil() {
 	// Output:
 	// 7
 	// 42
+}
+
+func ExampleSerialize() {
+	data, err := vobj.Serialize(exampleObject{Name: "Ada", Scores: []int{3, 5}})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	decoded, err := vobj.DeserializeTo[exampleObject](data)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(decoded.Name)
+	fmt.Println(decoded.Scores)
+	// Output:
+	// Ada
+	// [3 5]
+}
+
+func ExampleDeserialize() {
+	data, err := vobj.Serialize(exampleObject{Name: "Lin", Scores: []int{8, 13}})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	var decoded exampleObject
+	if err := vobj.Deserialize(data, &decoded); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(decoded.Name, decoded.Scores[1])
+	// Output: Lin 13
+}
+
+func ExampleClone() {
+	original := exampleObject{Name: "Ada", Scores: []int{1, 2}}
+	cloned, err := vobj.Clone(original)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	cloned.Scores[0] = 99
+	fmt.Println(original.Scores)
+	fmt.Println(cloned.Scores)
+	// Output:
+	// [1 2]
+	// [99 2]
+}
+
+func ExampleApply() {
+	name := "go-knifer"
+	length := vobj.Apply(&name, func(s string) int { return len(s) })
+	missing := vobj.Apply[string, int](nil, func(s string) int { return len(s) })
+
+	fmt.Println(length)
+	fmt.Println(missing)
+	// Output:
+	// 9
+	// 0
+}
+
+func ExampleCompare() {
+	low := 1
+	high := 2
+
+	fmt.Println(vobj.Compare(&low, &high))
+	fmt.Println(vobj.Compare[int](nil, &high))
+	fmt.Println(vobj.CompareNull[int](nil, &high, false))
+	// Output:
+	// -1
+	// 1
+	// -1
+}
+
+func ExampleEmptyCount() {
+	fmt.Println(vobj.EmptyCount(nil, "", []int{}, "go"))
+	fmt.Println(vobj.HasEmpty("go", []int{1}))
+	// Output:
+	// 3
+	// false
 }

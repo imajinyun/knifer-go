@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 54,
     "function_count": 2604,
-    "functions_with_examples": 1013,
+    "functions_with_examples": 1032,
     "context_aware_functions": 36,
     "returns_error_functions": 603,
     "variadic_functions": 776,
@@ -3121,8 +3121,8 @@
       "synopsis": "Package vconf provides configuration file reading and grouped configuration utilities.",
       "summary": {
         "function_count": 38,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 13.2,
+        "functions_with_examples": 8,
+        "example_coverage_percent": 21.1,
         "synopsis_sources": {
           "empty": 0,
           "facade": 38,
@@ -3401,7 +3401,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNew"
+          ]
         },
         {
           "name": "Parse",
@@ -3473,7 +3476,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleParseByExtWithOptions"
+          ]
         },
         {
           "name": "ParseBytes",
@@ -3514,7 +3520,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseTOML"
+          ]
         },
         {
           "name": "ParseTOMLWithOptions",
@@ -9769,8 +9778,8 @@
       "synopsis": "Package vdfa exposes deterministic-finite-automaton text matching APIs.",
       "summary": {
         "function_count": 41,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 12.2,
+        "functions_with_examples": 9,
+        "example_coverage_percent": 22,
         "synopsis_sources": {
           "empty": 0,
           "facade": 41,
@@ -10030,7 +10039,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleFilterModeWithOptions"
+          ]
         },
         {
           "name": "FilterWithOptions",
@@ -10191,7 +10203,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetFoundAllWithOptions"
+          ]
         },
         {
           "name": "GetFoundFirst",
@@ -10471,7 +10486,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewWordTree"
+          ]
         },
         {
           "name": "NewWordTreeWithOptions",
@@ -10489,7 +10507,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewWordTreeWithOptions"
+          ]
         },
         {
           "name": "ResetAsyncRunner",
@@ -18316,8 +18337,8 @@
       "synopsis": "Package vident provides identity and legal identifier helpers.",
       "summary": {
         "function_count": 48,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 10.4,
+        "functions_with_examples": 11,
+        "example_coverage_percent": 22.9,
         "synopsis_sources": {
           "empty": 0,
           "facade": 48,
@@ -18391,7 +18412,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleAgeWithOptions"
+          ]
         },
         {
           "name": "BirthDate",
@@ -18496,7 +18520,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCheckCode18"
+          ]
         },
         {
           "name": "CheckCode18WithOptions",
@@ -18601,7 +18628,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleConvert18To15"
+          ]
         },
         {
           "name": "Convert18To15WithOptions",
@@ -18681,7 +18711,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGenderOf"
+          ]
         },
         {
           "name": "Hide",
@@ -19058,7 +19091,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseRegionCard"
+          ]
         },
         {
           "name": "ParseRegionCardWithOptions",
@@ -19100,7 +19136,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleProvince"
+          ]
         },
         {
           "name": "ProvinceCode",
@@ -35814,8 +35853,8 @@
       "synopsis": "Package vobj provides object utilities.",
       "summary": {
         "function_count": 49,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 10.2,
+        "functions_with_examples": 11,
+        "example_coverage_percent": 22.4,
         "synopsis_sources": {
           "empty": 0,
           "facade": 49,
@@ -35862,7 +35901,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleApply"
+          ]
         },
         {
           "name": "Clone",
@@ -35881,7 +35923,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleClone"
+          ]
         },
         {
           "name": "CloneByStream",
@@ -36008,7 +36053,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCompare"
+          ]
         },
         {
           "name": "CompareNull",
@@ -36158,7 +36206,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleDeserialize"
+          ]
         },
         {
           "name": "DeserializeTo",
@@ -36256,7 +36307,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleEmptyCount"
+          ]
         },
         {
           "name": "Equal",
@@ -36658,7 +36712,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSerialize"
+          ]
         },
         {
           "name": "SerializeOrNil",

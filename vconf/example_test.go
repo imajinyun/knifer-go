@@ -11,6 +11,12 @@ import (
 	"github.com/imajinyun/go-knifer/vconf"
 )
 
+type exampleServerConfig struct {
+	Host    string `conf:"host"`
+	Port    int    `conf:"port"`
+	Enabled bool   `conf:"enabled"`
+}
+
 func ExampleParse() {
 	cfg, err := vconf.Parse("app.name=go-knifer\napp.port=8080\n")
 	if err != nil {
@@ -83,6 +89,105 @@ func ExampleMerge() {
 	// Output:
 	// override
 	// 8080
+}
+
+func ExampleNew() {
+	cfg := vconf.New()
+	cfg.Set("app.name", "go-knifer")
+	cfg.SetByGroup("server", "port", "8080")
+
+	fmt.Println(cfg.Get("app.name"))
+	fmt.Println(cfg.GetIntByGroup("server", "port", 0))
+	// Output:
+	// go-knifer
+	// 8080
+}
+
+func ExampleParseByExtWithOptions() {
+	cfg, err := vconf.ParseByExtWithOptions(
+		"app.custom",
+		[]byte("ignored"),
+		vconf.WithParserForExt("custom", func([]byte) (*vconf.Conf, error) {
+			parsed := vconf.New()
+			parsed.Set("source", "custom")
+			return parsed, nil
+		}),
+	)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(cfg.Get("source"))
+	// Output: custom
+}
+
+func ExampleParseTOML() {
+	cfg, err := vconf.ParseTOML("title = 'demo'\n[server]\nport = 8080\nenabled = true\n")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(cfg.Get("title"))
+	fmt.Println(cfg.GetByGroup("server", "port"))
+	fmt.Println(cfg.GetBoolByGroup("server", "enabled", false))
+	// Output:
+	// demo
+	// 8080
+	// true
+}
+
+func ExampleConf_Bind() {
+	cfg, err := vconf.Parse("host=localhost\nport=8080\nenabled=true\n")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	var server exampleServerConfig
+	if err := cfg.Bind(&server); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(server.Host)
+	fmt.Println(server.Port)
+	fmt.Println(server.Enabled)
+	// Output:
+	// localhost
+	// 8080
+	// true
+}
+
+func ExampleConf_Clone() {
+	cfg := vconf.New()
+	cfg.Set("name", "original")
+
+	clone := cfg.Clone()
+	clone.Set("name", "clone")
+
+	fmt.Println(cfg.Get("name"))
+	fmt.Println(clone.Get("name"))
+	// Output:
+	// original
+	// clone
+}
+
+func ExampleConf_ExpandWithOptions() {
+	cfg := vconf.New()
+	cfg.Set("host", "localhost")
+	cfg.Set("dsn", "http://${host}:${ENV:PORT}")
+
+	expanded := cfg.ExpandWithOptions(vconf.WithEnvLookup(func(name string) string {
+		if name == "PORT" {
+			return "8080"
+		}
+		return ""
+	}))
+
+	fmt.Println(expanded.Get("dsn"))
+	// Output: http://localhost:8080
 }
 
 type roundTripFunc func(*http.Request) (*http.Response, error)
