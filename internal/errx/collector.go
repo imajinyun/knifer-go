@@ -196,14 +196,19 @@ func (c *Collector) WaitUntilWithOptions(duration time.Duration, opts ...WaitOpt
 		return false, nil
 	}
 	cfg := c.waitConfig(opts...)
+	timerC, timer := cfg.timerFactory(duration)
+	defer timer.Stop()
+
+	select {
+	case <-cfg.ctx.Done():
+		return false, nil
+	default:
+	}
 	done := make(chan struct{})
 	go func() {
 		c.swg.Wait()
 		close(done)
 	}()
-
-	timerC, timer := cfg.timerFactory(duration)
-	defer timer.Stop()
 
 	select {
 	case <-done:
