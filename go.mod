@@ -6,7 +6,7 @@ require (
 	github.com/getsentry/sentry-go v0.47.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/makiuchi-d/gozxing v0.1.1
-	github.com/pelletier/go-toml/v2 v2.4.0
+	github.com/pelletier/go-toml/v2 v2.4.2
 	github.com/sirupsen/logrus v1.9.4
 	github.com/stretchr/testify v1.11.1
 	github.com/xuri/excelize/v2 v2.10.1
