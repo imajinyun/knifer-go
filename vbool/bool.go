@@ -1,6 +1,6 @@
 package vbool
 
-import boolimpl "github.com/imajinyun/go-knifer/internal/boolean"
+import boolimpl "github.com/imajinyun/knifer-go/internal/boolean"
 
 func Negate(b bool) bool  { return boolimpl.Negate(b) }
 func ToInt(b bool) int    { return boolimpl.ToInt(b) }

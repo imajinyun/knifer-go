@@ -8,7 +8,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/sirupsen/logrus"
 
-	"github.com/imajinyun/go-knifer/verr"
+	"github.com/imajinyun/knifer-go/verr"
 )
 
 type facadeSentryHook struct {

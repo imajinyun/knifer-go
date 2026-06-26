@@ -1,6 +1,6 @@
 package vsem
 
-import semimpl "github.com/imajinyun/go-knifer/internal/semaphore"
+import semimpl "github.com/imajinyun/knifer-go/internal/semaphore"
 
 var (
 	// ErrInvalidCapacity indicates an invalid semaphore capacity.

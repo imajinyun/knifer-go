@@ -10,7 +10,7 @@ import (
 	"io"
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 func makePNG(width, height int) []byte {

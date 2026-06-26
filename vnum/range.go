@@ -1,6 +1,6 @@
 package vnum
 
-import numimpl "github.com/imajinyun/go-knifer/internal/num"
+import numimpl "github.com/imajinyun/knifer-go/internal/num"
 
 func Range(start, end, step int) []int { return numimpl.Range(start, end, step) }
 

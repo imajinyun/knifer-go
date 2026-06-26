@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vurl"
+	"github.com/imajinyun/knifer-go/vurl"
 )
 
 func TestFacadeResourceMaxBytesAndStatusErrors(t *testing.T) {

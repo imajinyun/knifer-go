@@ -76,7 +76,7 @@ type User struct {
 	Age  int    `json:"age"`
 }
 
-body, err := vjson.ToStr(User{Name: "go-knifer", Age: 5})
+body, err := vjson.ToStr(User{Name: "knifer-go", Age: 5})
 if err != nil {
 	panic(err)
 }
@@ -92,7 +92,7 @@ type User struct {
 }
 
 var user User
-if err := vjson.ToBean(`{"name":"go-knifer","age":5}`, &user); err != nil {
+if err := vjson.ToBean(`{"name":"knifer-go","age":5}`, &user); err != nil {
 	panic(err)
 }
 fmt.Println(user.Name, user.Age)
@@ -101,7 +101,7 @@ fmt.Println(user.Name, user.Age)
 ### Parse into an object and read by path
 
 ```go
-obj, err := vjson.ParseObj(`{"user":{"name":"go-knifer"}}`)
+obj, err := vjson.ParseObj(`{"user":{"name":"knifer-go"}}`)
 if err != nil {
 	panic(err)
 }
@@ -112,14 +112,14 @@ fmt.Println(vjson.GetByPathOr(obj, "user.email", "missing"))
 ### Format JSON for humans
 
 ```go
-pretty := vjson.FormatWithOptions(`{"name":"go-knifer"}`, vjson.WithFormatIndentWidth(2))
+pretty := vjson.FormatWithOptions(`{"name":"knifer-go"}`, vjson.WithFormatIndentWidth(2))
 fmt.Println(pretty)
 ```
 
 ### Convert between XML and JSON
 
 ```go
-obj, err := vjson.XMLToJSON(`<user><name>go-knifer</name></user>`)
+obj, err := vjson.XMLToJSON(`<user><name>knifer-go</name></user>`)
 if err != nil {
 	panic(err)
 }
@@ -152,12 +152,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vjson"
+	"github.com/imajinyun/knifer-go/vjson"
 )
 
 func main() {
 	data := map[string]any{
-		"name": "go-knifer",
+		"name": "knifer-go",
 		"date": time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC),
 	}
 
@@ -183,7 +183,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vjson"
+	"github.com/imajinyun/knifer-go/vjson"
 )
 
 func main() {
@@ -206,7 +206,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vjson"
+	"github.com/imajinyun/knifer-go/vjson"
 )
 
 func main() {
@@ -231,7 +231,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vjson"
+	"github.com/imajinyun/knifer-go/vjson"
 )
 
 type User struct {

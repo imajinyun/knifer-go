@@ -8,12 +8,12 @@ import (
 	"strings"
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 	"github.com/makiuchi-d/gozxing"
 )
 
 func TestQRCodePNGAndDecode(t *testing.T) {
-	const content = "https://github.com/imajinyun/go-knifer"
+	const content = "https://github.com/imajinyun/knifer-go"
 	pngBytes, err := QRCodePNG(content,
 		WithQRCodeSize(180),
 		WithQRCodeMargin(2),

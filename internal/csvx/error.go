@@ -1,6 +1,6 @@
 package csvx
 
-import knifer "github.com/imajinyun/go-knifer"
+import knifer "github.com/imajinyun/knifer-go"
 
 // CSVError represents an error produced by CSV helpers.
 type CSVError struct {
@@ -20,7 +20,7 @@ func (e *CSVError) Error() string {
 	return e.Msg
 }
 
-// ErrorCode returns the go-knifer error code.
+// ErrorCode returns the knifer-go error code.
 func (e *CSVError) ErrorCode() knifer.ErrCode {
 	if e == nil {
 		return ""

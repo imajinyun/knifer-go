@@ -1,6 +1,6 @@
 package vconv
 
-import convimpl "github.com/imajinyun/go-knifer/internal/conv"
+import convimpl "github.com/imajinyun/knifer-go/internal/conv"
 
 // ErrInvalidConversion reports that a value cannot be converted to the requested scalar type.
 var ErrInvalidConversion = convimpl.ErrInvalidConversion

@@ -3,7 +3,7 @@ package vcrypto
 import (
 	"io"
 
-	cryptoimpl "github.com/imajinyun/go-knifer/internal/crypto"
+	cryptoimpl "github.com/imajinyun/knifer-go/internal/crypto"
 )
 
 // RandomOption customizes random byte generation helpers.

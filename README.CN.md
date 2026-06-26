@@ -1,22 +1,22 @@
-# 🔪 go-knifer
+# 🔪 knifer-go
 
 > 🔪 Go 开发的瑞士军刀，让日常编码更锋利。
 >
 > 🧰 提供字符串处理、集合操作、编码解码、加密、HTTP、缓存、ID 生成、日志、配置等开箱即用的工具包，按 `v*` 域包导入，只取所需。
 
-`go-knifer` 是一个 Go / Golang 常用工具库，覆盖字符串、切片、Map、JSON、文件、HTTP、安全 URL、加密、JWT、配置、缓存、ID、日志等常见开发场景。它通过独立的 `v*` 包暴露稳定 API，方便开发者和 AI 编程智能体按需导入。
+`knifer-go` 是一个 Go / Golang 常用工具库，覆盖字符串、切片、Map、JSON、文件、HTTP、安全 URL、加密、JWT、配置、缓存、ID、日志等常见开发场景。它通过独立的 `v*` 包暴露稳定 API，方便开发者和 AI 编程智能体按需导入。
 
-![go-knifer](./go-knifer.jpeg)
+![knifer-go](./knifer-go.jpeg)
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/imajinyun/go-knifer.svg)](https://pkg.go.dev/github.com/imajinyun/go-knifer)
+[![Go Reference](https://pkg.go.dev/badge/github.com/imajinyun/knifer-go.svg)](https://pkg.go.dev/github.com/imajinyun/knifer-go)
 [![Go Version](https://img.shields.io/badge/go-%3E%3D1.25-00ADD8?logo=go)](https://go.dev/)
-[![CI](https://github.com/imajinyun/go-knifer/actions/workflows/go.yml/badge.svg)](https://github.com/imajinyun/go-knifer/actions/workflows/go.yml)
-[![License](https://img.shields.io/github/license/imajinyun/go-knifer)](./LICENSE)
+[![CI](https://github.com/imajinyun/knifer-go/actions/workflows/go.yml/badge.svg)](https://github.com/imajinyun/knifer-go/actions/workflows/go.yml)
+[![License](https://img.shields.io/github/license/imajinyun/knifer-go)](./LICENSE)
 
 ## 📑 Table of Contents
 
 - [📚 简介](#introduction)
-- [✨ 为什么选择 go-knifer](#why-go-knifer)
+- [✨ 为什么选择 knifer-go](#why-knifer-go)
 - [🚀 安装](#install)
 - [⭐ 从这些包开始](#start-with-these-packages)
 - [🤖 面向 AI 智能体和编程助手](#for-ai-agents-and-coding-assistants)
@@ -29,21 +29,21 @@
 - [📦 构建与测试](#build-and-test)
 - [🛡️ 治理](#governance)
 - [🤝 贡献](#contributing)
-- [⭐ Star go-knifer](#star-go-knifer)
+- [⭐ Star knifer-go](#star-knifer-go)
 
 <a id="introduction"></a>
 
 ## 📚 简介
 
-`go-knifer` 是一个面向 Go 项目的实用工具集合：把项目里反复出现的字符串处理、集合操作、编解码、加密、HTTP、JSON、缓存、定时任务、JWT、日志、配置、系统信息等能力沉淀成可复用的工具包。
+`knifer-go` 是一个面向 Go 项目的实用工具集合：把项目里反复出现的字符串处理、集合操作、编解码、加密、HTTP、JSON、缓存、定时任务、JWT、日志、配置、系统信息等能力沉淀成可复用的工具包。
 
-当你搜索 Go 工具库、Golang 工具函数库、Go 常用工具包、Go 字符串工具、Go 切片工具、Go Map 工具、Go 安全 HTTP 下载、Go URL 校验、Go 加密工具、Go JWT 工具、Go JSON 路径工具、Go 文件操作工具或 Go 配置读取工具时，`go-knifer` 提供的是带清晰公共包边界的一站式选项。
+当你搜索 Go 工具库、Golang 工具函数库、Go 常用工具包、Go 字符串工具、Go 切片工具、Go Map 工具、Go 安全 HTTP 下载、Go URL 校验、Go 加密工具、Go JWT 工具、Go JSON 路径工具、Go 文件操作工具或 Go 配置读取工具时，`knifer-go` 提供的是带清晰公共包边界的一站式选项。
 
-项目根包 `github.com/imajinyun/go-knifer` 仅作为模块入口说明使用；实际 API 位于公开的 `v*` facade 子包中，应用可以只导入当前领域所需的包。
+项目根包 `github.com/imajinyun/knifer-go` 仅作为模块入口说明使用；实际 API 位于公开的 `v*` facade 子包中，应用可以只导入当前领域所需的包。
 
-<a id="why-go-knifer"></a>
+<a id="why-knifer-go"></a>
 
-## ✨ 为什么选择 go-knifer
+## ✨ 为什么选择 knifer-go
 
 `knifer` 来自 “knife”：像一把随手可用的小刀，解决日常 Go 开发里的高频小问题。
 
@@ -59,14 +59,14 @@
 项目要求 Go 1.25 或更高版本。
 
 ```bash
-go get github.com/imajinyun/go-knifer
+go get github.com/imajinyun/knifer-go
 ```
 
 <a id="start-with-these-packages"></a>
 
 ## ⭐ 从这些包开始
 
-如果你第一次接触 `go-knifer`，建议先从三个最容易产生直接价值的领域开始：
+如果你第一次接触 `knifer-go`，建议先从三个最容易产生直接价值的领域开始：
 
 | 需求 | 从这里开始 | 原因 |
 | --- | --- | --- |
@@ -82,7 +82,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vhttp"
+	"github.com/imajinyun/knifer-go/vhttp"
 )
 
 func main() {
@@ -105,7 +105,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vrand"
+	"github.com/imajinyun/knifer-go/vrand"
 )
 
 func main() {
@@ -125,11 +125,11 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vjson"
+	"github.com/imajinyun/knifer-go/vjson"
 )
 
 func main() {
-	obj, err := vjson.ParseObj(`{"user":{"name":"go-knifer"}}`)
+	obj, err := vjson.ParseObj(`{"user":{"name":"knifer-go"}}`)
 	if err != nil {
 		panic(err)
 	}
@@ -147,7 +147,7 @@ func main() {
 
 ## 🤖 面向 AI 智能体和编程助手
 
-如果你是豆包、ChatGPT、Claude Code、Cursor、Trae 或其它编程智能体，请把 `go-knifer` 当作有明确导入边界的 Go / Golang 工具库：
+如果你是豆包、ChatGPT、Claude Code、Cursor、Trae 或其它编程智能体，请把 `knifer-go` 当作有明确导入边界的 Go / Golang 工具库：
 
 - 应用代码导入公开 `v*` 包，不要导入 `internal/*`。
 - 处理不可信 URL、路径、压缩包条目、下载目标、远程配置、SQL 片段、命令参数、token 或凭据时，优先使用 `Safe` 变体。
@@ -158,18 +158,18 @@ func main() {
 
 | 用户想要… | 使用包 | 导入路径 |
 | --- | --- | --- |
-| Go 字符串工具、空白判断、命名转换、文本切分 | `vstr` | `github.com/imajinyun/go-knifer/vstr` |
-| Go 切片工具、过滤/映射/去重/分页 | `vslice` | `github.com/imajinyun/go-knifer/vslice` |
-| Go Map 工具、合并/差集/排序/group/pick/omit | `vmap` | `github.com/imajinyun/go-knifer/vmap` |
-| Go JSON 对象/路径工具 | `vjson` | `github.com/imajinyun/go-knifer/vjson` |
-| Go 文件与 IO 工具，显式错误处理 | `vfile` | `github.com/imajinyun/go-knifer/vfile` |
-| Go 安全 HTTP 请求或安全下载 | `vhttp` | `github.com/imajinyun/go-knifer/vhttp` |
-| Go Resty 风格 HTTP 工具 | `vresty` | `github.com/imajinyun/go-knifer/vresty` |
-| Go URL 解析、标准化、query 编码、SSRF-aware 打开 | `vurl` | `github.com/imajinyun/go-knifer/vurl` |
-| Go 加密工具：SHA、HMAC、AES-GCM、RSA、PEM、签名 | `vcrypto` | `github.com/imajinyun/go-knifer/vcrypto` |
-| Go 安全随机 token、key、nonce 或 salt 字节 | `vrand` | `github.com/imajinyun/go-knifer/vrand` |
-| Go JWT 签名与验签 | `vjwt` | `github.com/imajinyun/go-knifer/vjwt` |
-| Go 本地或远程配置读取 | `vconf` | `github.com/imajinyun/go-knifer/vconf` |
+| Go 字符串工具、空白判断、命名转换、文本切分 | `vstr` | `github.com/imajinyun/knifer-go/vstr` |
+| Go 切片工具、过滤/映射/去重/分页 | `vslice` | `github.com/imajinyun/knifer-go/vslice` |
+| Go Map 工具、合并/差集/排序/group/pick/omit | `vmap` | `github.com/imajinyun/knifer-go/vmap` |
+| Go JSON 对象/路径工具 | `vjson` | `github.com/imajinyun/knifer-go/vjson` |
+| Go 文件与 IO 工具，显式错误处理 | `vfile` | `github.com/imajinyun/knifer-go/vfile` |
+| Go 安全 HTTP 请求或安全下载 | `vhttp` | `github.com/imajinyun/knifer-go/vhttp` |
+| Go Resty 风格 HTTP 工具 | `vresty` | `github.com/imajinyun/knifer-go/vresty` |
+| Go URL 解析、标准化、query 编码、SSRF-aware 打开 | `vurl` | `github.com/imajinyun/knifer-go/vurl` |
+| Go 加密工具：SHA、HMAC、AES-GCM、RSA、PEM、签名 | `vcrypto` | `github.com/imajinyun/knifer-go/vcrypto` |
+| Go 安全随机 token、key、nonce 或 salt 字节 | `vrand` | `github.com/imajinyun/knifer-go/vrand` |
+| Go JWT 签名与验签 | `vjwt` | `github.com/imajinyun/knifer-go/vjwt` |
+| Go 本地或远程配置读取 | `vconf` | `github.com/imajinyun/knifer-go/vconf` |
 
 <a id="find-by-scenario"></a>
 
@@ -211,21 +211,21 @@ func main() {
 
 ## ⚖️ 与其它 Go 工具库对比
 
-`go-knifer` 不是单一用途 helper 包，而是覆盖多个常见开发场景的工具库。选择时可以按下面的边界判断：
+`knifer-go` 不是单一用途 helper 包，而是覆盖多个常见开发场景的工具库。选择时可以按下面的边界判断：
 
 | 需求 | 优先选择 | 边界 |
 | --- | --- | --- |
-| 只需要 Lodash 风格的泛型集合 helper | `samber/lo` | 如果同一项目还需要安全 HTTP、URL、加密、JWT、JSON、文件、配置、缓存、ID 或日志 helper，再考虑 `go-knifer`。 |
-| 只需要类型转换 | `spf13/cast` | 如果类型转换是整体 `go-knifer` 工具链的一部分，可使用 `go-knifer/vconv`。 |
-| 只需要 struct-to-struct 或 map 拷贝 | `jinzhu/copier` | 如果 struct/map 映射希望保持在同一套 public facade 模型内，可使用 `go-knifer/vbean`。 |
-| 只需要 map-to-struct 解码 | `mitchellh/mapstructure` | 如果周边流程是配置加载或 bean mapping，可使用 `go-knifer/vconf` 或 `vbean`。 |
-| 反射式函数式 helper | `thoas/go-funk` | 如果希望使用边界更清楚的 focused helpers，优先看 `go-knifer/vslice`、`vmap` 或 `vstr`。 |
+| 只需要 Lodash 风格的泛型集合 helper | `samber/lo` | 如果同一项目还需要安全 HTTP、URL、加密、JWT、JSON、文件、配置、缓存、ID 或日志 helper，再考虑 `knifer-go`。 |
+| 只需要类型转换 | `spf13/cast` | 如果类型转换是整体 `knifer-go` 工具链的一部分，可使用 `knifer-go/vconv`。 |
+| 只需要 struct-to-struct 或 map 拷贝 | `jinzhu/copier` | 如果 struct/map 映射希望保持在同一套 public facade 模型内，可使用 `knifer-go/vbean`。 |
+| 只需要 map-to-struct 解码 | `mitchellh/mapstructure` | 如果周边流程是配置加载或 bean mapping，可使用 `knifer-go/vconf` 或 `vbean`。 |
+| 反射式函数式 helper | `thoas/go-funk` | 如果希望使用边界更清楚的 focused helpers，优先看 `knifer-go/vslice`、`vmap` 或 `vstr`。 |
 
 <a id="package-catalog"></a>
 
 ## 🧩 模块目录
 
-`go-knifer` 采用“内部实现 + 对外 facade”的组织方式：`internal/*` 保存具体实现，`v*` 包提供稳定、可导入的公共 API。
+`knifer-go` 采用“内部实现 + 对外 facade”的组织方式：`internal/*` 保存具体实现，`v*` 包提供稳定、可导入的公共 API。
 
 - 📦 完整模块矩阵：[`docs/doc/README.CN.md#package-catalog`](./docs/doc/README.CN.md#package-catalog)
 - 🔎 分包 quickstart：[`docs/doc/*.md`](./docs/doc/README.CN.md#quickstart-documents)
@@ -261,7 +261,7 @@ func main() {
 
 - 📚 中文文档中心：[`docs/doc/README.CN.md`](./docs/doc/README.CN.md)
 - 📚 English documentation hub: [`docs/doc/README.md`](./docs/doc/README.md)
-- 🌐 在线 Go 文档：[pkg.go.dev/github.com/imajinyun/go-knifer](https://pkg.go.dev/github.com/imajinyun/go-knifer)
+- 🌐 在线 Go 文档：[pkg.go.dev/github.com/imajinyun/knifer-go](https://pkg.go.dev/github.com/imajinyun/knifer-go)
 - 🧾 API 快照：[`docs/api/exports.txt`](./docs/api/exports.txt)
 - 🤖 机读工具目录：[`docs/api/tools.json`](./docs/api/tools.json)
 - 📋 可读工具目录：[`docs/api/tools.md`](./docs/api/tools.md)
@@ -277,8 +277,8 @@ func main() {
 下载源码：
 
 ```bash
-git clone https://github.com/imajinyun/go-knifer.git
-cd go-knifer
+git clone https://github.com/imajinyun/knifer-go.git
+cd knifer-go
 ```
 
 运行常用本地检查：
@@ -322,8 +322,8 @@ UPDATE_API=1 make api-check
 
 Issue 模板、PR 原则和门禁预期见 [贡献](./docs/doc/README.CN.md#contributing)。
 
-<a id="star-go-knifer"></a>
+<a id="star-knifer-go"></a>
 
-## ⭐ Star go-knifer
+## ⭐ Star knifer-go
 
 如果这个项目减少了你的重复代码，欢迎给它一个 Star。你的反馈和贡献会帮助它成为更趁手的 Go 工具集合。

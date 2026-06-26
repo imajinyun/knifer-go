@@ -1,4 +1,4 @@
-module github.com/imajinyun/go-knifer
+module github.com/imajinyun/knifer-go
 
 go 1.25.0
 

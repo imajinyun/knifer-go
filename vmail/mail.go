@@ -8,7 +8,7 @@ import (
 	"net/smtp"
 	"time"
 
-	"github.com/imajinyun/go-knifer/internal/mail"
+	"github.com/imajinyun/knifer-go/internal/mail"
 )
 
 // Address is an RFC 5322 mailbox address.

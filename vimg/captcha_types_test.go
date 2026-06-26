@@ -3,7 +3,7 @@ package vimg_test
 import (
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vimg"
+	"github.com/imajinyun/knifer-go/vimg"
 )
 
 func TestFacadeLineCaptcha(t *testing.T) {

@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/vjson"
-	"github.com/imajinyun/go-knifer/vxml"
+	"github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/vjson"
+	"github.com/imajinyun/knifer-go/vxml"
 )
 
 func Example_cookbookEncodeStruct() {
@@ -20,9 +20,9 @@ func Example_cookbookEncodeStruct() {
 		Age  int    `json:"age"`
 	}
 
-	body, err := vjson.ToStr(user{Name: "go-knifer", Age: 5})
+	body, err := vjson.ToStr(user{Name: "knifer-go", Age: 5})
 	fmt.Println(body, err)
-	// Output: {"age":5,"name":"go-knifer"} <nil>
+	// Output: {"age":5,"name":"knifer-go"} <nil>
 }
 
 func Example_cookbookDecodeStruct() {
@@ -32,13 +32,13 @@ func Example_cookbookDecodeStruct() {
 	}
 
 	var dst user
-	err := vjson.ToBean(`{"name":"go-knifer","age":5}`, &dst)
+	err := vjson.ToBean(`{"name":"knifer-go","age":5}`, &dst)
 	fmt.Println(dst.Name, dst.Age, err)
-	// Output: go-knifer 5 <nil>
+	// Output: knifer-go 5 <nil>
 }
 
 func Example_cookbookParseObjectPathDefault() {
-	obj, err := vjson.ParseObj(`{"user":{"name":"go-knifer"}}`)
+	obj, err := vjson.ParseObj(`{"user":{"name":"knifer-go"}}`)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -47,27 +47,27 @@ func Example_cookbookParseObjectPathDefault() {
 	fmt.Println(vjson.GetByPath(obj, "user.name"))
 	fmt.Println(vjson.GetByPathOr(obj, "user.email", "missing"))
 	// Output:
-	// go-knifer
+	// knifer-go
 	// missing
 }
 
 func Example_cookbookFormatForHumans() {
-	fmt.Println(vjson.FormatWithOptions(`{"name":"go-knifer"}`, vjson.WithFormatIndentWidth(2)))
+	fmt.Println(vjson.FormatWithOptions(`{"name":"knifer-go"}`, vjson.WithFormatIndentWidth(2)))
 	// Output:
 	// {
-	//   "name": "go-knifer"
+	//   "name": "knifer-go"
 	// }
 }
 
 func Example_cookbookConvertXMLAndJSON() {
-	obj, err := vjson.XMLToJSON(`<user><name>go-knifer</name></user>`)
+	obj, err := vjson.XMLToJSON(`<user><name>knifer-go</name></user>`)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	xmlText, err := vjson.ToXMLWithOptions(obj.GetJSONObject("user"), "user", vxml.WithOmitDeclaration(true))
 	fmt.Println(vjson.GetByPath(obj, "user.name"), xmlText, err)
-	// Output: go-knifer <user><name>go-knifer</name></user> <nil>
+	// Output: knifer-go <user><name>knifer-go</name></user> <nil>
 }
 
 func Example_cookbookCustomParsingBehavior() {
@@ -114,9 +114,9 @@ func ExampleParseObj_error() {
 
 func ExamplePutByPath() {
 	root := vjson.NewObject()
-	_ = vjson.PutByPath(root, "user.name", "go-knifer")
+	_ = vjson.PutByPath(root, "user.name", "knifer-go")
 	fmt.Println(vjson.GetByPath(root, "user.name"))
-	// Output: go-knifer
+	// Output: knifer-go
 }
 
 func ExampleToBean() {
@@ -124,15 +124,15 @@ func ExampleToBean() {
 		Name string `json:"name"`
 	}
 	var u user
-	_ = vjson.ToBean(`{"name":"go-knifer"}`, &u)
+	_ = vjson.ToBean(`{"name":"knifer-go"}`, &u)
 	fmt.Println(u.Name)
-	// Output: go-knifer
+	// Output: knifer-go
 }
 
 func ExampleXMLToJSON() {
-	obj, _ := vjson.XMLToJSON(`<user><name>go-knifer</name></user>`)
+	obj, _ := vjson.XMLToJSON(`<user><name>knifer-go</name></user>`)
 	fmt.Println(vjson.GetByPath(obj, "user.name"))
-	// Output: go-knifer
+	// Output: knifer-go
 }
 
 func ExampleCreateConfig() {

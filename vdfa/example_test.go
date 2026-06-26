@@ -3,7 +3,7 @@ package vdfa_test
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vdfa"
+	"github.com/imajinyun/knifer-go/vdfa"
 )
 
 func ExampleContains() {

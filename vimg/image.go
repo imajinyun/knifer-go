@@ -9,7 +9,7 @@ package vimg
 import (
 	"io"
 
-	"github.com/imajinyun/go-knifer/internal/imgx"
+	"github.com/imajinyun/knifer-go/internal/imgx"
 )
 
 // Thumbnail decodes a raster image from r and writes a downscaled copy to w.

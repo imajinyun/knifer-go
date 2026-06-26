@@ -4,7 +4,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/imajinyun/go-knifer/vhttp"
+	"github.com/imajinyun/knifer-go/vhttp"
 )
 
 type nopWriteCloser struct{ io.Writer }

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vssh"
+	"github.com/imajinyun/knifer-go/vssh"
 )
 
 type exampleProvider struct{}

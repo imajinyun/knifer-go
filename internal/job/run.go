@@ -3,8 +3,8 @@ package job
 import (
 	"context"
 
-	"github.com/imajinyun/go-knifer/internal/errx"
-	"github.com/imajinyun/go-knifer/internal/semaphore"
+	"github.com/imajinyun/knifer-go/internal/errx"
+	"github.com/imajinyun/knifer-go/internal/semaphore"
 )
 
 // Run executes job with the default Options. By default, the whole job runs as one serial shard.

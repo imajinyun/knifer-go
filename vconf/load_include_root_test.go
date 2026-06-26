@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/vconf"
+	knifer "github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/vconf"
 )
 
 func TestLoadWithOptionsIncludeRootFacade(t *testing.T) {

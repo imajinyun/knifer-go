@@ -1,6 +1,6 @@
 package vjwt
 
-import jwtimpl "github.com/imajinyun/go-knifer/internal/jwt"
+import jwtimpl "github.com/imajinyun/knifer-go/internal/jwt"
 
 // JWT is a JSON Web Token object.
 type JWT = jwtimpl.JWT

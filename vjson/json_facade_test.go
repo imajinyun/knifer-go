@@ -3,15 +3,15 @@ package vjson_test
 import (
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vjson"
+	"github.com/imajinyun/knifer-go/vjson"
 )
 
 func TestFacadeUsesNamesWithoutJSONPrefix(t *testing.T) {
 	obj := vjson.NewObject().
-		Set("name", "go-knifer").
+		Set("name", "knifer-go").
 		Set("tags", []string{"go", "tool"})
 
-	if got := obj.GetString("name"); got != "go-knifer" {
+	if got := obj.GetString("name"); got != "knifer-go" {
 		t.Fatalf("GetString(name) = %q", got)
 	}
 
@@ -20,7 +20,7 @@ func TestFacadeUsesNamesWithoutJSONPrefix(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := parsed.GetString("name"); got != "go-knifer" {
+	if got := parsed.GetString("name"); got != "knifer-go" {
 		t.Fatalf("ParseObj().GetString(name) = %q", got)
 	}
 

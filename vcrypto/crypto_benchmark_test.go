@@ -4,11 +4,11 @@ import (
 	"crypto/sha256"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vcrypto"
+	"github.com/imajinyun/knifer-go/vcrypto"
 )
 
 var (
-	benchmarkCryptoPayload = []byte("go-knifer crypto benchmark payload for hashing hmac and authenticated encryption")
+	benchmarkCryptoPayload = []byte("knifer-go crypto benchmark payload for hashing hmac and authenticated encryption")
 	benchmarkCryptoKey     = []byte("0123456789abcdef0123456789abcdef")
 	benchmarkCryptoNonce   = []byte("123456789012")
 	benchmarkCryptoAAD     = []byte("benchmark-aad")

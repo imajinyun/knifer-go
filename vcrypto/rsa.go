@@ -6,7 +6,7 @@ import (
 	"hash"
 	"io"
 
-	cryptoimpl "github.com/imajinyun/go-knifer/internal/crypto"
+	cryptoimpl "github.com/imajinyun/knifer-go/internal/crypto"
 )
 
 // RSAOption customizes RSA helper behavior.

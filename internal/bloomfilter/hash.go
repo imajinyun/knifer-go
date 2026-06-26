@@ -4,7 +4,7 @@ package bloomfilter
 // internal/hash as the single source of truth. These aliases keep the existing
 // call sites within this package unchanged.
 
-import hashimpl "github.com/imajinyun/go-knifer/internal/hash"
+import hashimpl "github.com/imajinyun/knifer-go/internal/hash"
 
 var (
 	// RsHash implements the RS algorithm.

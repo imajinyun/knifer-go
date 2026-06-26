@@ -6,7 +6,7 @@ import (
 	"html/template"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vtpl"
+	"github.com/imajinyun/knifer-go/vtpl"
 )
 
 func ExampleRender() {
@@ -47,34 +47,34 @@ func ExampleRenderWithOptions() {
 }
 
 func ExampleRender_htmlEscaping() {
-	result, err := vtpl.Render("<p>{{.}}</p>", "<go-knifer>")
+	result, err := vtpl.Render("<p>{{.}}</p>", "<knifer-go>")
 
 	fmt.Println(result)
 	fmt.Println(err)
 	// Output:
-	// <p>&lt;go-knifer&gt;</p>
+	// <p>&lt;knifer-go&gt;</p>
 	// <nil>
 }
 
 func ExampleRenderWithEngine_textEngine() {
 	engine := vtpl.NewTextEngine()
-	result, err := vtpl.RenderWithEngine(context.Background(), engine, "{{.}}", "<go-knifer>")
+	result, err := vtpl.RenderWithEngine(context.Background(), engine, "{{.}}", "<knifer-go>")
 
 	fmt.Println(result)
 	fmt.Println(err)
 	// Output:
-	// <go-knifer>
+	// <knifer-go>
 	// <nil>
 }
 
 func ExampleRenderWithEngine_htmlEngine() {
 	engine := vtpl.NewHTMLEngine()
-	result, err := vtpl.RenderWithEngine(context.Background(), engine, "{{.}}", "<go-knifer>")
+	result, err := vtpl.RenderWithEngine(context.Background(), engine, "{{.}}", "<knifer-go>")
 
 	fmt.Println(result)
 	fmt.Println(err)
 	// Output:
-	// &lt;go-knifer&gt;
+	// &lt;knifer-go&gt;
 	// <nil>
 }
 

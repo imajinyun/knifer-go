@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/vbean"
+	knifer "github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/vbean"
 )
 
 func TestFacadeBeanErrorContract(t *testing.T) {

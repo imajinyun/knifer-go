@@ -8,7 +8,7 @@ import (
 	"io"
 	texttemplate "text/template"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 // ErrMissingEngine reports that no template engine was provided.
@@ -72,14 +72,14 @@ func WithEngineDelims(left, right string) EngineOption {
 }
 
 func applyEngineOptions(opts []EngineOption) engineConfig {
-	cfg := engineConfig{name: "go-knifer-template"}
+	cfg := engineConfig{name: "knifer-go-template"}
 	for _, opt := range opts {
 		if opt != nil {
 			opt(&cfg)
 		}
 	}
 	if cfg.name == "" {
-		cfg.name = "go-knifer-template"
+		cfg.name = "knifer-go-template"
 	}
 	return cfg
 }
@@ -208,14 +208,14 @@ func WithTemplateExecutor(executor func(*template.Template, io.Writer, any) erro
 }
 
 func applyRenderOptions(opts []RenderOption) renderConfig {
-	cfg := renderConfig{name: "go-knifer-template", factory: template.New}
+	cfg := renderConfig{name: "knifer-go-template", factory: template.New}
 	for _, opt := range opts {
 		if opt != nil {
 			opt(&cfg)
 		}
 	}
 	if cfg.name == "" {
-		cfg.name = "go-knifer-template"
+		cfg.name = "knifer-go-template"
 	}
 	if cfg.factory == nil {
 		cfg.factory = template.New

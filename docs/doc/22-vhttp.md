@@ -7,7 +7,7 @@
 | Scenario | Recommended package | Recommended API family | Why |
 | --- | --- | --- | --- |
 | Standard-library style request | `vhttp` | `Get`, `Post`, request builders | Keeps dependencies light and behavior explicit. |
-| Resty-based fluent client | `vresty` | client/request helpers | Uses Resty ergonomics while keeping go-knifer safety docs. |
+| Resty-based fluent client | `vresty` | client/request helpers | Uses Resty ergonomics while keeping knifer-go safety docs. |
 | Untrusted URL | `vhttp`/`vresty` plus safe APIs | `Safe`/`E` variants | Applies validation and explicit errors before network access. |
 | File download | `vhttp`/`vresty` safe download helpers | `DownloadFileSafe` family | Keeps path and transfer risks visible. |
 
@@ -46,7 +46,7 @@ The suite uses `httptest.Server` and temporary files only. It covers simple GET 
 
 `vhttp` does not replace `net/http`; it provides repeatable convenience helpers and safe entry points for common request, response, and download flows.
 
-`vresty` does not replace Resty; it keeps Resty ergonomics while documenting go-knifer's safety boundaries and generated examples.
+`vresty` does not replace Resty; it keeps Resty ergonomics while documenting knifer-go's safety boundaries and generated examples.
 
 Safe APIs may add validation overhead. Use the benchmark commands in this document to measure the trade-off on your workload.
 
@@ -87,7 +87,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vhttp"
+	"github.com/imajinyun/knifer-go/vhttp"
 )
 
 func main() {
@@ -115,7 +115,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vhttp"
+	"github.com/imajinyun/knifer-go/vhttp"
 )
 
 func main() {
@@ -145,7 +145,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vhttp"
+	"github.com/imajinyun/knifer-go/vhttp"
 )
 
 func main() {
@@ -174,7 +174,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vhttp"
+	"github.com/imajinyun/knifer-go/vhttp"
 )
 
 func main() {

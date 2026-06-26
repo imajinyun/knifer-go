@@ -82,7 +82,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/imajinyun/go-knifer/vzip"
+	"github.com/imajinyun/knifer-go/vzip"
 )
 
 func main() {
@@ -113,7 +113,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/imajinyun/go-knifer/vzip"
+	"github.com/imajinyun/knifer-go/vzip"
 )
 
 func main() {
@@ -151,7 +151,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/imajinyun/go-knifer/vzip"
+	"github.com/imajinyun/knifer-go/vzip"
 )
 
 func main() {
@@ -188,7 +188,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vzip"
+	"github.com/imajinyun/knifer-go/vzip"
 )
 
 func main() {

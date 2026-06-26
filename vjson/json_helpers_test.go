@@ -4,14 +4,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vjson"
+	"github.com/imajinyun/knifer-go/vjson"
 )
 
 func TestFacadeHelperNamesWithoutJSONPrefix(t *testing.T) {
 	cfg := vjson.NewConfig()
 	cfg.IgnoreNullValue = true
 	obj := vjson.NewObjectWithConfig(cfg).
-		Set("name", "go-knifer").
+		Set("name", "knifer-go").
 		Set("empty", vjson.Null)
 
 	if !vjson.IsNull(vjson.Null) {
@@ -25,7 +25,7 @@ func TestFacadeHelperNamesWithoutJSONPrefix(t *testing.T) {
 	if !strings.Contains(formatted, "\n") {
 		t.Fatalf("Format() = %q, want pretty JSON", formatted)
 	}
-	if got := vjson.GetByPath(obj, "name"); got != "go-knifer" {
+	if got := vjson.GetByPath(obj, "name"); got != "knifer-go" {
 		t.Fatalf("GetByPath(name) = %v", got)
 	}
 	if got := vjson.GetByPathOr(obj, "missing", "default"); got != "default" {

@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vhttp"
+	"github.com/imajinyun/knifer-go/vhttp"
 )
 
 const facadeDownloadText = "download-text"

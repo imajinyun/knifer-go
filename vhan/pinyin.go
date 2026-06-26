@@ -3,7 +3,7 @@ package vhan
 import (
 	"context"
 
-	pinyinimpl "github.com/imajinyun/go-knifer/internal/pinyin"
+	pinyinimpl "github.com/imajinyun/knifer-go/internal/pinyin"
 )
 
 // ToneStyle describes how converted syllables should represent tones.

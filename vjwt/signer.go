@@ -5,7 +5,7 @@ import (
 	"crypto/rsa"
 	"io"
 
-	jwtimpl "github.com/imajinyun/go-knifer/internal/jwt"
+	jwtimpl "github.com/imajinyun/knifer-go/internal/jwt"
 )
 
 // JWTSignerHMAC creates an HMAC signer.

@@ -3,7 +3,7 @@ package vftp
 import (
 	"context"
 
-	ftpimpl "github.com/imajinyun/go-knifer/internal/ftp"
+	ftpimpl "github.com/imajinyun/knifer-go/internal/ftp"
 )
 
 // EntryType describes the kind of remote FTP entry.

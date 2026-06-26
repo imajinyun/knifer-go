@@ -47,7 +47,7 @@ For Go changes, load `golang-how-to` first, then use the relevant Go skills it s
 - `make docs-gen`: regenerates generated documentation artifacts.
 - `make ai-context-check`: validates AI metadata and command side-effect declarations.
 - `make agent-check`: default AI/Agent-safe validation gate.
-- `make agent-full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out`: full AI/Agent validation gate when a broad change requires coverage, lint, and vulnerability checks.
+- `make agent-full-check COVERAGE_FILE=/tmp/knifer-go-coverage.out`: full AI/Agent validation gate when a broad change requires coverage, lint, and vulnerability checks.
 
 ## Generated artifacts
 

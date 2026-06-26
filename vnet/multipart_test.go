@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vnet"
+	"github.com/imajinyun/knifer-go/vnet"
 )
 
 func TestVNetUploadSaveOptionsFacade(t *testing.T) {

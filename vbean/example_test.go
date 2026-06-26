@@ -3,7 +3,7 @@ package vbean_test
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vbean"
+	"github.com/imajinyun/knifer-go/vbean"
 )
 
 func ExampleToMap() {

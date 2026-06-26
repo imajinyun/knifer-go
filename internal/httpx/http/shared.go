@@ -1,8 +1,8 @@
 package http
 
 import (
-	knifer "github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/internal/httpx/internal/shared"
+	knifer "github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/internal/httpx/internal/shared"
 )
 
 // Method represents an HTTP request method.
@@ -99,7 +99,7 @@ func NewHTTPError(msg string, cause error) *HTTPError {
 	return shared.NewHTTPError(msg, cause)
 }
 
-// NewHTTPErrorWithCode creates an HTTP error with an explicit go-knifer code.
+// NewHTTPErrorWithCode creates an HTTP error with an explicit knifer-go code.
 func NewHTTPErrorWithCode(code knifer.ErrCode, msg string, cause error) *HTTPError {
 	return shared.NewHTTPErrorWithCode(code, msg, cause)
 }

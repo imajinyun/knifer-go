@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vskt"
+	"github.com/imajinyun/knifer-go/vskt"
 )
 
 func TestFacadeSocketConfig(t *testing.T) {

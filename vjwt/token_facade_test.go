@@ -3,7 +3,7 @@ package vjwt_test
 import (
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vjwt"
+	"github.com/imajinyun/knifer-go/vjwt"
 )
 
 func TestFacadeTokenConstructorsAndValidators(t *testing.T) {

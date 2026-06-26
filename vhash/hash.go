@@ -3,7 +3,7 @@ package vhash
 import (
 	"hash"
 
-	hashimpl "github.com/imajinyun/go-knifer/internal/hash"
+	hashimpl "github.com/imajinyun/knifer-go/internal/hash"
 )
 
 // AdditiveHash calculates an additive hash modulo prime.

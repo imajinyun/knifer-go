@@ -3,7 +3,7 @@ package vnum
 import (
 	"math/big"
 
-	numimpl "github.com/imajinyun/go-knifer/internal/num"
+	numimpl "github.com/imajinyun/knifer-go/internal/num"
 )
 
 func Compare[T Ordered](x, y T) int { return numimpl.Compare(x, y) }

@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 var (

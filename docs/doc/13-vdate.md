@@ -70,7 +70,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vdate"
+	"github.com/imajinyun/knifer-go/vdate"
 )
 
 func main() {
@@ -96,7 +96,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vdate"
+	"github.com/imajinyun/knifer-go/vdate"
 )
 
 func main() {
@@ -126,7 +126,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vdate"
+	"github.com/imajinyun/knifer-go/vdate"
 )
 
 func main() {
@@ -148,7 +148,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vdate"
+	"github.com/imajinyun/knifer-go/vdate"
 )
 
 func main() {

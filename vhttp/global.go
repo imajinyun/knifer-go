@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	httpx "github.com/imajinyun/go-knifer/internal/httpx/http"
+	httpx "github.com/imajinyun/knifer-go/internal/httpx/http"
 )
 
 // SetGlobalTimeout sets the global HTTP timeout.

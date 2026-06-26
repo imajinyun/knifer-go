@@ -13,7 +13,7 @@ import (
 	"slices"
 	"strings"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 	"github.com/makiuchi-d/gozxing"
 	"github.com/makiuchi-d/gozxing/aztec"
 	"github.com/makiuchi-d/gozxing/datamatrix"

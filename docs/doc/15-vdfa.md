@@ -73,7 +73,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vdfa"
+	"github.com/imajinyun/knifer-go/vdfa"
 )
 
 func main() {
@@ -92,7 +92,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vdfa"
+	"github.com/imajinyun/knifer-go/vdfa"
 )
 
 func main() {
@@ -114,7 +114,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vdfa"
+	"github.com/imajinyun/knifer-go/vdfa"
 )
 
 func main() {
@@ -135,7 +135,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vdfa"
+	"github.com/imajinyun/knifer-go/vdfa"
 )
 
 type Payload struct {

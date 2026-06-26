@@ -3,7 +3,7 @@ package conf
 import (
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 func TestLoadWithOptionsReadFileProvider(t *testing.T) {

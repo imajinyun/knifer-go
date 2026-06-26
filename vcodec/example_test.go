@@ -3,11 +3,11 @@ package vcodec_test
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcodec"
+	"github.com/imajinyun/knifer-go/vcodec"
 )
 
 func ExampleBase64Encode() {
-	encoded := vcodec.Base64Encode([]byte("go-knifer"))
+	encoded := vcodec.Base64Encode([]byte("knifer-go"))
 	fmt.Println(encoded)
 	// Output: Z28ta25pZmVy
 }
@@ -15,7 +15,7 @@ func ExampleBase64Encode() {
 func ExampleBase64Decode() {
 	decoded, _ := vcodec.Base64Decode("Z28ta25pZmVy")
 	fmt.Println(string(decoded))
-	// Output: go-knifer
+	// Output: knifer-go
 }
 
 func ExampleHexEncode() {

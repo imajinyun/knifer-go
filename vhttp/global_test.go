@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vhttp"
-	"github.com/imajinyun/go-knifer/vurl"
+	"github.com/imajinyun/knifer-go/vhttp"
+	"github.com/imajinyun/knifer-go/vurl"
 )
 
 func TestFacadeHelperNamesWithoutHTTPPrefix(t *testing.T) {

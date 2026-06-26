@@ -4,7 +4,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vsys"
+	"github.com/imajinyun/knifer-go/vsys"
 )
 
 func TestFacadeHostInfo(t *testing.T) {

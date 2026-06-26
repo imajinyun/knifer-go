@@ -3,7 +3,7 @@ package vform_test
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vform"
+	"github.com/imajinyun/knifer-go/vform"
 )
 
 func ExampleIsEmail() {

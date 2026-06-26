@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vmail"
+	"github.com/imajinyun/knifer-go/vmail"
 )
 
 func ExampleNewMessage() {

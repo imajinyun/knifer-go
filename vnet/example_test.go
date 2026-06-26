@@ -8,7 +8,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/imajinyun/go-knifer/vnet"
+	"github.com/imajinyun/knifer-go/vnet"
 )
 
 func ExampleCreateAddress() {

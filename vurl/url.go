@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	urlimpl "github.com/imajinyun/go-knifer/internal/url"
+	urlimpl "github.com/imajinyun/knifer-go/internal/url"
 )
 
 const (

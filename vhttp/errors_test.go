@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/vhttp"
+	knifer "github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/vhttp"
 )
 
 func TestFacadeErrorNamesWithoutHTTPPrefix(t *testing.T) {

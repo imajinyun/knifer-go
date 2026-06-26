@@ -1,8 +1,8 @@
 package vhttp
 
 import (
-	knifer "github.com/imajinyun/go-knifer"
-	httpx "github.com/imajinyun/go-knifer/internal/httpx/http"
+	knifer "github.com/imajinyun/knifer-go"
+	httpx "github.com/imajinyun/knifer-go/internal/httpx/http"
 )
 
 // NewError delegates to the internal httpx implementation.
@@ -10,7 +10,7 @@ func NewError(msg string, cause error) *Error {
 	return httpx.NewHTTPError(msg, cause)
 }
 
-// NewErrorWithCode creates an HTTP error with an explicit go-knifer code.
+// NewErrorWithCode creates an HTTP error with an explicit knifer-go code.
 func NewErrorWithCode(code knifer.ErrCode, msg string, cause error) *Error {
 	return httpx.NewHTTPErrorWithCode(code, msg, cause)
 }

@@ -77,7 +77,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/imajinyun/go-knifer/vpoi"
+	"github.com/imajinyun/knifer-go/vpoi"
 )
 
 func main() {
@@ -105,7 +105,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/imajinyun/go-knifer/vpoi"
+	"github.com/imajinyun/knifer-go/vpoi"
 )
 
 func main() {
@@ -136,7 +136,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/imajinyun/go-knifer/vpoi"
+	"github.com/imajinyun/knifer-go/vpoi"
 )
 
 func main() {
@@ -170,7 +170,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/imajinyun/go-knifer/vpoi"
+	"github.com/imajinyun/knifer-go/vpoi"
 )
 
 func main() {
@@ -203,7 +203,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vpoi"
+	"github.com/imajinyun/knifer-go/vpoi"
 )
 
 func main() {
@@ -222,7 +222,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vpoi"
+	"github.com/imajinyun/knifer-go/vpoi"
 )
 
 func main() {
@@ -249,7 +249,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/imajinyun/go-knifer/vpoi"
+	"github.com/imajinyun/knifer-go/vpoi"
 )
 
 func main() {

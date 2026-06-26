@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vskt"
+	"github.com/imajinyun/knifer-go/vskt"
 )
 
 func TestFacadeFuncDecoderAndEncoder(t *testing.T) {

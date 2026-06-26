@@ -69,13 +69,13 @@ import (
 	"fmt"
 	"hash/fnv"
 
-	"github.com/imajinyun/go-knifer/vhash"
+	"github.com/imajinyun/knifer-go/vhash"
 )
 
 func main() {
-	fmt.Println(vhash.FnvHash("go-knifer"))
-	fmt.Println(vhash.Hash32("go-knifer", fnv.New32))
-	fmt.Println(vhash.Hash32("go-knifer", nil))
+	fmt.Println(vhash.FnvHash("knifer-go"))
+	fmt.Println(vhash.Hash32("knifer-go", fnv.New32))
+	fmt.Println(vhash.Hash32("knifer-go", nil))
 }
 ```
 
@@ -87,11 +87,11 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vhash"
+	"github.com/imajinyun/knifer-go/vhash"
 )
 
 func main() {
-	s := "go-knifer"
+	s := "knifer-go"
 	fmt.Println(vhash.BkdrHash(s))
 	fmt.Println(vhash.DjbHash(s))
 	fmt.Println(vhash.SdbmHash(s))
@@ -107,7 +107,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vhash"
+	"github.com/imajinyun/knifer-go/vhash"
 )
 
 func main() {
@@ -127,7 +127,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vhash"
+	"github.com/imajinyun/knifer-go/vhash"
 )
 
 func main() {

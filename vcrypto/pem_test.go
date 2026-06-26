@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vcrypto"
+	"github.com/imajinyun/knifer-go/vcrypto"
 )
 
 func TestPEMEncodeParseRSAKeys(t *testing.T) {
@@ -66,7 +66,7 @@ func TestPEMCertificateParseAndPublicKey(t *testing.T) {
 	pub := &priv.PublicKey
 	certDER, err := x509.CreateCertificate(bytes.NewReader(bytes.Repeat([]byte{0x42}, 1024)), &x509.Certificate{
 		SerialNumber: big.NewInt(1),
-		Subject:      pkix.Name{CommonName: "go-knifer.test"},
+		Subject:      pkix.Name{CommonName: "knifer-go.test"},
 		NotBefore:    time.Unix(0, 0),
 		NotAfter:     time.Unix(3600, 0),
 		KeyUsage:     x509.KeyUsageDigitalSignature,
@@ -79,7 +79,7 @@ func TestPEMCertificateParseAndPublicKey(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ParseX509CertificatePEM: %v", err)
 	}
-	if cert.Subject.CommonName != "go-knifer.test" {
+	if cert.Subject.CommonName != "knifer-go.test" {
 		t.Fatalf("certificate CN = %q", cert.Subject.CommonName)
 	}
 	certPub, err := vcrypto.PublicKeyFromCertificatePEM(certPEM)

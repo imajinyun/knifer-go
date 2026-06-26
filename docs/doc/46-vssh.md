@@ -1,6 +1,6 @@
 # vssh: SSH/SFTP adapter helpers
 
-`vssh` provides provider-neutral SSH command and SFTP-style transfer helpers. It defines a small interface for callers to inject their own SSH/SFTP providers while keeping `go-knifer` free of network-client, key-parsing, and credential dependencies.
+`vssh` provides provider-neutral SSH command and SFTP-style transfer helpers. It defines a small interface for callers to inject their own SSH/SFTP providers while keeping `knifer-go` free of network-client, key-parsing, and credential dependencies.
 
 ## Which helper should I use?
 
@@ -41,7 +41,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vssh"
+	"github.com/imajinyun/knifer-go/vssh"
 )
 
 type sshProvider struct{}
@@ -186,7 +186,7 @@ make agent-security-check
 - The facade adds request validation, defensive copying, and limit checks around provider calls. That overhead is small for network-bound operations but visible in microbenchmarks.
 - In-memory transfers simplify testing and provider contracts, but they are not appropriate for multi-gigabyte streams.
 - `Run`, `List`, `Download`, and `Upload` create short-lived clients for convenience. Reuse `New(WithProvider(...))` when multiple calls share one provider.
-- Provider-neutral structs keep go-knifer dependency-light while shifting connection lifecycle and protocol-specific tuning to the application.
+- Provider-neutral structs keep knifer-go dependency-light while shifting connection lifecycle and protocol-specific tuning to the application.
 
 ## FAQ
 

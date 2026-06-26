@@ -3,7 +3,7 @@ package vjob
 import (
 	"context"
 
-	jobimpl "github.com/imajinyun/go-knifer/internal/job"
+	jobimpl "github.com/imajinyun/knifer-go/internal/job"
 )
 
 var (

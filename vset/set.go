@@ -3,7 +3,7 @@ package vset
 import (
 	"fmt"
 
-	setimpl "github.com/imajinyun/go-knifer/internal/sets"
+	setimpl "github.com/imajinyun/knifer-go/internal/sets"
 )
 
 // JSONOption customizes explicit Set JSON helpers per call.

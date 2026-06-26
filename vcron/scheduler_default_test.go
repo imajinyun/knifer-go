@@ -3,7 +3,7 @@ package vcron_test
 import (
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vcron"
+	"github.com/imajinyun/knifer-go/vcron"
 )
 
 func TestFacadeDefaultSchedulerOptions(t *testing.T) {

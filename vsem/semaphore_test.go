@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	knifer "github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/vsem"
+	knifer "github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/vsem"
 )
 
 func TestVSemFacade(t *testing.T) {

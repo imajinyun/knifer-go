@@ -3,7 +3,7 @@ package vref
 import (
 	"reflect"
 
-	refimpl "github.com/imajinyun/go-knifer/internal/ref"
+	refimpl "github.com/imajinyun/knifer-go/internal/ref"
 )
 
 type (

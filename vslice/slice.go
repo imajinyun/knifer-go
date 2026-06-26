@@ -3,7 +3,7 @@ package vslice
 import (
 	"iter"
 
-	sliceimpl "github.com/imajinyun/go-knifer/internal/slice"
+	sliceimpl "github.com/imajinyun/knifer-go/internal/slice"
 )
 
 func IsEmpty[T any](a []T) bool                { return sliceimpl.IsEmpty(a) }

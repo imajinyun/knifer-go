@@ -13,7 +13,7 @@ import (
 	"testing"
 	"time"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 func TestPublicKeyToPEM(t *testing.T) {
@@ -73,7 +73,7 @@ func TestPEMCertificate(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if cert.Subject.CommonName != "go-knifer-test" {
+	if cert.Subject.CommonName != "knifer-go-test" {
 		t.Fatalf("certificate subject = %s", cert.Subject.CommonName)
 	}
 	certPub, err := PublicKeyFromCertificatePEM(certPEM)
@@ -156,7 +156,7 @@ func newTestCertificatePEM(t *testing.T, priv any) []byte {
 	t.Helper()
 	tmpl := &x509.Certificate{
 		SerialNumber: big.NewInt(1),
-		Subject:      pkix.Name{CommonName: "go-knifer-test"},
+		Subject:      pkix.Name{CommonName: "knifer-go-test"},
 		NotBefore:    time.Now().Add(-time.Hour),
 		NotAfter:     time.Now().Add(time.Hour),
 		KeyUsage:     x509.KeyUsageDigitalSignature,

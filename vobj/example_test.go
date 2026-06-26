@@ -3,7 +3,7 @@ package vobj_test
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vobj"
+	"github.com/imajinyun/knifer-go/vobj"
 )
 
 type exampleObject struct {
@@ -106,7 +106,7 @@ func ExampleClone() {
 }
 
 func ExampleApply() {
-	name := "go-knifer"
+	name := "knifer-go"
 	length := vobj.Apply(&name, func(s string) int { return len(s) })
 	missing := vobj.Apply[string, int](nil, func(s string) int { return len(s) })
 

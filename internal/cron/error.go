@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 // ErrSchedulerStarted is returned when immutable scheduler configuration is changed after Start.
@@ -41,7 +41,7 @@ func (e *CronError) Error() string {
 	return e.Msg
 }
 
-// ErrorCode returns the go-knifer error code.
+// ErrorCode returns the knifer-go error code.
 func (e *CronError) ErrorCode() knifer.ErrCode {
 	if e == nil {
 		return ""

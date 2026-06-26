@@ -1,6 +1,6 @@
 # vftp: FTP adapter helpers
 
-`vftp` provides provider-neutral list, download, and upload helpers for FTP-style remote file transfer workflows. It defines small interfaces for callers to inject their own FTP providers while keeping `go-knifer` free of network-client and credential dependencies.
+`vftp` provides provider-neutral list, download, and upload helpers for FTP-style remote file transfer workflows. It defines small interfaces for callers to inject their own FTP providers while keeping `knifer-go` free of network-client and credential dependencies.
 
 ## Which helper should I use?
 
@@ -39,7 +39,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vftp"
+	"github.com/imajinyun/knifer-go/vftp"
 )
 
 type ftpProvider struct{}
@@ -163,7 +163,7 @@ make agent-security-check
 - Request validation and defensive copying make provider boundaries safer and more testable, with small overhead compared with real network calls.
 - The one-off helpers create short-lived clients for concise call sites. Reuse `New(WithProvider(...))` when a workflow shares provider setup.
 - In-memory transfers make limit checks straightforward but move streaming and backpressure out of scope.
-- Provider neutrality keeps go-knifer dependency-light while requiring applications to document their own FTP security and retry behavior.
+- Provider neutrality keeps knifer-go dependency-light while requiring applications to document their own FTP security and retry behavior.
 
 ## FAQ
 

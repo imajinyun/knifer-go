@@ -1,6 +1,6 @@
 package vdfa
 
-import dfaimpl "github.com/imajinyun/go-knifer/internal/dfa"
+import dfaimpl "github.com/imajinyun/knifer-go/internal/dfa"
 
 // CharFilter decides whether a rune participates in matching.
 type CharFilter = dfaimpl.CharFilter

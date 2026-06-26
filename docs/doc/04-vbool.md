@@ -66,7 +66,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vbool"
+	"github.com/imajinyun/knifer-go/vbool"
 )
 
 func main() {
@@ -82,7 +82,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vbool"
+	"github.com/imajinyun/knifer-go/vbool"
 )
 
 func main() {
@@ -99,7 +99,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vbool"
+	"github.com/imajinyun/knifer-go/vbool"
 )
 
 func main() {
@@ -115,7 +115,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vbool"
+	"github.com/imajinyun/knifer-go/vbool"
 )
 
 func main() {

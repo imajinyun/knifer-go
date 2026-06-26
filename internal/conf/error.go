@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 // ConfError represents an error produced by configuration helpers.
@@ -25,7 +25,7 @@ func (e *ConfError) Error() string {
 	return e.Msg
 }
 
-// ErrorCode returns the go-knifer error code.
+// ErrorCode returns the knifer-go error code.
 func (e *ConfError) ErrorCode() knifer.ErrCode {
 	if e == nil {
 		return ""

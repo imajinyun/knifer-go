@@ -5,7 +5,7 @@ import (
 	"io/fs"
 	"os"
 
-	httpx "github.com/imajinyun/go-knifer/internal/httpx/http"
+	httpx "github.com/imajinyun/knifer-go/internal/httpx/http"
 )
 
 // WithSaveFilePerm sets the file permission used when creating the destination file.

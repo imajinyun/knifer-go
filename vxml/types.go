@@ -1,6 +1,6 @@
 package vxml
 
-import xmlimpl "github.com/imajinyun/go-knifer/internal/xml"
+import xmlimpl "github.com/imajinyun/knifer-go/internal/xml"
 
 const (
 	NBSP           = xmlimpl.NBSP

@@ -11,7 +11,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vimg"
+	"github.com/imajinyun/knifer-go/vimg"
 )
 
 func ExampleBarcodeASCII() {

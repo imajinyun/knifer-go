@@ -1,6 +1,6 @@
 package num
 
-import "github.com/imajinyun/go-knifer/internal/constraint"
+import "github.com/imajinyun/knifer-go/internal/constraint"
 
 // SumNumber returns the sum of all elements as float64.
 func SumNumber[T constraint.Integer | constraint.Float](values ...T) float64 {

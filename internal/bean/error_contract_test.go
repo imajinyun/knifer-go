@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 func TestBeanErrorContract(t *testing.T) {

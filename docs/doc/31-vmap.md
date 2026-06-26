@@ -39,7 +39,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vmap"
+	"github.com/imajinyun/knifer-go/vmap"
 )
 
 func main() {
@@ -63,7 +63,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/imajinyun/go-knifer/vmap"
+	"github.com/imajinyun/knifer-go/vmap"
 )
 
 func main() {
@@ -87,7 +87,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vmap"
+	"github.com/imajinyun/knifer-go/vmap"
 )
 
 func main() {
@@ -115,7 +115,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vmap"
+	"github.com/imajinyun/knifer-go/vmap"
 )
 
 func main() {
@@ -142,7 +142,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vmap"
+	"github.com/imajinyun/knifer-go/vmap"
 )
 
 func main() {
@@ -170,7 +170,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vmap"
+	"github.com/imajinyun/knifer-go/vmap"
 )
 
 func main() {

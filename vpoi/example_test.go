@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/imajinyun/go-knifer/vpoi"
+	"github.com/imajinyun/knifer-go/vpoi"
 )
 
 func ExampleSheetNames() {

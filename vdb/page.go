@@ -1,6 +1,6 @@
 package vdb
 
-import dbimpl "github.com/imajinyun/go-knifer/internal/db"
+import dbimpl "github.com/imajinyun/knifer-go/internal/db"
 
 func Asc(field string) Order { return dbimpl.Asc(field) }
 

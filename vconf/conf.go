@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"time"
 
-	confimpl "github.com/imajinyun/go-knifer/internal/conf"
+	confimpl "github.com/imajinyun/knifer-go/internal/conf"
 )
 
 // Conf stores grouped key-value configuration.

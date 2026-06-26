@@ -3,7 +3,7 @@ package vrand_test
 import (
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vrand"
+	"github.com/imajinyun/knifer-go/vrand"
 )
 
 var (

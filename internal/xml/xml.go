@@ -1,5 +1,5 @@
 // Package xml is the internal implementation of the vxml facade.
-// External callers must depend on github.com/imajinyun/go-knifer/vxml.
+// External callers must depend on github.com/imajinyun/knifer-go/vxml.
 package xml
 
 import (

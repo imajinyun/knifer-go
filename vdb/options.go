@@ -3,7 +3,7 @@ package vdb
 import (
 	"time"
 
-	dbimpl "github.com/imajinyun/go-knifer/internal/db"
+	dbimpl "github.com/imajinyun/knifer-go/internal/db"
 )
 
 // NewOptions returns default database helper options.

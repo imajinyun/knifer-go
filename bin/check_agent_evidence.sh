@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 AI_CONTEXT="${ROOT_DIR}/ai-context.json"
-EVIDENCE_FILE="${AGENT_EVIDENCE_FILE:-/tmp/go-knifer-agent-validation.json}"
+EVIDENCE_FILE="${AGENT_EVIDENCE_FILE:-/tmp/knifer-go-agent-validation.json}"
 
 python3 - "${ROOT_DIR}" "${AI_CONTEXT}" "${EVIDENCE_FILE}" <<'PY'
 import json

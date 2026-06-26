@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vident"
+	"github.com/imajinyun/knifer-go/vident"
 )
 
 func ExampleParseIDCard() {

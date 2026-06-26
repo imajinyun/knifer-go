@@ -3,7 +3,7 @@ package vstr_test
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vstr"
+	"github.com/imajinyun/knifer-go/vstr"
 )
 
 func ExampleToCamelCase() {

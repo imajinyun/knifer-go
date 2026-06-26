@@ -3,7 +3,7 @@ package vblf
 import (
 	"io"
 
-	"github.com/imajinyun/go-knifer/internal/bloomfilter"
+	"github.com/imajinyun/knifer-go/internal/bloomfilter"
 )
 
 // BitMap is the bitmap abstraction used by bloom filters.

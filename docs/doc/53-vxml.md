@@ -36,7 +36,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vxml"
+	"github.com/imajinyun/knifer-go/vxml"
 )
 
 func main() {
@@ -60,7 +60,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vxml"
+	"github.com/imajinyun/knifer-go/vxml"
 )
 
 func main() {
@@ -85,7 +85,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vxml"
+	"github.com/imajinyun/knifer-go/vxml"
 )
 
 type User struct {
@@ -117,7 +117,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vxml"
+	"github.com/imajinyun/knifer-go/vxml"
 )
 
 func main() {

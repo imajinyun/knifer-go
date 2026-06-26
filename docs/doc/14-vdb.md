@@ -42,7 +42,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vdb"
+	"github.com/imajinyun/knifer-go/vdb"
 )
 
 func main() {
@@ -71,7 +71,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vdb"
+	"github.com/imajinyun/knifer-go/vdb"
 )
 
 func main() {
@@ -98,7 +98,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vdb"
+	"github.com/imajinyun/knifer-go/vdb"
 )
 
 func main() {
@@ -126,7 +126,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vdb"
+	"github.com/imajinyun/knifer-go/vdb"
 )
 
 func main() {
@@ -154,7 +154,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vdb"
+	"github.com/imajinyun/knifer-go/vdb"
 )
 
 func main() {

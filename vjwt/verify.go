@@ -3,7 +3,7 @@ package vjwt
 import (
 	"time"
 
-	jwtimpl "github.com/imajinyun/go-knifer/internal/jwt"
+	jwtimpl "github.com/imajinyun/knifer-go/internal/jwt"
 )
 
 // VerifyJWT verifies a token using HMAC key.

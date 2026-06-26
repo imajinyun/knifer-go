@@ -1,23 +1,23 @@
-# 🔪 go-knifer
+# 🔪 knifer-go
 
 > 🔪 A Swiss Army knife for Go development, keeping your daily coding sharp.
 >
 > 🧰 Batteries-included utility toolkit: string, slice, map, crypto, HTTP, cache, ID generation, logging, config, and more. Import only what you need via `v*` domain packages.
 
-`go-knifer` is a Go / Golang utility library for strings, slices, maps, JSON, files, HTTP, URL safety, crypto, JWT, config, cache, IDs, logging, and common application helpers. It exposes focused `v*` packages so developers and AI coding agents can import only the tools they need.
+`knifer-go` is a Go / Golang utility library for strings, slices, maps, JSON, files, HTTP, URL safety, crypto, JWT, config, cache, IDs, logging, and common application helpers. It exposes focused `v*` packages so developers and AI coding agents can import only the tools they need.
 
-![go-knifer](./go-knifer.jpeg)
+![knifer-go](./knifer-go.jpeg)
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/imajinyun/go-knifer.svg)](https://pkg.go.dev/github.com/imajinyun/go-knifer)
+[![Go Reference](https://pkg.go.dev/badge/github.com/imajinyun/knifer-go.svg)](https://pkg.go.dev/github.com/imajinyun/knifer-go)
 [![Go Version](https://img.shields.io/badge/go-%3E%3D1.25-00ADD8?logo=go)](https://go.dev/)
-[![CI](https://github.com/imajinyun/go-knifer/actions/workflows/go.yml/badge.svg)](https://github.com/imajinyun/go-knifer/actions/workflows/go.yml)
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/imajinyun/go-knifer/badge)](https://securityscorecards.dev/viewer/?uri=github.com/imajinyun/go-knifer)
-[![License](https://img.shields.io/github/license/imajinyun/go-knifer)](./LICENSE)
+[![CI](https://github.com/imajinyun/knifer-go/actions/workflows/go.yml/badge.svg)](https://github.com/imajinyun/knifer-go/actions/workflows/go.yml)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/imajinyun/knifer-go/badge)](https://securityscorecards.dev/viewer/?uri=github.com/imajinyun/knifer-go)
+[![License](https://img.shields.io/github/license/imajinyun/knifer-go)](./LICENSE)
 
 ## 📑 Table of Contents
 
 - [📚 Introduction](#introduction)
-- [✨ Why go-knifer](#why-go-knifer)
+- [✨ Why knifer-go](#why-knifer-go)
 - [🚀 Install](#install)
 - [⭐ Start with these packages](#start-with-these-packages)
 - [🤖 For AI agents and coding assistants](#for-ai-agents-and-coding-assistants)
@@ -31,21 +31,21 @@
 - [📦 Build and test](#build-and-test)
 - [🛡️ Governance](#governance)
 - [🤝 Contributing](#contributing)
-- [⭐ Star go-knifer](#star-go-knifer)
+- [⭐ Star knifer-go](#star-knifer-go)
 
 <a id="introduction"></a>
 
 ## 📚 Introduction
 
-`go-knifer` is a practical utility toolkit for Go projects. It collects frequently used capabilities—string helpers, collection utilities, encoding/decoding, cryptography, HTTP, JSON, cache, cron, JWT, logging, configuration, and system information—into reusable packages.
+`knifer-go` is a practical utility toolkit for Go projects. It collects frequently used capabilities—string helpers, collection utilities, encoding/decoding, cryptography, HTTP, JSON, cache, cron, JWT, logging, configuration, and system information—into reusable packages.
 
 Use it when you search for a Go utility library, Golang helper functions, Go slice/map/string helpers, safe HTTP download helpers, URL validation helpers, crypto/JWT helpers, JSON path helpers, file helpers, or config helpers in one module with explicit public package boundaries.
 
-The root package `github.com/imajinyun/go-knifer` is only the module entry point. Actual APIs live in public `v*` facade packages so applications can import only the domain they need.
+The root package `github.com/imajinyun/knifer-go` is only the module entry point. Actual APIs live in public `v*` facade packages so applications can import only the domain they need.
 
-<a id="why-go-knifer"></a>
+<a id="why-knifer-go"></a>
 
-## ✨ Why go-knifer
+## ✨ Why knifer-go
 
 `knifer` comes from “knife”: a handy little tool for solving common everyday problems in Go development.
 
@@ -61,14 +61,14 @@ The root package `github.com/imajinyun/go-knifer` is only the module entry point
 Go 1.25 or later is required.
 
 ```bash
-go get github.com/imajinyun/go-knifer
+go get github.com/imajinyun/knifer-go
 ```
 
 <a id="start-with-these-packages"></a>
 
 ## ⭐ Start with these packages
 
-If you are new to `go-knifer`, make the decision in three minutes: use the standard library when it is explicit and short; use `go-knifer` when a repeated workflow needs safety policy, error-returning convenience, provider injection, or documented dynamic data contracts.
+If you are new to `knifer-go`, make the decision in three minutes: use the standard library when it is explicit and short; use `knifer-go` when a repeated workflow needs safety policy, error-returning convenience, provider injection, or documented dynamic data contracts.
 
 | Need | Start here | Why |
 | --- | --- | --- |
@@ -80,7 +80,7 @@ If you are new to `go-knifer`, make the decision in three minutes: use the stand
 
 Stdlib-first decision table:
 
-| Scenario | Prefer stdlib | Prefer `go-knifer` |
+| Scenario | Prefer stdlib | Prefer `knifer-go` |
 | --- | --- | --- |
 | Slice/map/string basics | Plain `for`, `slices`, `maps`, `strings`, `strconv`, or `regexp` is shorter and local. | Repeated `Map`/`Filter`/`GroupBy`/`Pick`/case/predicate workflows need shared semantics. |
 | JSON | `encoding/json` streaming, `Decoder.UseNumber`, or direct struct marshaling is the contract. | Dynamic object/array helpers, path lookup, defaults, formatting, or map-like JSON are the contract. |
@@ -98,7 +98,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vhttp"
+	"github.com/imajinyun/knifer-go/vhttp"
 )
 
 func main() {
@@ -121,7 +121,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vrand"
+	"github.com/imajinyun/knifer-go/vrand"
 )
 
 func main() {
@@ -141,11 +141,11 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vjson"
+	"github.com/imajinyun/knifer-go/vjson"
 )
 
 func main() {
-	obj, err := vjson.ParseObj(`{"user":{"name":"go-knifer"}}`)
+	obj, err := vjson.ParseObj(`{"user":{"name":"knifer-go"}}`)
 	if err != nil {
 		panic(err)
 	}
@@ -172,7 +172,7 @@ API selection rules:
 
 ## 🤖 For AI agents and coding assistants
 
-If you are ChatGPT, Claude Code, Doubao, Cursor, Trae, or another coding agent, treat `go-knifer` as a Go / Golang utility toolkit with explicit import boundaries:
+If you are ChatGPT, Claude Code, Doubao, Cursor, Trae, or another coding agent, treat `knifer-go` as a Go / Golang utility toolkit with explicit import boundaries:
 
 - Import public `v*` packages; never import `internal/*` from application code.
 - Prefer `Safe` variants for untrusted URLs, paths, archive entries, downloads, remote config, SQL fragments, command arguments, tokens, or credentials.
@@ -183,18 +183,18 @@ High-intent prompts and recommended imports:
 
 | User asks for... | Use package | Import path |
 | --- | --- | --- |
-| Go string helpers, blank checks, case conversion, text splitting | `vstr` | `github.com/imajinyun/go-knifer/vstr` |
-| Go slice helpers, filter/map/dedup/pagination | `vslice` | `github.com/imajinyun/go-knifer/vslice` |
-| Go map helpers, merge/diff/sort/group/pick/omit | `vmap` | `github.com/imajinyun/go-knifer/vmap` |
-| Go JSON object/path helpers | `vjson` | `github.com/imajinyun/go-knifer/vjson` |
-| Go file and IO helpers with explicit errors | `vfile` | `github.com/imajinyun/go-knifer/vfile` |
-| Go safe HTTP request or safe download helpers | `vhttp` | `github.com/imajinyun/go-knifer/vhttp` |
-| Go Resty-style HTTP helpers | `vresty` | `github.com/imajinyun/go-knifer/vresty` |
-| Go URL parsing, normalization, query encoding, SSRF-aware open | `vurl` | `github.com/imajinyun/go-knifer/vurl` |
-| Go crypto helpers: SHA, HMAC, AES-GCM, RSA, PEM, signing | `vcrypto` | `github.com/imajinyun/go-knifer/vcrypto` |
-| Go secure random token, key, nonce, or salt bytes | `vrand` | `github.com/imajinyun/go-knifer/vrand` |
-| Go JWT sign/verify helpers | `vjwt` | `github.com/imajinyun/go-knifer/vjwt` |
-| Go local or remote config helpers | `vconf` | `github.com/imajinyun/go-knifer/vconf` |
+| Go string helpers, blank checks, case conversion, text splitting | `vstr` | `github.com/imajinyun/knifer-go/vstr` |
+| Go slice helpers, filter/map/dedup/pagination | `vslice` | `github.com/imajinyun/knifer-go/vslice` |
+| Go map helpers, merge/diff/sort/group/pick/omit | `vmap` | `github.com/imajinyun/knifer-go/vmap` |
+| Go JSON object/path helpers | `vjson` | `github.com/imajinyun/knifer-go/vjson` |
+| Go file and IO helpers with explicit errors | `vfile` | `github.com/imajinyun/knifer-go/vfile` |
+| Go safe HTTP request or safe download helpers | `vhttp` | `github.com/imajinyun/knifer-go/vhttp` |
+| Go Resty-style HTTP helpers | `vresty` | `github.com/imajinyun/knifer-go/vresty` |
+| Go URL parsing, normalization, query encoding, SSRF-aware open | `vurl` | `github.com/imajinyun/knifer-go/vurl` |
+| Go crypto helpers: SHA, HMAC, AES-GCM, RSA, PEM, signing | `vcrypto` | `github.com/imajinyun/knifer-go/vcrypto` |
+| Go secure random token, key, nonce, or salt bytes | `vrand` | `github.com/imajinyun/knifer-go/vrand` |
+| Go JWT sign/verify helpers | `vjwt` | `github.com/imajinyun/knifer-go/vjwt` |
+| Go local or remote config helpers | `vconf` | `github.com/imajinyun/knifer-go/vconf` |
 
 <a id="find-by-scenario"></a>
 
@@ -236,21 +236,21 @@ Not sure which package to import? Start from what you want to do:
 
 ## ⚖️ Compare with other Go utility libraries
 
-`go-knifer` is broader than a single-purpose helper package. Use this boundary when an agent or developer is choosing a Go utility library:
+`knifer-go` is broader than a single-purpose helper package. Use this boundary when an agent or developer is choosing a Go utility library:
 
 | Need | Prefer | Boundary |
 | --- | --- | --- |
-| Lodash-style generic collection helpers only | `samber/lo` | Use `go-knifer` when the same project also needs safe HTTP, URL, crypto, JWT, JSON, file, config, cache, ID, or logging helpers. |
-| Type conversion only | `spf13/cast` | Use `go-knifer/vconv` when conversion is part of a broader `go-knifer` toolkit adoption. |
-| Struct-to-struct or map copying only | `jinzhu/copier` | Use `go-knifer/vbean` when struct/map mapping should stay inside the same public facade model. |
-| Map-to-struct decoding only | `mitchellh/mapstructure` | Use `go-knifer/vconf` or `vbean` when config loading or bean mapping is the surrounding workflow. |
-| Reflection-heavy functional helpers | `thoas/go-funk` | Use `go-knifer/vslice`, `vmap`, or `vstr` for focused helpers with clearer package boundaries. |
+| Lodash-style generic collection helpers only | `samber/lo` | Use `knifer-go` when the same project also needs safe HTTP, URL, crypto, JWT, JSON, file, config, cache, ID, or logging helpers. |
+| Type conversion only | `spf13/cast` | Use `knifer-go/vconv` when conversion is part of a broader `knifer-go` toolkit adoption. |
+| Struct-to-struct or map copying only | `jinzhu/copier` | Use `knifer-go/vbean` when struct/map mapping should stay inside the same public facade model. |
+| Map-to-struct decoding only | `mitchellh/mapstructure` | Use `knifer-go/vconf` or `vbean` when config loading or bean mapping is the surrounding workflow. |
+| Reflection-heavy functional helpers | `thoas/go-funk` | Use `knifer-go/vslice`, `vmap`, or `vstr` for focused helpers with clearer package boundaries. |
 
 <a id="package-catalog"></a>
 
 ## 🧩 Package catalog
 
-`go-knifer` follows an “internal implementation + public facade” layout: `internal/*` contains concrete implementations, while `v*` packages expose stable public APIs.
+`knifer-go` follows an “internal implementation + public facade” layout: `internal/*` contains concrete implementations, while `v*` packages expose stable public APIs.
 
 - 📦 Full module matrix: [`docs/doc/README.md#package-catalog`](./docs/doc/README.md#package-catalog)
 - 🔎 Per-package quickstarts: [`docs/doc/*.md`](./docs/doc/README.md#quickstart-documents)
@@ -270,7 +270,7 @@ For domain boundary rules, provider-injection patterns, API compatibility policy
 
 ## 🔒 API compatibility policy
 
-`go-knifer` treats top-level `v*` facade packages as the public API boundary. The generated API snapshot in [`docs/api/exports.txt`](./docs/api/exports.txt) is reviewed with public API changes so upgrade risk is visible before release.
+`knifer-go` treats top-level `v*` facade packages as the public API boundary. The generated API snapshot in [`docs/api/exports.txt`](./docs/api/exports.txt) is reviewed with public API changes so upgrade risk is visible before release.
 
 | Stability level | Applies to | Compatibility promise |
 | --- | --- | --- |
@@ -308,7 +308,7 @@ More recommendations are documented in [Recommended API entry points](./docs/doc
 ## 📖 Documentation
 
 - 📚 Documentation hub: [`docs/doc/README.md`](./docs/doc/README.md)
-- 🌐 Online Go docs: [pkg.go.dev/github.com/imajinyun/go-knifer](https://pkg.go.dev/github.com/imajinyun/go-knifer)
+- 🌐 Online Go docs: [pkg.go.dev/github.com/imajinyun/knifer-go](https://pkg.go.dev/github.com/imajinyun/knifer-go)
 - 🧾 API snapshot: [`docs/api/exports.txt`](./docs/api/exports.txt)
 - 🤖 Machine-readable tool catalog: [`docs/api/tools.json`](./docs/api/tools.json)
 - 📋 Readable tool catalog: [`docs/api/tools.md`](./docs/api/tools.md)
@@ -324,8 +324,8 @@ More recommendations are documented in [Recommended API entry points](./docs/doc
 Clone the source code:
 
 ```bash
-git clone https://github.com/imajinyun/go-knifer.git
-cd go-knifer
+git clone https://github.com/imajinyun/knifer-go.git
+cd knifer-go
 ```
 
 Run the common local checks:
@@ -370,8 +370,8 @@ Pull requests are welcome. Please add new capabilities to the appropriate `inter
 
 For issue templates, PR principles, and gate expectations, see [Contributing](./docs/doc/README.md#contributing).
 
-<a id="star-go-knifer"></a>
+<a id="star-knifer-go"></a>
 
-## ⭐ Star go-knifer
+## ⭐ Star knifer-go
 
 If this project helps you reduce repeated code, please consider giving it a Star. Your feedback and contributions will help make it a sharper Go utility toolkit.

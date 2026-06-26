@@ -3,7 +3,7 @@ package vbool_test
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vbool"
+	"github.com/imajinyun/knifer-go/vbool"
 )
 
 func ExampleAnd() {

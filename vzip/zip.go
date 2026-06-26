@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	zipimpl "github.com/imajinyun/go-knifer/internal/zip"
+	zipimpl "github.com/imajinyun/knifer-go/internal/zip"
 )
 
 // FileFilter decides whether a source path should be added to an archive.

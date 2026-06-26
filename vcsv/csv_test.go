@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vcsv"
+	"github.com/imajinyun/knifer-go/vcsv"
 )
 
 type facadePerson struct {

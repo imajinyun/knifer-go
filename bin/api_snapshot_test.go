@@ -10,7 +10,7 @@ import (
 
 func TestGenerateSnapshotIncludesCompatibilityDetails(t *testing.T) {
 	root := t.TempDir()
-	writeTestFile(t, root, "go.mod", "module github.com/imajinyun/go-knifer\n\ngo 1.25.0\n")
+	writeTestFile(t, root, "go.mod", "module github.com/imajinyun/knifer-go\n\ngo 1.25.0\n")
 	writeTestFile(t, root, "vcompat/compat.go", `package vcompat
 
 const DefaultName = "demo"
@@ -52,7 +52,7 @@ func Hidden() {}
 	}
 	snapshot := strings.Join(lines, "\n")
 	for _, want := range []string{
-		"github.com/imajinyun/go-knifer/vcompat",
+		"github.com/imajinyun/knifer-go/vcompat",
 		`const DefaultName untyped string = "demo"`,
 		"var DefaultResult Result",
 		"func Build(input string) (Result, error)",
@@ -75,7 +75,7 @@ func Hidden() {}
 
 func TestGenerateSnapshotIncludesGenericAndEmbeddedAPIDetails(t *testing.T) {
 	root := t.TempDir()
-	writeTestFile(t, root, "go.mod", "module github.com/imajinyun/go-knifer\n\ngo 1.25.0\n")
+	writeTestFile(t, root, "go.mod", "module github.com/imajinyun/knifer-go\n\ngo 1.25.0\n")
 	writeTestFile(t, root, "vcompat/compat.go", `package vcompat
 
 import "time"

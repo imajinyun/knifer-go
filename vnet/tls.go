@@ -5,7 +5,7 @@ import (
 	"crypto/x509"
 	"io"
 
-	netimpl "github.com/imajinyun/go-knifer/internal/net"
+	netimpl "github.com/imajinyun/knifer-go/internal/net"
 )
 
 func NewTLSConfigBuilder() *TLSConfigBuilder { return netimpl.NewTLSConfigBuilder() }

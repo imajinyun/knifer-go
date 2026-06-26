@@ -3,7 +3,7 @@ package vident
 import (
 	"time"
 
-	identityimpl "github.com/imajinyun/go-knifer/internal/identity"
+	identityimpl "github.com/imajinyun/knifer-go/internal/identity"
 )
 
 // Gender identifies the gender encoded in an identity card number.

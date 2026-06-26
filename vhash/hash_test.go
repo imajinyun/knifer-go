@@ -21,7 +21,7 @@ func TestHash32Facade(t *testing.T) {
 }
 
 func TestStringHashFacade(t *testing.T) {
-	const s = "go-knifer"
+	const s = "knifer-go"
 	if RsHash(s) < 0 || JsHash(s) < 0 || PjwHash(s) < 0 || ElfHash(s) < 0 {
 		t.Fatal("masked hashes must be non-negative")
 	}

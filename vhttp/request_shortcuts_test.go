@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vhttp"
+	"github.com/imajinyun/knifer-go/vhttp"
 )
 
 func TestFacadeShortcutRequestHelpers(t *testing.T) {

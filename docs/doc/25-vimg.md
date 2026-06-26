@@ -2,7 +2,7 @@
 
 `vimg` provides image processing, QR/barcode, and captcha helpers. It covers image metadata reads, format conversion, thumbnail generation, ZXing-backed QR/barcode generation and decoding, PNG/SVG/ASCII/Base64 data URI output, QR logo embedding, transparent backgrounds, captcha generation/verification, and file writes.
 
-Captcha image bytes are returned as defensive copies, so callers can inspect or transform the returned slice without mutating the captcha's cached image. File overwrite failures from captcha writers preserve `fs.ErrExist` and carry the go-knifer invalid-input error code for consistent error inspection.
+Captcha image bytes are returned as defensive copies, so callers can inspect or transform the returned slice without mutating the captcha's cached image. File overwrite failures from captcha writers preserve `fs.ErrExist` and carry the knifer-go invalid-input error code for consistent error inspection.
 
 ## Which helper should I use?
 
@@ -41,7 +41,7 @@ import (
 	"image/color"
 	"image/png"
 
-	"github.com/imajinyun/go-knifer/vimg"
+	"github.com/imajinyun/knifer-go/vimg"
 )
 
 func main() {
@@ -72,7 +72,7 @@ import (
 	"image"
 	"image/png"
 
-	"github.com/imajinyun/go-knifer/vimg"
+	"github.com/imajinyun/knifer-go/vimg"
 )
 
 func main() {
@@ -105,11 +105,11 @@ import (
 	"image/color"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vimg"
+	"github.com/imajinyun/knifer-go/vimg"
 )
 
 func main() {
-	pngBytes, err := vimg.QRCodePNG("https://github.com/imajinyun/go-knifer",
+	pngBytes, err := vimg.QRCodePNG("https://github.com/imajinyun/knifer-go",
 		vimg.WithQRCodeSize(180),
 		vimg.WithQRCodeMargin(2),
 		vimg.WithQRCodeErrorCorrection(vimg.QRErrorCorrectionMedium),
@@ -156,7 +156,7 @@ import (
 	"image/color"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vimg"
+	"github.com/imajinyun/knifer-go/vimg"
 )
 
 func main() {
@@ -191,7 +191,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vimg"
+	"github.com/imajinyun/knifer-go/vimg"
 )
 
 func main() {
@@ -218,7 +218,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vimg"
+	"github.com/imajinyun/knifer-go/vimg"
 )
 
 func main() {
@@ -240,7 +240,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vimg"
+	"github.com/imajinyun/knifer-go/vimg"
 )
 
 func main() {
@@ -269,7 +269,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vimg"
+	"github.com/imajinyun/knifer-go/vimg"
 )
 
 func main() {
@@ -296,7 +296,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/imajinyun/go-knifer/vimg"
+	"github.com/imajinyun/knifer-go/vimg"
 )
 
 func main() {

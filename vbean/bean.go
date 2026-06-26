@@ -3,7 +3,7 @@ package vbean
 import (
 	"reflect"
 
-	beanimpl "github.com/imajinyun/go-knifer/internal/bean"
+	beanimpl "github.com/imajinyun/knifer-go/internal/bean"
 )
 
 // Option customizes bean mapping behavior.

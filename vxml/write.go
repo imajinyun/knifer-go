@@ -3,7 +3,7 @@ package vxml
 import (
 	"io"
 
-	xmlimpl "github.com/imajinyun/go-knifer/internal/xml"
+	xmlimpl "github.com/imajinyun/knifer-go/internal/xml"
 )
 
 // WriteTo serializes a document or element to writer.

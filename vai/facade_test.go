@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vai"
+	"github.com/imajinyun/knifer-go/vai"
 )
 
 type chatProviderFunc func(context.Context, vai.ChatRequest) (vai.ChatResponse, error)

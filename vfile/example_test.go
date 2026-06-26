@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/vfile"
+	"github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/vfile"
 )
 
 func Example_cookbookReadWriteTextFile() {
@@ -108,7 +108,7 @@ func ExampleReadString() {
 }
 
 func ExampleWriteFileString() {
-	dir, err := os.MkdirTemp("", "go-knifer-vfile-example-*")
+	dir, err := os.MkdirTemp("", "knifer-go-vfile-example-*")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -126,7 +126,7 @@ func ExampleWriteFileString() {
 }
 
 func ExampleExists() {
-	dir, err := os.MkdirTemp("", "go-knifer-vfile-example-*")
+	dir, err := os.MkdirTemp("", "knifer-go-vfile-example-*")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -661,7 +661,7 @@ func ExampleWithUnlimitedRead() {
 }
 
 func exampleTempDir() (string, func()) {
-	dir, err := os.MkdirTemp("", "go-knifer-vfile-example-*")
+	dir, err := os.MkdirTemp("", "knifer-go-vfile-example-*")
 	if err != nil {
 		panic(err)
 	}

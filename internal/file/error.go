@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 // FileError represents an error produced by file helpers.
@@ -25,7 +25,7 @@ func (e *FileError) Error() string {
 	return e.Msg
 }
 
-// ErrorCode returns the go-knifer error code.
+// ErrorCode returns the knifer-go error code.
 func (e *FileError) ErrorCode() knifer.ErrCode {
 	if e == nil {
 		return ""

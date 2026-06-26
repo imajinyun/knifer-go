@@ -1,6 +1,6 @@
 {
   "schema": "1.7",
-  "module": "github.com/imajinyun/go-knifer",
+  "module": "github.com/imajinyun/knifer-go",
   "summary": {
     "package_count": 54,
     "function_count": 2618,
@@ -22,7 +22,7 @@
   },
   "packages": [
     {
-      "import_path": "github.com/imajinyun/go-knifer/vai",
+      "import_path": "github.com/imajinyun/knifer-go/vai",
       "name": "vai",
       "synopsis": "Package vai provides provider-neutral AI chat and embedding helpers.",
       "summary": {
@@ -239,7 +239,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vbean",
+      "import_path": "github.com/imajinyun/knifer-go/vbean",
       "name": "vbean",
       "synopsis": "Package vbean provides public APIs for struct and map property mapping.",
       "summary": {
@@ -890,7 +890,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vblf",
+      "import_path": "github.com/imajinyun/knifer-go/vblf",
       "name": "vblf",
       "synopsis": "Package vblf provides public APIs for Bloom filter utilities.",
       "summary": {
@@ -2216,7 +2216,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vbool",
+      "import_path": "github.com/imajinyun/knifer-go/vbool",
       "name": "vbool",
       "synopsis": "Package vbool provides public APIs for boolean utilities.",
       "summary": {
@@ -2356,7 +2356,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vcache",
+      "import_path": "github.com/imajinyun/knifer-go/vcache",
       "name": "vcache",
       "synopsis": "Package vcache provides public APIs for cache utilities.",
       "summary": {
@@ -2893,7 +2893,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vcli",
+      "import_path": "github.com/imajinyun/knifer-go/vcli",
       "name": "vcli",
       "synopsis": "Package vcli provides public APIs for lightweight command-line helpers.",
       "summary": {
@@ -3334,7 +3334,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vcodec",
+      "import_path": "github.com/imajinyun/knifer-go/vcodec",
       "name": "vcodec",
       "synopsis": "Package vcodec provides public APIs for encoding and decoding utilities.",
       "summary": {
@@ -3692,7 +3692,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vconf",
+      "import_path": "github.com/imajinyun/knifer-go/vconf",
       "name": "vconf",
       "synopsis": "Package vconf provides configuration file reading and grouped configuration utilities.",
       "summary": {
@@ -4609,7 +4609,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vconv",
+      "import_path": "github.com/imajinyun/knifer-go/vconv",
       "name": "vconv",
       "synopsis": "Package vconv provides public APIs for permissive type conversion.",
       "summary": {
@@ -5555,7 +5555,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vcron",
+      "import_path": "github.com/imajinyun/knifer-go/vcron",
       "name": "vcron",
       "synopsis": "Package vcron provides public APIs for cron scheduling utilities.",
       "summary": {
@@ -6655,7 +6655,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vcrypto",
+      "import_path": "github.com/imajinyun/knifer-go/vcrypto",
       "name": "vcrypto",
       "synopsis": "Package vcrypto provides public APIs for cryptographic utilities.",
       "summary": {
@@ -8652,7 +8652,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vcsv",
+      "import_path": "github.com/imajinyun/knifer-go/vcsv",
       "name": "vcsv",
       "synopsis": "Package vcsv provides public APIs for CSV reading and writing.",
       "summary": {
@@ -9247,7 +9247,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vdate",
+      "import_path": "github.com/imajinyun/knifer-go/vdate",
       "name": "vdate",
       "synopsis": "Package vdate provides public APIs for date/time utilities.",
       "summary": {
@@ -9957,7 +9957,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vdb",
+      "import_path": "github.com/imajinyun/knifer-go/vdb",
       "name": "vdb",
       "synopsis": "Package vdb exposes database/sql helper APIs for SQL execution, query building, entities, conditions, pagination, transactions, named parameters, and lightweight metadata lookup.",
       "summary": {
@@ -11138,7 +11138,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vdfa",
+      "import_path": "github.com/imajinyun/knifer-go/vdfa",
       "name": "vdfa",
       "synopsis": "Package vdfa exposes deterministic-finite-automaton text matching APIs.",
       "summary": {
@@ -12089,7 +12089,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/verr",
+      "import_path": "github.com/imajinyun/knifer-go/verr",
       "name": "verr",
       "synopsis": "Package verr exposes error handling, panic recovery, and stack helpers.",
       "summary": {
@@ -13222,7 +13222,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vfile",
+      "import_path": "github.com/imajinyun/knifer-go/vfile",
       "name": "vfile",
       "synopsis": "Package vfile provides public APIs for file and IO utilities.",
       "summary": {
@@ -14752,7 +14752,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vform",
+      "import_path": "github.com/imajinyun/knifer-go/vform",
       "name": "vform",
       "synopsis": "Package vform provides public APIs for form and input validation utilities.",
       "summary": {
@@ -15191,7 +15191,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vftp",
+      "import_path": "github.com/imajinyun/knifer-go/vftp",
       "name": "vftp",
       "synopsis": "Package vftp provides provider-neutral FTP list, download, and upload helpers.",
       "summary": {
@@ -15395,7 +15395,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vhan",
+      "import_path": "github.com/imajinyun/knifer-go/vhan",
       "name": "vhan",
       "synopsis": "Package vhan provides provider-neutral Han text romanization helpers.",
       "summary": {
@@ -15563,7 +15563,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vhash",
+      "import_path": "github.com/imajinyun/knifer-go/vhash",
       "name": "vhash",
       "synopsis": "Package vhash provides public APIs for hash utilities.",
       "summary": {
@@ -15947,7 +15947,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vhttp",
+      "import_path": "github.com/imajinyun/knifer-go/vhttp",
       "name": "vhttp",
       "synopsis": "Package vhttp provides public APIs for HTTP utilities.",
       "summary": {
@@ -17459,7 +17459,7 @@
         {
           "name": "NewErrorWithCode",
           "signature": "func NewErrorWithCode(code knifer.ErrCode, msg string, cause error) *Error",
-          "synopsis": "NewErrorWithCode creates an HTTP error with an explicit go-knifer code.",
+          "synopsis": "NewErrorWithCode creates an HTTP error with an explicit knifer-go code.",
           "synopsis_source": "facade",
           "status": "recommended",
           "params": [
@@ -19481,7 +19481,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vid",
+      "import_path": "github.com/imajinyun/knifer-go/vid",
       "name": "vid",
       "synopsis": "Package vid provides public APIs for ID generation utilities.",
       "summary": {
@@ -20547,7 +20547,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vident",
+      "import_path": "github.com/imajinyun/knifer-go/vident",
       "name": "vident",
       "synopsis": "Package vident provides identity and legal identifier helpers.",
       "summary": {
@@ -21652,7 +21652,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vimg",
+      "import_path": "github.com/imajinyun/knifer-go/vimg",
       "name": "vimg",
       "synopsis": "Package vimg provides public APIs for image utilities.",
       "summary": {
@@ -24012,7 +24012,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vjob",
+      "import_path": "github.com/imajinyun/knifer-go/vjob",
       "name": "vjob",
       "synopsis": "Package vjob provides public APIs for sliceable job execution.",
       "summary": {
@@ -24301,7 +24301,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vjson",
+      "import_path": "github.com/imajinyun/knifer-go/vjson",
       "name": "vjson",
       "synopsis": "Package vjson provides public APIs for JSON utilities.",
       "summary": {
@@ -25928,7 +25928,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vjwt",
+      "import_path": "github.com/imajinyun/knifer-go/vjwt",
       "name": "vjwt",
       "synopsis": "Package vjwt provides public APIs for JWT utilities.",
       "summary": {
@@ -27846,7 +27846,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vlog",
+      "import_path": "github.com/imajinyun/knifer-go/vlog",
       "name": "vlog",
       "synopsis": "Package vlog provides public APIs for logging utilities.",
       "summary": {
@@ -28995,7 +28995,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vmail",
+      "import_path": "github.com/imajinyun/knifer-go/vmail",
       "name": "vmail",
       "synopsis": "Package vmail exposes email message construction, MIME attachment, and SMTP sending helpers.",
       "summary": {
@@ -30307,7 +30307,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vmap",
+      "import_path": "github.com/imajinyun/knifer-go/vmap",
       "name": "vmap",
       "synopsis": "Package vmap provides public APIs for map utilities.",
       "summary": {
@@ -31972,7 +31972,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vmask",
+      "import_path": "github.com/imajinyun/knifer-go/vmask",
       "name": "vmask",
       "synopsis": "Package vmask provides data masking (desensitization) utilities.",
       "summary": {
@@ -32434,7 +32434,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vnet",
+      "import_path": "github.com/imajinyun/knifer-go/vnet",
       "name": "vnet",
       "synopsis": "Package vnet provides public APIs for network, IP, URL-encoding, TLS, and multipart utilities.",
       "summary": {
@@ -36181,7 +36181,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vnum",
+      "import_path": "github.com/imajinyun/knifer-go/vnum",
       "name": "vnum",
       "synopsis": "Package vnum provides public APIs for numeric utilities.",
       "summary": {
@@ -39560,7 +39560,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vobj",
+      "import_path": "github.com/imajinyun/knifer-go/vobj",
       "name": "vobj",
       "synopsis": "Package vobj provides object utilities.",
       "summary": {
@@ -40711,7 +40711,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vpass",
+      "import_path": "github.com/imajinyun/knifer-go/vpass",
       "name": "vpass",
       "synopsis": "Package vpass provides password strength helpers.",
       "summary": {
@@ -40878,7 +40878,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vpoi",
+      "import_path": "github.com/imajinyun/knifer-go/vpoi",
       "name": "vpoi",
       "synopsis": "Package vpoi provides office-document utilities.",
       "summary": {
@@ -41801,7 +41801,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vrand",
+      "import_path": "github.com/imajinyun/knifer-go/vrand",
       "name": "vrand",
       "synopsis": "Package vrand provides public APIs for random value utilities.",
       "summary": {
@@ -42467,7 +42467,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vref",
+      "import_path": "github.com/imajinyun/knifer-go/vref",
       "name": "vref",
       "synopsis": "Package vref provides public APIs for reflection utilities.",
       "summary": {
@@ -44058,7 +44058,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vregex",
+      "import_path": "github.com/imajinyun/knifer-go/vregex",
       "name": "vregex",
       "synopsis": "Package vregex provides public APIs for regular-expression utilities.",
       "summary": {
@@ -46471,7 +46471,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vresty",
+      "import_path": "github.com/imajinyun/knifer-go/vresty",
       "name": "vresty",
       "synopsis": "Package vresty provides convenient HTTP client wrappers backed by resty.",
       "summary": {
@@ -49293,7 +49293,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vsem",
+      "import_path": "github.com/imajinyun/knifer-go/vsem",
       "name": "vsem",
       "synopsis": "Package vsem provides public APIs for semaphore utilities.",
       "summary": {
@@ -49385,7 +49385,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vset",
+      "import_path": "github.com/imajinyun/knifer-go/vset",
       "name": "vset",
       "synopsis": "Package vset provides public APIs for set utilities.",
       "summary": {
@@ -49663,7 +49663,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vskt",
+      "import_path": "github.com/imajinyun/knifer-go/vskt",
       "name": "vskt",
       "synopsis": "Package vskt provides public APIs for socket utilities.",
       "summary": {
@@ -50863,7 +50863,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vslice",
+      "import_path": "github.com/imajinyun/knifer-go/vslice",
       "name": "vslice",
       "synopsis": "Package vslice provides public APIs for slice utilities.",
       "summary": {
@@ -52026,7 +52026,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vssh",
+      "import_path": "github.com/imajinyun/knifer-go/vssh",
       "name": "vssh",
       "synopsis": "Package vssh provides provider-neutral SSH command and SFTP transfer helpers.",
       "summary": {
@@ -52261,7 +52261,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vstr",
+      "import_path": "github.com/imajinyun/knifer-go/vstr",
       "name": "vstr",
       "synopsis": "Package vstr provides public APIs for string and text utilities.",
       "summary": {
@@ -53883,7 +53883,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vsys",
+      "import_path": "github.com/imajinyun/knifer-go/vsys",
       "name": "vsys",
       "synopsis": "Package vsys provides public APIs for system information utilities.",
       "summary": {
@@ -56113,7 +56113,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vtok",
+      "import_path": "github.com/imajinyun/knifer-go/vtok",
       "name": "vtok",
       "synopsis": "Package vtok provides provider-neutral text tokenization helpers.",
       "summary": {
@@ -56281,7 +56281,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vtpl",
+      "import_path": "github.com/imajinyun/knifer-go/vtpl",
       "name": "vtpl",
       "synopsis": "Package vtpl provides Go html/template rendering utilities.",
       "summary": {
@@ -56695,7 +56695,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vurl",
+      "import_path": "github.com/imajinyun/knifer-go/vurl",
       "name": "vurl",
       "synopsis": "Package vurl provides URL and URI utilities.",
       "summary": {
@@ -58714,7 +58714,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vver",
+      "import_path": "github.com/imajinyun/knifer-go/vver",
       "name": "vver",
       "synopsis": "Package vver provides version comparison and expression matching utilities.",
       "summary": {
@@ -59056,7 +59056,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vxml",
+      "import_path": "github.com/imajinyun/knifer-go/vxml",
       "name": "vxml",
       "synopsis": "Package vxml provides public APIs for XML utilities.",
       "summary": {
@@ -61052,7 +61052,7 @@
       ]
     },
     {
-      "import_path": "github.com/imajinyun/go-knifer/vzip",
+      "import_path": "github.com/imajinyun/knifer-go/vzip",
       "name": "vzip",
       "synopsis": "Package vzip provides ZIP, gzip, and zlib utilities.",
       "summary": {

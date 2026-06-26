@@ -1,6 +1,6 @@
 package vregex
 
-import regeximpl "github.com/imajinyun/go-knifer/internal/regex"
+import regeximpl "github.com/imajinyun/knifer-go/internal/regex"
 
 // EscapeChar escapes a single regular-expression keyword character.
 func EscapeChar(c rune) string { return regeximpl.EscapeChar(c) }

@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/verr"
+	knifer "github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/verr"
 	"github.com/sirupsen/logrus"
 )
 

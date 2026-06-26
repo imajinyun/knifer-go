@@ -12,7 +12,7 @@ Affected package, for example `vhttp`, `vjson`, or `vcache`:
 
 ## Version
 
-`go-knifer` version or commit:
+`knifer-go` version or commit:
 
 Go version:
 

@@ -3,7 +3,7 @@ package vmask_test
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vmask"
+	"github.com/imajinyun/knifer-go/vmask"
 )
 
 func ExampleMobilePhone() {

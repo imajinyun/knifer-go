@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"time"
 
-	restyimpl "github.com/imajinyun/go-knifer/internal/httpx/resty"
+	restyimpl "github.com/imajinyun/knifer-go/internal/httpx/resty"
 	grestry "resty.dev/v3"
 )
 

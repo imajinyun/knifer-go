@@ -3,7 +3,7 @@ package vssh
 import (
 	"context"
 
-	sshimpl "github.com/imajinyun/go-knifer/internal/ssh"
+	sshimpl "github.com/imajinyun/knifer-go/internal/ssh"
 )
 
 // EntryType describes the kind of remote SFTP entry.

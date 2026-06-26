@@ -4,7 +4,7 @@ import (
 	"io"
 	"reflect"
 
-	objimpl "github.com/imajinyun/go-knifer/internal/obj"
+	objimpl "github.com/imajinyun/knifer-go/internal/obj"
 )
 
 // Ordered is the set of built-in ordered value types.

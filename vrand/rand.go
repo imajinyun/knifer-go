@@ -4,7 +4,7 @@ import (
 	"io"
 	mathrand "math/rand"
 
-	randimpl "github.com/imajinyun/go-knifer/internal/rand"
+	randimpl "github.com/imajinyun/knifer-go/internal/rand"
 )
 
 const (

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vconf"
+	"github.com/imajinyun/knifer-go/vconf"
 )
 
 func TestLoadFilesAndRemoteWithOptionsFacade(t *testing.T) {

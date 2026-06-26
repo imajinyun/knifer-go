@@ -3,7 +3,7 @@ package vdb
 import (
 	"database/sql"
 
-	dbimpl "github.com/imajinyun/go-knifer/internal/db"
+	dbimpl "github.com/imajinyun/knifer-go/internal/db"
 )
 
 func NewEntity(table string) Entity { return dbimpl.NewEntity(table) }

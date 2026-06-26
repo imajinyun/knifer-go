@@ -1,6 +1,6 @@
 package crypto
 
-import knifer "github.com/imajinyun/go-knifer"
+import knifer "github.com/imajinyun/knifer-go"
 
 type sentinel struct {
 	code knifer.ErrCode

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vlog"
+	"github.com/imajinyun/knifer-go/vlog"
 )
 
 func ExampleGetDefault() {

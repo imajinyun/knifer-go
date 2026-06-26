@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vobj"
+	"github.com/imajinyun/knifer-go/vobj"
 )
 
 func TestFacadeTypeNumberCompareAndEmptyHelpers(t *testing.T) {

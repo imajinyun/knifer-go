@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 func TestSchedulerLifecycle(t *testing.T) {

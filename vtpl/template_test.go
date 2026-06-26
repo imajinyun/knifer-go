@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/vtpl"
+	knifer "github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/vtpl"
 )
 
 func BenchmarkRenderWithTextEngineFacade(b *testing.B) {

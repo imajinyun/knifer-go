@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vjwt"
+	"github.com/imajinyun/knifer-go/vjwt"
 )
 
 func TestSignVerifyWithJSONProviders(t *testing.T) {

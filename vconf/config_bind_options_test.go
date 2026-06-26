@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vconf"
+	"github.com/imajinyun/knifer-go/vconf"
 )
 
 func TestFacadeBindAndSchemaParserOptions(t *testing.T) {
@@ -106,7 +106,7 @@ func TestFacadeBindDecodeHookApplied(t *testing.T) {
 
 func TestDynamicConfigContractMatrix(t *testing.T) {
 	cfg, err := vconf.Parse(`
-name=go-knifer
+name=knifer-go
 [server]
 port=8080
 enabled=true
@@ -121,7 +121,7 @@ tags=api,admin
 		got  any
 		want any
 	}{
-		{name: "string", got: cfg.Get("name"), want: "go-knifer"},
+		{name: "string", got: cfg.Get("name"), want: "knifer-go"},
 		{name: "missing default", got: cfg.GetOrDefault("missing", "fallback"), want: "fallback"},
 		{name: "group int", got: cfg.GetIntByGroup("server", "port", 0), want: 8080},
 		{name: "group bool", got: cfg.GetBoolByGroup("server", "enabled", false), want: true},
@@ -153,7 +153,7 @@ tags=api,admin
 func FuzzDynamicConfigScalarContract(f *testing.F) {
 	f.Add("42")
 	f.Add("true")
-	f.Add("go-knifer")
+	f.Add("knifer-go")
 	f.Fuzz(func(t *testing.T, value string) {
 		cfg := vconf.New()
 		cfg.Set("value", value)

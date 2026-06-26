@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	netimpl "github.com/imajinyun/go-knifer/internal/net"
+	netimpl "github.com/imajinyun/knifer-go/internal/net"
 )
 
 func IDNToASCII(unicode string) (string, error) { return netimpl.IDNToASCII(unicode) }

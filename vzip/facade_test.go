@@ -5,7 +5,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vzip"
+	"github.com/imajinyun/knifer-go/vzip"
 )
 
 func TestFacadeArchiveOptionConstructors(t *testing.T) {

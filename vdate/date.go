@@ -3,7 +3,7 @@ package vdate
 import (
 	"time"
 
-	dateimpl "github.com/imajinyun/go-knifer/internal/date"
+	dateimpl "github.com/imajinyun/knifer-go/internal/date"
 )
 
 // Error is the date module error type.

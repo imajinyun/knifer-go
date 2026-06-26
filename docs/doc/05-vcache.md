@@ -40,7 +40,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcache"
+	"github.com/imajinyun/knifer-go/vcache"
 )
 
 func main() {
@@ -63,7 +63,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcache"
+	"github.com/imajinyun/knifer-go/vcache"
 )
 
 func main() {
@@ -90,7 +90,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vcache"
+	"github.com/imajinyun/knifer-go/vcache"
 )
 
 func main() {
@@ -112,7 +112,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcache"
+	"github.com/imajinyun/knifer-go/vcache"
 )
 
 func main() {

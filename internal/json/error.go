@@ -3,7 +3,7 @@ package json
 import (
 	"fmt"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 // JSONError matches the utility JSONException.
@@ -33,7 +33,7 @@ func (e *JSONError) Error() string {
 	return e.Msg
 }
 
-// ErrorCode returns the go-knifer error code.
+// ErrorCode returns the knifer-go error code.
 func (e *JSONError) ErrorCode() knifer.ErrCode {
 	if e == nil {
 		return ""

@@ -3,7 +3,7 @@ package num
 import (
 	"math"
 
-	"github.com/imajinyun/go-knifer/internal/constraint"
+	"github.com/imajinyun/knifer-go/internal/constraint"
 )
 
 // MaxInteger returns the larger of a or b.

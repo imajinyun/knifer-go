@@ -6,8 +6,8 @@ import (
 	"net"
 	"time"
 
-	netimpl "github.com/imajinyun/go-knifer/internal/net"
-	socketx "github.com/imajinyun/go-knifer/internal/socket"
+	netimpl "github.com/imajinyun/knifer-go/internal/net"
+	socketx "github.com/imajinyun/knifer-go/internal/socket"
 )
 
 // SocketConfig configures socket clients and servers.

@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 
-	dbimpl "github.com/imajinyun/go-knifer/internal/db"
+	dbimpl "github.com/imajinyun/knifer-go/internal/db"
 )
 
 // Open opens a database using database/sql and applies pool/dialect options.

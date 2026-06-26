@@ -13,7 +13,7 @@
 //	body := http.Get("https://example.com").Execute().Body()
 //	resp := http.NewRequest(http.MethodPost, url,
 //	            http.WithTimeout(5*time.Second),
-//	            http.WithHeader("X-Client", "go-knifer"),
+//	            http.WithHeader("X-Client", "knifer-go"),
 //	        ).
 //	            Form(map[string]any{"a": 1}).
 //	            Execute()

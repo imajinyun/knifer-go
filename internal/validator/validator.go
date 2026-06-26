@@ -4,9 +4,9 @@ package validator
 import (
 	"regexp"
 
-	identityimpl "github.com/imajinyun/go-knifer/internal/identity"
-	netimpl "github.com/imajinyun/go-knifer/internal/net"
-	urlimpl "github.com/imajinyun/go-knifer/internal/url"
+	identityimpl "github.com/imajinyun/knifer-go/internal/identity"
+	netimpl "github.com/imajinyun/knifer-go/internal/net"
+	urlimpl "github.com/imajinyun/knifer-go/internal/url"
 )
 
 var (

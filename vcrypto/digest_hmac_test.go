@@ -7,7 +7,7 @@ import (
 	"hash"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vcrypto"
+	"github.com/imajinyun/knifer-go/vcrypto"
 )
 
 func TestDigestAndHMAC(t *testing.T) {

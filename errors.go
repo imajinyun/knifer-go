@@ -39,7 +39,7 @@ const (
 	ErrCodeInternal ErrCode = "GK_INTERNAL"
 )
 
-// Error is the unified error type for go-knifer subpackages.
+// Error is the unified error type for knifer-go subpackages.
 //
 // Subpackages that want to participate in the cross-cutting error contract
 // should return *Error and wrap any underlying cause through Cause so that
@@ -54,7 +54,7 @@ type Error struct {
 	Cause error
 }
 
-// CodeCarrier is implemented by errors that can expose a go-knifer error code.
+// CodeCarrier is implemented by errors that can expose a knifer-go error code.
 //
 // Custom subpackage errors can implement this interface while preserving their
 // own concrete type and sentinel semantics.
@@ -127,7 +127,7 @@ func Errorf(code ErrCode, format string, args ...any) *Error {
 	return &Error{Code: code, Message: fmt.Sprintf(format, args...)}
 }
 
-// CodeOf extracts a go-knifer error code from err.
+// CodeOf extracts a knifer-go error code from err.
 //
 // It first looks for an error implementing CodeCarrier, then falls back to the
 // predefined base ErrCode values through errors.Is. The fallback keeps sentinel

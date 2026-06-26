@@ -3,7 +3,7 @@ package socket
 import (
 	"fmt"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 // SocketRuntimeError represents a runtime error during socket communication.
@@ -27,7 +27,7 @@ func (e *SocketRuntimeError) Error() string {
 	return e.Msg
 }
 
-// ErrorCode returns the go-knifer error code.
+// ErrorCode returns the knifer-go error code.
 func (e *SocketRuntimeError) ErrorCode() knifer.ErrCode {
 	if e == nil {
 		return ""

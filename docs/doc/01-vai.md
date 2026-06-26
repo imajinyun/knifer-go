@@ -1,6 +1,6 @@
 # vai: AI adapter helpers
 
-`vai` provides provider-neutral chat and embedding helpers. It defines small interfaces for callers to inject their own AI providers while keeping `go-knifer` free of provider SDK dependencies.
+`vai` provides provider-neutral chat and embedding helpers. It defines small interfaces for callers to inject their own AI providers while keeping `knifer-go` free of provider SDK dependencies.
 
 ## Which helper should I use?
 
@@ -40,7 +40,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vai"
+	"github.com/imajinyun/knifer-go/vai"
 )
 
 type chatProvider struct{}
@@ -157,7 +157,7 @@ make agent-security-check
 
 - Provider-neutral validation and defensive request shape checks are tiny compared with real model latency, but they keep tests and adapter contracts stable.
 - The short `Chat` and `Embed` helpers are concise for one-off calls. Reuse `New(...)` when a service shares provider configuration.
-- Keeping SDKs out of go-knifer avoids dependency bloat, but applications must implement provider adapters and document provider-specific behavior.
+- Keeping SDKs out of knifer-go avoids dependency bloat, but applications must implement provider adapters and document provider-specific behavior.
 - Redaction is intentionally conservative and lightweight; comprehensive DLP belongs outside the facade.
 
 ## FAQ

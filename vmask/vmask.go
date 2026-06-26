@@ -1,6 +1,6 @@
 package vmask
 
-import maskimpl "github.com/imajinyun/go-knifer/internal/mask"
+import maskimpl "github.com/imajinyun/knifer-go/internal/mask"
 
 // Type identifies a built-in masking strategy.
 type Type = maskimpl.Type

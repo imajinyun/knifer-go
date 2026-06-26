@@ -3,7 +3,7 @@ package vcrypto
 import (
 	"hash"
 
-	cryptoimpl "github.com/imajinyun/go-knifer/internal/crypto"
+	cryptoimpl "github.com/imajinyun/knifer-go/internal/crypto"
 )
 
 // HMACHex returns HMAC digest in lower-case hex form using the given hash function.

@@ -3,7 +3,7 @@ package vnet
 import (
 	stdnet "net"
 
-	netimpl "github.com/imajinyun/go-knifer/internal/net"
+	netimpl "github.com/imajinyun/knifer-go/internal/net"
 )
 
 func IsValidPort(port int) bool { return netimpl.IsValidPort(port) }

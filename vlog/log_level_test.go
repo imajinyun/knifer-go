@@ -3,7 +3,7 @@ package vlog_test
 import (
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vlog"
+	"github.com/imajinyun/knifer-go/vlog"
 )
 
 func TestFacadeLogLevel(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vhttp"
+	"github.com/imajinyun/knifer-go/vhttp"
 )
 
 func TestFacadeContentHTMLAndUserAgentHelpers(t *testing.T) {

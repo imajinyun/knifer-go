@@ -4,7 +4,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 
-	cryptoimpl "github.com/imajinyun/go-knifer/internal/crypto"
+	cryptoimpl "github.com/imajinyun/knifer-go/internal/crypto"
 )
 
 // PrivateKeyToPEM encodes an RSA private key as PKCS#1 PEM.

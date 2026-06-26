@@ -4,8 +4,8 @@ import (
 	stdjson "encoding/json"
 	"io"
 
-	jsonx "github.com/imajinyun/go-knifer/internal/json"
-	xmlimpl "github.com/imajinyun/go-knifer/internal/xml"
+	jsonx "github.com/imajinyun/knifer-go/internal/json"
+	xmlimpl "github.com/imajinyun/knifer-go/internal/xml"
 )
 
 // Object is an ordered JSON object.

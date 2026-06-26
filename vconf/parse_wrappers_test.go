@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vconf"
+	"github.com/imajinyun/knifer-go/vconf"
 )
 
 func TestFacadeParseWrappers(t *testing.T) {

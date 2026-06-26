@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/verr"
+	"github.com/imajinyun/knifer-go/verr"
 )
 
 func TestStackFacade(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/imajinyun/go-knifer/vregex"
+	"github.com/imajinyun/knifer-go/vregex"
 )
 
 func ExampleMatch() {
@@ -31,7 +31,7 @@ func ExampleCount() {
 }
 
 func ExampleContains() {
-	fmt.Println(vregex.Contains(`go-\w+`, "hello go-knifer"))
+	fmt.Println(vregex.Contains(`go-\w+`, "hello knifer-go"))
 	fmt.Println(vregex.Contains(`go-\w+`, "hello knifer"))
 	// Output:
 	// true

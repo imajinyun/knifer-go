@@ -6,7 +6,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vset"
+	"github.com/imajinyun/knifer-go/vset"
 )
 
 func TestVSetUnmarshalErrorPaths(t *testing.T) {

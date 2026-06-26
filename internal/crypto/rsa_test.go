@@ -8,7 +8,7 @@ import (
 	"errors"
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 func TestRSADigestOptions(t *testing.T) {
@@ -197,7 +197,7 @@ func TestRSARealUserEncryptSignVerifyScenario(t *testing.T) {
 		t.Fatal(err)
 	}
 	message := []byte("order_id=42&amount=19.99")
-	label := []byte("go-knifer:vcrypto")
+	label := []byte("knifer-go:vcrypto")
 	cipherText, err := RSAEncryptOAEP(message, &priv.PublicKey, label)
 	if err != nil {
 		t.Fatalf("RSAEncryptOAEP = %v", err)

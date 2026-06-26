@@ -8,7 +8,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vcrypto"
+	"github.com/imajinyun/knifer-go/vcrypto"
 )
 
 func TestRSAEncryptDecryptAndSignVerify(t *testing.T) {

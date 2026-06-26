@@ -1,4 +1,4 @@
-# go-knifer — AI Agent Guide
+# knifer-go — AI Agent Guide
 
 > Go utility library (54 public `v*` facade packages + `internal/*` implementations).
 
@@ -105,13 +105,13 @@
 | `make worktree-check` | Fail when unrelated untracked Go files may pollute tests or commits |
 | `make change-policy-check` | Detect change policies from staged, unstaged, and untracked local diff |
 | `make security-sensitive-diff` | Detect changes under security-sensitive public facades and their internal implementations |
-| `make agent-evidence` | Emit `/tmp/go-knifer-agent-validation.json` with detected policies, required commands, and command attestations |
+| `make agent-evidence` | Emit `/tmp/knifer-go-agent-validation.json` with detected policies, required commands, and command attestations |
 | `make agent-evidence-check` | Validate Agent evidence schema, policy references, command references, command attestations, risk, and embedded check status |
 | `make quick-check` | Fast local: mod-verify → vet → arch → test → api-check → tools-check → ai-context-check → diff-whitespace |
 | `make security-check` | Lint + govulncheck |
 | `make full-check COVERAGE_FILE=/tmp/coverage.out` | Full pre-push: quick-check + race coverage + coverage gate + lint + vuln |
 | `make agent-check` | Default AI/Agent-safe validation gate; delegates to `quick-check` |
-| `make agent-full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out` | Full AI/Agent validation gate with coverage, lint, and vulnerability scan |
+| `make agent-full-check COVERAGE_FILE=/tmp/knifer-go-coverage.out` | Full AI/Agent validation gate with coverage, lint, and vulnerability scan |
 | `make agent-security-check` | AI/Agent security validation gate |
 | `make ci-agent-governance` | CI Agent governance gate; detects change policies and emits validation evidence |
 | `make install-hooks` / `make uninstall-hooks` | Enable or disable optional local Git hooks for pre-commit/pre-push validation |
@@ -150,7 +150,7 @@
 - **Generated docs**: `make docs-check` guards generated documentation artifacts. Run `make docs-gen` after intentional generated-doc changes, then re-run `make docs-check`.
 - **AI metadata**: `ai-context.json` is CI-enforced by `make ai-context-check`; update command side-effect metadata, `risk_level`, facades, security-sensitive package lists, or coverage gates when governance inputs change.
 - **Change policies**: `ai-context.json.change_type_policies` maps PR change types to required Agent validation commands; keep PR template change types aligned with those policy keys.
-- **Agent evidence**: `make agent-evidence` writes `/tmp/go-knifer-agent-validation.json`; use it to summarize detected policies, required commands, command attestations, security-sensitive paths, and governance check results.
+- **Agent evidence**: `make agent-evidence` writes `/tmp/knifer-go-agent-validation.json`; use it to summarize detected policies, required commands, command attestations, security-sensitive paths, and governance check results.
 - **Agent evidence validation**: `make agent-evidence-check` validates the generated evidence JSON against `ai-context.json`; all change policies must require both evidence generation and evidence validation, and every required command must have an attestation entry.
 - **CI Agent governance**: GitHub Actions runs `make ci-agent-governance` with `AGENT_CHANGE_BASE_REF` so policy detection is based on the PR or push diff, then uploads the Agent evidence JSON artifact.
 - **CI workflow invariants**: `ai-context.json.ci_workflows` declares required GitHub Actions jobs, Agent governance commands, environment variables, and artifacts; `make ci-workflow-check` validates them.
@@ -184,18 +184,18 @@ When the user asks to implement, rename, refactor, document, or otherwise modify
    - `make tools-check`; if facade functions, doc comments, or Example tests changed intentionally, run `make tools-gen` and re-run `make tools-check`. Keep `docs/api/tools.json` and `docs/api/tools.md` in the same logical change.
    - `make docs-check`; if generated documentation artifacts changed intentionally, run `make docs-gen` and re-run `make docs-check`. Keep generated artifacts in the same logical change.
    - `golangci-lint run ./...` after non-trivial Go code or test changes when the tool is available. Because lint analyzes untracked Go files too, either include intentional untracked Go files in the logical change and format/fix them, or exclude/stash unrelated ones before broad lint.
-   - For coverage gates, first generate a fresh profile, then pass that exact file to the checker, e.g. `go test -race -shuffle=on -coverprofile=/tmp/go-knifer-coverage.out ./...` followed by `bash bin/check_coverage.sh /tmp/go-knifer-coverage.out`. Do not rely on an implicit or stale `coverage.out`.
+   - For coverage gates, first generate a fresh profile, then pass that exact file to the checker, e.g. `go test -race -shuffle=on -coverprofile=/tmp/knifer-go-coverage.out ./...` followed by `bash bin/check_coverage.sh /tmp/knifer-go-coverage.out`. Do not rely on an implicit or stale `coverage.out`.
    - `git diff --check` before committing.
-   - `make agent-evidence` after governance checks to generate `/tmp/go-knifer-agent-validation.json` for PR evidence.
+   - `make agent-evidence` after governance checks to generate `/tmp/knifer-go-agent-validation.json` for PR evidence.
    - `make agent-evidence-check` after generating Agent evidence to verify policy, command, attestation, risk, and embedded check consistency.
-   - Prefer the named workflow targets when they match the change scope: `make agent-check` for the default AI/Agent-safe gate, `make agent-security-check` for lint/vulnerability gates, `make agent-full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out` for the full AI/Agent gate, and `make ci-test` for the CI test-job gate. For security-sensitive changes, use the `security_sensitive` policy in `ai-context.json.change_type_policies`.
+   - Prefer the named workflow targets when they match the change scope: `make agent-check` for the default AI/Agent-safe gate, `make agent-security-check` for lint/vulnerability gates, `make agent-full-check COVERAGE_FILE=/tmp/knifer-go-coverage.out` for the full AI/Agent gate, and `make ci-test` for the CI test-job gate. For security-sensitive changes, use the `security_sensitive` policy in `ai-context.json.change_type_policies`.
 
 5. If validation fails, **fix the cause** and re-run the failing command before reporting completion.
 
 6. Before committing, **re-check the final staged logical change**:
    - Run `git status --porcelain=v1 -b` and review `git diff --stat` / `git diff --staged --stat` so the commit contains only the requested files.
    - Ensure the latest validation was run after the final edit/API snapshot update, not before it. If lint required formatting or simplification fixes, re-run lint after those final edits.
-   - For non-trivial Go changes, the pre-commit validation set should include: focused package tests, `go test -v -gcflags="all=-l -N" ./...`, `go vet ./...`, `bash bin/check_arch.sh`, `bash bin/check_api_compat.sh`, `make tools-check`, `golangci-lint run ./...`, `go test -race -shuffle=on -coverprofile=/tmp/go-knifer-coverage.out ./...`, `bash bin/check_coverage.sh /tmp/go-knifer-coverage.out`, and `git diff --check`. `make agent-full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out` is the preferred AI/Agent aggregate target when a full local gate is feasible.
+   - For non-trivial Go changes, the pre-commit validation set should include: focused package tests, `go test -v -gcflags="all=-l -N" ./...`, `go vet ./...`, `bash bin/check_arch.sh`, `bash bin/check_api_compat.sh`, `make tools-check`, `golangci-lint run ./...`, `go test -race -shuffle=on -coverprofile=/tmp/knifer-go-coverage.out ./...`, `bash bin/check_coverage.sh /tmp/knifer-go-coverage.out`, and `git diff --check`. `make agent-full-check COVERAGE_FILE=/tmp/knifer-go-coverage.out` is the preferred AI/Agent aggregate target when a full local gate is feasible.
    - If a public API snapshot was intentionally refreshed, run the API check once to observe the stale snapshot, then `UPDATE_API=1 bash bin/check_api_compat.sh`, then re-run `bash bin/check_api_compat.sh` and include `docs/api/exports.txt` in the same logical commit.
    - If the tools catalog was intentionally refreshed, run `make tools-check` once to observe drift, then `make tools-gen`, then re-run `make tools-check` and include `docs/api/tools.json` and `docs/api/tools.md` in the same logical commit.
    - If generated docs were intentionally refreshed, run `make docs-check` once to observe drift, then `make docs-gen`, then re-run `make docs-check` and include generated artifacts in the same logical commit.
@@ -258,7 +258,7 @@ When the user asks to continue general governance, generate next governance task
    - Keep examples deterministic; sort map-derived output before printing.
 
 4. Use coverage data to choose small, stable test improvements:
-   - Generate a fresh profile with `go test -coverprofile=/tmp/go-knifer-coverage-audit.out ./...` and inspect `go tool cover -func=/tmp/go-knifer-coverage-audit.out`.
+   - Generate a fresh profile with `go test -coverprofile=/tmp/knifer-go-coverage-audit.out ./...` and inspect `go tool cover -func=/tmp/knifer-go-coverage-audit.out`.
    - Prefer low-risk tests for public facade options, error branches, nil/empty boundaries, deterministic fallback behavior, and serialization round trips.
    - Do not test implementation details or add flaky timing/network dependencies only to increase coverage.
 
@@ -276,7 +276,7 @@ When the user asks to continue general governance, generate next governance task
    - `bash bin/check_arch.sh`.
    - `bash bin/check_api_compat.sh` when public exports may have changed.
    - `golangci-lint run ./...` when available.
-   - `go test -race -shuffle=on -coverprofile=/tmp/go-knifer-coverage.out ./...` followed by `bash bin/check_coverage.sh /tmp/go-knifer-coverage.out`.
+   - `go test -race -shuffle=on -coverprofile=/tmp/knifer-go-coverage.out ./...` followed by `bash bin/check_coverage.sh /tmp/knifer-go-coverage.out`.
    - `git diff --check`.
 
 ### Package test governance
@@ -327,8 +327,8 @@ Run validation in this order:
    - `go test -v -gcflags="all=-l -N" ./...`
    - `go vet ./...`
    - `bash bin/check_arch.sh`
-   - `go test -race -shuffle=on -coverprofile=/tmp/go-knifer-coverage.out ./...`
-   - `bash bin/check_coverage.sh /tmp/go-knifer-coverage.out`
+   - `go test -race -shuffle=on -coverprofile=/tmp/knifer-go-coverage.out ./...`
+   - `bash bin/check_coverage.sh /tmp/knifer-go-coverage.out`
    - `bash bin/check_api_compat.sh` when public exports may have changed.
    - `golangci-lint run ./...` when production code or non-trivial tests changed and the tool is available.
 5. Run `utree flush` before the final report.

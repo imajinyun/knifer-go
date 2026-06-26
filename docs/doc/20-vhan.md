@@ -1,6 +1,6 @@
 # vhan: Han text adapter helpers
 
-`vhan` provides provider-neutral Chinese-to-pinyin conversion helpers. It defines a small interface for callers to inject their own pinyin provider while keeping `go-knifer` free of dictionary, tokenizer, network-client, and credential dependencies.
+`vhan` provides provider-neutral Chinese-to-pinyin conversion helpers. It defines a small interface for callers to inject their own pinyin provider while keeping `knifer-go` free of dictionary, tokenizer, network-client, and credential dependencies.
 
 ## When to use
 
@@ -48,7 +48,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vhan"
+	"github.com/imajinyun/knifer-go/vhan"
 )
 
 type pinyinProvider struct{}
@@ -131,7 +131,7 @@ go test -bench=. -benchmem -run=^$ ./internal/pinyin ./vhan
 
 `vhan` measures only validation, defensive copying, client dispatch, and provider-interface overhead. Real pinyin quality and cost depend on the injected provider's dictionaries, segmentation, caching, and polyphone logic.
 
-Provider neutrality keeps `go-knifer` small and deterministic, but it means applications own provider lifecycle, privacy controls, dictionary updates, and observability.
+Provider neutrality keeps `knifer-go` small and deterministic, but it means applications own provider lifecycle, privacy controls, dictionary updates, and observability.
 
 ## FAQ
 

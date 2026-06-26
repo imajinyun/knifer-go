@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/verr"
+	"github.com/imajinyun/knifer-go/verr"
 	"github.com/sirupsen/logrus"
 )
 

@@ -5,7 +5,7 @@ import (
 	stdnet "net"
 	"regexp"
 
-	netimpl "github.com/imajinyun/go-knifer/internal/net"
+	netimpl "github.com/imajinyun/knifer-go/internal/net"
 )
 
 type WildcardOption = netimpl.WildcardOption

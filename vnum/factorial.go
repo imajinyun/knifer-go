@@ -3,7 +3,7 @@ package vnum
 import (
 	"math/big"
 
-	numimpl "github.com/imajinyun/go-knifer/internal/num"
+	numimpl "github.com/imajinyun/knifer-go/internal/num"
 )
 
 func Factorial(n uint64) (uint64, error) { return numimpl.Factorial(n) }

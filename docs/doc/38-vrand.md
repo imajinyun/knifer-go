@@ -74,7 +74,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vrand"
+	"github.com/imajinyun/knifer-go/vrand"
 )
 
 func main() {
@@ -94,7 +94,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vrand"
+	"github.com/imajinyun/knifer-go/vrand"
 )
 
 func main() {
@@ -113,7 +113,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vrand"
+	"github.com/imajinyun/knifer-go/vrand"
 )
 
 func main() {
@@ -135,7 +135,7 @@ import (
 	"fmt"
 	mathrand "math/rand"
 
-	"github.com/imajinyun/go-knifer/vrand"
+	"github.com/imajinyun/knifer-go/vrand"
 )
 
 func main() {

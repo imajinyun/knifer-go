@@ -5,7 +5,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vblf"
+	"github.com/imajinyun/knifer-go/vblf"
 )
 
 func ExampleNewBitSetBloomFilter() {
@@ -66,9 +66,9 @@ func ExampleNewFuncFilterWithMachineNumE() {
 
 func ExampleNewDefaultFilter() {
 	filter := vblf.NewDefaultFilter(1000)
-	filter.Add("go-knifer")
+	filter.Add("knifer-go")
 
-	fmt.Println(filter.Contains("go-knifer"))
+	fmt.Println(filter.Contains("knifer-go"))
 	// Output: true
 }
 

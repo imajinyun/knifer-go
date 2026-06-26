@@ -1,6 +1,6 @@
-# Contributing to go-knifer
+# Contributing to knifer-go
 
-Thanks for contributing! go-knifer is a large, multi-domain Go utility library
+Thanks for contributing! knifer-go is a large, multi-domain Go utility library
 (54 public facade subpackages). To keep it consistent and maintainable at this scale,
 please follow the conventions below. Most of them are enforced by CI
 (`go vet`, `golangci-lint`, and `bin/check_arch.sh`).
@@ -190,7 +190,7 @@ make check
 - Follow [SemVer](https://semver.org/). The subpackage is the unit of API
   stability.
 - Removing or renaming an exported symbol is a breaking change (major bump).
-- `v2+` must change the module path (`.../go-knifer/v2`).
+- `v2+` must change the module path (`.../knifer-go/v2`).
 - Add user-visible changes to `CHANGELOG.md` before tagging a release.
 
 ## Security

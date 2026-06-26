@@ -1,6 +1,6 @@
 package vnum
 
-import numimpl "github.com/imajinyun/go-knifer/internal/num"
+import numimpl "github.com/imajinyun/knifer-go/internal/num"
 
 func Round(v float64, scale int) float64 { return numimpl.Round(v, scale) }
 

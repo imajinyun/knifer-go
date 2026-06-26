@@ -5,7 +5,7 @@ import (
 	"crypto/rsa"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vjwt"
+	"github.com/imajinyun/knifer-go/vjwt"
 )
 
 func TestRSAPSSSignerFactories(t *testing.T) {

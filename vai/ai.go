@@ -3,7 +3,7 @@ package vai
 import (
 	"context"
 
-	aiimpl "github.com/imajinyun/go-knifer/internal/ai"
+	aiimpl "github.com/imajinyun/knifer-go/internal/ai"
 )
 
 // Role identifies the speaker or source of a chat message.

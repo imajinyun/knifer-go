@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vident"
+	"github.com/imajinyun/knifer-go/vident"
 )
 
 func TestIDCardFacade(t *testing.T) {

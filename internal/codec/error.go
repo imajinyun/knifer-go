@@ -1,6 +1,6 @@
 package codec
 
-import knifer "github.com/imajinyun/go-knifer"
+import knifer "github.com/imajinyun/knifer-go"
 
 // CodecError represents an error produced by codec helpers.
 type CodecError struct {
@@ -20,7 +20,7 @@ func (e *CodecError) Error() string {
 	return e.Msg
 }
 
-// ErrorCode returns the go-knifer error code.
+// ErrorCode returns the knifer-go error code.
 func (e *CodecError) ErrorCode() knifer.ErrCode {
 	if e == nil {
 		return ""

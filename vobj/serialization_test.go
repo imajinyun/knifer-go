@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vobj"
+	"github.com/imajinyun/knifer-go/vobj"
 )
 
 func TestFacadeCloneAndSerialize(t *testing.T) {
@@ -140,7 +140,7 @@ func TestDynamicObjectContractMatrix(t *testing.T) {
 
 func FuzzDynamicObjectStringContract(f *testing.F) {
 	f.Add("")
-	f.Add("go-knifer")
+	f.Add("knifer-go")
 	f.Add("42")
 	f.Fuzz(func(t *testing.T, input string) {
 		if vobj.IsNil(input) {

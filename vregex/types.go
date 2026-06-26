@@ -1,6 +1,6 @@
 package vregex
 
-import regeximpl "github.com/imajinyun/go-knifer/internal/regex"
+import regeximpl "github.com/imajinyun/knifer-go/internal/regex"
 
 const (
 	// REChinese matches a single Chinese Han character.

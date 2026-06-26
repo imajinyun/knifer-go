@@ -3,7 +3,7 @@ package hash
 import "testing"
 
 func TestStringHashAlgorithms(t *testing.T) {
-	const s = "go-knifer"
+	const s = "knifer-go"
 	// Non-zero, deterministic sanity checks for each algorithm.
 	if RsHash(s) < 0 || JsHash(s) < 0 || PjwHash(s) < 0 || ElfHash(s) < 0 {
 		t.Fatal("masked hashes must be non-negative")

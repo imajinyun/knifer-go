@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 type fixedGenerator struct{ code string }

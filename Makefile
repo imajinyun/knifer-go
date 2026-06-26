@@ -3,7 +3,7 @@
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
 PKGS ?= ./...
-COVERAGE_FILE ?= /tmp/go-knifer-coverage.out
+COVERAGE_FILE ?= /tmp/knifer-go-coverage.out
 BENCH ?= .
 BENCH_PKGS ?= ./internal/slice ./internal/maps ./internal/str ./internal/num ./internal/bean ./internal/db ./internal/poi ./internal/imgx ./internal/template ./internal/cli ./internal/ai ./internal/ftp ./internal/ssh ./internal/pinyin ./internal/tokenize
 BENCH_FACADE_PKGS ?= ./vslice ./vmap ./vstr ./vnum ./vbean ./vdb ./vcrypto ./vpoi ./vimg ./vtpl ./vcli ./vai ./vftp ./vssh ./vhan ./vtok
@@ -14,8 +14,8 @@ FUZZTIME ?= 1s
 FUZZ_PKGS ?= ./internal/codec ./internal/json ./internal/sets
 BENCH_BASELINE ?=
 BENCH_CURRENT ?=
-BENCH_BASELINE_OUT ?= /tmp/go-knifer-bench-baseline.txt
-BENCH_CURRENT_OUT ?= /tmp/go-knifer-bench-current.txt
+BENCH_BASELINE_OUT ?= /tmp/knifer-go-bench-baseline.txt
+BENCH_CURRENT_OUT ?= /tmp/knifer-go-bench-current.txt
 
 help:
 	@echo "Targets:"
@@ -80,7 +80,7 @@ doctor:
 	@echo "== git status =="
 	@git status --short --branch
 	@echo "== module =="
-	@$(GO) list -m | grep 'go-knifer' || $(GO) list -m
+	@$(GO) list -m | grep 'knifer-go' || $(GO) list -m
 	@echo "== package list =="
 	@$(GO) list ./... >/dev/null
 	@echo "go list ./... OK"
@@ -88,11 +88,11 @@ doctor:
 install-hooks:
 	@git config core.hooksPath .githooks
 	@chmod +x .githooks/pre-commit .githooks/pre-push
-	@echo "Installed go-knifer Git hooks from .githooks"
+	@echo "Installed knifer-go Git hooks from .githooks"
 
 uninstall-hooks:
 	@git config --unset core.hooksPath || true
-	@echo "Disabled go-knifer Git hooks"
+	@echo "Disabled knifer-go Git hooks"
 
 worktree-check:
 	@if [ "$${SKIP_WORKTREE_CHECK:-}" = "1" ]; then \

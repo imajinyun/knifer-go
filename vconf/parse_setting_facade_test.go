@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vconf"
+	"github.com/imajinyun/knifer-go/vconf"
 )
 
 func TestParseSettingFacade(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vurl"
+	"github.com/imajinyun/knifer-go/vurl"
 )
 
 func TestFacadeQueryAndNormalize(t *testing.T) {

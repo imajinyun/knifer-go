@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vtok"
+	"github.com/imajinyun/knifer-go/vtok"
 )
 
 type providerFunc struct {

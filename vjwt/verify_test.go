@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/vjwt"
+	knifer "github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/vjwt"
 )
 
 func TestVerifyRejectsNoneToken(t *testing.T) {

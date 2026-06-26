@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/vhttp"
+	"github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/vhttp"
 )
 
 func ExampleNewError() {
@@ -393,9 +393,9 @@ func ExampleWithUserAgent() {
 	}))
 	defer server.Close()
 
-	resp := vhttp.Get(server.URL, vhttp.WithUserAgent("go-knifer-example")).Execute()
+	resp := vhttp.Get(server.URL, vhttp.WithUserAgent("knifer-go-example")).Execute()
 	fmt.Println(resp.Body())
-	// Output: go-knifer-example
+	// Output: knifer-go-example
 }
 
 func ExampleWithTimeout() {

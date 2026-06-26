@@ -1,6 +1,6 @@
 package vnum
 
-import numimpl "github.com/imajinyun/go-knifer/internal/num"
+import numimpl "github.com/imajinyun/knifer-go/internal/num"
 
 func WithFormatFloatFunc(formatter func(float64, byte, int, int) string) FormatOption {
 	return numimpl.WithFormatFloatFunc(formatter)

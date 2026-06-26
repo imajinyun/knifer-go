@@ -1,6 +1,6 @@
 package vnum
 
-import numimpl "github.com/imajinyun/go-knifer/internal/num"
+import numimpl "github.com/imajinyun/knifer-go/internal/num"
 
 func WithParseIntFunc(parser func(string, int, int) (int64, error)) ParseOption {
 	return numimpl.WithParseIntFunc(parser)

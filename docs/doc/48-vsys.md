@@ -34,7 +34,7 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/imajinyun/go-knifer/vsys"
+	"github.com/imajinyun/knifer-go/vsys"
 )
 
 func main() {
@@ -58,7 +58,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vsys"
+	"github.com/imajinyun/knifer-go/vsys"
 )
 
 func main() {
@@ -77,7 +77,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vsys"
+	"github.com/imajinyun/knifer-go/vsys"
 )
 
 func main() {
@@ -87,7 +87,7 @@ func main() {
 		return v, ok
 	}
 
-	fmt.Println(vsys.EnvOrDefaultWithOptions("APP", "go-knifer", vsys.WithEnvLookupFunc(lookup)))
+	fmt.Println(vsys.EnvOrDefaultWithOptions("APP", "knifer-go", vsys.WithEnvLookupFunc(lookup)))
 	fmt.Println(vsys.EnvIntWithOptions("PORT", 80, vsys.WithEnvLookupFunc(lookup)))
 	fmt.Println(vsys.EnvBoolWithOptions("DEBUG", false, vsys.WithEnvLookupFunc(lookup)))
 }
@@ -102,7 +102,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vsys"
+	"github.com/imajinyun/knifer-go/vsys"
 )
 
 func main() {

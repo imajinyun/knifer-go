@@ -1,6 +1,6 @@
 package vjwt
 
-import jwtimpl "github.com/imajinyun/go-knifer/internal/jwt"
+import jwtimpl "github.com/imajinyun/knifer-go/internal/jwt"
 
 // NewJWT creates a new JWT object.
 func NewJWT() *JWT { return jwtimpl.New() }

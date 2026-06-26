@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vcron"
+	"github.com/imajinyun/knifer-go/vcron"
 )
 
 func TestFacadeSchedulerWithOptions(t *testing.T) {

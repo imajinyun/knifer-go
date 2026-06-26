@@ -4,7 +4,7 @@ import (
 	"io"
 	"time"
 
-	logx "github.com/imajinyun/go-knifer/internal/log"
+	logx "github.com/imajinyun/knifer-go/internal/log"
 )
 
 // LogLevel is the logging level used by the logging facade.

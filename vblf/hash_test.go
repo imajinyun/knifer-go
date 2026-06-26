@@ -3,7 +3,7 @@ package vblf_test
 import (
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vblf"
+	"github.com/imajinyun/knifer-go/vblf"
 )
 
 func TestFacadeHashFunctions(t *testing.T) {

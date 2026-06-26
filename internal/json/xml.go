@@ -3,7 +3,7 @@ package json
 import (
 	"sort"
 
-	xmlimpl "github.com/imajinyun/go-knifer/internal/xml"
+	xmlimpl "github.com/imajinyun/knifer-go/internal/xml"
 )
 
 // XMLToJSON parses XML text into an ordered JSON object.

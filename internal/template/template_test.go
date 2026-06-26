@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 func BenchmarkRenderWithTextEngine(b *testing.B) {
@@ -87,7 +87,7 @@ func TestRenderWithOptionsExecutorAndFallbacks(t *testing.T) {
 		WithTemplateParser(nil),
 		WithTemplateExecutor(func(tpl *template.Template, w io.Writer, data any) error {
 			executed = true
-			if tpl.Name() != "go-knifer-template" {
+			if tpl.Name() != "knifer-go-template" {
 				t.Fatalf("template name = %q", tpl.Name())
 			}
 			_, err := io.WriteString(w, "executor-output")

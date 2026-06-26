@@ -6,7 +6,7 @@ import (
 	"net"
 	"time"
 
-	idimpl "github.com/imajinyun/go-knifer/internal/id"
+	idimpl "github.com/imajinyun/knifer-go/internal/id"
 )
 
 type (

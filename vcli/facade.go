@@ -3,7 +3,7 @@ package vcli
 import (
 	"context"
 
-	"github.com/imajinyun/go-knifer/internal/cli"
+	"github.com/imajinyun/knifer-go/internal/cli"
 )
 
 // Run executes name with args using context-aware process handling.

@@ -6,7 +6,7 @@ import (
 	"net"
 	"os"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 // HTTPError represents an error during HTTP operations.
@@ -27,7 +27,7 @@ func (e *HTTPError) Error() string {
 	return e.Msg
 }
 
-// ErrorCode returns the go-knifer error code.
+// ErrorCode returns the knifer-go error code.
 func (e *HTTPError) ErrorCode() knifer.ErrCode {
 	if e == nil {
 		return ""
@@ -80,7 +80,7 @@ func NewHTTPErrorWithCode(code knifer.ErrCode, msg string, cause error) *HTTPErr
 	return &HTTPError{Code: code, Msg: msg, Cause: cause}
 }
 
-// ClassifyHTTPErrorCode maps common transport errors to go-knifer error codes.
+// ClassifyHTTPErrorCode maps common transport errors to knifer-go error codes.
 func ClassifyHTTPErrorCode(err error, fallback knifer.ErrCode) knifer.ErrCode {
 	if err == nil {
 		if fallback == "" {

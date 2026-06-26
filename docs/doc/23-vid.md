@@ -72,7 +72,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vid"
+	"github.com/imajinyun/knifer-go/vid"
 )
 
 func main() {
@@ -91,7 +91,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vid"
+	"github.com/imajinyun/knifer-go/vid"
 )
 
 func main() {
@@ -113,7 +113,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vid"
+	"github.com/imajinyun/knifer-go/vid"
 )
 
 func main() {
@@ -132,7 +132,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vid"
+	"github.com/imajinyun/knifer-go/vid"
 )
 
 func main() {

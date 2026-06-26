@@ -6,7 +6,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vcrypto"
+	"github.com/imajinyun/knifer-go/vcrypto"
 )
 
 func TestKDFAndParamSigning(t *testing.T) {

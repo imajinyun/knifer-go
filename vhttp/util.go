@@ -1,6 +1,6 @@
 package vhttp
 
-import httpx "github.com/imajinyun/go-knifer/internal/httpx/http"
+import httpx "github.com/imajinyun/knifer-go/internal/httpx/http"
 
 // BuildBasicAuth builds a Basic authorization value.
 func BuildBasicAuth(user, pass string) string { return httpx.BuildBasicAuth(user, pass) }

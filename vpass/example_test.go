@@ -3,7 +3,7 @@ package vpass_test
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vpass"
+	"github.com/imajinyun/knifer-go/vpass"
 )
 
 func ExampleScore() {

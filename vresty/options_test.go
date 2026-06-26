@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vresty"
+	"github.com/imajinyun/knifer-go/vresty"
 	grestry "resty.dev/v3"
 )
 

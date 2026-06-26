@@ -88,7 +88,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vconf"
+	"github.com/imajinyun/knifer-go/vconf"
 )
 
 func main() {
@@ -116,7 +116,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vconf"
+	"github.com/imajinyun/knifer-go/vconf"
 )
 
 func main() {
@@ -143,7 +143,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vconf"
+	"github.com/imajinyun/knifer-go/vconf"
 )
 
 type Server struct {
@@ -179,7 +179,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vconf"
+	"github.com/imajinyun/knifer-go/vconf"
 )
 
 func main() {

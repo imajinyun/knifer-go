@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vresty"
+	"github.com/imajinyun/knifer-go/vresty"
 	grestry "resty.dev/v3"
 )
 
@@ -606,9 +606,9 @@ func ExampleWithUserAgent() {
 	}))
 	defer server.Close()
 
-	resp := vresty.Get(server.URL, vresty.WithUserAgent("go-knifer-resty-example")).Execute()
+	resp := vresty.Get(server.URL, vresty.WithUserAgent("knifer-go-resty-example")).Execute()
 	fmt.Println(resp.Body())
-	// Output: go-knifer-resty-example
+	// Output: knifer-go-resty-example
 }
 
 func ExampleWithContentType() {

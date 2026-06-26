@@ -3,7 +3,7 @@ package vxml
 import (
 	"io"
 
-	xmlimpl "github.com/imajinyun/go-knifer/internal/xml"
+	xmlimpl "github.com/imajinyun/knifer-go/internal/xml"
 )
 
 // ReadXML parses XML content directly, or treats the input as a file path when

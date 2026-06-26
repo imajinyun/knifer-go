@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vcron"
+	"github.com/imajinyun/knifer-go/vcron"
 )
 
 func ExampleNewPattern() {

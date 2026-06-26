@@ -72,7 +72,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vregex"
+	"github.com/imajinyun/knifer-go/vregex"
 )
 
 func main() {
@@ -91,7 +91,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vregex"
+	"github.com/imajinyun/knifer-go/vregex"
 )
 
 func main() {
@@ -111,7 +111,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vregex"
+	"github.com/imajinyun/knifer-go/vregex"
 )
 
 func main() {
@@ -132,7 +132,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vregex"
+	"github.com/imajinyun/knifer-go/vregex"
 )
 
 func main() {

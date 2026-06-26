@@ -1,7 +1,7 @@
 package resty
 
 import (
-	"github.com/imajinyun/go-knifer/internal/httpx/internal/shared"
+	"github.com/imajinyun/knifer-go/internal/httpx/internal/shared"
 )
 
 // Method represents an HTTP request method.

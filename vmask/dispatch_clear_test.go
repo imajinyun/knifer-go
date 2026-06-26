@@ -3,7 +3,7 @@ package vmask_test
 import (
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vmask"
+	"github.com/imajinyun/knifer-go/vmask"
 )
 
 func TestFacadeMaskDispatchAndClearHelpers(t *testing.T) {

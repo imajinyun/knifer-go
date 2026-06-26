@@ -1,6 +1,6 @@
 package vnet
 
-import netimpl "github.com/imajinyun/go-knifer/internal/net"
+import netimpl "github.com/imajinyun/knifer-go/internal/net"
 
 const (
 	LocalIP         = netimpl.LocalIP

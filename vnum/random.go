@@ -3,7 +3,7 @@ package vnum
 import (
 	"io"
 
-	numimpl "github.com/imajinyun/go-knifer/internal/num"
+	numimpl "github.com/imajinyun/knifer-go/internal/num"
 )
 
 func WithRandomReader(reader io.Reader) RandomNumberOption {

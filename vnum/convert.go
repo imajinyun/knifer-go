@@ -3,7 +3,7 @@ package vnum
 import (
 	"math/big"
 
-	numimpl "github.com/imajinyun/go-knifer/internal/num"
+	numimpl "github.com/imajinyun/knifer-go/internal/num"
 )
 
 func ToBigDecimal(numberStr string) *big.Rat { return numimpl.ToBigDecimal(numberStr) }

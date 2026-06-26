@@ -3,7 +3,7 @@ package date
 import (
 	"fmt"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 // DateError represents an error produced by date helpers.
@@ -24,7 +24,7 @@ func (e *DateError) Error() string {
 	return e.Msg
 }
 
-// ErrorCode returns the go-knifer error code.
+// ErrorCode returns the knifer-go error code.
 func (e *DateError) ErrorCode() knifer.ErrCode {
 	if e == nil {
 		return ""

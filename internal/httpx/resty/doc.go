@@ -13,6 +13,6 @@
 //
 //	resp := resty.Get("https://example.com",
 //	    resty.WithTimeout(3*time.Second),
-//	    resty.WithHeader("X-Client", "go-knifer"),
+//	    resty.WithHeader("X-Client", "knifer-go"),
 //	).Execute()
 package resty

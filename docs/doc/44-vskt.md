@@ -40,7 +40,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vskt"
+	"github.com/imajinyun/knifer-go/vskt"
 )
 
 func main() {
@@ -65,7 +65,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vskt"
+	"github.com/imajinyun/knifer-go/vskt"
 )
 
 func main() {
@@ -96,7 +96,7 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/imajinyun/go-knifer/vskt"
+	"github.com/imajinyun/knifer-go/vskt"
 )
 
 func main() {
@@ -125,7 +125,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vskt"
+	"github.com/imajinyun/knifer-go/vskt"
 )
 
 func main() {

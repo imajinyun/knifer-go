@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vpoi"
+	"github.com/imajinyun/knifer-go/vpoi"
 	"github.com/xuri/excelize/v2"
 )
 

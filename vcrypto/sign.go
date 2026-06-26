@@ -1,6 +1,6 @@
 package vcrypto
 
-import cryptoimpl "github.com/imajinyun/go-knifer/internal/crypto"
+import cryptoimpl "github.com/imajinyun/knifer-go/internal/crypto"
 
 // SignParams joins params by sorted key and returns the digest hex using digestHex.
 func SignParams(params map[string]any, digestHex func([]byte) string, separator, keyValueSeparator string, ignoreNil bool, otherParams ...string) string {

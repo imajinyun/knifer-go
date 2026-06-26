@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vcron"
+	"github.com/imajinyun/knifer-go/vcron"
 )
 
 func TestFacadePatternParse(t *testing.T) {

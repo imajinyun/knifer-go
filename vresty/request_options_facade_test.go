@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vresty"
+	"github.com/imajinyun/knifer-go/vresty"
 )
 
 func TestFacadeRequestOptions(t *testing.T) {

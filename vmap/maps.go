@@ -4,7 +4,7 @@ import (
 	"cmp"
 	"iter"
 
-	mapsimpl "github.com/imajinyun/go-knifer/internal/maps"
+	mapsimpl "github.com/imajinyun/knifer-go/internal/maps"
 )
 
 type Pair[K comparable, V any] = mapsimpl.Pair[K, V]

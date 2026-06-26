@@ -1,6 +1,6 @@
 package vxml
 
-import xmlimpl "github.com/imajinyun/go-knifer/internal/xml"
+import xmlimpl "github.com/imajinyun/knifer-go/internal/xml"
 
 // GetElementByXPath returns the first element matched by a simple expression.
 func GetElementByXPath(expression string, source any) *Element {

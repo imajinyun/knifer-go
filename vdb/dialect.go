@@ -1,6 +1,6 @@
 package vdb
 
-import dbimpl "github.com/imajinyun/go-knifer/internal/db"
+import dbimpl "github.com/imajinyun/knifer-go/internal/db"
 
 // NormalizeDialect maps common driver names to a SQL dialect.
 func NormalizeDialect(name string) Dialect { return dbimpl.NormalizeDialect(name) }

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	netimpl "github.com/imajinyun/go-knifer/internal/net"
+	netimpl "github.com/imajinyun/knifer-go/internal/net"
 )
 
 type connectConfig struct {

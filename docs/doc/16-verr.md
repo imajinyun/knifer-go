@@ -35,7 +35,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/verr"
+	"github.com/imajinyun/knifer-go/verr"
 )
 
 func main() {
@@ -58,7 +58,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/verr"
+	"github.com/imajinyun/knifer-go/verr"
 )
 
 func main() {
@@ -78,7 +78,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/verr"
+	"github.com/imajinyun/knifer-go/verr"
 )
 
 func main() {
@@ -101,7 +101,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/verr"
+	"github.com/imajinyun/knifer-go/verr"
 )
 
 func main() {
@@ -126,7 +126,7 @@ import (
 	"fmt"
 
 	"github.com/getsentry/sentry-go"
-	"github.com/imajinyun/go-knifer/verr"
+	"github.com/imajinyun/knifer-go/verr"
 	"github.com/sirupsen/logrus"
 )
 

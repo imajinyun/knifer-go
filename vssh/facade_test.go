@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vssh"
+	"github.com/imajinyun/knifer-go/vssh"
 )
 
 type providerFunc struct {

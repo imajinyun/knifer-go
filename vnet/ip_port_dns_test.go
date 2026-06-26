@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vnet"
+	"github.com/imajinyun/knifer-go/vnet"
 )
 
 func TestVNetFacade(t *testing.T) {

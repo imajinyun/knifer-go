@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	httpxhttp "github.com/imajinyun/go-knifer/internal/httpx/http"
-	httpxresty "github.com/imajinyun/go-knifer/internal/httpx/resty"
+	httpxhttp "github.com/imajinyun/knifer-go/internal/httpx/http"
+	httpxresty "github.com/imajinyun/knifer-go/internal/httpx/resty"
 )
 
 type contractResponse struct {

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vblf"
+	"github.com/imajinyun/knifer-go/vblf"
 )
 
 func TestFacadeBitSetBloomFilter(t *testing.T) {

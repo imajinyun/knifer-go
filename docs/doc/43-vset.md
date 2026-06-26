@@ -37,7 +37,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vset"
+	"github.com/imajinyun/knifer-go/vset"
 )
 
 func main() {
@@ -57,7 +57,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vset"
+	"github.com/imajinyun/knifer-go/vset"
 )
 
 func main() {
@@ -79,7 +79,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vset"
+	"github.com/imajinyun/knifer-go/vset"
 )
 
 func main() {
@@ -100,7 +100,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vset"
+	"github.com/imajinyun/knifer-go/vset"
 )
 
 func main() {

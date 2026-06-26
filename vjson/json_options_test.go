@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vjson"
-	"github.com/imajinyun/go-knifer/vxml"
+	"github.com/imajinyun/knifer-go/vjson"
+	"github.com/imajinyun/knifer-go/vxml"
 )
 
 func TestFacadeJSONOptions(t *testing.T) {

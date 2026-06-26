@@ -6,7 +6,7 @@ import (
 	mathrand "math/rand"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vrand"
+	"github.com/imajinyun/knifer-go/vrand"
 )
 
 func ExampleSecureBytes() {

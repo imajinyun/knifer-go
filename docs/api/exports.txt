@@ -3,7 +3,7 @@
 # Scope: module root and top-level v* facade packages only.
 # Detail: function signatures, exported type definitions, exported struct fields, interface methods, and method sets.
 
-github.com/imajinyun/go-knifer
+github.com/imajinyun/knifer-go
   const ErrCodeInternal ErrCode = "GK_INTERNAL"
   const ErrCodeInvalidInput ErrCode = "GK_INVALID_INPUT"
   const ErrCodeNotFound ErrCode = "GK_NOT_FOUND"
@@ -25,34 +25,34 @@ github.com/imajinyun/go-knifer
   type ErrCode string
   type Error struct{ Cause error; Code ErrCode; Message string }
 
-github.com/imajinyun/go-knifer/vai
-  const RoleAssistant github.com/imajinyun/go-knifer/internal/ai.Role = "assistant"
-  const RoleSystem github.com/imajinyun/go-knifer/internal/ai.Role = "system"
-  const RoleUser github.com/imajinyun/go-knifer/internal/ai.Role = "user"
+github.com/imajinyun/knifer-go/vai
+  const RoleAssistant github.com/imajinyun/knifer-go/internal/ai.Role = "assistant"
+  const RoleSystem github.com/imajinyun/knifer-go/internal/ai.Role = "system"
+  const RoleUser github.com/imajinyun/knifer-go/internal/ai.Role = "user"
   func Chat(ctx context.Context, provider ChatProvider, request ChatRequest) (ChatResponse, error)
   func Embed(ctx context.Context, provider EmbeddingProvider, request EmbeddingRequest) (EmbeddingResponse, error)
   func New(opts ...Option) *Client
   func Redact(text string) string
   func WithChatProvider(provider ChatProvider) Option
   func WithEmbeddingProvider(provider EmbeddingProvider) Option
-  type ChatProvider = github.com/imajinyun/go-knifer/internal/ai.ChatProvider
-  type ChatRequest = github.com/imajinyun/go-knifer/internal/ai.ChatRequest
-  type ChatResponse = github.com/imajinyun/go-knifer/internal/ai.ChatResponse
-  type Client = github.com/imajinyun/go-knifer/internal/ai.Client
-  type EmbeddingProvider = github.com/imajinyun/go-knifer/internal/ai.EmbeddingProvider
-  type EmbeddingRequest = github.com/imajinyun/go-knifer/internal/ai.EmbeddingRequest
-  type EmbeddingResponse = github.com/imajinyun/go-knifer/internal/ai.EmbeddingResponse
-  type Message = github.com/imajinyun/go-knifer/internal/ai.Message
-  type Option = github.com/imajinyun/go-knifer/internal/ai.Option
-  type ProviderMetadata = github.com/imajinyun/go-knifer/internal/ai.ProviderMetadata
-  type Role = github.com/imajinyun/go-knifer/internal/ai.Role
-  type Usage = github.com/imajinyun/go-knifer/internal/ai.Usage
+  type ChatProvider = github.com/imajinyun/knifer-go/internal/ai.ChatProvider
+  type ChatRequest = github.com/imajinyun/knifer-go/internal/ai.ChatRequest
+  type ChatResponse = github.com/imajinyun/knifer-go/internal/ai.ChatResponse
+  type Client = github.com/imajinyun/knifer-go/internal/ai.Client
+  type EmbeddingProvider = github.com/imajinyun/knifer-go/internal/ai.EmbeddingProvider
+  type EmbeddingRequest = github.com/imajinyun/knifer-go/internal/ai.EmbeddingRequest
+  type EmbeddingResponse = github.com/imajinyun/knifer-go/internal/ai.EmbeddingResponse
+  type Message = github.com/imajinyun/knifer-go/internal/ai.Message
+  type Option = github.com/imajinyun/knifer-go/internal/ai.Option
+  type ProviderMetadata = github.com/imajinyun/knifer-go/internal/ai.ProviderMetadata
+  type Role = github.com/imajinyun/knifer-go/internal/ai.Role
+  type Usage = github.com/imajinyun/knifer-go/internal/ai.Usage
   var ErrInvalidChatRequest error
   var ErrInvalidEmbeddingRequest error
   var ErrMissingChatProvider error
   var ErrMissingEmbeddingProvider error
 
-github.com/imajinyun/go-knifer/vbean
+github.com/imajinyun/knifer-go/vbean
   func ComposeDecodeHook(hooks ...DecodeHookFunc) DecodeHookFunc
   func Copy(src any, dst any, opts ...Option) error
   func CopyProperties(src any, dst any, opts ...Option) error
@@ -79,13 +79,13 @@ github.com/imajinyun/go-knifer/vbean
   func WithTagNames(names ...string) Option
   func WithUintParser(parser func(string, int, int) (uint64, error)) Option
   func WithWeaklyTyped(enable bool) Option
-  type DecodeHookFunc = github.com/imajinyun/go-knifer/internal/bean.DecodeHookFunc
-  type Error = github.com/imajinyun/go-knifer/internal/bean.BeanError
-  type Option = github.com/imajinyun/go-knifer/internal/bean.Option
-  type Options = github.com/imajinyun/go-knifer/internal/bean.Options
-  type Result = github.com/imajinyun/go-knifer/internal/bean.Result
+  type DecodeHookFunc = github.com/imajinyun/knifer-go/internal/bean.DecodeHookFunc
+  type Error = github.com/imajinyun/knifer-go/internal/bean.BeanError
+  type Option = github.com/imajinyun/knifer-go/internal/bean.Option
+  type Options = github.com/imajinyun/knifer-go/internal/bean.Options
+  type Result = github.com/imajinyun/knifer-go/internal/bean.Result
 
-github.com/imajinyun/go-knifer/vblf
+github.com/imajinyun/knifer-go/vblf
   const BloomMachine32 untyped int = 32
   const BloomMachine64 untyped int = 64
   func ApHash(str string) int32
@@ -148,27 +148,27 @@ github.com/imajinyun/go-knifer/vblf
   func WithMachineNum(machineNum int) FuncFilterOption
   func WithMaxValue(maxValue int64) FuncFilterOption
   func WithOpenFile(openFile func(string) (io.ReadCloser, error)) FileOption
-  type BitMap = github.com/imajinyun/go-knifer/internal/bloomfilter.BitMap
-  type BitMapBloomFilter = github.com/imajinyun/go-knifer/internal/bloomfilter.BitMapBloomFilter
-  type BitMapBloomFilterOption = github.com/imajinyun/go-knifer/internal/bloomfilter.BitMapBloomFilterOption
-  type BitSetBloomFilter = github.com/imajinyun/go-knifer/internal/bloomfilter.BitSetBloomFilter
-  type BitSetBloomFilterOption = github.com/imajinyun/go-knifer/internal/bloomfilter.BitSetBloomFilterOption
-  type BloomFilter = github.com/imajinyun/go-knifer/internal/bloomfilter.BloomFilter
-  type Error = github.com/imajinyun/go-knifer/internal/bloomfilter.BloomFilterError
-  type FileOption = github.com/imajinyun/go-knifer/internal/bloomfilter.FileOption
-  type FuncFilter = github.com/imajinyun/go-knifer/internal/bloomfilter.FuncFilter
-  type FuncFilterOption = github.com/imajinyun/go-knifer/internal/bloomfilter.FuncFilterOption
-  type HashFunc = github.com/imajinyun/go-knifer/internal/bloomfilter.HashFunc
-  type IntMap = github.com/imajinyun/go-knifer/internal/bloomfilter.IntMap
-  type LongMap = github.com/imajinyun/go-knifer/internal/bloomfilter.LongMap
+  type BitMap = github.com/imajinyun/knifer-go/internal/bloomfilter.BitMap
+  type BitMapBloomFilter = github.com/imajinyun/knifer-go/internal/bloomfilter.BitMapBloomFilter
+  type BitMapBloomFilterOption = github.com/imajinyun/knifer-go/internal/bloomfilter.BitMapBloomFilterOption
+  type BitSetBloomFilter = github.com/imajinyun/knifer-go/internal/bloomfilter.BitSetBloomFilter
+  type BitSetBloomFilterOption = github.com/imajinyun/knifer-go/internal/bloomfilter.BitSetBloomFilterOption
+  type BloomFilter = github.com/imajinyun/knifer-go/internal/bloomfilter.BloomFilter
+  type Error = github.com/imajinyun/knifer-go/internal/bloomfilter.BloomFilterError
+  type FileOption = github.com/imajinyun/knifer-go/internal/bloomfilter.FileOption
+  type FuncFilter = github.com/imajinyun/knifer-go/internal/bloomfilter.FuncFilter
+  type FuncFilterOption = github.com/imajinyun/knifer-go/internal/bloomfilter.FuncFilterOption
+  type HashFunc = github.com/imajinyun/knifer-go/internal/bloomfilter.HashFunc
+  type IntMap = github.com/imajinyun/knifer-go/internal/bloomfilter.IntMap
+  type LongMap = github.com/imajinyun/knifer-go/internal/bloomfilter.LongMap
 
-github.com/imajinyun/go-knifer/vbool
+github.com/imajinyun/knifer-go/vbool
   func And(bs ...bool) bool
   func Negate(b bool) bool
   func Or(bs ...bool) bool
   func ToInt(b bool) int
 
-github.com/imajinyun/go-knifer/vcache
+github.com/imajinyun/knifer-go/vcache
   func NewFIFOWithOptions[K comparable, V any](opts ...Option[K, V]) *FIFOCache[K, V]
   func NewFIFOWithTimeout[K comparable, V any](capacity int, timeout time.Duration) *FIFOCache[K, V]
   func NewFIFO[K comparable, V any](capacity int) *FIFOCache[K, V]
@@ -193,170 +193,170 @@ github.com/imajinyun/go-knifer/vcache
   func WithTimeout[K comparable, V any](timeout time.Duration) Option[K, V]
   func WithWeakFinalizerEnabled[K comparable, V any](enabled bool) Option[K, *V]
   func WithWeakFinalizerFunc[K comparable, V any](finalizer func(*V, func(*V))) Option[K, *V]
-  method (*github.com/imajinyun/go-knifer/internal/cache.CacheObj[K, V]) AccessCount() int64
-  method (*github.com/imajinyun/go-knifer/internal/cache.CacheObj[K, V]) ExpiredTime() (time.Time, bool)
-  method (*github.com/imajinyun/go-knifer/internal/cache.CacheObj[K, V]) Key() K
-  method (*github.com/imajinyun/go-knifer/internal/cache.CacheObj[K, V]) LastAccess() time.Time
-  method (*github.com/imajinyun/go-knifer/internal/cache.CacheObj[K, V]) TTL() time.Duration
-  method (*github.com/imajinyun/go-knifer/internal/cache.CacheObj[K, V]) Value() V
-  method (*github.com/imajinyun/go-knifer/internal/cache.FIFOCache[K, V]) SetListener(l github.com/imajinyun/go-knifer/internal/cache.CacheListener[K, V]) github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]
-  method (*github.com/imajinyun/go-knifer/internal/cache.LFUCache[K, V]) SetListener(l github.com/imajinyun/go-knifer/internal/cache.CacheListener[K, V]) github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]
-  method (*github.com/imajinyun/go-knifer/internal/cache.LRUCache[K, V]) SetListener(l github.com/imajinyun/go-knifer/internal/cache.CacheListener[K, V]) github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]
-  method (*github.com/imajinyun/go-knifer/internal/cache.TimedCache[K, V]) CancelPruneSchedule()
-  method (*github.com/imajinyun/go-knifer/internal/cache.TimedCache[K, V]) SchedulePrune(delay time.Duration)
-  method (*github.com/imajinyun/go-knifer/internal/cache.TimedCache[K, V]) SetListener(l github.com/imajinyun/go-knifer/internal/cache.CacheListener[K, V]) github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]
-  method (*github.com/imajinyun/go-knifer/internal/cache.WeakCache[K, V]) Clear()
-  method (*github.com/imajinyun/go-knifer/internal/cache.WeakCache[K, V]) Get(key K) (*V, bool)
-  method (*github.com/imajinyun/go-knifer/internal/cache.WeakCache[K, V]) HitCount() int64
-  method (*github.com/imajinyun/go-knifer/internal/cache.WeakCache[K, V]) MissCount() int64
-  method (*github.com/imajinyun/go-knifer/internal/cache.WeakCache[K, V]) Prune() int
-  method (*github.com/imajinyun/go-knifer/internal/cache.WeakCache[K, V]) Put(key K, value *V)
-  method (*github.com/imajinyun/go-knifer/internal/cache.WeakCache[K, V]) PutWithTimeout(key K, value *V, timeout time.Duration)
-  method (*github.com/imajinyun/go-knifer/internal/cache.WeakCache[K, V]) Remove(key K)
-  method (*github.com/imajinyun/go-knifer/internal/cache.WeakCache[K, V]) SetListener(l github.com/imajinyun/go-knifer/internal/cache.CacheListener[K, *V]) *github.com/imajinyun/go-knifer/internal/cache.WeakCache[K, V]
-  method (*github.com/imajinyun/go-knifer/internal/cache.WeakCache[K, V]) Size() int
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Capacity() int
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Capacity() int
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Capacity() int
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Capacity() int
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Clear()
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Clear()
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Clear()
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Clear()
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) ContainsKey(key K) bool
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) ContainsKey(key K) bool
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) ContainsKey(key K) bool
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) ContainsKey(key K) bool
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Get(key K) (V, bool)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Get(key K) (V, bool)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Get(key K) (V, bool)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Get(key K) (V, bool)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) GetOrLoad(key K, supplier github.com/imajinyun/go-knifer/internal/cache.Supplier[V]) (V, error)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) GetOrLoad(key K, supplier github.com/imajinyun/go-knifer/internal/cache.Supplier[V]) (V, error)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) GetOrLoad(key K, supplier github.com/imajinyun/go-knifer/internal/cache.Supplier[V]) (V, error)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) GetOrLoad(key K, supplier github.com/imajinyun/go-knifer/internal/cache.Supplier[V]) (V, error)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) GetOrLoadWith(key K, updateLastAccess bool, timeout time.Duration, supplier github.com/imajinyun/go-knifer/internal/cache.Supplier[V]) (V, error)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) GetOrLoadWith(key K, updateLastAccess bool, timeout time.Duration, supplier github.com/imajinyun/go-knifer/internal/cache.Supplier[V]) (V, error)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) GetOrLoadWith(key K, updateLastAccess bool, timeout time.Duration, supplier github.com/imajinyun/go-knifer/internal/cache.Supplier[V]) (V, error)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) GetOrLoadWith(key K, updateLastAccess bool, timeout time.Duration, supplier github.com/imajinyun/go-knifer/internal/cache.Supplier[V]) (V, error)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) GetWithUpdate(key K, updateLastAccess bool) (V, bool)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) GetWithUpdate(key K, updateLastAccess bool) (V, bool)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) GetWithUpdate(key K, updateLastAccess bool) (V, bool)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) GetWithUpdate(key K, updateLastAccess bool) (V, bool)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) HitCount() int64
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) HitCount() int64
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) HitCount() int64
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) HitCount() int64
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) IsEmpty() bool
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) IsEmpty() bool
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) IsEmpty() bool
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) IsEmpty() bool
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) IsFull() bool
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) IsFull() bool
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) IsFull() bool
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) IsFull() bool
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Keys() []K
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Keys() []K
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Keys() []K
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Keys() []K
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) MissCount() int64
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) MissCount() int64
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) MissCount() int64
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) MissCount() int64
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Prune() int
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Prune() int
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Prune() int
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Prune() int
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Put(key K, value V)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Put(key K, value V)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Put(key K, value V)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Put(key K, value V)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) PutWithTimeout(key K, value V, timeout time.Duration)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) PutWithTimeout(key K, value V, timeout time.Duration)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) PutWithTimeout(key K, value V, timeout time.Duration)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) PutWithTimeout(key K, value V, timeout time.Duration)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Remove(key K)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Remove(key K)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Remove(key K)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Remove(key K)
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Size() int
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Size() int
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Size() int
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Size() int
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Timeout() time.Duration
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Timeout() time.Duration
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Timeout() time.Duration
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Timeout() time.Duration
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Values() []V
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Values() []V
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Values() []V
-  method (*github.com/imajinyun/go-knifer/internal/cache.abstractCache[K, V]) Values() []V
+  method (*github.com/imajinyun/knifer-go/internal/cache.CacheObj[K, V]) AccessCount() int64
+  method (*github.com/imajinyun/knifer-go/internal/cache.CacheObj[K, V]) ExpiredTime() (time.Time, bool)
+  method (*github.com/imajinyun/knifer-go/internal/cache.CacheObj[K, V]) Key() K
+  method (*github.com/imajinyun/knifer-go/internal/cache.CacheObj[K, V]) LastAccess() time.Time
+  method (*github.com/imajinyun/knifer-go/internal/cache.CacheObj[K, V]) TTL() time.Duration
+  method (*github.com/imajinyun/knifer-go/internal/cache.CacheObj[K, V]) Value() V
+  method (*github.com/imajinyun/knifer-go/internal/cache.FIFOCache[K, V]) SetListener(l github.com/imajinyun/knifer-go/internal/cache.CacheListener[K, V]) github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]
+  method (*github.com/imajinyun/knifer-go/internal/cache.LFUCache[K, V]) SetListener(l github.com/imajinyun/knifer-go/internal/cache.CacheListener[K, V]) github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]
+  method (*github.com/imajinyun/knifer-go/internal/cache.LRUCache[K, V]) SetListener(l github.com/imajinyun/knifer-go/internal/cache.CacheListener[K, V]) github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]
+  method (*github.com/imajinyun/knifer-go/internal/cache.TimedCache[K, V]) CancelPruneSchedule()
+  method (*github.com/imajinyun/knifer-go/internal/cache.TimedCache[K, V]) SchedulePrune(delay time.Duration)
+  method (*github.com/imajinyun/knifer-go/internal/cache.TimedCache[K, V]) SetListener(l github.com/imajinyun/knifer-go/internal/cache.CacheListener[K, V]) github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]
+  method (*github.com/imajinyun/knifer-go/internal/cache.WeakCache[K, V]) Clear()
+  method (*github.com/imajinyun/knifer-go/internal/cache.WeakCache[K, V]) Get(key K) (*V, bool)
+  method (*github.com/imajinyun/knifer-go/internal/cache.WeakCache[K, V]) HitCount() int64
+  method (*github.com/imajinyun/knifer-go/internal/cache.WeakCache[K, V]) MissCount() int64
+  method (*github.com/imajinyun/knifer-go/internal/cache.WeakCache[K, V]) Prune() int
+  method (*github.com/imajinyun/knifer-go/internal/cache.WeakCache[K, V]) Put(key K, value *V)
+  method (*github.com/imajinyun/knifer-go/internal/cache.WeakCache[K, V]) PutWithTimeout(key K, value *V, timeout time.Duration)
+  method (*github.com/imajinyun/knifer-go/internal/cache.WeakCache[K, V]) Remove(key K)
+  method (*github.com/imajinyun/knifer-go/internal/cache.WeakCache[K, V]) SetListener(l github.com/imajinyun/knifer-go/internal/cache.CacheListener[K, *V]) *github.com/imajinyun/knifer-go/internal/cache.WeakCache[K, V]
+  method (*github.com/imajinyun/knifer-go/internal/cache.WeakCache[K, V]) Size() int
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Capacity() int
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Capacity() int
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Capacity() int
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Capacity() int
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Clear()
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Clear()
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Clear()
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Clear()
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) ContainsKey(key K) bool
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) ContainsKey(key K) bool
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) ContainsKey(key K) bool
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) ContainsKey(key K) bool
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Get(key K) (V, bool)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Get(key K) (V, bool)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Get(key K) (V, bool)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Get(key K) (V, bool)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) GetOrLoad(key K, supplier github.com/imajinyun/knifer-go/internal/cache.Supplier[V]) (V, error)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) GetOrLoad(key K, supplier github.com/imajinyun/knifer-go/internal/cache.Supplier[V]) (V, error)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) GetOrLoad(key K, supplier github.com/imajinyun/knifer-go/internal/cache.Supplier[V]) (V, error)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) GetOrLoad(key K, supplier github.com/imajinyun/knifer-go/internal/cache.Supplier[V]) (V, error)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) GetOrLoadWith(key K, updateLastAccess bool, timeout time.Duration, supplier github.com/imajinyun/knifer-go/internal/cache.Supplier[V]) (V, error)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) GetOrLoadWith(key K, updateLastAccess bool, timeout time.Duration, supplier github.com/imajinyun/knifer-go/internal/cache.Supplier[V]) (V, error)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) GetOrLoadWith(key K, updateLastAccess bool, timeout time.Duration, supplier github.com/imajinyun/knifer-go/internal/cache.Supplier[V]) (V, error)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) GetOrLoadWith(key K, updateLastAccess bool, timeout time.Duration, supplier github.com/imajinyun/knifer-go/internal/cache.Supplier[V]) (V, error)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) GetWithUpdate(key K, updateLastAccess bool) (V, bool)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) GetWithUpdate(key K, updateLastAccess bool) (V, bool)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) GetWithUpdate(key K, updateLastAccess bool) (V, bool)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) GetWithUpdate(key K, updateLastAccess bool) (V, bool)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) HitCount() int64
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) HitCount() int64
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) HitCount() int64
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) HitCount() int64
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) IsEmpty() bool
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) IsEmpty() bool
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) IsEmpty() bool
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) IsEmpty() bool
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) IsFull() bool
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) IsFull() bool
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) IsFull() bool
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) IsFull() bool
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Keys() []K
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Keys() []K
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Keys() []K
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Keys() []K
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) MissCount() int64
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) MissCount() int64
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) MissCount() int64
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) MissCount() int64
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Prune() int
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Prune() int
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Prune() int
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Prune() int
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Put(key K, value V)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Put(key K, value V)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Put(key K, value V)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Put(key K, value V)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) PutWithTimeout(key K, value V, timeout time.Duration)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) PutWithTimeout(key K, value V, timeout time.Duration)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) PutWithTimeout(key K, value V, timeout time.Duration)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) PutWithTimeout(key K, value V, timeout time.Duration)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Remove(key K)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Remove(key K)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Remove(key K)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Remove(key K)
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Size() int
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Size() int
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Size() int
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Size() int
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Timeout() time.Duration
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Timeout() time.Duration
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Timeout() time.Duration
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Timeout() time.Duration
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Values() []V
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Values() []V
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Values() []V
+  method (*github.com/imajinyun/knifer-go/internal/cache.abstractCache[K, V]) Values() []V
   method (CacheListenerFunc[K, V]) OnRemove(key K, value V)
-  method (github.com/imajinyun/go-knifer/internal/cache.CacheListener[K, V]) OnRemove(key K, value V)
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) Capacity() int
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) Clear()
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) ContainsKey(key K) bool
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) Get(key K) (V, bool)
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) GetOrLoad(key K, supplier github.com/imajinyun/go-knifer/internal/cache.Supplier[V]) (V, error)
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) GetOrLoadWith(key K, updateLastAccess bool, timeout time.Duration, supplier github.com/imajinyun/go-knifer/internal/cache.Supplier[V]) (V, error)
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) GetWithUpdate(key K, updateLastAccess bool) (V, bool)
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) HitCount() int64
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) IsEmpty() bool
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) IsFull() bool
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) Keys() []K
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) MissCount() int64
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) Prune() int
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) Put(key K, value V)
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) PutWithTimeout(key K, value V, timeout time.Duration)
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) Remove(key K)
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) SetListener(listener github.com/imajinyun/go-knifer/internal/cache.CacheListener[K, V]) github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) Size() int
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) Timeout() time.Duration
-  method (github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]) Values() []V
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) Capacity() int
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) Clear()
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) ContainsKey(key K) bool
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) Get(key K) (V, bool)
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) GetOrLoad(key K, supplier github.com/imajinyun/go-knifer/internal/cache.Supplier[V]) (V, error)
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) GetOrLoadWith(key K, _ bool, _ time.Duration, supplier github.com/imajinyun/go-knifer/internal/cache.Supplier[V]) (V, error)
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) GetWithUpdate(key K, _ bool) (V, bool)
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) HitCount() int64
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) IsEmpty() bool
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) IsFull() bool
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) Keys() []K
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) MissCount() int64
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) Prune() int
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) Put(key K, value V)
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) PutWithTimeout(key K, value V, timeout time.Duration)
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) Remove(key K)
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) SetListener(_ github.com/imajinyun/go-knifer/internal/cache.CacheListener[K, V]) github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) Size() int
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) Timeout() time.Duration
-  method (github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V]) Values() []V
+  method (github.com/imajinyun/knifer-go/internal/cache.CacheListener[K, V]) OnRemove(key K, value V)
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) Capacity() int
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) Clear()
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) ContainsKey(key K) bool
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) Get(key K) (V, bool)
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) GetOrLoad(key K, supplier github.com/imajinyun/knifer-go/internal/cache.Supplier[V]) (V, error)
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) GetOrLoadWith(key K, updateLastAccess bool, timeout time.Duration, supplier github.com/imajinyun/knifer-go/internal/cache.Supplier[V]) (V, error)
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) GetWithUpdate(key K, updateLastAccess bool) (V, bool)
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) HitCount() int64
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) IsEmpty() bool
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) IsFull() bool
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) Keys() []K
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) MissCount() int64
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) Prune() int
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) Put(key K, value V)
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) PutWithTimeout(key K, value V, timeout time.Duration)
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) Remove(key K)
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) SetListener(listener github.com/imajinyun/knifer-go/internal/cache.CacheListener[K, V]) github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) Size() int
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) Timeout() time.Duration
+  method (github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]) Values() []V
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) Capacity() int
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) Clear()
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) ContainsKey(key K) bool
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) Get(key K) (V, bool)
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) GetOrLoad(key K, supplier github.com/imajinyun/knifer-go/internal/cache.Supplier[V]) (V, error)
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) GetOrLoadWith(key K, _ bool, _ time.Duration, supplier github.com/imajinyun/knifer-go/internal/cache.Supplier[V]) (V, error)
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) GetWithUpdate(key K, _ bool) (V, bool)
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) HitCount() int64
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) IsEmpty() bool
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) IsFull() bool
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) Keys() []K
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) MissCount() int64
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) Prune() int
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) Put(key K, value V)
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) PutWithTimeout(key K, value V, timeout time.Duration)
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) Remove(key K)
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) SetListener(_ github.com/imajinyun/knifer-go/internal/cache.CacheListener[K, V]) github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) Size() int
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) Timeout() time.Duration
+  method (github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V]) Values() []V
   type CacheListenerFunc[K comparable, V any] func(key K, value V)
   type CacheListener[K comparable, V any] interface{ OnRemove(key K, value V) }
-  type CacheObj[K comparable, V any] struct{ *github.com/imajinyun/go-knifer/internal/cache.CacheObj[K, V] *github.com/imajinyun/go-knifer/internal/cache.CacheObj[K, V] }
-  type Cache[K comparable, V any] interface{ Capacity() int; Clear(); ContainsKey(key K) bool; Get(key K) (V, bool); GetOrLoad(key K, supplier github.com/imajinyun/go-knifer/internal/cache.Supplier[V]) (V, error); GetOrLoadWith(key K, updateLastAccess bool, timeout time.Duration, supplier github.com/imajinyun/go-knifer/internal/cache.Supplier[V]) (V, error); GetWithUpdate(key K, updateLastAccess bool) (V, bool); HitCount() int64; IsEmpty() bool; IsFull() bool; Keys() []K; MissCount() int64; Prune() int; Put(key K, value V); PutWithTimeout(key K, value V, timeout time.Duration); Remove(key K); SetListener(listener github.com/imajinyun/go-knifer/internal/cache.CacheListener[K, V]) github.com/imajinyun/go-knifer/internal/cache.Cache[K, V]; Size() int; Timeout() time.Duration; Values() []V }
-  type FIFOCache[K comparable, V any] struct{ *github.com/imajinyun/go-knifer/internal/cache.FIFOCache[K, V] *github.com/imajinyun/go-knifer/internal/cache.FIFOCache[K, V] }
-  type LFUCache[K comparable, V any] struct{ *github.com/imajinyun/go-knifer/internal/cache.LFUCache[K, V] *github.com/imajinyun/go-knifer/internal/cache.LFUCache[K, V] }
-  type LRUCache[K comparable, V any] struct{ *github.com/imajinyun/go-knifer/internal/cache.LRUCache[K, V] *github.com/imajinyun/go-knifer/internal/cache.LRUCache[K, V] }
-  type NoCache[K comparable, V any] struct{ *github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V] *github.com/imajinyun/go-knifer/internal/cache.NoCache[K, V] }
-  type Option[K comparable, V any] = github.com/imajinyun/go-knifer/internal/cache.Option[K, V]
+  type CacheObj[K comparable, V any] struct{ *github.com/imajinyun/knifer-go/internal/cache.CacheObj[K, V] *github.com/imajinyun/knifer-go/internal/cache.CacheObj[K, V] }
+  type Cache[K comparable, V any] interface{ Capacity() int; Clear(); ContainsKey(key K) bool; Get(key K) (V, bool); GetOrLoad(key K, supplier github.com/imajinyun/knifer-go/internal/cache.Supplier[V]) (V, error); GetOrLoadWith(key K, updateLastAccess bool, timeout time.Duration, supplier github.com/imajinyun/knifer-go/internal/cache.Supplier[V]) (V, error); GetWithUpdate(key K, updateLastAccess bool) (V, bool); HitCount() int64; IsEmpty() bool; IsFull() bool; Keys() []K; MissCount() int64; Prune() int; Put(key K, value V); PutWithTimeout(key K, value V, timeout time.Duration); Remove(key K); SetListener(listener github.com/imajinyun/knifer-go/internal/cache.CacheListener[K, V]) github.com/imajinyun/knifer-go/internal/cache.Cache[K, V]; Size() int; Timeout() time.Duration; Values() []V }
+  type FIFOCache[K comparable, V any] struct{ *github.com/imajinyun/knifer-go/internal/cache.FIFOCache[K, V] *github.com/imajinyun/knifer-go/internal/cache.FIFOCache[K, V] }
+  type LFUCache[K comparable, V any] struct{ *github.com/imajinyun/knifer-go/internal/cache.LFUCache[K, V] *github.com/imajinyun/knifer-go/internal/cache.LFUCache[K, V] }
+  type LRUCache[K comparable, V any] struct{ *github.com/imajinyun/knifer-go/internal/cache.LRUCache[K, V] *github.com/imajinyun/knifer-go/internal/cache.LRUCache[K, V] }
+  type NoCache[K comparable, V any] struct{ *github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V] *github.com/imajinyun/knifer-go/internal/cache.NoCache[K, V] }
+  type Option[K comparable, V any] = github.com/imajinyun/knifer-go/internal/cache.Option[K, V]
   type Supplier[V any] func() (V, error)
-  type Ticker = github.com/imajinyun/go-knifer/internal/cache.Ticker
-  type TickerFactory = github.com/imajinyun/go-knifer/internal/cache.TickerFactory
-  type TimedCache[K comparable, V any] struct{ *github.com/imajinyun/go-knifer/internal/cache.TimedCache[K, V] *github.com/imajinyun/go-knifer/internal/cache.TimedCache[K, V] }
-  type WeakCache[K comparable, V any] struct{ *github.com/imajinyun/go-knifer/internal/cache.WeakCache[K, V] *github.com/imajinyun/go-knifer/internal/cache.WeakCache[K, V] }
+  type Ticker = github.com/imajinyun/knifer-go/internal/cache.Ticker
+  type TickerFactory = github.com/imajinyun/knifer-go/internal/cache.TickerFactory
+  type TimedCache[K comparable, V any] struct{ *github.com/imajinyun/knifer-go/internal/cache.TimedCache[K, V] *github.com/imajinyun/knifer-go/internal/cache.TimedCache[K, V] }
+  type WeakCache[K comparable, V any] struct{ *github.com/imajinyun/knifer-go/internal/cache.WeakCache[K, V] *github.com/imajinyun/knifer-go/internal/cache.WeakCache[K, V] }
 
-github.com/imajinyun/go-knifer/vcli
-  const Blue github.com/imajinyun/go-knifer/internal/cli.Color = "34"
-  const Bold github.com/imajinyun/go-knifer/internal/cli.Color = "1"
-  const ColorAlways github.com/imajinyun/go-knifer/internal/cli.ColorMode = 1
-  const ColorAuto github.com/imajinyun/go-knifer/internal/cli.ColorMode = 0
-  const ColorNever github.com/imajinyun/go-knifer/internal/cli.ColorMode = 2
-  const Green github.com/imajinyun/go-knifer/internal/cli.Color = "32"
-  const Red github.com/imajinyun/go-knifer/internal/cli.Color = "31"
-  const Yellow github.com/imajinyun/go-knifer/internal/cli.Color = "33"
+github.com/imajinyun/knifer-go/vcli
+  const Blue github.com/imajinyun/knifer-go/internal/cli.Color = "34"
+  const Bold github.com/imajinyun/knifer-go/internal/cli.Color = "1"
+  const ColorAlways github.com/imajinyun/knifer-go/internal/cli.ColorMode = 1
+  const ColorAuto github.com/imajinyun/knifer-go/internal/cli.ColorMode = 0
+  const ColorNever github.com/imajinyun/knifer-go/internal/cli.ColorMode = 2
+  const Green github.com/imajinyun/knifer-go/internal/cli.Color = "32"
+  const Red github.com/imajinyun/knifer-go/internal/cli.Color = "31"
+  const Yellow github.com/imajinyun/knifer-go/internal/cli.Color = "33"
   func Colorize(text string, color Color, opts ...ColorOption) string
   func NewFlagParser(name string, opts ...FlagParserOption) *FlagParser
   func Output(ctx context.Context, name string, args []string, opts ...ExecOption) (string, error)
@@ -372,26 +372,26 @@ github.com/imajinyun/go-knifer/vcli
   func WithStdin(r io.Reader) ExecOption
   func WithStdout(w io.Writer) ExecuteOption
   func WithTimeout(d time.Duration) ExecOption
-  type Color = github.com/imajinyun/go-knifer/internal/cli.Color
-  type ColorMode = github.com/imajinyun/go-knifer/internal/cli.ColorMode
-  type ColorOption = github.com/imajinyun/go-knifer/internal/cli.ColorOption
-  type Command = github.com/imajinyun/go-knifer/internal/cli.Command
-  type ExecOption = github.com/imajinyun/go-knifer/internal/cli.ExecOption
-  type ExecRequest = github.com/imajinyun/go-knifer/internal/cli.ExecRequest
-  type ExecResult = github.com/imajinyun/go-knifer/internal/cli.ExecResult
-  type ExecuteOption = github.com/imajinyun/go-knifer/internal/cli.ExecuteOption
-  type FlagParseResult = github.com/imajinyun/go-knifer/internal/cli.FlagParseResult
-  type FlagParser = github.com/imajinyun/go-knifer/internal/cli.FlagParser
-  type FlagParserOption = github.com/imajinyun/go-knifer/internal/cli.FlagParserOption
-  type Handler = github.com/imajinyun/go-knifer/internal/cli.Handler
-  type Invocation = github.com/imajinyun/go-knifer/internal/cli.Invocation
-  type Runner = github.com/imajinyun/go-knifer/internal/cli.Runner
-  type RunnerFunc = github.com/imajinyun/go-knifer/internal/cli.RunnerFunc
+  type Color = github.com/imajinyun/knifer-go/internal/cli.Color
+  type ColorMode = github.com/imajinyun/knifer-go/internal/cli.ColorMode
+  type ColorOption = github.com/imajinyun/knifer-go/internal/cli.ColorOption
+  type Command = github.com/imajinyun/knifer-go/internal/cli.Command
+  type ExecOption = github.com/imajinyun/knifer-go/internal/cli.ExecOption
+  type ExecRequest = github.com/imajinyun/knifer-go/internal/cli.ExecRequest
+  type ExecResult = github.com/imajinyun/knifer-go/internal/cli.ExecResult
+  type ExecuteOption = github.com/imajinyun/knifer-go/internal/cli.ExecuteOption
+  type FlagParseResult = github.com/imajinyun/knifer-go/internal/cli.FlagParseResult
+  type FlagParser = github.com/imajinyun/knifer-go/internal/cli.FlagParser
+  type FlagParserOption = github.com/imajinyun/knifer-go/internal/cli.FlagParserOption
+  type Handler = github.com/imajinyun/knifer-go/internal/cli.Handler
+  type Invocation = github.com/imajinyun/knifer-go/internal/cli.Invocation
+  type Runner = github.com/imajinyun/knifer-go/internal/cli.Runner
+  type RunnerFunc = github.com/imajinyun/knifer-go/internal/cli.RunnerFunc
   var ErrEmptyCommand error
   var ErrOutputLimitExceeded error
   var ErrUsage error
 
-github.com/imajinyun/go-knifer/vcodec
+github.com/imajinyun/knifer-go/vcodec
   func Base64Decode(s string) ([]byte, error)
   func Base64DecodeStr(s string) (string, error)
   func Base64DecodeWithEncoding(s string, enc *encoding/base64.Encoding) ([]byte, error)
@@ -406,9 +406,9 @@ github.com/imajinyun/go-knifer/vcodec
   func HexDecodeStr(s string) (string, error)
   func HexEncode(data []byte) string
   func HexEncodeStr(s string) string
-  type Error = github.com/imajinyun/go-knifer/internal/codec.CodecError
+  type Error = github.com/imajinyun/knifer-go/internal/codec.CodecError
 
-github.com/imajinyun/go-knifer/vconf
+github.com/imajinyun/knifer-go/vconf
   const DefaultMaxBytes int64 = 16777216
   const TypeBool untyped string = "bool"
   const TypeFloat untyped string = "float"
@@ -454,24 +454,24 @@ github.com/imajinyun/go-knifer/vconf
   func WithSchemaIntParser(parser func(string, int, int) (int64, error)) SchemaOption
   func WithTOMLUnmarshalFunc(unmarshal func([]byte, any) error) ParseOption
   func WithYAMLUnmarshalFunc(unmarshal func([]byte, any) error) ParseOption
-  type BindOption = github.com/imajinyun/go-knifer/internal/conf.BindOption
-  type Conf = github.com/imajinyun/go-knifer/internal/conf.Conf
-  type DecodeHookFunc = github.com/imajinyun/go-knifer/internal/conf.DecodeHookFunc
-  type DecryptFunc = github.com/imajinyun/go-knifer/internal/conf.DecryptFunc
-  type Error = github.com/imajinyun/go-knifer/internal/conf.ConfError
-  type ExpandOption = github.com/imajinyun/go-knifer/internal/conf.ExpandOption
-  type FieldRule = github.com/imajinyun/go-knifer/internal/conf.FieldRule
-  type LoadOptions = github.com/imajinyun/go-knifer/internal/conf.LoadOptions
-  type ParseOption = github.com/imajinyun/go-knifer/internal/conf.ParseOption
-  type Schema = github.com/imajinyun/go-knifer/internal/conf.Schema
-  type SchemaOption = github.com/imajinyun/go-knifer/internal/conf.SchemaOption
-  type ValueOption = github.com/imajinyun/go-knifer/internal/conf.ValueOption
-  type WatchEvent = github.com/imajinyun/go-knifer/internal/conf.WatchEvent
-  type WatchOptions = github.com/imajinyun/go-knifer/internal/conf.WatchOptions
-  type WatchTicker = github.com/imajinyun/go-knifer/internal/conf.WatchTicker
-  type WatchTickerFactory = github.com/imajinyun/go-knifer/internal/conf.WatchTickerFactory
+  type BindOption = github.com/imajinyun/knifer-go/internal/conf.BindOption
+  type Conf = github.com/imajinyun/knifer-go/internal/conf.Conf
+  type DecodeHookFunc = github.com/imajinyun/knifer-go/internal/conf.DecodeHookFunc
+  type DecryptFunc = github.com/imajinyun/knifer-go/internal/conf.DecryptFunc
+  type Error = github.com/imajinyun/knifer-go/internal/conf.ConfError
+  type ExpandOption = github.com/imajinyun/knifer-go/internal/conf.ExpandOption
+  type FieldRule = github.com/imajinyun/knifer-go/internal/conf.FieldRule
+  type LoadOptions = github.com/imajinyun/knifer-go/internal/conf.LoadOptions
+  type ParseOption = github.com/imajinyun/knifer-go/internal/conf.ParseOption
+  type Schema = github.com/imajinyun/knifer-go/internal/conf.Schema
+  type SchemaOption = github.com/imajinyun/knifer-go/internal/conf.SchemaOption
+  type ValueOption = github.com/imajinyun/knifer-go/internal/conf.ValueOption
+  type WatchEvent = github.com/imajinyun/knifer-go/internal/conf.WatchEvent
+  type WatchOptions = github.com/imajinyun/knifer-go/internal/conf.WatchOptions
+  type WatchTicker = github.com/imajinyun/knifer-go/internal/conf.WatchTicker
+  type WatchTickerFactory = github.com/imajinyun/knifer-go/internal/conf.WatchTickerFactory
 
-github.com/imajinyun/go-knifer/vconv
+github.com/imajinyun/knifer-go/vconv
   func ToBool(v any) bool
   func ToBoolDefault(v any, def bool) bool
   func ToBoolDefaultWithOptions(v any, def bool, opts ...Option) bool
@@ -507,10 +507,10 @@ github.com/imajinyun/go-knifer/vconv
   func WithFormatFloatFunc(formatter func(float64, byte, int, int) string) Option
   func WithParseFloatFunc(parser func(string, int) (float64, error)) Option
   func WithParseIntFunc(parser func(string, int, int) (int64, error)) Option
-  type Option = github.com/imajinyun/go-knifer/internal/conv.Option
+  type Option = github.com/imajinyun/knifer-go/internal/conv.Option
   var ErrInvalidConversion error
 
-github.com/imajinyun/go-knifer/vcron
+github.com/imajinyun/knifer-go/vcron
   const PartDayOfMonth Part = 3
   const PartDayOfWeek Part = 5
   const PartHour Part = 2
@@ -569,27 +569,27 @@ github.com/imajinyun/go-knifer/vcron
   func WithSchedulerPatternOptions(opts ...PatternOption) SchedulerOption
   func WithSleeper(sleeper func(time.Duration, <-chan struct{}) bool) SchedulerOption
   func WrapCronError(cause error, format string, args ...any) *CronError
-  type Config = github.com/imajinyun/go-knifer/internal/cron.Config
-  type ConfigOption = github.com/imajinyun/go-knifer/internal/cron.ConfigOption
-  type CronError = github.com/imajinyun/go-knifer/internal/cron.CronError
-  type CronTask = github.com/imajinyun/go-knifer/internal/cron.CronTask
-  type DefaultSchedulerOption = github.com/imajinyun/go-knifer/internal/cron.DefaultSchedulerOption
-  type Part = github.com/imajinyun/go-knifer/internal/cron.Part
-  type PartMatcher = github.com/imajinyun/go-knifer/internal/cron.PartMatcher
-  type Pattern = github.com/imajinyun/go-knifer/internal/cron.Pattern
-  type PatternOption = github.com/imajinyun/go-knifer/internal/cron.PatternOption
-  type Scheduler = github.com/imajinyun/go-knifer/internal/cron.Scheduler
-  type SchedulerOption = github.com/imajinyun/go-knifer/internal/cron.SchedulerOption
-  type SimpleTaskListener = github.com/imajinyun/go-knifer/internal/cron.SimpleTaskListener
-  type Task = github.com/imajinyun/go-knifer/internal/cron.Task
-  type TaskExecutor = github.com/imajinyun/go-knifer/internal/cron.TaskExecutor
-  type TaskFunc = github.com/imajinyun/go-knifer/internal/cron.TaskFunc
-  type TaskListener = github.com/imajinyun/go-knifer/internal/cron.TaskListener
-  type TaskTable = github.com/imajinyun/go-knifer/internal/cron.TaskTable
+  type Config = github.com/imajinyun/knifer-go/internal/cron.Config
+  type ConfigOption = github.com/imajinyun/knifer-go/internal/cron.ConfigOption
+  type CronError = github.com/imajinyun/knifer-go/internal/cron.CronError
+  type CronTask = github.com/imajinyun/knifer-go/internal/cron.CronTask
+  type DefaultSchedulerOption = github.com/imajinyun/knifer-go/internal/cron.DefaultSchedulerOption
+  type Part = github.com/imajinyun/knifer-go/internal/cron.Part
+  type PartMatcher = github.com/imajinyun/knifer-go/internal/cron.PartMatcher
+  type Pattern = github.com/imajinyun/knifer-go/internal/cron.Pattern
+  type PatternOption = github.com/imajinyun/knifer-go/internal/cron.PatternOption
+  type Scheduler = github.com/imajinyun/knifer-go/internal/cron.Scheduler
+  type SchedulerOption = github.com/imajinyun/knifer-go/internal/cron.SchedulerOption
+  type SimpleTaskListener = github.com/imajinyun/knifer-go/internal/cron.SimpleTaskListener
+  type Task = github.com/imajinyun/knifer-go/internal/cron.Task
+  type TaskExecutor = github.com/imajinyun/knifer-go/internal/cron.TaskExecutor
+  type TaskFunc = github.com/imajinyun/knifer-go/internal/cron.TaskFunc
+  type TaskListener = github.com/imajinyun/knifer-go/internal/cron.TaskListener
+  type TaskTable = github.com/imajinyun/knifer-go/internal/cron.TaskTable
   var AlwaysTrueMatcher PartMatcher
   var ErrSchedulerStarted error
 
-github.com/imajinyun/go-knifer/vcrypto
+github.com/imajinyun/knifer-go/vcrypto
   func AESDecryptGCM(cipherText []byte, key []byte, nonce []byte, additionalData []byte) ([]byte, error)
   func AESDecryptGCMWithOptions(cipherText []byte, key []byte, nonce []byte, additionalData []byte, opts ...AESGCMOption) ([]byte, error)
   func AESEncryptGCM(plain []byte, key []byte, nonce []byte, additionalData []byte) ([]byte, error)
@@ -661,15 +661,15 @@ github.com/imajinyun/go-knifer/vcrypto
   func WithRSAPSSOptions(opts *crypto/rsa.PSSOptions) RSAOption
   func WithRSARandomReader(reader io.Reader) RSAOption
   func WithRandomReader(reader io.Reader) RandomOption
-  type AESGCMOption = github.com/imajinyun/go-knifer/internal/crypto.AESGCMOption
-  type RSADigestOption = github.com/imajinyun/go-knifer/internal/crypto.RSADigestOption
-  type RSAOption = github.com/imajinyun/go-knifer/internal/crypto.RSAOption
-  type RandomOption = github.com/imajinyun/go-knifer/internal/crypto.RandomOption
+  type AESGCMOption = github.com/imajinyun/knifer-go/internal/crypto.AESGCMOption
+  type RSADigestOption = github.com/imajinyun/knifer-go/internal/crypto.RSADigestOption
+  type RSAOption = github.com/imajinyun/knifer-go/internal/crypto.RSAOption
+  type RandomOption = github.com/imajinyun/knifer-go/internal/crypto.RandomOption
   var ErrInvalidCipherText error
   var ErrInvalidIV error
   var ErrInvalidKey error
 
-github.com/imajinyun/go-knifer/vcsv
+github.com/imajinyun/knifer-go/vcsv
   func ForEach(r io.Reader, handle func([]string) error, opts ...ReadOption) error
   func MapsToRecords(headers []string, rows []map[string]string) [][]string
   func Read(r io.Reader, opts ...ReadOption) ([][]string, error)
@@ -693,12 +693,12 @@ github.com/imajinyun/go-knifer/vcsv
   func WriteStringMaps(headers []string, rows []map[string]string, opts ...WriteOption) (string, error)
   func WriteStringStructs(values any, opts ...WriteOption) (string, error)
   func WriteStructs(w io.Writer, values any, opts ...WriteOption) error
-  type Error = github.com/imajinyun/go-knifer/internal/csvx.CSVError
-  type Option = github.com/imajinyun/go-knifer/internal/csvx.Option
-  type ReadOption = github.com/imajinyun/go-knifer/internal/csvx.ReadOption
-  type WriteOption = github.com/imajinyun/go-knifer/internal/csvx.WriteOption
+  type Error = github.com/imajinyun/knifer-go/internal/csvx.CSVError
+  type Option = github.com/imajinyun/knifer-go/internal/csvx.Option
+  type ReadOption = github.com/imajinyun/knifer-go/internal/csvx.ReadOption
+  type WriteOption = github.com/imajinyun/knifer-go/internal/csvx.WriteOption
 
-github.com/imajinyun/go-knifer/vdate
+github.com/imajinyun/knifer-go/vdate
   const HTTPPattern untyped string = "Mon, 02 Jan 2006 15:04:05 MST"
   const NormDatePattern untyped string = "2006-01-02"
   const NormDatetimePattern untyped string = "2006-01-02 15:04:05"
@@ -736,23 +736,23 @@ github.com/imajinyun/go-knifer/vdate
   func WithClock(clock func() time.Time) NowOption
   func WithLocation(location *time.Location) ParseOption
   func WithParseInLocationFunc(parser func(layout string, value string, location *time.Location) (time.Time, error)) ParseOption
-  type Error = github.com/imajinyun/go-knifer/internal/date.DateError
-  type NowOption = github.com/imajinyun/go-knifer/internal/date.NowOption
-  type ParseOption = github.com/imajinyun/go-knifer/internal/date.ParseOption
+  type Error = github.com/imajinyun/knifer-go/internal/date.DateError
+  type NowOption = github.com/imajinyun/knifer-go/internal/date.NowOption
+  type ParseOption = github.com/imajinyun/knifer-go/internal/date.ParseOption
 
-github.com/imajinyun/go-knifer/vdb
-  const And github.com/imajinyun/go-knifer/internal/db.LogicalOperator = "AND"
-  const AscDirection github.com/imajinyun/go-knifer/internal/db.Direction = "ASC"
-  const DescDirection github.com/imajinyun/go-knifer/internal/db.Direction = "DESC"
-  const DialectClickHouse github.com/imajinyun/go-knifer/internal/db.Dialect = "clickhouse"
-  const DialectMySQL github.com/imajinyun/go-knifer/internal/db.Dialect = "mysql"
-  const DialectOracle github.com/imajinyun/go-knifer/internal/db.Dialect = "oracle"
-  const DialectPostgres github.com/imajinyun/go-knifer/internal/db.Dialect = "postgres"
-  const DialectQuestion github.com/imajinyun/go-knifer/internal/db.Dialect = "question"
-  const DialectSQLServer github.com/imajinyun/go-knifer/internal/db.Dialect = "sqlserver"
-  const DialectSQLite github.com/imajinyun/go-knifer/internal/db.Dialect = "sqlite"
-  const DialectUnknown github.com/imajinyun/go-knifer/internal/db.Dialect = ""
-  const Or github.com/imajinyun/go-knifer/internal/db.LogicalOperator = "OR"
+github.com/imajinyun/knifer-go/vdb
+  const And github.com/imajinyun/knifer-go/internal/db.LogicalOperator = "AND"
+  const AscDirection github.com/imajinyun/knifer-go/internal/db.Direction = "ASC"
+  const DescDirection github.com/imajinyun/knifer-go/internal/db.Direction = "DESC"
+  const DialectClickHouse github.com/imajinyun/knifer-go/internal/db.Dialect = "clickhouse"
+  const DialectMySQL github.com/imajinyun/knifer-go/internal/db.Dialect = "mysql"
+  const DialectOracle github.com/imajinyun/knifer-go/internal/db.Dialect = "oracle"
+  const DialectPostgres github.com/imajinyun/knifer-go/internal/db.Dialect = "postgres"
+  const DialectQuestion github.com/imajinyun/knifer-go/internal/db.Dialect = "question"
+  const DialectSQLServer github.com/imajinyun/knifer-go/internal/db.Dialect = "sqlserver"
+  const DialectSQLite github.com/imajinyun/knifer-go/internal/db.Dialect = "sqlite"
+  const DialectUnknown github.com/imajinyun/knifer-go/internal/db.Dialect = ""
+  const Or github.com/imajinyun/knifer-go/internal/db.LogicalOperator = "OR"
   func AndGroup(conds ...Condition) Condition
   func Asc(field string) Order
   func AssignEntity(entity Entity, dst any) error
@@ -804,28 +804,28 @@ github.com/imajinyun/go-knifer/vdb
   func WithSQLOpenFunc(open SQLOpenFunc) Option
   func WithWrapper(w Wrapper) Option
   func WrapperForDialect(d Dialect) Wrapper
-  type Column = github.com/imajinyun/go-knifer/internal/db.Column
-  type Condition = github.com/imajinyun/go-knifer/internal/db.Condition
-  type DB = github.com/imajinyun/go-knifer/internal/db.DB
-  type DBError = github.com/imajinyun/go-knifer/internal/db.DBError
-  type Dialect = github.com/imajinyun/go-knifer/internal/db.Dialect
-  type Direction = github.com/imajinyun/go-knifer/internal/db.Direction
-  type Entity = github.com/imajinyun/go-knifer/internal/db.Entity
-  type LogicalOperator = github.com/imajinyun/go-knifer/internal/db.LogicalOperator
-  type NamedSQL = github.com/imajinyun/go-knifer/internal/db.NamedSQL
-  type Option = github.com/imajinyun/go-knifer/internal/db.Option
-  type Options = github.com/imajinyun/go-knifer/internal/db.Options
-  type Order = github.com/imajinyun/go-knifer/internal/db.Order
-  type Page = github.com/imajinyun/go-knifer/internal/db.Page
-  type PageResult[T any] = github.com/imajinyun/go-knifer/internal/db.PageResult[T]
-  type Query = github.com/imajinyun/go-knifer/internal/db.Query
-  type SQLBuilder = github.com/imajinyun/go-knifer/internal/db.SQLBuilder
-  type SQLOpenFunc = github.com/imajinyun/go-knifer/internal/db.SQLOpenFunc
-  type Session = github.com/imajinyun/go-knifer/internal/db.Session
-  type Table = github.com/imajinyun/go-knifer/internal/db.Table
-  type Wrapper = github.com/imajinyun/go-knifer/internal/db.Wrapper
+  type Column = github.com/imajinyun/knifer-go/internal/db.Column
+  type Condition = github.com/imajinyun/knifer-go/internal/db.Condition
+  type DB = github.com/imajinyun/knifer-go/internal/db.DB
+  type DBError = github.com/imajinyun/knifer-go/internal/db.DBError
+  type Dialect = github.com/imajinyun/knifer-go/internal/db.Dialect
+  type Direction = github.com/imajinyun/knifer-go/internal/db.Direction
+  type Entity = github.com/imajinyun/knifer-go/internal/db.Entity
+  type LogicalOperator = github.com/imajinyun/knifer-go/internal/db.LogicalOperator
+  type NamedSQL = github.com/imajinyun/knifer-go/internal/db.NamedSQL
+  type Option = github.com/imajinyun/knifer-go/internal/db.Option
+  type Options = github.com/imajinyun/knifer-go/internal/db.Options
+  type Order = github.com/imajinyun/knifer-go/internal/db.Order
+  type Page = github.com/imajinyun/knifer-go/internal/db.Page
+  type PageResult[T any] = github.com/imajinyun/knifer-go/internal/db.PageResult[T]
+  type Query = github.com/imajinyun/knifer-go/internal/db.Query
+  type SQLBuilder = github.com/imajinyun/knifer-go/internal/db.SQLBuilder
+  type SQLOpenFunc = github.com/imajinyun/knifer-go/internal/db.SQLOpenFunc
+  type Session = github.com/imajinyun/knifer-go/internal/db.Session
+  type Table = github.com/imajinyun/knifer-go/internal/db.Table
+  type Wrapper = github.com/imajinyun/knifer-go/internal/db.Wrapper
 
-github.com/imajinyun/go-knifer/vdfa
+github.com/imajinyun/knifer-go/vdfa
   const DefaultSeparator untyped rune = 44
   func ConfigureAsyncRunner(runner func(func()))
   func Contains(text string) bool
@@ -868,14 +868,14 @@ github.com/imajinyun/go-knifer/vdfa
   func WithJSONUnmarshal(unmarshal func([]byte, any) error) MatcherOption
   func WithMatcher(tree *WordTree) MatcherOption
   func WithMatcherWords(words []string, opts ...WordTreeOption) MatcherOption
-  type CharFilter = github.com/imajinyun/go-knifer/internal/dfa.CharFilter
-  type FoundWord = github.com/imajinyun/go-knifer/internal/dfa.FoundWord
-  type MatcherOption = github.com/imajinyun/go-knifer/internal/dfa.MatcherOption
-  type Processor = github.com/imajinyun/go-knifer/internal/dfa.Processor
-  type WordTree = github.com/imajinyun/go-knifer/internal/dfa.WordTree
-  type WordTreeOption = github.com/imajinyun/go-knifer/internal/dfa.WordTreeOption
+  type CharFilter = github.com/imajinyun/knifer-go/internal/dfa.CharFilter
+  type FoundWord = github.com/imajinyun/knifer-go/internal/dfa.FoundWord
+  type MatcherOption = github.com/imajinyun/knifer-go/internal/dfa.MatcherOption
+  type Processor = github.com/imajinyun/knifer-go/internal/dfa.Processor
+  type WordTree = github.com/imajinyun/knifer-go/internal/dfa.WordTree
+  type WordTreeOption = github.com/imajinyun/knifer-go/internal/dfa.WordTreeOption
 
-github.com/imajinyun/go-knifer/verr
+github.com/imajinyun/knifer-go/verr
   const SentryDSN untyped string = "SENTRY_DSN"
   func ConfigureDefaultLogFunc(logFunc LogFunc)
   func ErrorIs(err error, target error) bool
@@ -930,28 +930,28 @@ github.com/imajinyun/go-knifer/verr
   func WithWaitContext(ctx context.Context) WaitOption
   func WithWaitTimerFactory(factory TimerFactory) WaitOption
   func Wrap(f func() error) *Wrapper
-  type CallersFunc = github.com/imajinyun/go-knifer/internal/errx.CallersFunc
-  type Collector = github.com/imajinyun/go-knifer/internal/errx.Collector
-  type CollectorOption = github.com/imajinyun/go-knifer/internal/errx.CollectorOption
-  type DebugStackFunc = github.com/imajinyun/go-knifer/internal/errx.DebugStackFunc
-  type ExitOption = github.com/imajinyun/go-knifer/internal/errx.ExitOption
-  type Frame = github.com/imajinyun/go-knifer/internal/errx.Frame
-  type FuncForPCFunc = github.com/imajinyun/go-knifer/internal/errx.FuncForPCFunc
-  type InitOption = github.com/imajinyun/go-knifer/internal/errx.InitOption
-  type LogFunc = github.com/imajinyun/go-knifer/internal/errx.LogFunc
-  type PanicError = github.com/imajinyun/go-knifer/internal/errx.PanicError
-  type StackOption = github.com/imajinyun/go-knifer/internal/errx.StackOption
-  type StackTrace = github.com/imajinyun/go-knifer/internal/errx.StackTrace
-  type StackTraceOption = github.com/imajinyun/go-knifer/internal/errx.StackTraceOption
-  type Timer = github.com/imajinyun/go-knifer/internal/errx.Timer
-  type TimerFactory = github.com/imajinyun/go-knifer/internal/errx.TimerFactory
-  type WaitOption = github.com/imajinyun/go-knifer/internal/errx.WaitOption
-  type WithStack = github.com/imajinyun/go-knifer/internal/errx.WithStack
-  type WithStackTrace = github.com/imajinyun/go-knifer/internal/errx.WithStackTrace
-  type Wrapper = github.com/imajinyun/go-knifer/internal/errx.Wrapper
+  type CallersFunc = github.com/imajinyun/knifer-go/internal/errx.CallersFunc
+  type Collector = github.com/imajinyun/knifer-go/internal/errx.Collector
+  type CollectorOption = github.com/imajinyun/knifer-go/internal/errx.CollectorOption
+  type DebugStackFunc = github.com/imajinyun/knifer-go/internal/errx.DebugStackFunc
+  type ExitOption = github.com/imajinyun/knifer-go/internal/errx.ExitOption
+  type Frame = github.com/imajinyun/knifer-go/internal/errx.Frame
+  type FuncForPCFunc = github.com/imajinyun/knifer-go/internal/errx.FuncForPCFunc
+  type InitOption = github.com/imajinyun/knifer-go/internal/errx.InitOption
+  type LogFunc = github.com/imajinyun/knifer-go/internal/errx.LogFunc
+  type PanicError = github.com/imajinyun/knifer-go/internal/errx.PanicError
+  type StackOption = github.com/imajinyun/knifer-go/internal/errx.StackOption
+  type StackTrace = github.com/imajinyun/knifer-go/internal/errx.StackTrace
+  type StackTraceOption = github.com/imajinyun/knifer-go/internal/errx.StackTraceOption
+  type Timer = github.com/imajinyun/knifer-go/internal/errx.Timer
+  type TimerFactory = github.com/imajinyun/knifer-go/internal/errx.TimerFactory
+  type WaitOption = github.com/imajinyun/knifer-go/internal/errx.WaitOption
+  type WithStack = github.com/imajinyun/knifer-go/internal/errx.WithStack
+  type WithStackTrace = github.com/imajinyun/knifer-go/internal/errx.WithStackTrace
+  type Wrapper = github.com/imajinyun/knifer-go/internal/errx.Wrapper
   var EmptyFormatter github.com/sirupsen/logrus.Formatter
 
-github.com/imajinyun/go-knifer/vfile
+github.com/imajinyun/knifer-go/vfile
   const DefaultMaxBytes int64 = 67108864
   func AppendFileString(path string, content string, opts ...WriteOption) error
   func AppendFileStringWithOptions(path string, content string, opts ...WriteOption) error
@@ -1012,19 +1012,19 @@ github.com/imajinyun/go-knifer/vfile
   func WriteFileBytesWithOptions(path string, data []byte, opts ...WriteOption) error
   func WriteFileString(path string, content string, opts ...WriteOption) error
   func WriteFileStringWithOptions(path string, content string, opts ...WriteOption) error
-  type DeleteOption = github.com/imajinyun/go-knifer/internal/file.DeleteOption
-  type DirOption = github.com/imajinyun/go-knifer/internal/file.DirOption
-  type Error = github.com/imajinyun/go-knifer/internal/file.FileError
-  type MkdirAllFunc = github.com/imajinyun/go-knifer/internal/file.MkdirAllFunc
-  type OpenFileFunc = github.com/imajinyun/go-knifer/internal/file.OpenFileFunc
-  type OpenFunc = github.com/imajinyun/go-knifer/internal/file.OpenFunc
-  type ReadOption = github.com/imajinyun/go-knifer/internal/file.ReadOption
-  type RemoveAllFunc = github.com/imajinyun/go-knifer/internal/file.RemoveAllFunc
-  type StatFunc = github.com/imajinyun/go-knifer/internal/file.StatFunc
-  type StatOption = github.com/imajinyun/go-knifer/internal/file.StatOption
-  type WriteOption = github.com/imajinyun/go-knifer/internal/file.WriteOption
+  type DeleteOption = github.com/imajinyun/knifer-go/internal/file.DeleteOption
+  type DirOption = github.com/imajinyun/knifer-go/internal/file.DirOption
+  type Error = github.com/imajinyun/knifer-go/internal/file.FileError
+  type MkdirAllFunc = github.com/imajinyun/knifer-go/internal/file.MkdirAllFunc
+  type OpenFileFunc = github.com/imajinyun/knifer-go/internal/file.OpenFileFunc
+  type OpenFunc = github.com/imajinyun/knifer-go/internal/file.OpenFunc
+  type ReadOption = github.com/imajinyun/knifer-go/internal/file.ReadOption
+  type RemoveAllFunc = github.com/imajinyun/knifer-go/internal/file.RemoveAllFunc
+  type StatFunc = github.com/imajinyun/knifer-go/internal/file.StatFunc
+  type StatOption = github.com/imajinyun/knifer-go/internal/file.StatOption
+  type WriteOption = github.com/imajinyun/knifer-go/internal/file.WriteOption
 
-github.com/imajinyun/go-knifer/vform
+github.com/imajinyun/knifer-go/vform
   func IsChinese(s string) bool
   func IsChineseWithOptions(s string, opts ...Option) bool
   func IsEmail(s string) bool
@@ -1043,58 +1043,58 @@ github.com/imajinyun/go-knifer/vform
   func WithIDCardMatcher(matcher func(string) bool) Option
   func WithMobileMatcher(matcher func(string) bool) Option
   func WithNumberMatcher(matcher func(string) bool) Option
-  type Option = github.com/imajinyun/go-knifer/internal/validator.Option
+  type Option = github.com/imajinyun/knifer-go/internal/validator.Option
 
-github.com/imajinyun/go-knifer/vftp
-  const EntryTypeDirectory github.com/imajinyun/go-knifer/internal/ftp.EntryType = "directory"
-  const EntryTypeFile github.com/imajinyun/go-knifer/internal/ftp.EntryType = "file"
-  const EntryTypeUnknown github.com/imajinyun/go-knifer/internal/ftp.EntryType = "unknown"
+github.com/imajinyun/knifer-go/vftp
+  const EntryTypeDirectory github.com/imajinyun/knifer-go/internal/ftp.EntryType = "directory"
+  const EntryTypeFile github.com/imajinyun/knifer-go/internal/ftp.EntryType = "file"
+  const EntryTypeUnknown github.com/imajinyun/knifer-go/internal/ftp.EntryType = "unknown"
   func Download(ctx context.Context, provider Provider, request DownloadRequest) (DownloadResponse, error)
   func List(ctx context.Context, provider Provider, request ListRequest) (ListResponse, error)
   func New(opts ...Option) *Client
   func Upload(ctx context.Context, provider Provider, request UploadRequest) (UploadResponse, error)
   func WithProvider(provider Provider) Option
-  type Client = github.com/imajinyun/go-knifer/internal/ftp.Client
-  type DownloadRequest = github.com/imajinyun/go-knifer/internal/ftp.DownloadRequest
-  type DownloadResponse = github.com/imajinyun/go-knifer/internal/ftp.DownloadResponse
-  type Entry = github.com/imajinyun/go-knifer/internal/ftp.Entry
-  type EntryType = github.com/imajinyun/go-knifer/internal/ftp.EntryType
-  type ListRequest = github.com/imajinyun/go-knifer/internal/ftp.ListRequest
-  type ListResponse = github.com/imajinyun/go-knifer/internal/ftp.ListResponse
-  type Option = github.com/imajinyun/go-knifer/internal/ftp.Option
-  type Provider = github.com/imajinyun/go-knifer/internal/ftp.Provider
-  type UploadRequest = github.com/imajinyun/go-knifer/internal/ftp.UploadRequest
-  type UploadResponse = github.com/imajinyun/go-knifer/internal/ftp.UploadResponse
+  type Client = github.com/imajinyun/knifer-go/internal/ftp.Client
+  type DownloadRequest = github.com/imajinyun/knifer-go/internal/ftp.DownloadRequest
+  type DownloadResponse = github.com/imajinyun/knifer-go/internal/ftp.DownloadResponse
+  type Entry = github.com/imajinyun/knifer-go/internal/ftp.Entry
+  type EntryType = github.com/imajinyun/knifer-go/internal/ftp.EntryType
+  type ListRequest = github.com/imajinyun/knifer-go/internal/ftp.ListRequest
+  type ListResponse = github.com/imajinyun/knifer-go/internal/ftp.ListResponse
+  type Option = github.com/imajinyun/knifer-go/internal/ftp.Option
+  type Provider = github.com/imajinyun/knifer-go/internal/ftp.Provider
+  type UploadRequest = github.com/imajinyun/knifer-go/internal/ftp.UploadRequest
+  type UploadResponse = github.com/imajinyun/knifer-go/internal/ftp.UploadResponse
   var ErrInvalidDownloadRequest error
   var ErrInvalidListRequest error
   var ErrInvalidUploadRequest error
   var ErrMissingProvider error
   var ErrTransferLimitExceeded error
 
-github.com/imajinyun/go-knifer/vhan
-  const ToneStyleDefault github.com/imajinyun/go-knifer/internal/pinyin.ToneStyle = ""
-  const ToneStyleMark github.com/imajinyun/go-knifer/internal/pinyin.ToneStyle = "mark"
-  const ToneStyleNumber github.com/imajinyun/go-knifer/internal/pinyin.ToneStyle = "number"
-  const ToneStylePlain github.com/imajinyun/go-knifer/internal/pinyin.ToneStyle = "plain"
+github.com/imajinyun/knifer-go/vhan
+  const ToneStyleDefault github.com/imajinyun/knifer-go/internal/pinyin.ToneStyle = ""
+  const ToneStyleMark github.com/imajinyun/knifer-go/internal/pinyin.ToneStyle = "mark"
+  const ToneStyleNumber github.com/imajinyun/knifer-go/internal/pinyin.ToneStyle = "number"
+  const ToneStylePlain github.com/imajinyun/knifer-go/internal/pinyin.ToneStyle = "plain"
   func Convert(ctx context.Context, provider Provider, request ConvertRequest) (ConvertResponse, error)
   func Initials(ctx context.Context, provider Provider, request InitialsRequest) (InitialsResponse, error)
   func New(opts ...Option) *Client
   func WithProvider(provider Provider) Option
-  type Client = github.com/imajinyun/go-knifer/internal/pinyin.Client
-  type ConvertRequest = github.com/imajinyun/go-knifer/internal/pinyin.ConvertRequest
-  type ConvertResponse = github.com/imajinyun/go-knifer/internal/pinyin.ConvertResponse
-  type InitialsRequest = github.com/imajinyun/go-knifer/internal/pinyin.InitialsRequest
-  type InitialsResponse = github.com/imajinyun/go-knifer/internal/pinyin.InitialsResponse
-  type Option = github.com/imajinyun/go-knifer/internal/pinyin.Option
-  type Provider = github.com/imajinyun/go-knifer/internal/pinyin.Provider
-  type Token = github.com/imajinyun/go-knifer/internal/pinyin.Token
-  type ToneStyle = github.com/imajinyun/go-knifer/internal/pinyin.ToneStyle
+  type Client = github.com/imajinyun/knifer-go/internal/pinyin.Client
+  type ConvertRequest = github.com/imajinyun/knifer-go/internal/pinyin.ConvertRequest
+  type ConvertResponse = github.com/imajinyun/knifer-go/internal/pinyin.ConvertResponse
+  type InitialsRequest = github.com/imajinyun/knifer-go/internal/pinyin.InitialsRequest
+  type InitialsResponse = github.com/imajinyun/knifer-go/internal/pinyin.InitialsResponse
+  type Option = github.com/imajinyun/knifer-go/internal/pinyin.Option
+  type Provider = github.com/imajinyun/knifer-go/internal/pinyin.Provider
+  type Token = github.com/imajinyun/knifer-go/internal/pinyin.Token
+  type ToneStyle = github.com/imajinyun/knifer-go/internal/pinyin.ToneStyle
   var ErrInputLimitExceeded error
   var ErrInvalidConvertRequest error
   var ErrInvalidInitialsRequest error
   var ErrMissingProvider error
 
-github.com/imajinyun/go-knifer/vhash
+github.com/imajinyun/knifer-go/vhash
   func AdditiveHash(s string, prime int) int
   func ApHash(s string) int32
   func BkdrHash(s string) int32
@@ -1112,7 +1112,7 @@ github.com/imajinyun/go-knifer/vhash
   func SdbmHash(s string) int32
   func TianlHash(s string) int64
 
-github.com/imajinyun/go-knifer/vhttp
+github.com/imajinyun/knifer-go/vhttp
   const ContentTypeEventStream ContentType = "text/event-stream"
   const ContentTypeFormURLEncoded ContentType = "application/x-www-form-urlencoded"
   const ContentTypeJSON ContentType = "application/json"
@@ -1186,7 +1186,7 @@ github.com/imajinyun/go-knifer/vhttp
   func DownloadStringSafeE(rawURL string, customCharset string, opts ...RequestOption) (string, error)
   func DownloadWithOptions(rawURL string, w io.Writer, opts ...RequestOption) (int64, error)
   func Errorf(format string, args ...any) *Error
-  func ErrorfWithCode(code github.com/imajinyun/go-knifer.ErrCode, format string, args ...any) *Error
+  func ErrorfWithCode(code github.com/imajinyun/knifer-go.ErrCode, format string, args ...any) *Error
   func FilterHTMLTag(s string, tagNames ...string) string
   func FilterHTMLTagWithOptions(s string, tagNames []string, opts ...HTMLFilterOption) string
   func Get(rawURL string, opts ...RequestOption) *Request
@@ -1223,7 +1223,7 @@ github.com/imajinyun/go-knifer/vhttp
   func NewClient(opts ...ClientOption) *Client
   func NewClientWithConfig(cfg GlobalConfig, opts ...RequestOption) *Client
   func NewError(msg string, cause error) *Error
-  func NewErrorWithCode(code github.com/imajinyun/go-knifer.ErrCode, msg string, cause error) *Error
+  func NewErrorWithCode(code github.com/imajinyun/knifer-go.ErrCode, msg string, cause error) *Error
   func NewIsolatedClient(opts ...ClientOption) *Client
   func NewIsolatedRequest(method Method, rawURL string, opts ...RequestOption) *Request
   func NewRequest(method Method, rawURL string, opts ...RequestOption) *Request
@@ -1320,32 +1320,32 @@ github.com/imajinyun/go-knifer/vhttp
   func WithURLPolicy(policy URLPolicy) RequestOption
   func WithUserAgent(ua string) RequestOption
   func WithWriteTimeout(timeout time.Duration) ServerOption
-  type CharsetOption = github.com/imajinyun/go-knifer/internal/httpx/http.CharsetOption
-  type Client = github.com/imajinyun/go-knifer/internal/httpx/http.Client
-  type ClientOption = github.com/imajinyun/go-knifer/internal/httpx/http.ClientOption
-  type ContentDecoder = github.com/imajinyun/go-knifer/internal/httpx/http.ContentDecoder
-  type ContentType = github.com/imajinyun/go-knifer/internal/httpx/http.ContentType
-  type Error = github.com/imajinyun/go-knifer/internal/httpx/http.HTTPError
-  type GlobalConfig = github.com/imajinyun/go-knifer/internal/httpx/http.GlobalConfig
-  type HTMLCleanOption = github.com/imajinyun/go-knifer/internal/httpx/http.HTMLCleanOption
-  type HTMLFilterOption = github.com/imajinyun/go-knifer/internal/httpx/http.HTMLFilterOption
-  type Header = github.com/imajinyun/go-knifer/internal/httpx/http.Header
-  type ListenAndServeFunc = github.com/imajinyun/go-knifer/internal/httpx/http.ListenAndServeFunc
-  type Method = github.com/imajinyun/go-knifer/internal/httpx/http.Method
-  type MultipartWriter = github.com/imajinyun/go-knifer/internal/httpx/http.MultipartWriter
-  type MultipartWriterFactory = github.com/imajinyun/go-knifer/internal/httpx/http.MultipartWriterFactory
-  type NewRequestFunc = github.com/imajinyun/go-knifer/internal/httpx/http.NewRequestFunc
-  type Request = github.com/imajinyun/go-knifer/internal/httpx/http.HTTPRequest
-  type RequestOption = github.com/imajinyun/go-knifer/internal/httpx/http.RequestOption
-  type Response = github.com/imajinyun/go-knifer/internal/httpx/http.HTTPResponse
-  type SaveOption = github.com/imajinyun/go-knifer/internal/httpx/http.SaveOption
-  type ServerOption = github.com/imajinyun/go-knifer/internal/httpx/http.ServerOption
-  type SimpleServer = github.com/imajinyun/go-knifer/internal/httpx/http.SimpleServer
-  type StaticOption = github.com/imajinyun/go-knifer/internal/httpx/http.StaticOption
-  type URLPolicy = github.com/imajinyun/go-knifer/internal/httpx/http.URLPolicy
-  type UserAgent = github.com/imajinyun/go-knifer/internal/httpx/http.UserAgent
+  type CharsetOption = github.com/imajinyun/knifer-go/internal/httpx/http.CharsetOption
+  type Client = github.com/imajinyun/knifer-go/internal/httpx/http.Client
+  type ClientOption = github.com/imajinyun/knifer-go/internal/httpx/http.ClientOption
+  type ContentDecoder = github.com/imajinyun/knifer-go/internal/httpx/http.ContentDecoder
+  type ContentType = github.com/imajinyun/knifer-go/internal/httpx/http.ContentType
+  type Error = github.com/imajinyun/knifer-go/internal/httpx/http.HTTPError
+  type GlobalConfig = github.com/imajinyun/knifer-go/internal/httpx/http.GlobalConfig
+  type HTMLCleanOption = github.com/imajinyun/knifer-go/internal/httpx/http.HTMLCleanOption
+  type HTMLFilterOption = github.com/imajinyun/knifer-go/internal/httpx/http.HTMLFilterOption
+  type Header = github.com/imajinyun/knifer-go/internal/httpx/http.Header
+  type ListenAndServeFunc = github.com/imajinyun/knifer-go/internal/httpx/http.ListenAndServeFunc
+  type Method = github.com/imajinyun/knifer-go/internal/httpx/http.Method
+  type MultipartWriter = github.com/imajinyun/knifer-go/internal/httpx/http.MultipartWriter
+  type MultipartWriterFactory = github.com/imajinyun/knifer-go/internal/httpx/http.MultipartWriterFactory
+  type NewRequestFunc = github.com/imajinyun/knifer-go/internal/httpx/http.NewRequestFunc
+  type Request = github.com/imajinyun/knifer-go/internal/httpx/http.HTTPRequest
+  type RequestOption = github.com/imajinyun/knifer-go/internal/httpx/http.RequestOption
+  type Response = github.com/imajinyun/knifer-go/internal/httpx/http.HTTPResponse
+  type SaveOption = github.com/imajinyun/knifer-go/internal/httpx/http.SaveOption
+  type ServerOption = github.com/imajinyun/knifer-go/internal/httpx/http.ServerOption
+  type SimpleServer = github.com/imajinyun/knifer-go/internal/httpx/http.SimpleServer
+  type StaticOption = github.com/imajinyun/knifer-go/internal/httpx/http.StaticOption
+  type URLPolicy = github.com/imajinyun/knifer-go/internal/httpx/http.URLPolicy
+  type UserAgent = github.com/imajinyun/knifer-go/internal/httpx/http.UserAgent
 
-github.com/imajinyun/go-knifer/vid
+github.com/imajinyun/knifer-go/vid
   func ConfigureDefaultFallbackRandomSourceProvider(provider func() *math/rand.Rand)
   func ConfigureDefaultSnowflake(opts ...SnowflakeOption) *Snowflake
   func CreateSnowflake(workerID int64, datacenterID int64) *Snowflake
@@ -1399,13 +1399,13 @@ github.com/imajinyun/go-knifer/vid
   func WithSnowflakeTimeFunc(timeFunc func() int64) SnowflakeOption
   func WithSnowflakeWaitFunc(waitFunc func(lastTimestamp int64, now func() int64) int64) SnowflakeOption
   func WithSnowflakeWorkerID(workerID int64) SnowflakeOption
-  type NanoIDOption = github.com/imajinyun/go-knifer/internal/id.NanoIDOption
-  type ObjectIDOption = github.com/imajinyun/go-knifer/internal/id.ObjectIDOption
-  type RandomOption = github.com/imajinyun/go-knifer/internal/id.RandomOption
-  type Snowflake = github.com/imajinyun/go-knifer/internal/id.Snowflake
-  type SnowflakeOption = github.com/imajinyun/go-knifer/internal/id.SnowflakeOption
+  type NanoIDOption = github.com/imajinyun/knifer-go/internal/id.NanoIDOption
+  type ObjectIDOption = github.com/imajinyun/knifer-go/internal/id.ObjectIDOption
+  type RandomOption = github.com/imajinyun/knifer-go/internal/id.RandomOption
+  type Snowflake = github.com/imajinyun/knifer-go/internal/id.Snowflake
+  type SnowflakeOption = github.com/imajinyun/knifer-go/internal/id.SnowflakeOption
 
-github.com/imajinyun/go-knifer/vident
+github.com/imajinyun/knifer-go/vident
   const GenderFemale Gender = 0
   const GenderMale Gender = 1
   const GenderUnknown Gender = -1
@@ -1457,41 +1457,41 @@ github.com/imajinyun/go-knifer/vident
   func WithMacauCardMatcher(matcher func(string) bool) IDCardOption
   func WithTWCardMatcher(matcher func(string) bool) IDCardOption
   func Year(idCard string) (int, bool)
-  type AgeOption = github.com/imajinyun/go-knifer/internal/identity.AgeOption
-  type BirthOption = github.com/imajinyun/go-knifer/internal/identity.BirthOption
-  type Gender = github.com/imajinyun/go-knifer/internal/identity.Gender
-  type IDCardInfo = github.com/imajinyun/go-knifer/internal/identity.IDCardInfo
-  type IDCardOption = github.com/imajinyun/go-knifer/internal/identity.IDCardOption
-  type RegionCardInfo = github.com/imajinyun/go-knifer/internal/identity.RegionCardInfo
+  type AgeOption = github.com/imajinyun/knifer-go/internal/identity.AgeOption
+  type BirthOption = github.com/imajinyun/knifer-go/internal/identity.BirthOption
+  type Gender = github.com/imajinyun/knifer-go/internal/identity.Gender
+  type IDCardInfo = github.com/imajinyun/knifer-go/internal/identity.IDCardInfo
+  type IDCardOption = github.com/imajinyun/knifer-go/internal/identity.IDCardOption
+  type RegionCardInfo = github.com/imajinyun/knifer-go/internal/identity.RegionCardInfo
 
-github.com/imajinyun/go-knifer/vimg
-  const BarcodeFormatAztec github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat = 1
-  const BarcodeFormatCodabar github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat = 2
-  const BarcodeFormatCode128 github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat = 5
-  const BarcodeFormatCode39 github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat = 3
-  const BarcodeFormatCode93 github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat = 4
-  const BarcodeFormatDataMatrix github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat = 6
-  const BarcodeFormatEAN13 github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat = 8
-  const BarcodeFormatEAN8 github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat = 7
-  const BarcodeFormatITF github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat = 9
-  const BarcodeFormatMaxiCode github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat = 10
-  const BarcodeFormatPDF417 github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat = 11
-  const BarcodeFormatQRCode github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat = 12
-  const BarcodeFormatRSS14 github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat = 13
-  const BarcodeFormatRSSExpanded github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat = 14
-  const BarcodeFormatUPCA github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat = 15
-  const BarcodeFormatUPCE github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat = 16
-  const BarcodeFormatUnknown github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat = 0
-  const BarcodeOutputFormatASCII github.com/imajinyun/go-knifer/internal/imgx.BarcodeOutputFormat = 3
-  const BarcodeOutputFormatBase64Data github.com/imajinyun/go-knifer/internal/imgx.BarcodeOutputFormat = 4
-  const BarcodeOutputFormatPNG github.com/imajinyun/go-knifer/internal/imgx.BarcodeOutputFormat = 1
-  const BarcodeOutputFormatSVG github.com/imajinyun/go-knifer/internal/imgx.BarcodeOutputFormat = 2
-  const BarcodeOutputFormatUnknown github.com/imajinyun/go-knifer/internal/imgx.BarcodeOutputFormat = 0
-  const QRErrorCorrectionHigh github.com/imajinyun/go-knifer/internal/imgx.QRErrorCorrectionLevel = 4
-  const QRErrorCorrectionLow github.com/imajinyun/go-knifer/internal/imgx.QRErrorCorrectionLevel = 1
-  const QRErrorCorrectionMedium github.com/imajinyun/go-knifer/internal/imgx.QRErrorCorrectionLevel = 2
-  const QRErrorCorrectionQuartile github.com/imajinyun/go-knifer/internal/imgx.QRErrorCorrectionLevel = 3
-  const QRErrorCorrectionUnknown github.com/imajinyun/go-knifer/internal/imgx.QRErrorCorrectionLevel = 0
+github.com/imajinyun/knifer-go/vimg
+  const BarcodeFormatAztec github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat = 1
+  const BarcodeFormatCodabar github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat = 2
+  const BarcodeFormatCode128 github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat = 5
+  const BarcodeFormatCode39 github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat = 3
+  const BarcodeFormatCode93 github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat = 4
+  const BarcodeFormatDataMatrix github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat = 6
+  const BarcodeFormatEAN13 github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat = 8
+  const BarcodeFormatEAN8 github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat = 7
+  const BarcodeFormatITF github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat = 9
+  const BarcodeFormatMaxiCode github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat = 10
+  const BarcodeFormatPDF417 github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat = 11
+  const BarcodeFormatQRCode github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat = 12
+  const BarcodeFormatRSS14 github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat = 13
+  const BarcodeFormatRSSExpanded github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat = 14
+  const BarcodeFormatUPCA github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat = 15
+  const BarcodeFormatUPCE github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat = 16
+  const BarcodeFormatUnknown github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat = 0
+  const BarcodeOutputFormatASCII github.com/imajinyun/knifer-go/internal/imgx.BarcodeOutputFormat = 3
+  const BarcodeOutputFormatBase64Data github.com/imajinyun/knifer-go/internal/imgx.BarcodeOutputFormat = 4
+  const BarcodeOutputFormatPNG github.com/imajinyun/knifer-go/internal/imgx.BarcodeOutputFormat = 1
+  const BarcodeOutputFormatSVG github.com/imajinyun/knifer-go/internal/imgx.BarcodeOutputFormat = 2
+  const BarcodeOutputFormatUnknown github.com/imajinyun/knifer-go/internal/imgx.BarcodeOutputFormat = 0
+  const QRErrorCorrectionHigh github.com/imajinyun/knifer-go/internal/imgx.QRErrorCorrectionLevel = 4
+  const QRErrorCorrectionLow github.com/imajinyun/knifer-go/internal/imgx.QRErrorCorrectionLevel = 1
+  const QRErrorCorrectionMedium github.com/imajinyun/knifer-go/internal/imgx.QRErrorCorrectionLevel = 2
+  const QRErrorCorrectionQuartile github.com/imajinyun/knifer-go/internal/imgx.QRErrorCorrectionLevel = 3
+  const QRErrorCorrectionUnknown github.com/imajinyun/knifer-go/internal/imgx.QRErrorCorrectionLevel = 0
   func BarcodeASCII(content string, format BarcodeFormat, opts ...BarcodeOption) (string, error)
   func BarcodeASCIIWithChars(content string, format BarcodeFormat, setString string, unsetString string, opts ...BarcodeOption) (string, error)
   func BarcodeBase64Data(content string, format BarcodeFormat, opts ...BarcodeOption) (string, error)
@@ -1583,28 +1583,28 @@ github.com/imajinyun/go-knifer/vimg
   func WithRandomInt(randomInt func(max int) int) CaptchaOption
   func WriteBarcode(w io.Writer, content string, format BarcodeFormat, opts ...BarcodeOption) error
   func WriteQRCode(w io.Writer, content string, opts ...QRCodeOption) error
-  type AbstractCaptcha = github.com/imajinyun/go-knifer/internal/imgx.AbstractCaptcha
-  type BarcodeFormat = github.com/imajinyun/go-knifer/internal/imgx.BarcodeFormat
-  type BarcodeOption = github.com/imajinyun/go-knifer/internal/imgx.BarcodeOption
-  type BarcodeOutputFormat = github.com/imajinyun/go-knifer/internal/imgx.BarcodeOutputFormat
-  type Captcha = github.com/imajinyun/go-knifer/internal/imgx.ICaptcha
-  type CaptchaOption = github.com/imajinyun/go-knifer/internal/imgx.CaptchaOption
-  type CircleCaptcha = github.com/imajinyun/go-knifer/internal/imgx.CircleCaptcha
-  type CodeGenerator = github.com/imajinyun/go-knifer/internal/imgx.CodeGenerator
-  type DecodeOption = github.com/imajinyun/go-knifer/internal/imgx.DecodeOption
-  type DecodeResult = github.com/imajinyun/go-knifer/internal/imgx.DecodeResult
-  type GeneratorOption = github.com/imajinyun/go-knifer/internal/imgx.GeneratorOption
-  type GifCaptcha = github.com/imajinyun/go-knifer/internal/imgx.GifCaptcha
-  type ICaptcha = github.com/imajinyun/go-knifer/internal/imgx.ICaptcha
-  type LineCaptcha = github.com/imajinyun/go-knifer/internal/imgx.LineCaptcha
-  type MathGenerator = github.com/imajinyun/go-knifer/internal/imgx.MathGenerator
-  type QRCodeOption = github.com/imajinyun/go-knifer/internal/imgx.QRCodeOption
-  type QRErrorCorrectionLevel = github.com/imajinyun/go-knifer/internal/imgx.QRErrorCorrectionLevel
-  type RandomGenerator = github.com/imajinyun/go-knifer/internal/imgx.RandomGenerator
-  type ShearCaptcha = github.com/imajinyun/go-knifer/internal/imgx.ShearCaptcha
-  type WriteOption = github.com/imajinyun/go-knifer/internal/imgx.WriteOption
+  type AbstractCaptcha = github.com/imajinyun/knifer-go/internal/imgx.AbstractCaptcha
+  type BarcodeFormat = github.com/imajinyun/knifer-go/internal/imgx.BarcodeFormat
+  type BarcodeOption = github.com/imajinyun/knifer-go/internal/imgx.BarcodeOption
+  type BarcodeOutputFormat = github.com/imajinyun/knifer-go/internal/imgx.BarcodeOutputFormat
+  type Captcha = github.com/imajinyun/knifer-go/internal/imgx.ICaptcha
+  type CaptchaOption = github.com/imajinyun/knifer-go/internal/imgx.CaptchaOption
+  type CircleCaptcha = github.com/imajinyun/knifer-go/internal/imgx.CircleCaptcha
+  type CodeGenerator = github.com/imajinyun/knifer-go/internal/imgx.CodeGenerator
+  type DecodeOption = github.com/imajinyun/knifer-go/internal/imgx.DecodeOption
+  type DecodeResult = github.com/imajinyun/knifer-go/internal/imgx.DecodeResult
+  type GeneratorOption = github.com/imajinyun/knifer-go/internal/imgx.GeneratorOption
+  type GifCaptcha = github.com/imajinyun/knifer-go/internal/imgx.GifCaptcha
+  type ICaptcha = github.com/imajinyun/knifer-go/internal/imgx.ICaptcha
+  type LineCaptcha = github.com/imajinyun/knifer-go/internal/imgx.LineCaptcha
+  type MathGenerator = github.com/imajinyun/knifer-go/internal/imgx.MathGenerator
+  type QRCodeOption = github.com/imajinyun/knifer-go/internal/imgx.QRCodeOption
+  type QRErrorCorrectionLevel = github.com/imajinyun/knifer-go/internal/imgx.QRErrorCorrectionLevel
+  type RandomGenerator = github.com/imajinyun/knifer-go/internal/imgx.RandomGenerator
+  type ShearCaptcha = github.com/imajinyun/knifer-go/internal/imgx.ShearCaptcha
+  type WriteOption = github.com/imajinyun/knifer-go/internal/imgx.WriteOption
 
-github.com/imajinyun/go-knifer/vjob
+github.com/imajinyun/knifer-go/vjob
   func NewBatchSingle[T any](run func(context.Context, T) (Merge, error), vals []T) *Batch[T]
   func NewBatch[T any](run func(context.Context, []T) (Merge, error), vals []T) *Batch[T]
   func NewMap(run any, m any) *Slice
@@ -1620,16 +1620,16 @@ github.com/imajinyun/go-knifer/vjob
   method (*Batch[T]) WithBatchSize(size int) *Batch[T]
   method (*Batch[T]) WithMaxConcurrency(maxConcurrency int) *Batch[T]
   type Batch[T any] struct{ Options Options }
-  type Merge = github.com/imajinyun/go-knifer/internal/job.Merge
-  type OptionCarrier = github.com/imajinyun/go-knifer/internal/job.OptionCarrier
-  type Options = github.com/imajinyun/go-knifer/internal/job.Options
-  type Slice = github.com/imajinyun/go-knifer/internal/job.Slice
-  type Sliceable = github.com/imajinyun/go-knifer/internal/job.Sliceable
+  type Merge = github.com/imajinyun/knifer-go/internal/job.Merge
+  type OptionCarrier = github.com/imajinyun/knifer-go/internal/job.OptionCarrier
+  type Options = github.com/imajinyun/knifer-go/internal/job.Options
+  type Slice = github.com/imajinyun/knifer-go/internal/job.Slice
+  type Sliceable = github.com/imajinyun/knifer-go/internal/job.Sliceable
   var ErrInvalidMapJob error
   var ErrInvalidRange error
   var ErrNilJob error
 
-github.com/imajinyun/go-knifer/vjson
+github.com/imajinyun/knifer-go/vjson
   func CreateConfig() *Config
   func Format(raw string) string
   func FormatWithOptions(raw string, opts ...FormatOption) string
@@ -1669,7 +1669,7 @@ github.com/imajinyun/go-knifer/vjson
   func ToStrIndent(v any, indent int, opts ...EncodeOption) (string, error)
   func ToStrWithConfig(v any, cfg *Config) (string, error)
   func ToXML(root any, rootTag string) (string, error)
-  func ToXMLWithOptions(root any, rootTag string, opts ...github.com/imajinyun/go-knifer/internal/xml.WriteOption) (string, error)
+  func ToXMLWithOptions(root any, rootTag string, opts ...github.com/imajinyun/knifer-go/internal/xml.WriteOption) (string, error)
   func WithBeanConfig(cfg *Config) BeanOption
   func WithBeanUnmarshalFunc(unmarshal func([]byte, any) error) BeanOption
   func WithConfig(cfg *Config) EncodeOption
@@ -1694,19 +1694,19 @@ github.com/imajinyun/go-knifer/vjson
   func WithUnmarshalFunc(unmarshal func([]byte, any) error) EncodeOption
   func WrapJSONError(cause error, format string, args ...any) *Error
   func XMLToJSON(xmlStr string) (*Object, error)
-  func XMLToJSONWithOptions(xmlStr string, opts ...github.com/imajinyun/go-knifer/internal/xml.ParseOption) (*Object, error)
-  type Array = github.com/imajinyun/go-knifer/internal/json.JSONArray
-  type BeanOption = github.com/imajinyun/go-knifer/internal/json.BeanOption
-  type Config = github.com/imajinyun/go-knifer/internal/json.Config
-  type EncodeOption = github.com/imajinyun/go-knifer/internal/json.EncodeOption
-  type Error = github.com/imajinyun/go-knifer/internal/json.JSONError
-  type FormatOption = github.com/imajinyun/go-knifer/internal/json.FormatOption
-  type Object = github.com/imajinyun/go-knifer/internal/json.JSONObject
-  type ParseOption = github.com/imajinyun/go-knifer/internal/json.ParseOption
-  type ValidOption = github.com/imajinyun/go-knifer/internal/json.ValidOption
-  var Null github.com/imajinyun/go-knifer/internal/json.jsonNull
+  func XMLToJSONWithOptions(xmlStr string, opts ...github.com/imajinyun/knifer-go/internal/xml.ParseOption) (*Object, error)
+  type Array = github.com/imajinyun/knifer-go/internal/json.JSONArray
+  type BeanOption = github.com/imajinyun/knifer-go/internal/json.BeanOption
+  type Config = github.com/imajinyun/knifer-go/internal/json.Config
+  type EncodeOption = github.com/imajinyun/knifer-go/internal/json.EncodeOption
+  type Error = github.com/imajinyun/knifer-go/internal/json.JSONError
+  type FormatOption = github.com/imajinyun/knifer-go/internal/json.FormatOption
+  type Object = github.com/imajinyun/knifer-go/internal/json.JSONObject
+  type ParseOption = github.com/imajinyun/knifer-go/internal/json.ParseOption
+  type ValidOption = github.com/imajinyun/knifer-go/internal/json.ValidOption
+  var Null github.com/imajinyun/knifer-go/internal/json.jsonNull
 
-github.com/imajinyun/go-knifer/vjwt
+github.com/imajinyun/knifer-go/vjwt
   const JWTAlgES256 untyped string = "ES256"
   const JWTAlgES384 untyped string = "ES384"
   const JWTAlgES512 untyped string = "ES512"
@@ -1802,16 +1802,16 @@ github.com/imajinyun/go-knifer/vjwt
   func WithValidateClock(clock func() time.Time) ValidateOption
   func WithValidateLeeway(leeway int64) ValidateOption
   func WithValidateTime(now time.Time) ValidateOption
-  type JSONOption = github.com/imajinyun/go-knifer/internal/jwt.JSONOption
-  type JWT = github.com/imajinyun/go-knifer/internal/jwt.JWT
-  type JWTError = github.com/imajinyun/go-knifer/internal/jwt.JWTError
-  type JWTSigner = github.com/imajinyun/go-knifer/internal/jwt.JWTSigner
-  type JWTValidator = github.com/imajinyun/go-knifer/internal/jwt.JWTValidator
-  type SignerOption = github.com/imajinyun/go-knifer/internal/jwt.SignerOption
-  type TokenOption = github.com/imajinyun/go-knifer/internal/jwt.TokenOption
-  type ValidateOption = github.com/imajinyun/go-knifer/internal/jwt.ValidateOption
+  type JSONOption = github.com/imajinyun/knifer-go/internal/jwt.JSONOption
+  type JWT = github.com/imajinyun/knifer-go/internal/jwt.JWT
+  type JWTError = github.com/imajinyun/knifer-go/internal/jwt.JWTError
+  type JWTSigner = github.com/imajinyun/knifer-go/internal/jwt.JWTSigner
+  type JWTValidator = github.com/imajinyun/knifer-go/internal/jwt.JWTValidator
+  type SignerOption = github.com/imajinyun/knifer-go/internal/jwt.SignerOption
+  type TokenOption = github.com/imajinyun/knifer-go/internal/jwt.TokenOption
+  type ValidateOption = github.com/imajinyun/knifer-go/internal/jwt.ValidateOption
 
-github.com/imajinyun/go-knifer/vlog
+github.com/imajinyun/knifer-go/vlog
   const LogLevelAll LogLevel = 0
   const LogLevelDebug LogLevel = 2
   const LogLevelError LogLevel = 5
@@ -1874,19 +1874,19 @@ github.com/imajinyun/go-knifer/vlog
   func WithLoggerCache(enabled bool) LoggerOption
   func WithLoggerConsoleOptions(opts ...ConsoleLogOption) LoggerOption
   func WithLoggerFactory(factory LogFactory) LoggerOption
-  type AbstractLog = github.com/imajinyun/go-knifer/internal/log.AbstractLog
-  type ColorFactory = github.com/imajinyun/go-knifer/internal/log.ColorFactory
-  type ConsoleColorLog = github.com/imajinyun/go-knifer/internal/log.ConsoleColorLog
-  type ConsoleLog = github.com/imajinyun/go-knifer/internal/log.ConsoleLog
-  type ConsoleLogOption = github.com/imajinyun/go-knifer/internal/log.ConsoleLogOption
-  type Level = github.com/imajinyun/go-knifer/internal/log.Level
-  type Log = github.com/imajinyun/go-knifer/internal/log.Log
-  type LogFactory = github.com/imajinyun/go-knifer/internal/log.LogFactory
-  type LogFactoryFunc = github.com/imajinyun/go-knifer/internal/log.LogFactoryFunc
-  type LogLevel = github.com/imajinyun/go-knifer/internal/log.Level
-  type LoggerOption = github.com/imajinyun/go-knifer/internal/log.LoggerOption
+  type AbstractLog = github.com/imajinyun/knifer-go/internal/log.AbstractLog
+  type ColorFactory = github.com/imajinyun/knifer-go/internal/log.ColorFactory
+  type ConsoleColorLog = github.com/imajinyun/knifer-go/internal/log.ConsoleColorLog
+  type ConsoleLog = github.com/imajinyun/knifer-go/internal/log.ConsoleLog
+  type ConsoleLogOption = github.com/imajinyun/knifer-go/internal/log.ConsoleLogOption
+  type Level = github.com/imajinyun/knifer-go/internal/log.Level
+  type Log = github.com/imajinyun/knifer-go/internal/log.Log
+  type LogFactory = github.com/imajinyun/knifer-go/internal/log.LogFactory
+  type LogFactoryFunc = github.com/imajinyun/knifer-go/internal/log.LogFactoryFunc
+  type LogLevel = github.com/imajinyun/knifer-go/internal/log.Level
+  type LoggerOption = github.com/imajinyun/knifer-go/internal/log.LoggerOption
 
-github.com/imajinyun/go-knifer/vmail
+github.com/imajinyun/knifer-go/vmail
   const CharsetASCII Charset = "US-ASCII"
   const CharsetUTF8 Charset = "UTF-8"
   const Encoding7Bit Encoding = "7bit"
@@ -1952,26 +1952,26 @@ github.com/imajinyun/go-knifer/vmail
   func WithText(text string) MessageOption
   func WithTimeout(timeout time.Duration) ClientOption
   func WithTo(addresses ...string) MessageOption
-  type Account = github.com/imajinyun/go-knifer/internal/mail.Account
-  type Address = github.com/imajinyun/go-knifer/internal/mail.Address
-  type Attachment = github.com/imajinyun/go-knifer/internal/mail.Attachment
-  type BoundaryGenerator = github.com/imajinyun/go-knifer/internal/mail.BoundaryGenerator
-  type Charset = github.com/imajinyun/go-knifer/internal/mail.Charset
-  type Client = github.com/imajinyun/go-knifer/internal/mail.Client
-  type ClientOption = github.com/imajinyun/go-knifer/internal/mail.ClientOption
-  type Config = github.com/imajinyun/go-knifer/internal/mail.Config
-  type ContentType = github.com/imajinyun/go-knifer/internal/mail.ContentType
-  type DialContextFunc = github.com/imajinyun/go-knifer/internal/mail.DialContextFunc
-  type Encoding = github.com/imajinyun/go-knifer/internal/mail.Encoding
-  type Header = github.com/imajinyun/go-knifer/internal/mail.Header
-  type Message = github.com/imajinyun/go-knifer/internal/mail.Message
-  type MessageOption = github.com/imajinyun/go-knifer/internal/mail.MessageOption
-  type QuickOption = github.com/imajinyun/go-knifer/internal/mail.QuickOption
-  type SendCloser = github.com/imajinyun/go-knifer/internal/mail.SendCloser
-  type Sender = github.com/imajinyun/go-knifer/internal/mail.Sender
-  type SenderFunc = github.com/imajinyun/go-knifer/internal/mail.SenderFunc
-  type SenderProvider = github.com/imajinyun/go-knifer/internal/mail.SenderProvider
-  type TLSPolicy = github.com/imajinyun/go-knifer/internal/mail.TLSPolicy
+  type Account = github.com/imajinyun/knifer-go/internal/mail.Account
+  type Address = github.com/imajinyun/knifer-go/internal/mail.Address
+  type Attachment = github.com/imajinyun/knifer-go/internal/mail.Attachment
+  type BoundaryGenerator = github.com/imajinyun/knifer-go/internal/mail.BoundaryGenerator
+  type Charset = github.com/imajinyun/knifer-go/internal/mail.Charset
+  type Client = github.com/imajinyun/knifer-go/internal/mail.Client
+  type ClientOption = github.com/imajinyun/knifer-go/internal/mail.ClientOption
+  type Config = github.com/imajinyun/knifer-go/internal/mail.Config
+  type ContentType = github.com/imajinyun/knifer-go/internal/mail.ContentType
+  type DialContextFunc = github.com/imajinyun/knifer-go/internal/mail.DialContextFunc
+  type Encoding = github.com/imajinyun/knifer-go/internal/mail.Encoding
+  type Header = github.com/imajinyun/knifer-go/internal/mail.Header
+  type Message = github.com/imajinyun/knifer-go/internal/mail.Message
+  type MessageOption = github.com/imajinyun/knifer-go/internal/mail.MessageOption
+  type QuickOption = github.com/imajinyun/knifer-go/internal/mail.QuickOption
+  type SendCloser = github.com/imajinyun/knifer-go/internal/mail.SendCloser
+  type Sender = github.com/imajinyun/knifer-go/internal/mail.Sender
+  type SenderFunc = github.com/imajinyun/knifer-go/internal/mail.SenderFunc
+  type SenderProvider = github.com/imajinyun/knifer-go/internal/mail.SenderProvider
+  type TLSPolicy = github.com/imajinyun/knifer-go/internal/mail.TLSPolicy
   var ErrAttachmentTooLarge error
   var ErrInvalidAddress error
   var ErrInvalidHeader error
@@ -1981,7 +1981,7 @@ github.com/imajinyun/go-knifer/vmail
   var ErrPlainAuth error
   var ErrTLSRequired error
 
-github.com/imajinyun/go-knifer/vmap
+github.com/imajinyun/knifer-go/vmap
   func Assign[K comparable, V any](maps ...map[K]V) map[K]V
   func Clear[K comparable, V any](m map[K]V)
   func Clone[K comparable, V any](m map[K]V) map[K]V
@@ -2047,9 +2047,9 @@ github.com/imajinyun/go-knifer/vmap
   func ToSlice[K comparable, V any, R any](m map[K]V, transform func(K, V) R) []R
   func Update[K comparable, V any](dst map[K]V, src map[K]V) map[K]V
   func Values[K comparable, V any](m map[K]V) []V
-  type Pair[K comparable, V any] = github.com/imajinyun/go-knifer/internal/maps.Pair[K, V]
+  type Pair[K comparable, V any] = github.com/imajinyun/knifer-go/internal/maps.Pair[K, V]
 
-github.com/imajinyun/go-knifer/vmask
+github.com/imajinyun/knifer-go/vmask
   const AddressType Type = 5
   const BankCardType Type = 9
   const CarLicenseType Type = 8
@@ -2087,9 +2087,9 @@ github.com/imajinyun/go-knifer/vmask
   func Passport(passport string) string
   func Password(password string) string
   func UserIDValue() int64
-  type Type = github.com/imajinyun/go-knifer/internal/mask.Type
+  type Type = github.com/imajinyun/knifer-go/internal/mask.Type
 
-github.com/imajinyun/go-knifer/vnet
+github.com/imajinyun/knifer-go/vnet
   const IPMaskMax untyped int = 32
   const IPMaskSplitMark untyped string = "/"
   const IPSplitMark untyped string = "-"
@@ -2270,27 +2270,27 @@ github.com/imajinyun/go-knifer/vnet
   func WithWildcardCompileFunc(compile func(string) (*regexp.Regexp, error)) WildcardOption
   func WithWildcardIPParser(parse func(string) net.IP) WildcardOption
   func WithWildcardIntParser(parse func(string) (int, error)) WildcardOption
-  type AddressOption = github.com/imajinyun/go-knifer/internal/net.AddressOption
-  type ConnectOption = github.com/imajinyun/go-knifer/internal/net.ConnectOption
-  type Dialer = github.com/imajinyun/go-knifer/internal/net.Dialer
-  type IPOption = github.com/imajinyun/go-knifer/internal/net.IPOption
-  type InterfaceOption = github.com/imajinyun/go-knifer/internal/net.InterfaceOption
-  type LocalPortGenerator = github.com/imajinyun/go-knifer/internal/net.LocalPortGenerator
-  type MultipartFormData = github.com/imajinyun/go-knifer/internal/net.MultipartFormData
-  type OpenUploadedFileFunc = github.com/imajinyun/go-knifer/internal/net.OpenUploadedFileFunc
-  type PingOption = github.com/imajinyun/go-knifer/internal/net.PingOption
-  type PortOption = github.com/imajinyun/go-knifer/internal/net.PortOption
-  type ResolveOption = github.com/imajinyun/go-knifer/internal/net.ResolveOption
-  type TLSConfigBuilder = github.com/imajinyun/go-knifer/internal/net.TLSConfigBuilder
-  type TLSFileOption = github.com/imajinyun/go-knifer/internal/net.TLSFileOption
-  type UploadSaveOption = github.com/imajinyun/go-knifer/internal/net.UploadSaveOption
-  type UploadSetting = github.com/imajinyun/go-knifer/internal/net.UploadSetting
-  type WildcardOption = github.com/imajinyun/go-knifer/internal/net.WildcardOption
+  type AddressOption = github.com/imajinyun/knifer-go/internal/net.AddressOption
+  type ConnectOption = github.com/imajinyun/knifer-go/internal/net.ConnectOption
+  type Dialer = github.com/imajinyun/knifer-go/internal/net.Dialer
+  type IPOption = github.com/imajinyun/knifer-go/internal/net.IPOption
+  type InterfaceOption = github.com/imajinyun/knifer-go/internal/net.InterfaceOption
+  type LocalPortGenerator = github.com/imajinyun/knifer-go/internal/net.LocalPortGenerator
+  type MultipartFormData = github.com/imajinyun/knifer-go/internal/net.MultipartFormData
+  type OpenUploadedFileFunc = github.com/imajinyun/knifer-go/internal/net.OpenUploadedFileFunc
+  type PingOption = github.com/imajinyun/knifer-go/internal/net.PingOption
+  type PortOption = github.com/imajinyun/knifer-go/internal/net.PortOption
+  type ResolveOption = github.com/imajinyun/knifer-go/internal/net.ResolveOption
+  type TLSConfigBuilder = github.com/imajinyun/knifer-go/internal/net.TLSConfigBuilder
+  type TLSFileOption = github.com/imajinyun/knifer-go/internal/net.TLSFileOption
+  type UploadSaveOption = github.com/imajinyun/knifer-go/internal/net.UploadSaveOption
+  type UploadSetting = github.com/imajinyun/knifer-go/internal/net.UploadSetting
+  type WildcardOption = github.com/imajinyun/knifer-go/internal/net.WildcardOption
 
-github.com/imajinyun/go-knifer/vnum
-  const RoundDown github.com/imajinyun/go-knifer/internal/num.RoundingMode = 2
-  const RoundHalfEven github.com/imajinyun/go-knifer/internal/num.RoundingMode = 1
-  const RoundHalfUp github.com/imajinyun/go-knifer/internal/num.RoundingMode = 0
+github.com/imajinyun/knifer-go/vnum
+  const RoundDown github.com/imajinyun/knifer-go/internal/num.RoundingMode = 2
+  const RoundHalfEven github.com/imajinyun/knifer-go/internal/num.RoundingMode = 1
+  const RoundHalfUp github.com/imajinyun/knifer-go/internal/num.RoundingMode = 0
   func AbsFloat32(x float32) float32
   func AbsFloat64(x float64) float64
   func AbsIntegerE[T integer](v T) (T, error)
@@ -2437,15 +2437,15 @@ github.com/imajinyun/go-knifer/vnum
   func WithParseIntFunc(parser func(string, int, int) (int64, error)) ParseOption
   func WithRandomReader(reader io.Reader) RandomNumberOption
   func Zero2One(value int) int
-  type DoubleOption = github.com/imajinyun/go-knifer/internal/num.DoubleOption
-  type FormatOption = github.com/imajinyun/go-knifer/internal/num.FormatOption
-  type Number = github.com/imajinyun/go-knifer/internal/num.Number
-  type Ordered = github.com/imajinyun/go-knifer/internal/num.Ordered
-  type ParseOption = github.com/imajinyun/go-knifer/internal/num.ParseOption
-  type RandomNumberOption = github.com/imajinyun/go-knifer/internal/num.RandomNumberOption
-  type RoundingMode = github.com/imajinyun/go-knifer/internal/num.RoundingMode
+  type DoubleOption = github.com/imajinyun/knifer-go/internal/num.DoubleOption
+  type FormatOption = github.com/imajinyun/knifer-go/internal/num.FormatOption
+  type Number = github.com/imajinyun/knifer-go/internal/num.Number
+  type Ordered = github.com/imajinyun/knifer-go/internal/num.Ordered
+  type ParseOption = github.com/imajinyun/knifer-go/internal/num.ParseOption
+  type RandomNumberOption = github.com/imajinyun/knifer-go/internal/num.RandomNumberOption
+  type RoundingMode = github.com/imajinyun/knifer-go/internal/num.RoundingMode
 
-github.com/imajinyun/go-knifer/vobj
+github.com/imajinyun/knifer-go/vobj
   func Accept[T any](source *T, consumer func(T))
   func Apply[T any, R any](source *T, handle func(T) R) R
   func CloneByStreamWithOptions[T any](src T, opts ...CodecOption) (T, error)
@@ -2495,27 +2495,27 @@ github.com/imajinyun/go-knifer/vobj
   func ValidateAcceptedTypes(value any, acceptedTypes ...any) error
   func WithDecoderFactory(factory func(io.Reader) Decoder) CodecOption
   func WithEncoderFactory(factory func(io.Writer) Encoder) CodecOption
-  type CodecOption = github.com/imajinyun/go-knifer/internal/obj.CodecOption
-  type Decoder = github.com/imajinyun/go-knifer/internal/obj.Decoder
-  type Encoder = github.com/imajinyun/go-knifer/internal/obj.Encoder
+  type CodecOption = github.com/imajinyun/knifer-go/internal/obj.CodecOption
+  type Decoder = github.com/imajinyun/knifer-go/internal/obj.Decoder
+  type Encoder = github.com/imajinyun/knifer-go/internal/obj.Encoder
   type Ordered interface{}
 
-github.com/imajinyun/go-knifer/vpass
-  const StrengthMedium github.com/imajinyun/go-knifer/internal/pass.Strength = 3
-  const StrengthStrong github.com/imajinyun/go-knifer/internal/pass.Strength = 4
-  const StrengthUnknown github.com/imajinyun/go-knifer/internal/pass.Strength = 0
-  const StrengthVeryStrong github.com/imajinyun/go-knifer/internal/pass.Strength = 5
-  const StrengthVeryWeak github.com/imajinyun/go-knifer/internal/pass.Strength = 1
-  const StrengthWeak github.com/imajinyun/go-knifer/internal/pass.Strength = 2
+github.com/imajinyun/knifer-go/vpass
+  const StrengthMedium github.com/imajinyun/knifer-go/internal/pass.Strength = 3
+  const StrengthStrong github.com/imajinyun/knifer-go/internal/pass.Strength = 4
+  const StrengthUnknown github.com/imajinyun/knifer-go/internal/pass.Strength = 0
+  const StrengthVeryStrong github.com/imajinyun/knifer-go/internal/pass.Strength = 5
+  const StrengthVeryWeak github.com/imajinyun/knifer-go/internal/pass.Strength = 1
+  const StrengthWeak github.com/imajinyun/knifer-go/internal/pass.Strength = 2
   func Analyze(password string) Analysis
   func IsStrong(password string) bool
   func IsWeak(password string) bool
   func Score(password string) int
   func StrengthOf(password string) Strength
-  type Analysis = github.com/imajinyun/go-knifer/internal/pass.Analysis
-  type Strength = github.com/imajinyun/go-knifer/internal/pass.Strength
+  type Analysis = github.com/imajinyun/knifer-go/internal/pass.Analysis
+  type Strength = github.com/imajinyun/knifer-go/internal/pass.Strength
 
-github.com/imajinyun/go-knifer/vpoi
+github.com/imajinyun/knifer-go/vpoi
   const CellTypeBool github.com/xuri/excelize/v2.CellType = 1
   const CellTypeDate github.com/xuri/excelize/v2.CellType = 2
   const CellTypeError github.com/xuri/excelize/v2.CellType = 3
@@ -2562,19 +2562,19 @@ github.com/imajinyun/go-knifer/vpoi
   func WriteSheetAnyRows(path string, sheet string, rows [][]any, opts ...WriteOption) error
   func WriteSheetRows(path string, sheet string, rows [][]string, opts ...WriteOption) error
   func WriteSheets(path string, sheets map[string][][]string, opts ...WriteOption) error
-  type Cell = github.com/imajinyun/go-knifer/internal/poi.Cell
-  type CellType = github.com/imajinyun/go-knifer/internal/poi.CellType
-  type NewFileFunc = github.com/imajinyun/go-knifer/internal/poi.NewFileFunc
-  type OpenFileFunc = github.com/imajinyun/go-knifer/internal/poi.OpenFileFunc
-  type OpenReaderFunc = github.com/imajinyun/go-knifer/internal/poi.OpenReaderFunc
-  type ReadOption = github.com/imajinyun/go-knifer/internal/poi.ReadOption
-  type SaveAsFunc = github.com/imajinyun/go-knifer/internal/poi.SaveAsFunc
-  type WriteOption = github.com/imajinyun/go-knifer/internal/poi.WriteOption
+  type Cell = github.com/imajinyun/knifer-go/internal/poi.Cell
+  type CellType = github.com/imajinyun/knifer-go/internal/poi.CellType
+  type NewFileFunc = github.com/imajinyun/knifer-go/internal/poi.NewFileFunc
+  type OpenFileFunc = github.com/imajinyun/knifer-go/internal/poi.OpenFileFunc
+  type OpenReaderFunc = github.com/imajinyun/knifer-go/internal/poi.OpenReaderFunc
+  type ReadOption = github.com/imajinyun/knifer-go/internal/poi.ReadOption
+  type SaveAsFunc = github.com/imajinyun/knifer-go/internal/poi.SaveAsFunc
+  type WriteOption = github.com/imajinyun/knifer-go/internal/poi.WriteOption
   var ErrEmptySheetName error
   var ErrInvalidSheetName error
   var ErrNoSheet error
 
-github.com/imajinyun/go-knifer/vrand
+github.com/imajinyun/knifer-go/vrand
   const BaseChar untyped string = "abcdefghijklmnopqrstuvwxyz"
   const BaseCharNumber untyped string = "abcdefghijklmnopqrstuvwxyz0123456789"
   const BaseCharNumberUC untyped string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -2608,9 +2608,9 @@ github.com/imajinyun/go-knifer/vrand
   func WithRandomReader(reader io.Reader) RandomOption
   func WithRandomSource(source *math/rand.Rand) RandomOption
   func WithStrictCryptoRandom() RandomOption
-  type RandomOption = github.com/imajinyun/go-knifer/internal/rand.RandomOption
+  type RandomOption = github.com/imajinyun/knifer-go/internal/rand.RandomOption
 
-github.com/imajinyun/go-knifer/vref
+github.com/imajinyun/knifer-go/vref
   func GetConstructor(target any) reflect.Value
   func GetConstructors(target any) []reflect.Value
   func GetConstructorsDirectly(target any) []reflect.Value
@@ -2678,11 +2678,11 @@ github.com/imajinyun/go-knifer/vref
   func ValueOf(object any) reflect.Value
   func WithAllowUnexported(enabled bool) FieldAccessOption
   func WithUnsafeAccess(enabled bool) FieldAccessOption
-  type FieldAccessOption = github.com/imajinyun/go-knifer/internal/ref.FieldAccessOption
-  type FieldFilter = github.com/imajinyun/go-knifer/internal/ref.FieldFilter
-  type MethodFilter = github.com/imajinyun/go-knifer/internal/ref.MethodFilter
+  type FieldAccessOption = github.com/imajinyun/knifer-go/internal/ref.FieldAccessOption
+  type FieldFilter = github.com/imajinyun/knifer-go/internal/ref.FieldFilter
+  type MethodFilter = github.com/imajinyun/knifer-go/internal/ref.MethodFilter
 
-github.com/imajinyun/go-knifer/vregex
+github.com/imajinyun/knifer-go/vregex
   const REChinese untyped string = "\\p{Han}"
   const REChineses untyped string = "^\\p{Han}+$"
   func Contains(pattern string, content string) bool
@@ -2774,10 +2774,10 @@ github.com/imajinyun/go-knifer/vregex
   func WithNamedGroupNormalizer(normalize func(string) string) Option
   func WithNamedGroupRegexp(re *regexp.Regexp) Option
   func WithNumbersRegexp(re *regexp.Regexp) Option
-  type MatchResult = github.com/imajinyun/go-knifer/internal/regex.MatchResult
-  type Option = github.com/imajinyun/go-knifer/internal/regex.Option
+  type MatchResult = github.com/imajinyun/knifer-go/internal/regex.MatchResult
+  type Option = github.com/imajinyun/knifer-go/internal/regex.Option
 
-github.com/imajinyun/go-knifer/vresty
+github.com/imajinyun/knifer-go/vresty
   const ContentTypeEventStream ContentType = "text/event-stream"
   const ContentTypeFormURLEncoded ContentType = "application/x-www-form-urlencoded"
   const ContentTypeJSON ContentType = "application/json"
@@ -2944,32 +2944,32 @@ github.com/imajinyun/go-knifer/vresty
   func WithTimeout(d time.Duration) RequestOption
   func WithURLPolicy(policy URLPolicy) RequestOption
   func WithUserAgent(ua string) RequestOption
-  type CharsetOption = github.com/imajinyun/go-knifer/internal/httpx/resty.CharsetOption
-  type Client = github.com/imajinyun/go-knifer/internal/httpx/resty.Client
-  type ClientOption = github.com/imajinyun/go-knifer/internal/httpx/resty.ClientOption
-  type ContentType = github.com/imajinyun/go-knifer/internal/httpx/resty.ContentType
-  type Cookie = github.com/imajinyun/go-knifer/internal/httpx/resty.Cookie
-  type Error = github.com/imajinyun/go-knifer/internal/httpx/resty.HTTPError
-  type GlobalConfig = github.com/imajinyun/go-knifer/internal/httpx/resty.GlobalConfig
-  type Header = github.com/imajinyun/go-knifer/internal/httpx/resty.Header
-  type HeaderValues = github.com/imajinyun/go-knifer/internal/httpx/resty.HeaderValues
-  type Method = github.com/imajinyun/go-knifer/internal/httpx/resty.Method
-  type Request = github.com/imajinyun/go-knifer/internal/httpx/resty.HTTPRequest
-  type RequestOption = github.com/imajinyun/go-knifer/internal/httpx/resty.RequestOption
-  type Response = github.com/imajinyun/go-knifer/internal/httpx/resty.HTTPResponse
-  type SaveOption = github.com/imajinyun/go-knifer/internal/httpx/resty.SaveOption
-  type URLPolicy = github.com/imajinyun/go-knifer/internal/httpx/resty.URLPolicy
+  type CharsetOption = github.com/imajinyun/knifer-go/internal/httpx/resty.CharsetOption
+  type Client = github.com/imajinyun/knifer-go/internal/httpx/resty.Client
+  type ClientOption = github.com/imajinyun/knifer-go/internal/httpx/resty.ClientOption
+  type ContentType = github.com/imajinyun/knifer-go/internal/httpx/resty.ContentType
+  type Cookie = github.com/imajinyun/knifer-go/internal/httpx/resty.Cookie
+  type Error = github.com/imajinyun/knifer-go/internal/httpx/resty.HTTPError
+  type GlobalConfig = github.com/imajinyun/knifer-go/internal/httpx/resty.GlobalConfig
+  type Header = github.com/imajinyun/knifer-go/internal/httpx/resty.Header
+  type HeaderValues = github.com/imajinyun/knifer-go/internal/httpx/resty.HeaderValues
+  type Method = github.com/imajinyun/knifer-go/internal/httpx/resty.Method
+  type Request = github.com/imajinyun/knifer-go/internal/httpx/resty.HTTPRequest
+  type RequestOption = github.com/imajinyun/knifer-go/internal/httpx/resty.RequestOption
+  type Response = github.com/imajinyun/knifer-go/internal/httpx/resty.HTTPResponse
+  type SaveOption = github.com/imajinyun/knifer-go/internal/httpx/resty.SaveOption
+  type URLPolicy = github.com/imajinyun/knifer-go/internal/httpx/resty.URLPolicy
 
-github.com/imajinyun/go-knifer/vsem
+github.com/imajinyun/knifer-go/vsem
   func New(capacity int) *Semaphore
   func NewE(capacity int) (*Semaphore, error)
-  type Semaphore = github.com/imajinyun/go-knifer/internal/semaphore.Semaphore
+  type Semaphore = github.com/imajinyun/knifer-go/internal/semaphore.Semaphore
   var ErrClosed error
   var ErrInvalidCapacity error
   var ErrInvalidWeight error
   var ErrReleaseTooMany error
 
-github.com/imajinyun/go-knifer/vset
+github.com/imajinyun/knifer-go/vset
   func NewInt(items ...int) Int
   func NewInt32(items ...int32) Int32
   func NewInt64(items ...int64) Int64
@@ -2995,17 +2995,17 @@ github.com/imajinyun/go-knifer/vset
   method (Set[T]) String() string
   method (Set[T]) Sub(other Set[T]) Set[T]
   method (Set[T]) Union(other Set[T]) Set[T]
-  type Int = github.com/imajinyun/go-knifer/internal/sets.Int
-  type Int32 = github.com/imajinyun/go-knifer/internal/sets.Int32
-  type Int64 = github.com/imajinyun/go-knifer/internal/sets.Int64
-  type JSONOption = github.com/imajinyun/go-knifer/internal/sets.JSONOption
+  type Int = github.com/imajinyun/knifer-go/internal/sets.Int
+  type Int32 = github.com/imajinyun/knifer-go/internal/sets.Int32
+  type Int64 = github.com/imajinyun/knifer-go/internal/sets.Int64
+  type JSONOption = github.com/imajinyun/knifer-go/internal/sets.JSONOption
   type Set[T comparable] map[T]struct{}
-  type String = github.com/imajinyun/go-knifer/internal/sets.String
-  type Uint = github.com/imajinyun/go-knifer/internal/sets.Uint
-  type Uint32 = github.com/imajinyun/go-knifer/internal/sets.Uint32
-  type Uint64 = github.com/imajinyun/go-knifer/internal/sets.Uint64
+  type String = github.com/imajinyun/knifer-go/internal/sets.String
+  type Uint = github.com/imajinyun/knifer-go/internal/sets.Uint
+  type Uint32 = github.com/imajinyun/knifer-go/internal/sets.Uint32
+  type Uint64 = github.com/imajinyun/knifer-go/internal/sets.Uint64
 
-github.com/imajinyun/go-knifer/vskt
+github.com/imajinyun/knifer-go/vskt
   const OpAccept Operation = 8
   const OpConnect Operation = 4
   const OpRead Operation = 1
@@ -3063,35 +3063,35 @@ github.com/imajinyun/go-knifer/vskt
   func WrapSocketError(err error, msg string) *SocketRuntimeError
   method (FuncDecoder[T]) Decode(session *AioSession, readBuffer *bytes.Buffer) (T, bool)
   method (FuncEncoder[T]) Encode(session *AioSession, writeBuffer *bytes.Buffer, data T)
-  method (github.com/imajinyun/go-knifer/internal/socket.IoAction[T]) Accept(session *github.com/imajinyun/go-knifer/internal/socket.AioSession)
-  method (github.com/imajinyun/go-knifer/internal/socket.IoAction[T]) DoAction(session *github.com/imajinyun/go-knifer/internal/socket.AioSession, data T)
-  method (github.com/imajinyun/go-knifer/internal/socket.IoAction[T]) Failed(err error, session *github.com/imajinyun/go-knifer/internal/socket.AioSession)
-  method (github.com/imajinyun/go-knifer/internal/socket.MsgDecoder[T]) Decode(session *github.com/imajinyun/go-knifer/internal/socket.AioSession, readBuffer *bytes.Buffer) (T, bool)
-  method (github.com/imajinyun/go-knifer/internal/socket.MsgDecoder[T]) Decode(session *github.com/imajinyun/go-knifer/internal/socket.AioSession, readBuffer *bytes.Buffer) (T, bool)
-  method (github.com/imajinyun/go-knifer/internal/socket.MsgEncoder[T]) Encode(session *github.com/imajinyun/go-knifer/internal/socket.AioSession, writeBuffer *bytes.Buffer, data T)
-  method (github.com/imajinyun/go-knifer/internal/socket.MsgEncoder[T]) Encode(session *github.com/imajinyun/go-knifer/internal/socket.AioSession, writeBuffer *bytes.Buffer, data T)
-  type AioClient = github.com/imajinyun/go-knifer/internal/socket.AioClient
-  type AioServer = github.com/imajinyun/go-knifer/internal/socket.AioServer
-  type AioSession = github.com/imajinyun/go-knifer/internal/socket.AioSession
-  type ChannelHandler = github.com/imajinyun/go-knifer/internal/socket.ChannelHandler
-  type ChannelHandlerFunc = github.com/imajinyun/go-knifer/internal/socket.ChannelHandlerFunc
-  type ConfigOption = github.com/imajinyun/go-knifer/internal/socket.ConfigOption
-  type ConnectOption = github.com/imajinyun/go-knifer/internal/socket.ConnectOption
-  type Dialer = github.com/imajinyun/go-knifer/internal/net.Dialer
+  method (github.com/imajinyun/knifer-go/internal/socket.IoAction[T]) Accept(session *github.com/imajinyun/knifer-go/internal/socket.AioSession)
+  method (github.com/imajinyun/knifer-go/internal/socket.IoAction[T]) DoAction(session *github.com/imajinyun/knifer-go/internal/socket.AioSession, data T)
+  method (github.com/imajinyun/knifer-go/internal/socket.IoAction[T]) Failed(err error, session *github.com/imajinyun/knifer-go/internal/socket.AioSession)
+  method (github.com/imajinyun/knifer-go/internal/socket.MsgDecoder[T]) Decode(session *github.com/imajinyun/knifer-go/internal/socket.AioSession, readBuffer *bytes.Buffer) (T, bool)
+  method (github.com/imajinyun/knifer-go/internal/socket.MsgDecoder[T]) Decode(session *github.com/imajinyun/knifer-go/internal/socket.AioSession, readBuffer *bytes.Buffer) (T, bool)
+  method (github.com/imajinyun/knifer-go/internal/socket.MsgEncoder[T]) Encode(session *github.com/imajinyun/knifer-go/internal/socket.AioSession, writeBuffer *bytes.Buffer, data T)
+  method (github.com/imajinyun/knifer-go/internal/socket.MsgEncoder[T]) Encode(session *github.com/imajinyun/knifer-go/internal/socket.AioSession, writeBuffer *bytes.Buffer, data T)
+  type AioClient = github.com/imajinyun/knifer-go/internal/socket.AioClient
+  type AioServer = github.com/imajinyun/knifer-go/internal/socket.AioServer
+  type AioSession = github.com/imajinyun/knifer-go/internal/socket.AioSession
+  type ChannelHandler = github.com/imajinyun/knifer-go/internal/socket.ChannelHandler
+  type ChannelHandlerFunc = github.com/imajinyun/knifer-go/internal/socket.ChannelHandlerFunc
+  type ConfigOption = github.com/imajinyun/knifer-go/internal/socket.ConfigOption
+  type ConnectOption = github.com/imajinyun/knifer-go/internal/socket.ConnectOption
+  type Dialer = github.com/imajinyun/knifer-go/internal/net.Dialer
   type FuncDecoder[T any] func(session *AioSession, readBuffer *bytes.Buffer) (T, bool)
   type FuncEncoder[T any] func(session *AioSession, writeBuffer *bytes.Buffer, data T)
-  type IoAction[T any] interface{ Accept(session *github.com/imajinyun/go-knifer/internal/socket.AioSession); DoAction(session *github.com/imajinyun/go-knifer/internal/socket.AioSession, data T); Failed(err error, session *github.com/imajinyun/go-knifer/internal/socket.AioSession) }
-  type MsgDecoder[T any] interface{ Decode(session *github.com/imajinyun/go-knifer/internal/socket.AioSession, readBuffer *bytes.Buffer) (T, bool) }
-  type MsgEncoder[T any] interface{ Encode(session *github.com/imajinyun/go-knifer/internal/socket.AioSession, writeBuffer *bytes.Buffer, data T) }
-  type NioClient = github.com/imajinyun/go-knifer/internal/socket.NioClient
-  type NioServer = github.com/imajinyun/go-knifer/internal/socket.NioServer
-  type Operation = github.com/imajinyun/go-knifer/internal/socket.Operation
-  type Protocol[T any] interface{ Decode(session *github.com/imajinyun/go-knifer/internal/socket.AioSession, readBuffer *bytes.Buffer) (T, bool); Encode(session *github.com/imajinyun/go-knifer/internal/socket.AioSession, writeBuffer *bytes.Buffer, data T) }
-  type SimpleIoAction = github.com/imajinyun/go-knifer/internal/socket.SimpleIoAction
-  type SocketConfig = github.com/imajinyun/go-knifer/internal/socket.SocketConfig
-  type SocketRuntimeError = github.com/imajinyun/go-knifer/internal/socket.SocketRuntimeError
+  type IoAction[T any] interface{ Accept(session *github.com/imajinyun/knifer-go/internal/socket.AioSession); DoAction(session *github.com/imajinyun/knifer-go/internal/socket.AioSession, data T); Failed(err error, session *github.com/imajinyun/knifer-go/internal/socket.AioSession) }
+  type MsgDecoder[T any] interface{ Decode(session *github.com/imajinyun/knifer-go/internal/socket.AioSession, readBuffer *bytes.Buffer) (T, bool) }
+  type MsgEncoder[T any] interface{ Encode(session *github.com/imajinyun/knifer-go/internal/socket.AioSession, writeBuffer *bytes.Buffer, data T) }
+  type NioClient = github.com/imajinyun/knifer-go/internal/socket.NioClient
+  type NioServer = github.com/imajinyun/knifer-go/internal/socket.NioServer
+  type Operation = github.com/imajinyun/knifer-go/internal/socket.Operation
+  type Protocol[T any] interface{ Decode(session *github.com/imajinyun/knifer-go/internal/socket.AioSession, readBuffer *bytes.Buffer) (T, bool); Encode(session *github.com/imajinyun/knifer-go/internal/socket.AioSession, writeBuffer *bytes.Buffer, data T) }
+  type SimpleIoAction = github.com/imajinyun/knifer-go/internal/socket.SimpleIoAction
+  type SocketConfig = github.com/imajinyun/knifer-go/internal/socket.SocketConfig
+  type SocketRuntimeError = github.com/imajinyun/knifer-go/internal/socket.SocketRuntimeError
 
-github.com/imajinyun/go-knifer/vslice
+github.com/imajinyun/knifer-go/vslice
   func Associate[T any, K comparable, V any](a []T, transform func(T) (K, V)) map[K]V
   func Chunk[T any](a []T, size int) [][]T
   func Compact[T comparable](a []T) []T
@@ -3135,32 +3135,32 @@ github.com/imajinyun/go-knifer/vslice
   func Unzip2[A any, B any](pairs []Pair[A, B]) ([]A, []B)
   func Window[T any](a []T, size int) [][]T
   func Zip2[A any, B any](a []A, b []B) []Pair[A, B]
-  type Pair[A any, B any] = github.com/imajinyun/go-knifer/internal/slice.Pair[A, B]
+  type Pair[A any, B any] = github.com/imajinyun/knifer-go/internal/slice.Pair[A, B]
 
-github.com/imajinyun/go-knifer/vssh
-  const EntryTypeDirectory github.com/imajinyun/go-knifer/internal/ssh.EntryType = "directory"
-  const EntryTypeFile github.com/imajinyun/go-knifer/internal/ssh.EntryType = "file"
-  const EntryTypeSymlink github.com/imajinyun/go-knifer/internal/ssh.EntryType = "symlink"
-  const EntryTypeUnknown github.com/imajinyun/go-knifer/internal/ssh.EntryType = "unknown"
+github.com/imajinyun/knifer-go/vssh
+  const EntryTypeDirectory github.com/imajinyun/knifer-go/internal/ssh.EntryType = "directory"
+  const EntryTypeFile github.com/imajinyun/knifer-go/internal/ssh.EntryType = "file"
+  const EntryTypeSymlink github.com/imajinyun/knifer-go/internal/ssh.EntryType = "symlink"
+  const EntryTypeUnknown github.com/imajinyun/knifer-go/internal/ssh.EntryType = "unknown"
   func Download(ctx context.Context, provider Provider, request DownloadRequest) (DownloadResponse, error)
   func List(ctx context.Context, provider Provider, request ListRequest) (ListResponse, error)
   func New(opts ...Option) *Client
   func Run(ctx context.Context, provider Provider, request CommandRequest) (CommandResponse, error)
   func Upload(ctx context.Context, provider Provider, request UploadRequest) (UploadResponse, error)
   func WithProvider(provider Provider) Option
-  type Client = github.com/imajinyun/go-knifer/internal/ssh.Client
-  type CommandRequest = github.com/imajinyun/go-knifer/internal/ssh.CommandRequest
-  type CommandResponse = github.com/imajinyun/go-knifer/internal/ssh.CommandResponse
-  type DownloadRequest = github.com/imajinyun/go-knifer/internal/ssh.DownloadRequest
-  type DownloadResponse = github.com/imajinyun/go-knifer/internal/ssh.DownloadResponse
-  type Entry = github.com/imajinyun/go-knifer/internal/ssh.Entry
-  type EntryType = github.com/imajinyun/go-knifer/internal/ssh.EntryType
-  type ListRequest = github.com/imajinyun/go-knifer/internal/ssh.ListRequest
-  type ListResponse = github.com/imajinyun/go-knifer/internal/ssh.ListResponse
-  type Option = github.com/imajinyun/go-knifer/internal/ssh.Option
-  type Provider = github.com/imajinyun/go-knifer/internal/ssh.Provider
-  type UploadRequest = github.com/imajinyun/go-knifer/internal/ssh.UploadRequest
-  type UploadResponse = github.com/imajinyun/go-knifer/internal/ssh.UploadResponse
+  type Client = github.com/imajinyun/knifer-go/internal/ssh.Client
+  type CommandRequest = github.com/imajinyun/knifer-go/internal/ssh.CommandRequest
+  type CommandResponse = github.com/imajinyun/knifer-go/internal/ssh.CommandResponse
+  type DownloadRequest = github.com/imajinyun/knifer-go/internal/ssh.DownloadRequest
+  type DownloadResponse = github.com/imajinyun/knifer-go/internal/ssh.DownloadResponse
+  type Entry = github.com/imajinyun/knifer-go/internal/ssh.Entry
+  type EntryType = github.com/imajinyun/knifer-go/internal/ssh.EntryType
+  type ListRequest = github.com/imajinyun/knifer-go/internal/ssh.ListRequest
+  type ListResponse = github.com/imajinyun/knifer-go/internal/ssh.ListResponse
+  type Option = github.com/imajinyun/knifer-go/internal/ssh.Option
+  type Provider = github.com/imajinyun/knifer-go/internal/ssh.Provider
+  type UploadRequest = github.com/imajinyun/knifer-go/internal/ssh.UploadRequest
+  type UploadResponse = github.com/imajinyun/knifer-go/internal/ssh.UploadResponse
   var ErrInvalidCommandRequest error
   var ErrInvalidDownloadRequest error
   var ErrInvalidListRequest error
@@ -3169,7 +3169,7 @@ github.com/imajinyun/go-knifer/vssh
   var ErrOutputLimitExceeded error
   var ErrTransferLimitExceeded error
 
-github.com/imajinyun/go-knifer/vstr
+github.com/imajinyun/knifer-go/vstr
   func AddPrefixIfNot(s string, prefix string) string
   func AddSuffixIfNot(s string, suffix string) string
   func AntPathMatch(pattern string, path string) bool
@@ -3234,9 +3234,9 @@ github.com/imajinyun/go-knifer/vstr
   func UnescapeUnicode(s string) string
   func WithEmojiMatcher(matcher func(string) bool) EmojiOption
   func WithEmojiReplacer(replacer func(string) string) EmojiOption
-  type EmojiOption = github.com/imajinyun/go-knifer/internal/str.EmojiOption
+  type EmojiOption = github.com/imajinyun/knifer-go/internal/str.EmojiOption
 
-github.com/imajinyun/go-knifer/vsys
+github.com/imajinyun/knifer-go/vsys
   func CurrentPID() int
   func CurrentPIDWithOptions(opts ...ProcessOption) int
   func DumpSystemInfo()
@@ -3348,46 +3348,46 @@ github.com/imajinyun/go-knifer/vsys
   func WithTempDirFunc(fn func() string) UserInfoOption
   func WithUserEnvLookup(lookup func(string) string) UserInfoOption
   func WithWorkingDirFunc(fn func() (string, error)) UserInfoOption
-  type DumpOption = github.com/imajinyun/go-knifer/internal/system.DumpOption
-  type EnvOption = github.com/imajinyun/go-knifer/internal/system.EnvOption
-  type GoInfo = github.com/imajinyun/go-knifer/internal/system.GoInfo
-  type GoInfoOption = github.com/imajinyun/go-knifer/internal/system.GoInfoOption
-  type HostInfo = github.com/imajinyun/go-knifer/internal/system.HostInfo
-  type HostInfoOption = github.com/imajinyun/go-knifer/internal/system.HostInfoOption
-  type OsInfo = github.com/imajinyun/go-knifer/internal/system.OsInfo
-  type OsInfoOption = github.com/imajinyun/go-knifer/internal/system.OsInfoOption
-  type ProcessOption = github.com/imajinyun/go-knifer/internal/system.ProcessOption
-  type RuntimeInfo = github.com/imajinyun/go-knifer/internal/system.RuntimeInfo
-  type RuntimeInfoOption = github.com/imajinyun/go-knifer/internal/system.RuntimeInfoOption
-  type UserInfo = github.com/imajinyun/go-knifer/internal/system.UserInfo
-  type UserInfoOption = github.com/imajinyun/go-knifer/internal/system.UserInfoOption
+  type DumpOption = github.com/imajinyun/knifer-go/internal/system.DumpOption
+  type EnvOption = github.com/imajinyun/knifer-go/internal/system.EnvOption
+  type GoInfo = github.com/imajinyun/knifer-go/internal/system.GoInfo
+  type GoInfoOption = github.com/imajinyun/knifer-go/internal/system.GoInfoOption
+  type HostInfo = github.com/imajinyun/knifer-go/internal/system.HostInfo
+  type HostInfoOption = github.com/imajinyun/knifer-go/internal/system.HostInfoOption
+  type OsInfo = github.com/imajinyun/knifer-go/internal/system.OsInfo
+  type OsInfoOption = github.com/imajinyun/knifer-go/internal/system.OsInfoOption
+  type ProcessOption = github.com/imajinyun/knifer-go/internal/system.ProcessOption
+  type RuntimeInfo = github.com/imajinyun/knifer-go/internal/system.RuntimeInfo
+  type RuntimeInfoOption = github.com/imajinyun/knifer-go/internal/system.RuntimeInfoOption
+  type UserInfo = github.com/imajinyun/knifer-go/internal/system.UserInfo
+  type UserInfoOption = github.com/imajinyun/knifer-go/internal/system.UserInfoOption
 
-github.com/imajinyun/go-knifer/vtok
-  const ModeDefault github.com/imajinyun/go-knifer/internal/tokenize.Mode = ""
-  const ModeFull github.com/imajinyun/go-knifer/internal/tokenize.Mode = "full"
-  const ModePrecise github.com/imajinyun/go-knifer/internal/tokenize.Mode = "precise"
-  const ModeSearch github.com/imajinyun/go-knifer/internal/tokenize.Mode = "search"
+github.com/imajinyun/knifer-go/vtok
+  const ModeDefault github.com/imajinyun/knifer-go/internal/tokenize.Mode = ""
+  const ModeFull github.com/imajinyun/knifer-go/internal/tokenize.Mode = "full"
+  const ModePrecise github.com/imajinyun/knifer-go/internal/tokenize.Mode = "precise"
+  const ModeSearch github.com/imajinyun/knifer-go/internal/tokenize.Mode = "search"
   func Keywords(ctx context.Context, provider Provider, request KeywordsRequest) (KeywordsResponse, error)
   func New(opts ...Option) *Client
   func Tokenize(ctx context.Context, provider Provider, request TokenizeRequest) (TokenizeResponse, error)
   func WithProvider(provider Provider) Option
-  type Client = github.com/imajinyun/go-knifer/internal/tokenize.Client
-  type Keyword = github.com/imajinyun/go-knifer/internal/tokenize.Keyword
-  type KeywordsRequest = github.com/imajinyun/go-knifer/internal/tokenize.KeywordsRequest
-  type KeywordsResponse = github.com/imajinyun/go-knifer/internal/tokenize.KeywordsResponse
-  type Mode = github.com/imajinyun/go-knifer/internal/tokenize.Mode
-  type Option = github.com/imajinyun/go-knifer/internal/tokenize.Option
-  type Provider = github.com/imajinyun/go-knifer/internal/tokenize.Provider
-  type Token = github.com/imajinyun/go-knifer/internal/tokenize.Token
-  type TokenizeRequest = github.com/imajinyun/go-knifer/internal/tokenize.TokenizeRequest
-  type TokenizeResponse = github.com/imajinyun/go-knifer/internal/tokenize.TokenizeResponse
+  type Client = github.com/imajinyun/knifer-go/internal/tokenize.Client
+  type Keyword = github.com/imajinyun/knifer-go/internal/tokenize.Keyword
+  type KeywordsRequest = github.com/imajinyun/knifer-go/internal/tokenize.KeywordsRequest
+  type KeywordsResponse = github.com/imajinyun/knifer-go/internal/tokenize.KeywordsResponse
+  type Mode = github.com/imajinyun/knifer-go/internal/tokenize.Mode
+  type Option = github.com/imajinyun/knifer-go/internal/tokenize.Option
+  type Provider = github.com/imajinyun/knifer-go/internal/tokenize.Provider
+  type Token = github.com/imajinyun/knifer-go/internal/tokenize.Token
+  type TokenizeRequest = github.com/imajinyun/knifer-go/internal/tokenize.TokenizeRequest
+  type TokenizeResponse = github.com/imajinyun/knifer-go/internal/tokenize.TokenizeResponse
   var ErrInputLimitExceeded error
   var ErrInvalidKeywordsRequest error
   var ErrInvalidTokenizeRequest error
   var ErrMissingProvider error
   var ErrTokenLimitExceeded error
 
-github.com/imajinyun/go-knifer/vtpl
+github.com/imajinyun/knifer-go/vtpl
   func NewHTMLEngine(opts ...EngineOption) Engine
   func NewTextEngine(opts ...EngineOption) Engine
   func Render(tpl string, data any) (string, error)
@@ -3403,15 +3403,15 @@ github.com/imajinyun/go-knifer/vtpl
   func WithTemplateFactory(factory func(string) *html/template.Template) RenderOption
   func WithTemplateName(name string) RenderOption
   func WithTemplateParser(parser func(*html/template.Template, string) (*html/template.Template, error)) RenderOption
-  type Engine = github.com/imajinyun/go-knifer/internal/template.Engine
-  type EngineFunc = github.com/imajinyun/go-knifer/internal/template.EngineFunc
-  type EngineOption = github.com/imajinyun/go-knifer/internal/template.EngineOption
-  type RenderOption = github.com/imajinyun/go-knifer/internal/template.RenderOption
-  type RenderRequest = github.com/imajinyun/go-knifer/internal/template.RenderRequest
+  type Engine = github.com/imajinyun/knifer-go/internal/template.Engine
+  type EngineFunc = github.com/imajinyun/knifer-go/internal/template.EngineFunc
+  type EngineOption = github.com/imajinyun/knifer-go/internal/template.EngineOption
+  type RenderOption = github.com/imajinyun/knifer-go/internal/template.RenderOption
+  type RenderRequest = github.com/imajinyun/knifer-go/internal/template.RenderRequest
   var ErrInvalidRenderRequest error
   var ErrMissingEngine error
 
-github.com/imajinyun/go-knifer/vurl
+github.com/imajinyun/knifer-go/vurl
   const ClasspathURLPrefix untyped string = "classpath:"
   const DefaultMaxBytes int64 = 67108864
   const FileURLPrefix untyped string = "file:"
@@ -3509,13 +3509,13 @@ github.com/imajinyun/go-knifer/vurl
   func WithRequestFactory(factory func(context.Context, string, string) (*net/http.Request, error)) ResourceOption
   func WithStat(stat func(string) (os.FileInfo, error)) ResourceOption
   func WithTimeout(timeout time.Duration) ResourceOption
-  type DecodeOption = github.com/imajinyun/go-knifer/internal/url.DecodeOption
-  type EncodeOption = github.com/imajinyun/go-knifer/internal/url.EncodeOption
-  type NormalizeOption = github.com/imajinyun/go-knifer/internal/url.NormalizeOption
-  type ResourceOption = github.com/imajinyun/go-knifer/internal/url.ResourceOption
-  type URLBuilder = github.com/imajinyun/go-knifer/internal/url.URLBuilder
+  type DecodeOption = github.com/imajinyun/knifer-go/internal/url.DecodeOption
+  type EncodeOption = github.com/imajinyun/knifer-go/internal/url.EncodeOption
+  type NormalizeOption = github.com/imajinyun/knifer-go/internal/url.NormalizeOption
+  type ResourceOption = github.com/imajinyun/knifer-go/internal/url.ResourceOption
+  type URLBuilder = github.com/imajinyun/knifer-go/internal/url.URLBuilder
 
-github.com/imajinyun/go-knifer/vver
+github.com/imajinyun/knifer-go/vver
   const DefaultVersionsDelimiter untyped string = ";"
   func AnyMatch(currentVersion string, compareVersions ...string) bool
   func AnyMatchSlice(currentVersion string, compareVersions []string) bool
@@ -3529,7 +3529,7 @@ github.com/imajinyun/go-knifer/vver
   func MatchElWithDelimiter(currentVersion string, versionEl string, versionsDelimiter string) bool
   func MatchElWithDelimiterErr(currentVersion string, versionEl string, versionsDelimiter string) error
 
-github.com/imajinyun/go-knifer/vxml
+github.com/imajinyun/knifer-go/vxml
   const AMP untyped string = "&amp;"
   const APOS untyped string = "&apos;"
   const CommentRegex untyped string = "(?s)<!--.+?-->"
@@ -3627,19 +3627,19 @@ github.com/imajinyun/go-knifer/vxml
   func XMLToMapInto(xmlStr string, result map[string]any) (map[string]any, error)
   func XMLToMapIntoWithOptions(xmlStr string, result map[string]any, opts ...ParseOption) (map[string]any, error)
   func XMLToMapWithOptions(xmlStr string, opts ...ParseOption) (map[string]any, error)
-  type BeanOption = github.com/imajinyun/go-knifer/internal/xml.BeanOption
-  type CleanOption = github.com/imajinyun/go-knifer/internal/xml.CleanOption
-  type Document = github.com/imajinyun/go-knifer/internal/xml.Document
-  type Element = github.com/imajinyun/go-knifer/internal/xml.Element
-  type Error = github.com/imajinyun/go-knifer/internal/xml.XMLError
-  type FormatOption = github.com/imajinyun/go-knifer/internal/xml.FormatOption
-  type NamespaceCache = github.com/imajinyun/go-knifer/internal/xml.NamespaceCache
-  type ParseOption = github.com/imajinyun/go-knifer/internal/xml.ParseOption
-  type TokenHandler = github.com/imajinyun/go-knifer/internal/xml.TokenHandler
-  type TransformOption = github.com/imajinyun/go-knifer/internal/xml.TransformOption
-  type WriteOption = github.com/imajinyun/go-knifer/internal/xml.WriteOption
+  type BeanOption = github.com/imajinyun/knifer-go/internal/xml.BeanOption
+  type CleanOption = github.com/imajinyun/knifer-go/internal/xml.CleanOption
+  type Document = github.com/imajinyun/knifer-go/internal/xml.Document
+  type Element = github.com/imajinyun/knifer-go/internal/xml.Element
+  type Error = github.com/imajinyun/knifer-go/internal/xml.XMLError
+  type FormatOption = github.com/imajinyun/knifer-go/internal/xml.FormatOption
+  type NamespaceCache = github.com/imajinyun/knifer-go/internal/xml.NamespaceCache
+  type ParseOption = github.com/imajinyun/knifer-go/internal/xml.ParseOption
+  type TokenHandler = github.com/imajinyun/knifer-go/internal/xml.TokenHandler
+  type TransformOption = github.com/imajinyun/knifer-go/internal/xml.TransformOption
+  type WriteOption = github.com/imajinyun/knifer-go/internal/xml.WriteOption
 
-github.com/imajinyun/go-knifer/vzip
+github.com/imajinyun/knifer-go/vzip
   func Append(zipPath string, srcPath string) error
   func AppendWithOptions(zipPath string, srcPath string, opts ...ArchiveOption) error
   func Get(zipFile string, name string) (io.ReadCloser, error)
@@ -3732,25 +3732,25 @@ github.com/imajinyun/go-knifer/vzip
   func ZlibReader(r io.Reader, level int, estimatedLength int) ([]byte, error)
   func ZlibReaderWithOptions(r io.Reader, level int, estimatedLength int, opts ...ArchiveOption) ([]byte, error)
   func ZlibString(content string, level int) ([]byte, error)
-  type ArchiveOption = github.com/imajinyun/go-knifer/internal/zip.ArchiveOption
-  type CreateTempFunc = github.com/imajinyun/go-knifer/internal/zip.CreateTempFunc
-  type Entry = github.com/imajinyun/go-knifer/internal/zip.Entry
-  type EntryData = github.com/imajinyun/go-knifer/internal/zip.EntryData
-  type Error = github.com/imajinyun/go-knifer/internal/zip.ZipError
-  type EvalSymlinksFunc = github.com/imajinyun/go-knifer/internal/zip.EvalSymlinksFunc
-  type FileFilter = github.com/imajinyun/go-knifer/internal/zip.FileFilter
-  type LstatFunc = github.com/imajinyun/go-knifer/internal/zip.LstatFunc
-  type MkdirAllFunc = github.com/imajinyun/go-knifer/internal/zip.MkdirAllFunc
-  type OpenFileFunc = github.com/imajinyun/go-knifer/internal/zip.OpenFileFunc
-  type OpenFunc = github.com/imajinyun/go-knifer/internal/zip.OpenFunc
-  type OpenZipReaderFunc = github.com/imajinyun/go-knifer/internal/zip.OpenZipReaderFunc
-  type ReadDirFunc = github.com/imajinyun/go-knifer/internal/zip.ReadDirFunc
-  type ReadFileFunc = github.com/imajinyun/go-knifer/internal/zip.ReadFileFunc
-  type Reader = github.com/imajinyun/go-knifer/internal/zip.Reader
-  type ReadlinkFunc = github.com/imajinyun/go-knifer/internal/zip.ReadlinkFunc
-  type RemoveFunc = github.com/imajinyun/go-knifer/internal/zip.RemoveFunc
-  type RenameFunc = github.com/imajinyun/go-knifer/internal/zip.RenameFunc
-  type StatFunc = github.com/imajinyun/go-knifer/internal/zip.StatFunc
-  type StreamEntry = github.com/imajinyun/go-knifer/internal/zip.StreamEntry
-  type TempFile = github.com/imajinyun/go-knifer/internal/zip.TempFile
-  type Writer = github.com/imajinyun/go-knifer/internal/zip.Writer
+  type ArchiveOption = github.com/imajinyun/knifer-go/internal/zip.ArchiveOption
+  type CreateTempFunc = github.com/imajinyun/knifer-go/internal/zip.CreateTempFunc
+  type Entry = github.com/imajinyun/knifer-go/internal/zip.Entry
+  type EntryData = github.com/imajinyun/knifer-go/internal/zip.EntryData
+  type Error = github.com/imajinyun/knifer-go/internal/zip.ZipError
+  type EvalSymlinksFunc = github.com/imajinyun/knifer-go/internal/zip.EvalSymlinksFunc
+  type FileFilter = github.com/imajinyun/knifer-go/internal/zip.FileFilter
+  type LstatFunc = github.com/imajinyun/knifer-go/internal/zip.LstatFunc
+  type MkdirAllFunc = github.com/imajinyun/knifer-go/internal/zip.MkdirAllFunc
+  type OpenFileFunc = github.com/imajinyun/knifer-go/internal/zip.OpenFileFunc
+  type OpenFunc = github.com/imajinyun/knifer-go/internal/zip.OpenFunc
+  type OpenZipReaderFunc = github.com/imajinyun/knifer-go/internal/zip.OpenZipReaderFunc
+  type ReadDirFunc = github.com/imajinyun/knifer-go/internal/zip.ReadDirFunc
+  type ReadFileFunc = github.com/imajinyun/knifer-go/internal/zip.ReadFileFunc
+  type Reader = github.com/imajinyun/knifer-go/internal/zip.Reader
+  type ReadlinkFunc = github.com/imajinyun/knifer-go/internal/zip.ReadlinkFunc
+  type RemoveFunc = github.com/imajinyun/knifer-go/internal/zip.RemoveFunc
+  type RenameFunc = github.com/imajinyun/knifer-go/internal/zip.RenameFunc
+  type StatFunc = github.com/imajinyun/knifer-go/internal/zip.StatFunc
+  type StreamEntry = github.com/imajinyun/knifer-go/internal/zip.StreamEntry
+  type TempFile = github.com/imajinyun/knifer-go/internal/zip.TempFile
+  type Writer = github.com/imajinyun/knifer-go/internal/zip.Writer

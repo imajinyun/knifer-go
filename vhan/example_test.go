@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vhan"
+	"github.com/imajinyun/knifer-go/vhan"
 )
 
 type exampleProvider struct{}

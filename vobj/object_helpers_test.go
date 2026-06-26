@@ -3,7 +3,7 @@ package vobj_test
 import (
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vobj"
+	"github.com/imajinyun/knifer-go/vobj"
 )
 
 func TestFacadeObjectHelpers(t *testing.T) {

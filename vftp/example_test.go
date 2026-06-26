@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vftp"
+	"github.com/imajinyun/knifer-go/vftp"
 )
 
 type exampleProvider struct{}

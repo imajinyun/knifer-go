@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/imajinyun/go-knifer"
+	"github.com/imajinyun/knifer-go"
 )
 
 func TestErrorCodeMatching(t *testing.T) {
@@ -133,7 +133,7 @@ func TestCodeOfFallbacks(t *testing.T) {
 		t.Fatalf("CodeOf(ErrCode) = %q, %v", code, ok)
 	}
 
-	// An error with no go-knifer code yields ("", false).
+	// An error with no knifer-go code yields ("", false).
 	if code, ok := knifer.CodeOf(errors.New("plain")); ok || code != "" {
 		t.Fatalf("CodeOf(plain) = %q, %v", code, ok)
 	}

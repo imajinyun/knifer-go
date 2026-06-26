@@ -3,7 +3,7 @@ package num
 import (
 	"math"
 
-	"github.com/imajinyun/go-knifer/internal/constraint"
+	"github.com/imajinyun/knifer-go/internal/constraint"
 )
 
 // MinInteger returns the smaller of a or b.

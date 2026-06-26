@@ -8,7 +8,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vskt"
+	"github.com/imajinyun/knifer-go/vskt"
 )
 
 type exampleDialer struct {

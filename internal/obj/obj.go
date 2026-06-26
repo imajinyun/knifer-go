@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	refimpl "github.com/imajinyun/go-knifer/internal/ref"
+	refimpl "github.com/imajinyun/knifer-go/internal/ref"
 )
 
 // Ordered is the set of built-in ordered value types.

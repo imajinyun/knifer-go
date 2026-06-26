@@ -1,4 +1,4 @@
-# Codecov configuration for go-knifer.
+# Codecov configuration for knifer-go.
 #
 # Values are kept in sync with bin/check_coverage.sh.
 

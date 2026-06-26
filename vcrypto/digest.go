@@ -3,7 +3,7 @@ package vcrypto
 import (
 	"hash"
 
-	cryptoimpl "github.com/imajinyun/go-knifer/internal/crypto"
+	cryptoimpl "github.com/imajinyun/knifer-go/internal/crypto"
 )
 
 // Digest returns digest bytes computed by newHash.

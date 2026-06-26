@@ -5,7 +5,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/imajinyun/go-knifer/internal/cron"
+	"github.com/imajinyun/knifer-go/internal/cron"
 )
 
 // Config configures a scheduler.

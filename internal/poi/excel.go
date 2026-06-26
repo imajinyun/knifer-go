@@ -11,7 +11,7 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 	"github.com/xuri/excelize/v2"
 )
 

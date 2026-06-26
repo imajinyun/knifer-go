@@ -3,7 +3,7 @@ package vnet
 import (
 	stdnet "net"
 
-	netimpl "github.com/imajinyun/go-knifer/internal/net"
+	netimpl "github.com/imajinyun/knifer-go/internal/net"
 )
 
 // BuildInetSocketAddress resolves host into a TCP address using defaultPort when the host omits a port.

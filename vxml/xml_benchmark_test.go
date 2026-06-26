@@ -2,7 +2,7 @@ package vxml
 
 import "testing"
 
-var benchmarkXMLPayload = `<user><name>go-knifer</name><age>5</age><tag>go</tag><tag>xml</tag></user>`
+var benchmarkXMLPayload = `<user><name>knifer-go</name><age>5</age><tag>go</tag><tag>xml</tag></user>`
 
 func BenchmarkXMLToMap(b *testing.B) {
 	for b.Loop() {
@@ -14,7 +14,7 @@ func BenchmarkXMLToMap(b *testing.B) {
 }
 
 func BenchmarkMarshalMap(b *testing.B) {
-	payload := map[string]any{"name": "go-knifer", "age": 5, "tag": []string{"go", "xml"}}
+	payload := map[string]any{"name": "knifer-go", "age": 5, "tag": []string{"go", "xml"}}
 	for b.Loop() {
 		if _, err := MarshalMap(payload, WithRootName("user"), WithOmitDeclaration(true)); err != nil {
 			b.Fatalf("MarshalMap: %v", err)

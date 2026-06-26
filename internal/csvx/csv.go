@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 type config struct {

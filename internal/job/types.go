@@ -3,7 +3,7 @@ package job
 import (
 	"context"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 type sentinel struct {

@@ -5,7 +5,7 @@ import (
 	"io"
 	"io/fs"
 
-	"github.com/imajinyun/go-knifer/internal/imgx"
+	"github.com/imajinyun/knifer-go/internal/imgx"
 )
 
 // Captcha is the common captcha interface.

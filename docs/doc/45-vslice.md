@@ -27,7 +27,7 @@
 
 ## When not to use vslice
 
-- Use the standard `slices` package directly for simple primitives such as `slices.Sort`, `slices.Clone`, `slices.DeleteFunc`, or `slices.Contains` when no go-knifer-specific helper is needed.
+- Use the standard `slices` package directly for simple primitives such as `slices.Sort`, `slices.Clone`, `slices.DeleteFunc`, or `slices.Contains` when no knifer-go-specific helper is needed.
 - Use explicit loops when you need precise allocation control, early returns with custom cleanup, or clear side-effect sequencing.
 - Use `vset` when membership is the primary operation and ordering or duplicate counts are not meaningful.
 
@@ -39,7 +39,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vslice"
+	"github.com/imajinyun/knifer-go/vslice"
 )
 
 func main() {
@@ -60,7 +60,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vslice"
+	"github.com/imajinyun/knifer-go/vslice"
 )
 
 func main() {
@@ -80,7 +80,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vslice"
+	"github.com/imajinyun/knifer-go/vslice"
 )
 
 func main() {
@@ -107,7 +107,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vslice"
+	"github.com/imajinyun/knifer-go/vslice"
 )
 
 func main() {
@@ -136,7 +136,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vslice"
+	"github.com/imajinyun/knifer-go/vslice"
 )
 
 func main() {
@@ -160,7 +160,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vslice"
+	"github.com/imajinyun/knifer-go/vslice"
 )
 
 func main() {

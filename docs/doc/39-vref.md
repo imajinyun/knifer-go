@@ -80,7 +80,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/imajinyun/go-knifer/vref"
+	"github.com/imajinyun/knifer-go/vref"
 )
 
 func main() {
@@ -102,7 +102,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vref"
+	"github.com/imajinyun/knifer-go/vref"
 )
 
 type User struct {
@@ -134,7 +134,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/imajinyun/go-knifer/vref"
+	"github.com/imajinyun/knifer-go/vref"
 )
 
 type Counter struct{}
@@ -169,7 +169,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vref"
+	"github.com/imajinyun/knifer-go/vref"
 )
 
 type User struct{ Name string }

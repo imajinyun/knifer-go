@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/vzip"
+	knifer "github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/vzip"
 )
 
 func TestFacadeZipOptions(t *testing.T) {

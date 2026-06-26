@@ -70,7 +70,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vident"
+	"github.com/imajinyun/knifer-go/vident"
 )
 
 func main() {
@@ -92,7 +92,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vident"
+	"github.com/imajinyun/knifer-go/vident"
 )
 
 func main() {
@@ -114,7 +114,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vident"
+	"github.com/imajinyun/knifer-go/vident"
 )
 
 func main() {
@@ -138,7 +138,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vident"
+	"github.com/imajinyun/knifer-go/vident"
 )
 
 func main() {

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
-	knifer "github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/vconv"
+	knifer "github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/vconv"
 )
 
 func ExampleToInt() {

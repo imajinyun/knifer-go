@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/imajinyun/go-knifer/vref"
+	"github.com/imajinyun/knifer-go/vref"
 )
 
 type exampleUser struct {
@@ -102,10 +102,10 @@ func ExampleValueOf() {
 }
 
 func ExampleIndirectValue() {
-	name := "go-knifer"
+	name := "knifer-go"
 	v := vref.IndirectValue(reflect.ValueOf(&name))
 	fmt.Println(v.String())
-	// Output: go-knifer
+	// Output: knifer-go
 }
 
 func ExampleIsFunction() {

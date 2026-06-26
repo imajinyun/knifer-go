@@ -4,7 +4,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vsys"
+	"github.com/imajinyun/knifer-go/vsys"
 )
 
 func TestFacadePID(t *testing.T) {

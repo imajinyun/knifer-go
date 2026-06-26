@@ -3,7 +3,7 @@ package vsem_test
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vsem"
+	"github.com/imajinyun/knifer-go/vsem"
 )
 
 func ExampleNew() {

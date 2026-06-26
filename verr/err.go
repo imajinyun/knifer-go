@@ -8,7 +8,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/sirupsen/logrus"
 
-	errimpl "github.com/imajinyun/go-knifer/internal/errx"
+	errimpl "github.com/imajinyun/knifer-go/internal/errx"
 )
 
 const (

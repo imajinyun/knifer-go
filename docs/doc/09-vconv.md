@@ -100,7 +100,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vconv"
+	"github.com/imajinyun/knifer-go/vconv"
 )
 
 func main() {
@@ -119,8 +119,8 @@ import (
 	"errors"
 	"fmt"
 
-	knifer "github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/vconv"
+	knifer "github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/vconv"
 )
 
 func main() {
@@ -142,7 +142,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vconv"
+	"github.com/imajinyun/knifer-go/vconv"
 )
 
 func main() {
@@ -162,7 +162,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/imajinyun/go-knifer/vconv"
+	"github.com/imajinyun/knifer-go/vconv"
 )
 
 func main() {
@@ -180,7 +180,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vconv"
+	"github.com/imajinyun/knifer-go/vconv"
 )
 
 func main() {

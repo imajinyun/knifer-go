@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vhttp"
+	"github.com/imajinyun/knifer-go/vhttp"
 )
 
 func TestFacadeSimpleServerWrappers(t *testing.T) {

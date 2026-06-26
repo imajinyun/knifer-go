@@ -3,7 +3,7 @@ package vcache
 import (
 	"time"
 
-	"github.com/imajinyun/go-knifer/internal/cache"
+	"github.com/imajinyun/knifer-go/internal/cache"
 )
 
 // Cache is a generic cache interface.

@@ -1,6 +1,6 @@
 # vtpl Quickstart
 
-`vtpl` provides Go `html/template` based string rendering facades, with support for template names, function maps, custom delimiters, and parse/execute provider injection. It also exposes an engine-neutral adapter contract so callers can select the standard HTML engine, the standard text engine, or a custom template engine without adding optional dependencies to go-knifer.
+`vtpl` provides Go `html/template` based string rendering facades, with support for template names, function maps, custom delimiters, and parse/execute provider injection. It also exposes an engine-neutral adapter contract so callers can select the standard HTML engine, the standard text engine, or a custom template engine without adding optional dependencies to knifer-go.
 
 ## Which helper should I use?
 
@@ -31,7 +31,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vtpl"
+	"github.com/imajinyun/knifer-go/vtpl"
 )
 
 func main() {
@@ -91,7 +91,7 @@ import (
 	"html/template"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vtpl"
+	"github.com/imajinyun/knifer-go/vtpl"
 )
 
 func main() {
@@ -115,7 +115,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vtpl"
+	"github.com/imajinyun/knifer-go/vtpl"
 )
 
 func main() {
@@ -143,7 +143,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vtpl"
+	"github.com/imajinyun/knifer-go/vtpl"
 )
 
 func main() {
@@ -172,7 +172,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vtpl"
+	"github.com/imajinyun/knifer-go/vtpl"
 )
 
 func main() {

@@ -3,7 +3,7 @@ package vset_test
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vset"
+	"github.com/imajinyun/knifer-go/vset"
 )
 
 func ExampleNewString() {

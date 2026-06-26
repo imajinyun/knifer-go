@@ -1,6 +1,6 @@
 package vstr
 
-import strimpl "github.com/imajinyun/go-knifer/internal/str"
+import strimpl "github.com/imajinyun/knifer-go/internal/str"
 
 type EmojiOption = strimpl.EmojiOption
 

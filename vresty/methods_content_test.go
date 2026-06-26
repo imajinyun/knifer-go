@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vresty"
+	"github.com/imajinyun/knifer-go/vresty"
 )
 
 func TestFacadeAdditionalMethods(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"io"
 	"io/fs"
 
-	xmlimpl "github.com/imajinyun/go-knifer/internal/xml"
+	xmlimpl "github.com/imajinyun/knifer-go/internal/xml"
 )
 
 // WithNamespaceAware controls whether parsed element names keep namespace URIs.

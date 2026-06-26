@@ -1,6 +1,6 @@
 package vhttp
 
-import httpx "github.com/imajinyun/go-knifer/internal/httpx/http"
+import httpx "github.com/imajinyun/knifer-go/internal/httpx/http"
 
 // Request is a chainable HTTP request builder.
 type Request = httpx.HTTPRequest

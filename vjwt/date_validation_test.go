@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vjwt"
+	"github.com/imajinyun/knifer-go/vjwt"
 )
 
 func TestFacadeDateValidationOptions(t *testing.T) {

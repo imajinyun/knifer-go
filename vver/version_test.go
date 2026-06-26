@@ -3,7 +3,7 @@ package vver_test
 import (
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vver"
+	"github.com/imajinyun/knifer-go/vver"
 )
 
 func TestFacadeVersionHelpers(t *testing.T) {

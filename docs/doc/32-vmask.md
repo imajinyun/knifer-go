@@ -31,7 +31,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vmask"
+	"github.com/imajinyun/knifer-go/vmask"
 )
 
 func main() {
@@ -50,7 +50,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vmask"
+	"github.com/imajinyun/knifer-go/vmask"
 )
 
 func main() {
@@ -71,7 +71,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vmask"
+	"github.com/imajinyun/knifer-go/vmask"
 )
 
 func main() {
@@ -90,7 +90,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vmask"
+	"github.com/imajinyun/knifer-go/vmask"
 )
 
 func main() {

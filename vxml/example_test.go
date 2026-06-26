@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vxml"
+	"github.com/imajinyun/knifer-go/vxml"
 )
 
 type exampleXMLUser struct {
@@ -17,38 +17,38 @@ type exampleXMLUser struct {
 }
 
 func ExampleXMLToMap() {
-	m, _ := vxml.XMLToMap(`<user><name>go-knifer</name></user>`)
+	m, _ := vxml.XMLToMap(`<user><name>knifer-go</name></user>`)
 	user := m["user"].(map[string]any)
 	fmt.Println(user["name"])
-	// Output: go-knifer
+	// Output: knifer-go
 }
 
 func ExampleXMLToMapInto() {
 	result := map[string]any{"source": "cache"}
-	m, err := vxml.XMLToMapInto(`<user><name>go-knifer</name></user>`, result)
+	m, err := vxml.XMLToMapInto(`<user><name>knifer-go</name></user>`, result)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	user := m["user"].(map[string]any)
 	fmt.Println(m["source"], user["name"])
-	// Output: cache go-knifer
+	// Output: cache knifer-go
 }
 
 func ExampleXMLToBean() {
 	var decoded struct {
 		User exampleXMLUser `json:"user"`
 	}
-	if err := vxml.XMLToBean(`<user><name>go-knifer</name><age>3</age></user>`, &decoded); err != nil {
+	if err := vxml.XMLToBean(`<user><name>knifer-go</name><age>3</age></user>`, &decoded); err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Println(decoded.User.Name, decoded.User.Age)
-	// Output: go-knifer 3
+	// Output: knifer-go 3
 }
 
 func ExampleParseXML() {
-	doc, err := vxml.ParseXML(`<root><name>go-knifer</name></root>`)
+	doc, err := vxml.ParseXML(`<root><name>knifer-go</name></root>`)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -58,27 +58,27 @@ func ExampleParseXML() {
 }
 
 func ExampleReadXMLBytes() {
-	doc, err := vxml.ReadXMLBytes([]byte(`<root><name>go-knifer</name></root>`))
+	doc, err := vxml.ReadXMLBytes([]byte(`<root><name>knifer-go</name></root>`))
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Println(vxml.ElementText(doc.Root, "name"))
-	// Output: go-knifer
+	// Output: knifer-go
 }
 
 func ExampleReadXMLReader() {
-	doc, err := vxml.ReadXMLReader(strings.NewReader(`<root><name>go-knifer</name></root>`))
+	doc, err := vxml.ReadXMLReader(strings.NewReader(`<root><name>knifer-go</name></root>`))
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Println(vxml.ElementText(doc.Root, "name"))
-	// Output: go-knifer
+	// Output: knifer-go
 }
 
 func ExampleReadXMLFile() {
-	dir, err := os.MkdirTemp("", "go-knifer-vxml-example-")
+	dir, err := os.MkdirTemp("", "knifer-go-vxml-example-")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -86,7 +86,7 @@ func ExampleReadXMLFile() {
 	defer os.RemoveAll(dir)
 
 	path := filepath.Join(dir, "input.xml")
-	if err := os.WriteFile(path, []byte(`<root><name>go-knifer</name></root>`), 0o600); err != nil {
+	if err := os.WriteFile(path, []byte(`<root><name>knifer-go</name></root>`), 0o600); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -96,7 +96,7 @@ func ExampleReadXMLFile() {
 		return
 	}
 	fmt.Println(vxml.ElementText(doc.Root, "name"))
-	// Output: go-knifer
+	// Output: knifer-go
 }
 
 func ExampleReadBySAX() {
@@ -117,7 +117,7 @@ func ExampleReadBySAX() {
 func ExampleCreateXMLWithRoot() {
 	doc := vxml.CreateXMLWithRoot("root")
 	text := vxml.AppendChild(doc.Root, "name")
-	vxml.AppendText(text, "go-knifer")
+	vxml.AppendText(text, "knifer-go")
 
 	xmlStr, err := vxml.MarshalString(doc, vxml.WithOmitDeclaration(true))
 	if err != nil {
@@ -125,7 +125,7 @@ func ExampleCreateXMLWithRoot() {
 		return
 	}
 	fmt.Println(xmlStr)
-	// Output: <root><name>go-knifer</name></root>
+	// Output: <root><name>knifer-go</name></root>
 }
 
 func ExampleCreateXMLWithRootNS() {
@@ -141,7 +141,7 @@ func ExampleCreateXMLWithRootNS() {
 
 func ExampleAppend() {
 	doc := vxml.CreateXMLWithRoot("user")
-	vxml.Append(doc.Root, map[string]any{"name": "go-knifer", "age": 3})
+	vxml.Append(doc.Root, map[string]any{"name": "knifer-go", "age": 3})
 
 	xmlStr, err := vxml.MarshalString(doc, vxml.WithOmitDeclaration(true))
 	if err != nil {
@@ -149,7 +149,7 @@ func ExampleAppend() {
 		return
 	}
 	fmt.Println(xmlStr)
-	// Output: <user><age>3</age><name>go-knifer</name></user>
+	// Output: <user><age>3</age><name>knifer-go</name></user>
 }
 
 func ExampleGetElements() {
@@ -160,11 +160,11 @@ func ExampleGetElements() {
 }
 
 func ExampleElementText() {
-	doc, _ := vxml.ParseXML(`<root><name>go-knifer</name></root>`)
+	doc, _ := vxml.ParseXML(`<root><name>knifer-go</name></root>`)
 	fmt.Println(vxml.ElementText(doc.Root, "name"))
 	fmt.Println(vxml.ElementText(doc.Root, "missing", "default"))
 	// Output:
-	// go-knifer
+	// knifer-go
 	// default
 }
 
@@ -178,7 +178,7 @@ func ExampleGetByXPath() {
 }
 
 func ExampleFormatWithOptions() {
-	formatted, _ := vxml.FormatWithOptions(`<root><name>go-knifer</name></root>`, vxml.WithFormatWriteOptions(vxml.WithOmitDeclaration(true)))
+	formatted, _ := vxml.FormatWithOptions(`<root><name>knifer-go</name></root>`, vxml.WithFormatWriteOptions(vxml.WithOmitDeclaration(true)))
 	fmt.Println(strings.Contains(formatted, "\n  <name>"))
 	// Output: true
 }
@@ -207,7 +207,7 @@ func ExampleWriteTo() {
 
 func ExampleMarshalBean() {
 	xmlStr, err := vxml.MarshalBean(
-		exampleXMLUser{Name: "go-knifer", Age: 3},
+		exampleXMLUser{Name: "knifer-go", Age: 3},
 		vxml.WithRootName("user"),
 		vxml.WithOmitDeclaration(true),
 	)
@@ -216,13 +216,13 @@ func ExampleMarshalBean() {
 		return
 	}
 	fmt.Println(xmlStr)
-	// Output: <user><age>3</age><name>go-knifer</name></user>
+	// Output: <user><age>3</age><name>knifer-go</name></user>
 }
 
 func ExampleTransformWith() {
 	var out bytes.Buffer
 	if err := vxml.TransformWith(
-		strings.NewReader(`<root><name>go-knifer</name></root>`),
+		strings.NewReader(`<root><name>knifer-go</name></root>`),
 		&out,
 		vxml.WithOmitDeclaration(true),
 	); err != nil {
@@ -230,17 +230,17 @@ func ExampleTransformWith() {
 		return
 	}
 	fmt.Println(out.String())
-	// Output: <root><name>go-knifer</name></root>
+	// Output: <root><name>knifer-go</name></root>
 }
 
 func ExampleEscape() {
-	fmt.Println(vxml.Escape("<name>go-knifer</name>"))
-	// Output: &lt;name&gt;go-knifer&lt;/name&gt;
+	fmt.Println(vxml.Escape("<name>knifer-go</name>"))
+	// Output: &lt;name&gt;knifer-go&lt;/name&gt;
 }
 
 func ExampleUnescape() {
-	fmt.Println(vxml.Unescape("&lt;name&gt;go-knifer&lt;/name&gt;"))
-	// Output: <name>go-knifer</name>
+	fmt.Println(vxml.Unescape("&lt;name&gt;knifer-go&lt;/name&gt;"))
+	// Output: <name>knifer-go</name>
 }
 
 func ExampleMarshalMap() {

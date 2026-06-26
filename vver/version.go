@@ -1,6 +1,6 @@
 package vver
 
-import versionimpl "github.com/imajinyun/go-knifer/internal/version"
+import versionimpl "github.com/imajinyun/knifer-go/internal/version"
 
 const DefaultVersionsDelimiter = versionimpl.DefaultVersionsDelimiter
 

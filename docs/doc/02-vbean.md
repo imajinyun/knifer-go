@@ -119,7 +119,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vbean"
+	"github.com/imajinyun/knifer-go/vbean"
 )
 
 type UserDTO struct {
@@ -144,7 +144,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vbean"
+	"github.com/imajinyun/knifer-go/vbean"
 )
 
 type User struct {
@@ -173,7 +173,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vbean"
+	"github.com/imajinyun/knifer-go/vbean"
 )
 
 type Row struct {
@@ -203,7 +203,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vbean"
+	"github.com/imajinyun/knifer-go/vbean"
 )
 
 type User struct {
@@ -232,7 +232,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vbean"
+	"github.com/imajinyun/knifer-go/vbean"
 )
 
 type User struct {
@@ -262,7 +262,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vbean"
+	"github.com/imajinyun/knifer-go/vbean"
 )
 
 type User struct {

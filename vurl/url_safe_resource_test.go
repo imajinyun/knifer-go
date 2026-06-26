@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vurl"
+	"github.com/imajinyun/knifer-go/vurl"
 )
 
 func TestFacadeSafeResourceHelpersRejectLocalhost(t *testing.T) {

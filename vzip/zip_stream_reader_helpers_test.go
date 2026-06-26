@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vzip"
+	"github.com/imajinyun/knifer-go/vzip"
 )
 
 func TestFacadeZipStreamAndReaderHelpers(t *testing.T) {

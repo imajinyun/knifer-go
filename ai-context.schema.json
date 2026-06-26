@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/imajinyun/go-knifer/ai-context.schema.json",
-  "title": "go-knifer AI context metadata",
+  "$id": "https://github.com/imajinyun/knifer-go/ai-context.schema.json",
+  "title": "knifer-go AI context metadata",
   "type": "object",
   "required": [
     "schema_version",

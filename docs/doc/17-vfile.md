@@ -180,7 +180,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/imajinyun/go-knifer/vfile"
+	"github.com/imajinyun/knifer-go/vfile"
 )
 
 func main() {
@@ -206,7 +206,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vfile"
+	"github.com/imajinyun/knifer-go/vfile"
 )
 
 func main() {
@@ -238,7 +238,7 @@ package main
 import (
 	"path/filepath"
 
-	"github.com/imajinyun/go-knifer/vfile"
+	"github.com/imajinyun/knifer-go/vfile"
 )
 
 func main() {
@@ -266,7 +266,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/imajinyun/go-knifer/vfile"
+	"github.com/imajinyun/knifer-go/vfile"
 )
 
 func main() {

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/vcrypto"
+	"github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/vcrypto"
 )
 
 func TestErrorContract(t *testing.T) {

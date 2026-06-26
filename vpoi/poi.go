@@ -6,7 +6,7 @@ import (
 	"io/fs"
 	"os"
 
-	poiimpl "github.com/imajinyun/go-knifer/internal/poi"
+	poiimpl "github.com/imajinyun/knifer-go/internal/poi"
 	"github.com/xuri/excelize/v2"
 )
 

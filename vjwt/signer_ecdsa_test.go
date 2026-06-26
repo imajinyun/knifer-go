@@ -6,7 +6,7 @@ import (
 	"crypto/rand"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vjwt"
+	"github.com/imajinyun/knifer-go/vjwt"
 )
 
 func TestECDSASignerFactories(t *testing.T) {

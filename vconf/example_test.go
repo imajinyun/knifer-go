@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vconf"
+	"github.com/imajinyun/knifer-go/vconf"
 )
 
 type exampleServerConfig struct {
@@ -18,7 +18,7 @@ type exampleServerConfig struct {
 }
 
 func ExampleParse() {
-	cfg, err := vconf.Parse("app.name=go-knifer\napp.port=8080\n")
+	cfg, err := vconf.Parse("app.name=knifer-go\napp.port=8080\n")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -28,7 +28,7 @@ func ExampleParse() {
 	fmt.Println(cfg.Get("app.name"))
 	fmt.Println(port)
 	// Output:
-	// go-knifer
+	// knifer-go
 	// 8080
 }
 
@@ -61,13 +61,13 @@ func ExampleLoadRemoteSafeWithOptions() {
 }
 
 func ExampleParseBytes() {
-	cfg, err := vconf.ParseBytes([]byte("name=go-knifer\n"))
+	cfg, err := vconf.ParseBytes([]byte("name=knifer-go\n"))
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Println(cfg.Get("name"))
-	// Output: go-knifer
+	// Output: knifer-go
 }
 
 func ExampleParseYAML() {
@@ -93,13 +93,13 @@ func ExampleMerge() {
 
 func ExampleNew() {
 	cfg := vconf.New()
-	cfg.Set("app.name", "go-knifer")
+	cfg.Set("app.name", "knifer-go")
 	cfg.SetByGroup("server", "port", "8080")
 
 	fmt.Println(cfg.Get("app.name"))
 	fmt.Println(cfg.GetIntByGroup("server", "port", 0))
 	// Output:
-	// go-knifer
+	// knifer-go
 	// 8080
 }
 

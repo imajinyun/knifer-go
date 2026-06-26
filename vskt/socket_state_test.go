@@ -3,7 +3,7 @@ package vskt_test
 import (
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vskt"
+	"github.com/imajinyun/knifer-go/vskt"
 )
 
 func TestFacadeSocketIsConnected(t *testing.T) {

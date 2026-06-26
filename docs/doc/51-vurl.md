@@ -55,7 +55,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vurl"
+	"github.com/imajinyun/knifer-go/vurl"
 )
 
 func main() {
@@ -77,7 +77,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vurl"
+	"github.com/imajinyun/knifer-go/vurl"
 )
 
 func main() {
@@ -102,7 +102,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vurl"
+	"github.com/imajinyun/knifer-go/vurl"
 )
 
 func main() {
@@ -130,7 +130,7 @@ import (
 	"net/http/httptest"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vurl"
+	"github.com/imajinyun/knifer-go/vurl"
 )
 
 func main() {

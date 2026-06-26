@@ -1,4 +1,4 @@
-name: go-knifer-release
+name: knifer-go-release
 
 env:
   GO_1_25_PATCH_VERSION: "1.25.11"
@@ -41,7 +41,7 @@ jobs:
         run: make release-notes-check RELEASE_VERSION="${GITHUB_REF_NAME#v}"
 
       - name: Verify release gates
-        run: make release-check COVERAGE_FILE=/tmp/go-knifer-release-coverage.out
+        run: make release-check COVERAGE_FILE=/tmp/knifer-go-release-coverage.out
 
       - name: Verify v1 governance maturity gates
         run: |

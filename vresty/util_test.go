@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	knifer "github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/vresty"
+	knifer "github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/vresty"
 )
 
 func TestFacadeBuildBasicAuth(t *testing.T) {

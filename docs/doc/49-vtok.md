@@ -1,6 +1,6 @@
 # vtok: tokenization adapter helpers
 
-`vtok` provides provider-neutral text tokenization and keyword extraction helpers. It defines a small interface for callers to inject their own tokenizer provider while keeping `go-knifer` free of dictionary, segmentation, ranking, network-client, and credential dependencies.
+`vtok` provides provider-neutral text tokenization and keyword extraction helpers. It defines a small interface for callers to inject their own tokenizer provider while keeping `knifer-go` free of dictionary, segmentation, ranking, network-client, and credential dependencies.
 
 ## When to use
 
@@ -55,7 +55,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vtok"
+	"github.com/imajinyun/knifer-go/vtok"
 )
 
 type tokenizeProvider struct{}
@@ -138,7 +138,7 @@ go test -bench=. -benchmem -run=^$ ./internal/tokenize ./vtok
 
 `vtok` measures validation, defensive copying, client dispatch, and provider-interface overhead. Real tokenization and keyword extraction cost depends on the injected provider's dictionaries, ranking algorithms, model lifecycle, and caching.
 
-Provider neutrality keeps `go-knifer` free of heavy NLP dependencies, but applications own provider lifecycle, privacy controls, dictionary/model updates, and observability.
+Provider neutrality keeps `knifer-go` free of heavy NLP dependencies, but applications own provider lifecycle, privacy controls, dictionary/model updates, and observability.
 
 ## FAQ
 

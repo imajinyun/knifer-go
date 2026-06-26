@@ -8,7 +8,7 @@ import (
 	"sync"
 
 	"github.com/hashicorp/go-multierror"
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 	"github.com/sirupsen/logrus"
 )
 
@@ -98,7 +98,7 @@ type PanicError struct {
 	StackTrace StackTrace
 }
 
-// ErrorCode returns the go-knifer error code for a recovered panic.
+// ErrorCode returns the knifer-go error code for a recovered panic.
 func (e *PanicError) ErrorCode() knifer.ErrCode {
 	if e == nil {
 		return ""

@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vhttp"
+	"github.com/imajinyun/knifer-go/vhttp"
 )
 
 func TestFacadeUsesNamesWithoutHTTPPrefix(t *testing.T) {
@@ -16,8 +16,8 @@ func TestFacadeUsesNamesWithoutHTTPPrefix(t *testing.T) {
 		if got := r.URL.Query().Get("lang"); got != "go" {
 			t.Fatalf("query lang = %q, want go", got)
 		}
-		if got := r.Header.Get("X-Client"); got != "go-knifer" {
-			t.Fatalf("header X-Client = %q, want go-knifer", got)
+		if got := r.Header.Get("X-Client"); got != "knifer-go" {
+			t.Fatalf("header X-Client = %q, want knifer-go", got)
 		}
 		_, _ = w.Write([]byte("ok"))
 	}))
@@ -25,7 +25,7 @@ func TestFacadeUsesNamesWithoutHTTPPrefix(t *testing.T) {
 
 	req := vhttp.Get(server.URL).
 		Query("lang", "go").
-		Header("X-Client", "go-knifer")
+		Header("X-Client", "knifer-go")
 
 	resp := executeRequest(req)
 	if resp.Err() != nil {

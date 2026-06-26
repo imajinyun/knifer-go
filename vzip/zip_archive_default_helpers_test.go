@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vzip"
+	"github.com/imajinyun/knifer-go/vzip"
 )
 
 func TestFacadeZipDefaultFileHelpers(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vid"
+	"github.com/imajinyun/knifer-go/vid"
 )
 
 func ExampleSimpleUUID() {

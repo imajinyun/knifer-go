@@ -12,8 +12,8 @@ import (
 	"path/filepath"
 	"sync"
 
-	knifer "github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/internal/httpx/internal/shared"
+	knifer "github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/internal/httpx/internal/shared"
 )
 
 // HTTPResponse wraps http.Response and provides convenient readers, aligned with the utility toolkit-http HttpResponse.

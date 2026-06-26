@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vcli"
+	"github.com/imajinyun/knifer-go/vcli"
 )
 
 func ExampleRun() {

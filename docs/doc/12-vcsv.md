@@ -37,7 +37,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vcsv"
+	"github.com/imajinyun/knifer-go/vcsv"
 )
 
 func main() {
@@ -63,7 +63,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcsv"
+	"github.com/imajinyun/knifer-go/vcsv"
 )
 
 func main() {
@@ -87,7 +87,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcsv"
+	"github.com/imajinyun/knifer-go/vcsv"
 )
 
 func main() {
@@ -146,7 +146,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcsv"
+	"github.com/imajinyun/knifer-go/vcsv"
 )
 
 type Person struct {

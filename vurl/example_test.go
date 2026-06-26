@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vurl"
+	"github.com/imajinyun/knifer-go/vurl"
 )
 
 func ExampleAppendQuery() {
@@ -204,13 +204,13 @@ func ExampleEncodeWithOptions() {
 }
 
 func ExampleFileURL() {
-	u, err := vurl.FileURL("/tmp/go-knifer.txt")
+	u, err := vurl.FileURL("/tmp/knifer-go.txt")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Println(u.Scheme, u.Path)
-	// Output: file /tmp/go-knifer.txt
+	// Output: file /tmp/knifer-go.txt
 }
 
 func ExampleFileURLs() {

@@ -1,6 +1,6 @@
 package vform
 
-import validatorimpl "github.com/imajinyun/go-knifer/internal/validator"
+import validatorimpl "github.com/imajinyun/knifer-go/internal/validator"
 
 // Option customizes validator helpers per call.
 type Option = validatorimpl.Option

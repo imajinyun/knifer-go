@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vcache"
+	"github.com/imajinyun/knifer-go/vcache"
 )
 
 type facadeTicker struct{}

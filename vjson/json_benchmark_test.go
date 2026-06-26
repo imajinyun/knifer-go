@@ -3,10 +3,10 @@ package vjson_test
 import (
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vjson"
+	"github.com/imajinyun/knifer-go/vjson"
 )
 
-var benchmarkJSONPayload = `{"user":{"name":"go-knifer","age":5,"tags":["go","tool","json"]}}`
+var benchmarkJSONPayload = `{"user":{"name":"knifer-go","age":5,"tags":["go","tool","json"]}}`
 
 func BenchmarkParseObj(b *testing.B) {
 	for b.Loop() {
@@ -18,7 +18,7 @@ func BenchmarkParseObj(b *testing.B) {
 }
 
 func BenchmarkToStr(b *testing.B) {
-	payload := map[string]any{"name": "go-knifer", "tags": []string{"go", "tool", "json"}}
+	payload := map[string]any{"name": "knifer-go", "tags": []string{"go", "tool", "json"}}
 	for b.Loop() {
 		if _, err := vjson.ToStr(payload); err != nil {
 			b.Fatalf("ToStr: %v", err)
@@ -32,14 +32,14 @@ func BenchmarkGetByPath(b *testing.B) {
 		b.Fatalf("Parse: %v", err)
 	}
 	for b.Loop() {
-		if got := vjson.GetByPath(root, "user.name"); got != "go-knifer" {
+		if got := vjson.GetByPath(root, "user.name"); got != "knifer-go" {
 			b.Fatalf("GetByPath = %v", got)
 		}
 	}
 }
 
 func BenchmarkXMLToJSON(b *testing.B) {
-	const payload = `<user><name>go-knifer</name><age>5</age><tag>go</tag><tag>tool</tag></user>`
+	const payload = `<user><name>knifer-go</name><age>5</age><tag>go</tag><tag>tool</tag></user>`
 	for b.Loop() {
 		obj, err := vjson.XMLToJSON(payload)
 		if err != nil || obj == nil {

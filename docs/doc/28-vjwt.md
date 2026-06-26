@@ -72,7 +72,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vjwt"
+	"github.com/imajinyun/knifer-go/vjwt"
 )
 
 func main() {
@@ -99,7 +99,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vjwt"
+	"github.com/imajinyun/knifer-go/vjwt"
 )
 
 func main() {
@@ -130,14 +130,14 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vjwt"
+	"github.com/imajinyun/knifer-go/vjwt"
 )
 
 func main() {
 	now := time.Now()
 	j := vjwt.New().
 		SetKey([]byte("secret")).
-		SetIssuer("go-knifer").
+		SetIssuer("knifer-go").
 		SetSubject("alice").
 		SetIssuedAt(now).
 		SetNotBefore(now.Add(-time.Minute)).
@@ -166,7 +166,7 @@ import (
 	"crypto/rsa"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vjwt"
+	"github.com/imajinyun/knifer-go/vjwt"
 )
 
 func main() {

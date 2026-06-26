@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vresty"
+	"github.com/imajinyun/knifer-go/vresty"
 )
 
 type benchmarkRestyPayload struct {

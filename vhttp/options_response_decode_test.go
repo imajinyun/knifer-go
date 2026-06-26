@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vhttp"
+	"github.com/imajinyun/knifer-go/vhttp"
 )
 
 func TestFacadeResponseDecodeOptions(t *testing.T) {

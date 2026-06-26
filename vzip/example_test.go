@@ -9,11 +9,11 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/imajinyun/go-knifer/vzip"
+	"github.com/imajinyun/knifer-go/vzip"
 )
 
 func writeExampleArchive(entries ...vzip.EntryData) (string, func(), error) {
-	dir, err := os.MkdirTemp("", "go-knifer-vzip-example-")
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-example-")
 	if err != nil {
 		return "", nil, err
 	}
@@ -30,7 +30,7 @@ func writeExampleArchive(entries ...vzip.EntryData) (string, func(), error) {
 func ExampleZipEntriesToWriter() {
 	var archive bytes.Buffer
 	if err := vzip.ZipEntriesToWriter(&archive,
-		vzip.EntryData{Name: "config/app.setting", Data: []byte("name=go-knifer")},
+		vzip.EntryData{Name: "config/app.setting", Data: []byte("name=knifer-go")},
 		vzip.EntryData{Name: "README.txt", Data: []byte("docs")},
 	); err != nil {
 		fmt.Println(err)
@@ -115,7 +115,7 @@ func ExampleNewWriter() {
 
 func ExampleZipEntries() {
 	archivePath, cleanup, err := writeExampleArchive(
-		vzip.EntryData{Name: "config/app.yml", Data: []byte("name: go-knifer")},
+		vzip.EntryData{Name: "config/app.yml", Data: []byte("name: knifer-go")},
 		vzip.EntryData{Name: "README.md", Data: []byte("docs")},
 	)
 	if err != nil {
@@ -141,7 +141,7 @@ func ExampleZipEntries() {
 }
 
 func ExampleZipFiles() {
-	dir, err := os.MkdirTemp("", "go-knifer-vzip-files-")
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-files-")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -167,7 +167,7 @@ func ExampleZipFiles() {
 }
 
 func ExampleZipFilesFilter() {
-	dir, err := os.MkdirTemp("", "go-knifer-vzip-filter-")
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-filter-")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -299,7 +299,7 @@ func ExampleGetBytes() {
 
 func ExampleRead() {
 	archivePath, cleanup, err := writeExampleArchive(
-		vzip.EntryData{Name: "config/app.yml", Data: []byte("name: go-knifer")},
+		vzip.EntryData{Name: "config/app.yml", Data: []byte("name: knifer-go")},
 		vzip.EntryData{Name: "data.txt", Data: []byte("payload")},
 	)
 	if err != nil {
@@ -355,7 +355,7 @@ func ExampleUnzipReaderTo() {
 		return
 	}
 
-	dir, err := os.MkdirTemp("", "go-knifer-vzip-unzip-reader-")
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-unzip-reader-")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -382,7 +382,7 @@ func ExampleUnzipTo() {
 	}
 	defer cleanup()
 
-	dir, err := os.MkdirTemp("", "go-knifer-vzip-unzip-to-")
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-unzip-to-")
 	if err != nil {
 		fmt.Println(err)
 		return

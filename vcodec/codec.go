@@ -3,7 +3,7 @@ package vcodec
 import (
 	"encoding/base64"
 
-	codecimpl "github.com/imajinyun/go-knifer/internal/codec"
+	codecimpl "github.com/imajinyun/knifer-go/internal/codec"
 )
 
 // Error is the codec module error type.

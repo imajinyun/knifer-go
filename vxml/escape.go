@@ -1,6 +1,6 @@
 package vxml
 
-import xmlimpl "github.com/imajinyun/go-knifer/internal/xml"
+import xmlimpl "github.com/imajinyun/knifer-go/internal/xml"
 
 // Escape escapes XML text.
 func Escape(s string) string { return xmlimpl.Escape(s) }

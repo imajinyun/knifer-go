@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vai"
+	"github.com/imajinyun/knifer-go/vai"
 )
 
 type exampleChatProvider struct{}

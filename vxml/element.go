@@ -4,7 +4,7 @@ import (
 	stdxml "encoding/xml"
 	"regexp"
 
-	xmlimpl "github.com/imajinyun/go-knifer/internal/xml"
+	xmlimpl "github.com/imajinyun/knifer-go/internal/xml"
 )
 
 // WithInvalidRegexp sets the regexp used by CleanInvalidWithOptions.

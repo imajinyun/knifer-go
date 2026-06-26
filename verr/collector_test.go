@@ -8,7 +8,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/imajinyun/go-knifer/verr"
+	"github.com/imajinyun/knifer-go/verr"
 )
 
 func TestCollectorFacade(t *testing.T) {

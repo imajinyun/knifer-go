@@ -5,7 +5,7 @@ import (
 	"image/color"
 	"io"
 
-	"github.com/imajinyun/go-knifer/internal/imgx"
+	"github.com/imajinyun/knifer-go/internal/imgx"
 )
 
 // BarcodeFormat identifies a QR code or barcode format.

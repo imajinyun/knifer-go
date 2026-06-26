@@ -16,8 +16,8 @@ import (
 	"math/big"
 	"time"
 
-	knifer "github.com/imajinyun/go-knifer"
-	"github.com/imajinyun/go-knifer/vcrypto"
+	knifer "github.com/imajinyun/knifer-go"
+	"github.com/imajinyun/knifer-go/vcrypto"
 )
 
 func Example_recommendedDigestAndHMAC() {
@@ -272,7 +272,7 @@ func ExampleParseRSAPublicKeyPEM() {
 func ExampleParseX509CertificatePEM() {
 	cert, err := vcrypto.ParseX509CertificatePEM(exampleCertificatePEM())
 	fmt.Println(err == nil, cert.Subject.CommonName)
-	// Output: true go-knifer.test
+	// Output: true knifer-go.test
 }
 
 func ExamplePrivateKeyToPEM() {
@@ -720,7 +720,7 @@ func mustExampleRSAKey() *rsa.PrivateKey {
 func exampleCertificatePEM() []byte {
 	template := &x509.Certificate{
 		SerialNumber: big.NewInt(1),
-		Subject:      pkix.Name{CommonName: "go-knifer.test"},
+		Subject:      pkix.Name{CommonName: "knifer-go.test"},
 		NotBefore:    time.Unix(0, 0),
 		NotAfter:     time.Unix(3600, 0),
 		KeyUsage:     x509.KeyUsageDigitalSignature,

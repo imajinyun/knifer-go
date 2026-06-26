@@ -1,6 +1,6 @@
 package vpass
 
-import passimpl "github.com/imajinyun/go-knifer/internal/pass"
+import passimpl "github.com/imajinyun/knifer-go/internal/pass"
 
 type (
 	// Strength classifies a password score into broad buckets.

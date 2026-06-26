@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	randutil "github.com/imajinyun/go-knifer/internal/rand"
+	randutil "github.com/imajinyun/knifer-go/internal/rand"
 )
 
 // CodeGenerator mirrors the CodeGenerator interface from captcha.

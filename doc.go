@@ -1,7 +1,7 @@
 //go:generate go run ./bin/api_snapshot.go
 //go:generate go run ./bin/toolsgen -out docs/api/tools.json -markdown docs/api/tools.md
 
-// Package knifer is the root package of the go-knifer utility toolkit.
+// Package knifer is the root package of the knifer-go utility toolkit.
 //
 // This module is split into 48 public subpackages by domain. Import only the
 // packages you need. The subpackages are grouped below for navigation:
@@ -86,8 +86,8 @@
 //
 // Example:
 //
-//	import "github.com/imajinyun/go-knifer/vstr"
-//	import "github.com/imajinyun/go-knifer/vhttp"
+//	import "github.com/imajinyun/knifer-go/vstr"
+//	import "github.com/imajinyun/knifer-go/vhttp"
 //
 // Subpackages are independent from each other. The root package exposes no
 // business APIs; it only defines the cross-cutting error contract (ErrCode,

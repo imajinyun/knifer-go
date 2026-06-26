@@ -50,7 +50,7 @@ The suite covers SHA-256 digest, HMAC-SHA256 signing, AES-GCM encrypt/decrypt, a
 
 ## FAQ
 
-### Does go-knifer replace Go's `crypto/*` standard library packages?
+### Does knifer-go replace Go's `crypto/*` standard library packages?
 
 No. It provides focused helper entry points and documents safe defaults for common workflows. Use the standard library directly when you need low-level control.
 
@@ -74,7 +74,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcrypto"
+	"github.com/imajinyun/knifer-go/vcrypto"
 )
 
 func main() {
@@ -96,7 +96,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcrypto"
+	"github.com/imajinyun/knifer-go/vcrypto"
 )
 
 func main() {
@@ -129,7 +129,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcrypto"
+	"github.com/imajinyun/knifer-go/vcrypto"
 )
 
 func main() {
@@ -149,7 +149,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcrypto"
+	"github.com/imajinyun/knifer-go/vcrypto"
 )
 
 func main() {

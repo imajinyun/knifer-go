@@ -17,7 +17,7 @@ import (
 	"io"
 	"strings"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 // supportedFormats enumerates the output formats accepted by Thumbnail and
@@ -133,7 +133,7 @@ func Info(r io.Reader) (width int, height int, format string, err error) {
 }
 
 // decodeAny decodes r using the registered image formats, translating the
-// generic image.ErrFormat into a go-knifer classified error.
+// generic image.ErrFormat into a knifer-go classified error.
 func decodeAny(r io.Reader) (image.Image, error) {
 	img, _, err := image.Decode(r)
 	if err != nil {

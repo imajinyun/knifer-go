@@ -84,7 +84,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vcli"
+	"github.com/imajinyun/knifer-go/vcli"
 )
 
 func main() {
@@ -110,7 +110,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcli"
+	"github.com/imajinyun/knifer-go/vcli"
 )
 
 func main() {
@@ -135,7 +135,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/imajinyun/go-knifer/vcli"
+	"github.com/imajinyun/knifer-go/vcli"
 )
 
 func main() {
@@ -159,7 +159,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcli"
+	"github.com/imajinyun/knifer-go/vcli"
 )
 
 func main() {

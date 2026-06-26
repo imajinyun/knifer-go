@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vzip"
+	"github.com/imajinyun/knifer-go/vzip"
 )
 
 func TestFacadeGzipAndZlibRoundTrip(t *testing.T) {

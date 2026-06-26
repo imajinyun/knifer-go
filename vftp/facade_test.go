@@ -5,7 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vftp"
+	"github.com/imajinyun/knifer-go/vftp"
 )
 
 type providerFunc struct {

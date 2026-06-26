@@ -40,7 +40,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vcron"
+	"github.com/imajinyun/knifer-go/vcron"
 )
 
 func main() {
@@ -62,7 +62,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcron"
+	"github.com/imajinyun/knifer-go/vcron"
 )
 
 func main() {
@@ -88,7 +88,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vcron"
+	"github.com/imajinyun/knifer-go/vcron"
 )
 
 func main() {
@@ -118,7 +118,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcron"
+	"github.com/imajinyun/knifer-go/vcron"
 )
 
 func main() {

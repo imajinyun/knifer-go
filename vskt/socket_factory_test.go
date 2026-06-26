@@ -5,7 +5,7 @@ import (
 	"net"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vskt"
+	"github.com/imajinyun/knifer-go/vskt"
 )
 
 func TestFacadeSocketFactories(t *testing.T) {

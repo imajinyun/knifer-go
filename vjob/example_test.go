@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"slices"
 
-	"github.com/imajinyun/go-knifer/vjob"
+	"github.com/imajinyun/knifer-go/vjob"
 )
 
 func ExampleNewBatch() {

@@ -30,12 +30,12 @@
 ```go
 package main
 
-import "github.com/imajinyun/go-knifer/vlog"
+import "github.com/imajinyun/knifer-go/vlog"
 
 func main() {
 	vlog.SetLogLevel(vlog.LogLevelDebug)
 	vlog.Debug("debug message")
-	vlog.Infof("hello %s", "go-knifer")
+	vlog.Infof("hello %s", "knifer-go")
 	vlog.Warn("watch this")
 }
 ```
@@ -50,7 +50,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vlog"
+	"github.com/imajinyun/knifer-go/vlog"
 )
 
 func main() {
@@ -81,7 +81,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vlog"
+	"github.com/imajinyun/knifer-go/vlog"
 )
 
 func main() {
@@ -143,7 +143,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vlog"
+	"github.com/imajinyun/knifer-go/vlog"
 )
 
 func main() {

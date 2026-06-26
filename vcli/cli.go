@@ -5,7 +5,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/imajinyun/go-knifer/internal/cli"
+	"github.com/imajinyun/knifer-go/internal/cli"
 )
 
 // ExecRequest describes one process execution request.

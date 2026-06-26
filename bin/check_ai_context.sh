@@ -622,8 +622,8 @@ for index, decision in enumerate(stdlib_first_decisions):
     )
     if "stdlib" not in prefer_stdlib_when.lower() and "standard" not in prefer_stdlib_when.lower():
         add_error(f"ai_tooling.stdlib_first_decisions[{index}].prefer_stdlib_when must mention stdlib or standard library")
-    if "go_knifer" not in prefer_go_knifer_when.lower() and "go-knifer" not in prefer_go_knifer_when.lower():
-        add_error(f"ai_tooling.stdlib_first_decisions[{index}].prefer_go_knifer_when must mention go-knifer")
+    if "go_knifer" not in prefer_go_knifer_when.lower() and "knifer-go" not in prefer_go_knifer_when.lower():
+        add_error(f"ai_tooling.stdlib_first_decisions[{index}].prefer_go_knifer_when must mention knifer-go")
 
 coverage_gates = require_mapping(data.get("coverage_gates"), "coverage_gates")
 repository_threshold = require_number(coverage_gates.get("repository_threshold"), "coverage_gates.repository_threshold")

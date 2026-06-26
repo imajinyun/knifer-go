@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vlog"
+	"github.com/imajinyun/knifer-go/vlog"
 )
 
 func TestFacadeConsoleLogOptions(t *testing.T) {

@@ -3,7 +3,7 @@ package vcrypto
 import (
 	"crypto/cipher"
 
-	cryptoimpl "github.com/imajinyun/go-knifer/internal/crypto"
+	cryptoimpl "github.com/imajinyun/knifer-go/internal/crypto"
 )
 
 // AESGCMOption customizes AES-GCM helper behavior.

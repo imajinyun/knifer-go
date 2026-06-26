@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 func TestToBeanWithOptionsUsesDecoderFactory(t *testing.T) {

@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vjson"
+	"github.com/imajinyun/knifer-go/vjson"
 )
 
 func TestFacadeConversionNamesWithoutJSONPrefix(t *testing.T) {
@@ -15,10 +15,10 @@ func TestFacadeConversionNamesWithoutJSONPrefix(t *testing.T) {
 	}
 
 	var u user
-	if err := vjson.ToBean(`{"name":"go-knifer"}`, &u); err != nil {
+	if err := vjson.ToBean(`{"name":"knifer-go"}`, &u); err != nil {
 		t.Fatal(err)
 	}
-	if u.Name != "go-knifer" {
+	if u.Name != "knifer-go" {
 		t.Fatalf("ToBean() name = %q", u.Name)
 	}
 
@@ -30,19 +30,19 @@ func TestFacadeConversionNamesWithoutJSONPrefix(t *testing.T) {
 		t.Fatalf("ToList() = %#v", list)
 	}
 
-	xmlObj, err := vjson.XMLToJSON(`<user><name>go-knifer</name></user>`)
+	xmlObj, err := vjson.XMLToJSON(`<user><name>knifer-go</name></user>`)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := objectString(xmlObj, "user", "name"); got != "go-knifer" {
+	if got := objectString(xmlObj, "user", "name"); got != "knifer-go" {
 		t.Fatalf("XMLToJSON() user.name = %q", got)
 	}
 
-	xmlStr, err := vjson.ToXML(vjson.NewObject().Set("name", "go-knifer"), "user")
+	xmlStr, err := vjson.ToXML(vjson.NewObject().Set("name", "knifer-go"), "user")
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(xmlStr, "<name>go-knifer</name>") {
+	if !strings.Contains(xmlStr, "<name>knifer-go</name>") {
 		t.Fatalf("ToXML() = %q", xmlStr)
 	}
 }

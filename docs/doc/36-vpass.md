@@ -29,7 +29,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vpass"
+	"github.com/imajinyun/knifer-go/vpass"
 )
 
 func main() {
@@ -47,7 +47,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vpass"
+	"github.com/imajinyun/knifer-go/vpass"
 )
 
 func main() {
@@ -65,7 +65,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vpass"
+	"github.com/imajinyun/knifer-go/vpass"
 )
 
 func main() {

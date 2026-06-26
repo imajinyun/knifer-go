@@ -3,7 +3,7 @@ package vregex
 import (
 	"regexp"
 
-	regeximpl "github.com/imajinyun/go-knifer/internal/regex"
+	regeximpl "github.com/imajinyun/knifer-go/internal/regex"
 )
 
 // Option customizes pattern-string regex helpers per call.

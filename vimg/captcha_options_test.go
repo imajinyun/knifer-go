@@ -4,7 +4,7 @@ import (
 	"image/color"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vimg"
+	"github.com/imajinyun/knifer-go/vimg"
 )
 
 func TestFacadeCaptchaOptions(t *testing.T) {

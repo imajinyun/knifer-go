@@ -5,7 +5,7 @@ import (
 	stdnet "net"
 	"time"
 
-	netimpl "github.com/imajinyun/go-knifer/internal/net"
+	netimpl "github.com/imajinyun/knifer-go/internal/net"
 )
 
 // NetCat sends data to host:port over TCP.

@@ -3,7 +3,7 @@ package vhash_test
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vhash"
+	"github.com/imajinyun/knifer-go/vhash"
 )
 
 func ExampleAdditiveHash() {

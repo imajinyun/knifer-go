@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vresty"
+	"github.com/imajinyun/knifer-go/vresty"
 )
 
 func TestFacadeRequestGlobalHelpers(t *testing.T) {

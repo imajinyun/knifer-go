@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vnet"
+	"github.com/imajinyun/knifer-go/vnet"
 )
 
 type stubListener struct{}

@@ -128,7 +128,7 @@ for entry in public_facades:
     runnable_facade_blocks = [
         block
         for block in runnable_blocks
-        if f"github.com/imajinyun/go-knifer/{package}" in collect_imports(block)
+        if f"github.com/imajinyun/knifer-go/{package}" in collect_imports(block)
     ]
     if go_blocks and not runnable_facade_blocks:
         add_error(f"{filename} must include at least one runnable package main example that imports {package}")

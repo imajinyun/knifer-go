@@ -1,6 +1,6 @@
 package vcrypto
 
-import cryptoimpl "github.com/imajinyun/go-knifer/internal/crypto"
+import cryptoimpl "github.com/imajinyun/knifer-go/internal/crypto"
 
 // ErrInvalidKey indicates an invalid cryptographic key.
 var ErrInvalidKey = cryptoimpl.ErrInvalidKey

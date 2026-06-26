@@ -35,7 +35,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vmail"
+	"github.com/imajinyun/knifer-go/vmail"
 )
 
 func main() {
@@ -67,7 +67,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/imajinyun/go-knifer/vmail"
+	"github.com/imajinyun/knifer-go/vmail"
 )
 
 func main() {
@@ -110,7 +110,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vmail"
+	"github.com/imajinyun/knifer-go/vmail"
 )
 
 func main() {
@@ -142,7 +142,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vmail"
+	"github.com/imajinyun/knifer-go/vmail"
 )
 
 func main() {
@@ -182,7 +182,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vmail"
+	"github.com/imajinyun/knifer-go/vmail"
 )
 
 func main() {

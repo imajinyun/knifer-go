@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 // TestSentinelErrorContract verifies that mail sentinel errors participate in
-// the go-knifer error contract while preserving sentinel identity.
+// the knifer-go error contract while preserving sentinel identity.
 func TestSentinelErrorContract(t *testing.T) {
 	cases := []struct {
 		err  error

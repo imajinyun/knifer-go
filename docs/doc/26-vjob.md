@@ -40,7 +40,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vjob"
+	"github.com/imajinyun/knifer-go/vjob"
 )
 
 func main() {
@@ -72,7 +72,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/imajinyun/go-knifer/vjob"
+	"github.com/imajinyun/knifer-go/vjob"
 )
 
 func main() {
@@ -109,7 +109,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vjob"
+	"github.com/imajinyun/knifer-go/vjob"
 )
 
 func main() {
@@ -137,7 +137,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vjob"
+	"github.com/imajinyun/knifer-go/vjob"
 )
 
 func main() {

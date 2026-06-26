@@ -11,7 +11,7 @@ import (
 
 func TestGenerateToolsDocIncludesMachineReadableDetails(t *testing.T) {
 	root := t.TempDir()
-	writeTestFile(t, root, "go.mod", "module github.com/imajinyun/go-knifer\n\ngo 1.25.0\n")
+	writeTestFile(t, root, "go.mod", "module github.com/imajinyun/knifer-go\n\ngo 1.25.0\n")
 	writeTestFile(t, root, "vtool/doc.go", `// Package vtool exposes test facade helpers.
 package vtool
 `)
@@ -20,7 +20,7 @@ package vtool
 import (
 	"context"
 
-	impl "github.com/imajinyun/go-knifer/internal/toolimpl"
+	impl "github.com/imajinyun/knifer-go/internal/toolimpl"
 )
 
 // Run executes the test tool.
@@ -613,7 +613,7 @@ func TestRenderToolsMarkdownIncludesSummaryAndPackages(t *testing.T) {
 
 	got := string(renderToolsMarkdown(doc))
 	wants := []string{
-		"# go-knifer Machine-readable Tool Catalog\n",
+		"# knifer-go Machine-readable Tool Catalog\n",
 		"| Schema | " + schemaVersion + " |",
 		"| Module | `" + modulePath + "` |",
 		"| API status: recommended | 1 |",
@@ -662,7 +662,7 @@ func TestRenderToolsQualityReportRanksEmptySynopsisPackages(t *testing.T) {
 
 	got := string(renderToolsQualityReport(doc))
 	wants := []string{
-		"# go-knifer Tool Catalog Quality Report\n",
+		"# knifer-go Tool Catalog Quality Report\n",
 		"| Empty synopses | 3 |",
 		"| Package | Functions | Empty synopses | With docs | With examples | Empty functions |",
 		"| `vnet` | 3 | 2 | 1 | 1 | `GetLocalHostName`, `GetLocalhost` |",
@@ -691,7 +691,7 @@ func TestWriteMarkdownDocWritesOnlyWhenPathProvided(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ReadFile(%q) error = %v", outPath, err)
 	}
-	if !strings.Contains(string(got), "# go-knifer Machine-readable Tool Catalog") {
+	if !strings.Contains(string(got), "# knifer-go Machine-readable Tool Catalog") {
 		t.Fatalf("generated markdown missing heading: %s", got)
 	}
 }

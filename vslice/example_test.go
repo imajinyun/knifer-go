@@ -3,7 +3,7 @@ package vslice_test
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vslice"
+	"github.com/imajinyun/knifer-go/vslice"
 )
 
 func ExampleDistinct() {

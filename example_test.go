@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/imajinyun/go-knifer"
+	"github.com/imajinyun/knifer-go"
 )
 
 func ExampleError() {

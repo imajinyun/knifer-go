@@ -3,7 +3,7 @@ package vcrypto
 import (
 	"hash"
 
-	cryptoimpl "github.com/imajinyun/go-knifer/internal/crypto"
+	cryptoimpl "github.com/imajinyun/knifer-go/internal/crypto"
 )
 
 // PBKDF2 derives a key from password and salt using PBKDF2.

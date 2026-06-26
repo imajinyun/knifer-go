@@ -68,7 +68,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcodec"
+	"github.com/imajinyun/knifer-go/vcodec"
 )
 
 func main() {
@@ -90,7 +90,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcodec"
+	"github.com/imajinyun/knifer-go/vcodec"
 )
 
 func main() {
@@ -112,7 +112,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcodec"
+	"github.com/imajinyun/knifer-go/vcodec"
 )
 
 func main() {
@@ -134,7 +134,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcodec"
+	"github.com/imajinyun/knifer-go/vcodec"
 )
 
 func main() {

@@ -1,10 +1,10 @@
 package mail
 
 import (
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
-// sentinel is a package-level error value that carries a go-knifer error code
+// sentinel is a package-level error value that carries a knifer-go error code
 // while preserving sentinel identity for errors.Is comparisons.
 type sentinel struct {
 	code knifer.ErrCode

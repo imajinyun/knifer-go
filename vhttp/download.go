@@ -1,6 +1,6 @@
 package vhttp
 
-import httpx "github.com/imajinyun/go-knifer/internal/httpx/http"
+import httpx "github.com/imajinyun/knifer-go/internal/httpx/http"
 
 // DownloadStringE downloads remote text and returns an error on request or read failure.
 func DownloadStringE(rawURL, customCharset string) (string, error) {

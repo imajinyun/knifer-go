@@ -3,7 +3,7 @@ package jwt
 import (
 	"fmt"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 // JWTError is a JWT-related error.
@@ -24,7 +24,7 @@ func (e *JWTError) Error() string {
 	return e.Msg
 }
 
-// ErrorCode returns the go-knifer error code.
+// ErrorCode returns the knifer-go error code.
 func (e *JWTError) ErrorCode() knifer.ErrCode {
 	if e == nil {
 		return ""

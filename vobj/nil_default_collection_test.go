@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vobj"
+	"github.com/imajinyun/knifer-go/vobj"
 )
 
 func TestFacadeNilDefaultAndCollectionHelpers(t *testing.T) {
@@ -16,7 +16,7 @@ func TestFacadeNilDefaultAndCollectionHelpers(t *testing.T) {
 	if got := vobj.Length(42); got != -1 {
 		t.Fatalf("Length unsupported = %d", got)
 	}
-	if !vobj.Contains("go-knifer", "knife") || vobj.Contains(map[string]int{"a": 1}, 2) {
+	if !vobj.Contains("knifer-go", "knife") || vobj.Contains(map[string]int{"a": 1}, 2) {
 		t.Fatal("Contains returned unexpected result")
 	}
 	if !vobj.Equals(1, uint(1)) || !vobj.NotEqual("a", "b") {

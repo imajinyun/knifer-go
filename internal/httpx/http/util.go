@@ -5,8 +5,8 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/imajinyun/go-knifer/internal/httpx/internal/shared"
-	urlimpl "github.com/imajinyun/go-knifer/internal/url"
+	"github.com/imajinyun/knifer-go/internal/httpx/internal/shared"
+	urlimpl "github.com/imajinyun/knifer-go/internal/url"
 )
 
 type CharsetOption = shared.CharsetOption

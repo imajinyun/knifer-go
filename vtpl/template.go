@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"io"
 
-	templateimpl "github.com/imajinyun/go-knifer/internal/template"
+	templateimpl "github.com/imajinyun/knifer-go/internal/template"
 )
 
 // ErrMissingEngine reports that no template engine was provided.

@@ -1,6 +1,6 @@
 package vxml
 
-import xmlimpl "github.com/imajinyun/go-knifer/internal/xml"
+import xmlimpl "github.com/imajinyun/knifer-go/internal/xml"
 
 // XMLToMap parses XML into a nested map. Repeated sibling tags become []any.
 func XMLToMap(xmlStr string) (map[string]any, error) { return xmlimpl.XMLToMap(xmlStr) }

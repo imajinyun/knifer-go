@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# check_arch.sh enforces go-knifer's architectural conventions in CI.
+# check_arch.sh enforces knifer-go's architectural conventions in CI.
 #
 # Rules checked:
 #   1. Every public v* package directory has a doc.go.
@@ -31,7 +31,7 @@ cd "$(dirname "$0")/.."
 
 # Resolve this module's path. In some environments (e.g. a go.work workspace)
 # `go list -m` prints multiple modules; pick the one for this directory.
-MODULE="$(go list -m 2>/dev/null | grep 'go-knifer' | head -n1)"
+MODULE="$(go list -m 2>/dev/null | grep 'knifer-go' | head -n1)"
 if [ -z "${MODULE}" ]; then
 	echo "ARCH CHECK ERROR: cannot resolve module path via 'go list -m'" >&2
 	exit 2

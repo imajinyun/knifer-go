@@ -3,7 +3,7 @@ package vcsv
 import (
 	"io"
 
-	csvx "github.com/imajinyun/go-knifer/internal/csvx"
+	csvx "github.com/imajinyun/knifer-go/internal/csvx"
 )
 
 type (

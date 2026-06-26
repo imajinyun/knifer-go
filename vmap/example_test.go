@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/imajinyun/go-knifer/vmap"
+	"github.com/imajinyun/knifer-go/vmap"
 )
 
 func ExampleIsEmpty() {

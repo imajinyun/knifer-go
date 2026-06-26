@@ -2,8 +2,8 @@
   "$schema": "./ai-context.schema.json",
   "schema_version": "1.0",
   "project": {
-    "name": "go-knifer",
-    "module": "github.com/imajinyun/go-knifer",
+    "name": "knifer-go",
+    "module": "github.com/imajinyun/knifer-go",
     "language": "go",
     "go_version": ">=1.25",
     "layout": "public v* facade packages delegate to internal/* implementation packages"
@@ -79,7 +79,7 @@
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "low",
-      "creates_artifacts": ["/tmp/go-knifer-agent-validation.json"],
+      "creates_artifacts": ["/tmp/knifer-go-agent-validation.json"],
       "notes": "Writes machine-readable Agent validation evidence outside the repository root, including base ref, deleted-file-aware diff metadata, detected policies, required commands, and command attestations."
     },
     "agent_evidence_check": {
@@ -89,17 +89,17 @@
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "low",
-      "reads_artifacts": ["/tmp/go-knifer-agent-validation.json"],
+      "reads_artifacts": ["/tmp/knifer-go-agent-validation.json"],
       "notes": "Validates Agent evidence JSON schema, diff metadata, policy references, command references, command attestation coverage, risk calculation, and embedded check consistency."
     },
     "agent_full_check": {
-      "cmd": "make agent-full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out",
+      "cmd": "make agent-full-check COVERAGE_FILE=/tmp/knifer-go-coverage.out",
       "safe_for_agent_auto_run": true,
       "writes_workspace": false,
       "writes_git_config": false,
       "network_required": true,
       "risk_level": "medium",
-      "creates_artifacts": ["/tmp/go-knifer-coverage.out"],
+      "creates_artifacts": ["/tmp/knifer-go-coverage.out"],
       "notes": "Full AI/Agent validation entrypoint; runs race coverage, lint, and vulnerability checks."
     },
     "agent_security_check": {
@@ -112,13 +112,13 @@
       "notes": "AI/Agent security validation entrypoint; runs lint and govulncheck."
     },
     "ci_test": {
-      "cmd": "make ci-test COVERAGE_FILE=/tmp/go-knifer-coverage.out",
+      "cmd": "make ci-test COVERAGE_FILE=/tmp/knifer-go-coverage.out",
       "safe_for_agent_auto_run": true,
       "writes_workspace": false,
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "medium",
-      "creates_artifacts": ["/tmp/go-knifer-coverage.out"],
+      "creates_artifacts": ["/tmp/knifer-go-coverage.out"],
       "notes": "Local reproduction of the GitHub Actions test job without creating coverage artifacts in the repository root."
     },
     "ci_agent_governance": {
@@ -128,17 +128,17 @@
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "low",
-      "creates_artifacts": ["/tmp/go-knifer-agent-validation.json"],
+      "creates_artifacts": ["/tmp/knifer-go-agent-validation.json"],
       "notes": "CI Agent governance gate; detects changed policies against AGENT_CHANGE_BASE_REF and emits validation evidence."
     },
     "full_check": {
-      "cmd": "make check COVERAGE_FILE=/tmp/go-knifer-coverage.out",
+      "cmd": "make check COVERAGE_FILE=/tmp/knifer-go-coverage.out",
       "safe_for_agent_auto_run": true,
       "writes_workspace": false,
       "writes_git_config": false,
       "network_required": true,
       "risk_level": "medium",
-      "creates_artifacts": ["/tmp/go-knifer-coverage.out"],
+      "creates_artifacts": ["/tmp/knifer-go-coverage.out"],
       "notes": "Full local pre-push gate; includes race coverage, governance maturity, benchmark metadata, lint, and govulncheck. govulncheck may require vulnerability database access."
     },
     "security_check": {
@@ -151,13 +151,13 @@
       "notes": "Runs golangci-lint and govulncheck."
     },
     "release_check": {
-      "cmd": "make release-check COVERAGE_FILE=/tmp/go-knifer-coverage.out",
+      "cmd": "make release-check COVERAGE_FILE=/tmp/knifer-go-coverage.out",
       "safe_for_agent_auto_run": true,
       "writes_workspace": false,
       "writes_git_config": false,
       "network_required": true,
       "risk_level": "medium",
-      "creates_artifacts": ["/tmp/go-knifer-coverage.out"],
+      "creates_artifacts": ["/tmp/knifer-go-coverage.out"],
       "notes": "Release readiness gate; runs full local checks plus CI workflow governance validation."
     },
     "release_notes_check": {
@@ -170,23 +170,23 @@
       "notes": "Validates CHANGELOG.md release-note structure and, when RELEASE_VERSION is set, verifies the tagged version has explicit release notes."
     },
     "coverage_profile": {
-      "cmd": "make coverage-profile COVERAGE_FILE=/tmp/go-knifer-coverage.out",
+      "cmd": "make coverage-profile COVERAGE_FILE=/tmp/knifer-go-coverage.out",
       "safe_for_agent_auto_run": true,
       "writes_workspace": false,
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "medium",
-      "creates_artifacts": ["/tmp/go-knifer-coverage.out"],
+      "creates_artifacts": ["/tmp/knifer-go-coverage.out"],
       "notes": "Generates a race/shuffle coverage profile outside the repository root."
     },
     "coverage_check": {
-      "cmd": "make coverage-check COVERAGE_FILE=/tmp/go-knifer-coverage.out",
+      "cmd": "make coverage-check COVERAGE_FILE=/tmp/knifer-go-coverage.out",
       "safe_for_agent_auto_run": true,
       "writes_workspace": false,
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "medium",
-      "reads_artifacts": ["/tmp/go-knifer-coverage.out"],
+      "reads_artifacts": ["/tmp/knifer-go-coverage.out"],
       "notes": "Requires a fresh coverage profile at the configured path and verifies security-sensitive packages have coverage data."
     },
     "api_check": {
@@ -371,34 +371,34 @@
       "notes": "Runs short fuzz/property smoke checks for packages with Fuzz targets. Increase FUZZTIME for deeper local exploration."
     },
     "benchstat_compare": {
-      "cmd": "make benchstat BENCH_BASELINE=/tmp/go-knifer-old.bench BENCH_CURRENT=/tmp/go-knifer-new.bench",
+      "cmd": "make benchstat BENCH_BASELINE=/tmp/knifer-go-old.bench BENCH_CURRENT=/tmp/knifer-go-new.bench",
       "safe_for_agent_auto_run": true,
       "writes_workspace": false,
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "low",
-      "reads_artifacts": ["/tmp/go-knifer-old.bench", "/tmp/go-knifer-new.bench"],
+      "reads_artifacts": ["/tmp/knifer-go-old.bench", "/tmp/knifer-go-new.bench"],
       "notes": "Compares repeated benchmark outputs with benchstat. Requires benchmark files produced by separate runs and a local benchstat binary."
     },
     "bench_baseline": {
-      "cmd": "make bench-baseline BENCHCOUNT=10 BENCHTIME=3s BENCH_BASELINE_OUT=/tmp/go-knifer-bench-baseline.txt",
+      "cmd": "make bench-baseline BENCHCOUNT=10 BENCHTIME=3s BENCH_BASELINE_OUT=/tmp/knifer-go-bench-baseline.txt",
       "safe_for_agent_auto_run": true,
       "writes_workspace": false,
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "medium",
-      "creates_artifacts": ["/tmp/go-knifer-bench-baseline.txt"],
+      "creates_artifacts": ["/tmp/knifer-go-bench-baseline.txt"],
       "notes": "Writes repeated benchmark output outside the repository for historical baseline comparisons. Runtime can be long with BENCHCOUNT=10."
     },
     "bench_compare": {
-      "cmd": "make bench-compare BENCHCOUNT=10 BENCHTIME=3s BENCH_BASELINE_OUT=/tmp/go-knifer-bench-baseline.txt BENCH_CURRENT_OUT=/tmp/go-knifer-bench-current.txt",
+      "cmd": "make bench-compare BENCHCOUNT=10 BENCHTIME=3s BENCH_BASELINE_OUT=/tmp/knifer-go-bench-baseline.txt BENCH_CURRENT_OUT=/tmp/knifer-go-bench-current.txt",
       "safe_for_agent_auto_run": true,
       "writes_workspace": false,
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "medium",
-      "creates_artifacts": ["/tmp/go-knifer-bench-current.txt"],
-      "reads_artifacts": ["/tmp/go-knifer-bench-baseline.txt"],
+      "creates_artifacts": ["/tmp/knifer-go-bench-current.txt"],
+      "reads_artifacts": ["/tmp/knifer-go-bench-baseline.txt"],
       "notes": "Writes current repeated benchmark output and compares it against the saved baseline with benchstat."
     },
     "api_freeze_check": {
@@ -462,7 +462,7 @@
     "install": "make install-hooks",
     "uninstall": "make uninstall-hooks",
     "pre_commit": "make quick-check",
-    "pre_push": "make full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out"
+    "pre_push": "make full-check COVERAGE_FILE=/tmp/knifer-go-coverage.out"
   },
   "ci_workflows": {
     "tool_versions": {
@@ -545,7 +545,7 @@
       "check_command": "docs_check"
     },
     "agent_import_rules": [
-      "Import public v* facade packages from github.com/imajinyun/go-knifer; do not import internal/* from application code.",
+      "Import public v* facade packages from github.com/imajinyun/knifer-go; do not import internal/* from application code.",
       "Choose one focused facade package per domain first, then combine packages only when the caller's workflow crosses domains.",
       "Prefer Safe, E, and WithOptions variants when inputs cross trust boundaries, can fail, or need explicit provider/limit injection.",
       "Use docs/api/tools.json as the machine-readable function index and docs/doc/README.md as the human quickstart map."
@@ -574,43 +574,43 @@
       {
         "scenario": "slice iteration and simple transforms",
         "prefer_stdlib_when": "Prefer stdlib when a plain for loop or slices package call is shorter, allocation-free, and local to one call site.",
-        "prefer_go_knifer_when": "Prefer go-knifer when the workflow needs reusable Map, Filter, GroupBy, Chunk, Page, or error-returning callback helpers.",
+        "prefer_go_knifer_when": "Prefer knifer-go when the workflow needs reusable Map, Filter, GroupBy, Chunk, Page, or error-returning callback helpers.",
         "packages": ["vslice"]
       },
       {
         "scenario": "map lookup, clone, ordering, and transforms",
         "prefer_stdlib_when": "Prefer stdlib when direct map access, maps.Clone, maps.Copy, or slices.Sorted(maps.Keys(m)) expresses the whole operation.",
-        "prefer_go_knifer_when": "Prefer go-knifer when the workflow needs Pick, Omit, Diff, MergeFunc, MapValues, FilterErr, GroupBy, or a documented non-nil map contract.",
+        "prefer_go_knifer_when": "Prefer knifer-go when the workflow needs Pick, Omit, Diff, MergeFunc, MapValues, FilterErr, GroupBy, or a documented non-nil map contract.",
         "packages": ["vmap"]
       },
       {
         "scenario": "string processing",
         "prefer_stdlib_when": "Prefer stdlib when strings, strconv, unicode, or regexp directly express the operation without project-specific semantics.",
-        "prefer_go_knifer_when": "Prefer go-knifer when the workflow combines blank checks, case helpers, masking-friendly text cleanup, or reusable string predicates.",
+        "prefer_go_knifer_when": "Prefer knifer-go when the workflow combines blank checks, case helpers, masking-friendly text cleanup, or reusable string predicates.",
         "packages": ["vstr"]
       },
       {
         "scenario": "JSON parsing and formatting",
         "prefer_stdlib_when": "Prefer stdlib when the caller needs streaming, token-level control, Decoder options, or direct struct marshaling.",
-        "prefer_go_knifer_when": "Prefer go-knifer when the workflow needs small in-memory object/array helpers, path lookup, formatting, or default-returning convenience around dynamic JSON.",
+        "prefer_go_knifer_when": "Prefer knifer-go when the workflow needs small in-memory object/array helpers, path lookup, formatting, or default-returning convenience around dynamic JSON.",
         "packages": ["vjson"]
       },
       {
         "scenario": "HTTP and URL access",
         "prefer_stdlib_when": "Prefer stdlib when the URL and host are trusted and net/http gives clearer request, transport, and context control.",
-        "prefer_go_knifer_when": "Prefer go-knifer when inputs cross trust boundaries and need SSRF-aware URL validation, allowed-host policies, bounded reads, or safe download helpers.",
+        "prefer_go_knifer_when": "Prefer knifer-go when inputs cross trust boundaries and need SSRF-aware URL validation, allowed-host policies, bounded reads, or safe download helpers.",
         "packages": ["vurl", "vhttp", "vresty"]
       },
       {
         "scenario": "crypto and random data",
         "prefer_stdlib_when": "Prefer stdlib when the caller is composing primitives directly and needs full crypto/rand, crypto/cipher, crypto/x509, or crypto/tls control.",
-        "prefer_go_knifer_when": "Prefer go-knifer when the workflow needs reviewed helper combinations for HMAC, AES-GCM, RSA-OAEP/PSS, parameter signing, JWT, or secure token bytes.",
+        "prefer_go_knifer_when": "Prefer knifer-go when the workflow needs reviewed helper combinations for HMAC, AES-GCM, RSA-OAEP/PSS, parameter signing, JWT, or secure token bytes.",
         "packages": ["vcrypto", "vjwt", "vrand"]
       },
       {
         "scenario": "struct, map, and configuration binding",
         "prefer_stdlib_when": "Prefer stdlib when encoding/json, flag, os.LookupEnv, or direct assignment keeps the data shape explicit and small.",
-        "prefer_go_knifer_when": "Prefer go-knifer when the workflow needs tag-aware Copy, DecodeResult metadata, StrictUnused, DecodeHook, profile overlays, environment expansion, or safe remote config loading.",
+        "prefer_go_knifer_when": "Prefer knifer-go when the workflow needs tag-aware Copy, DecodeResult metadata, StrictUnused, DecodeHook, profile overlays, environment expansion, or safe remote config loading.",
         "packages": ["vbean", "vconf", "vobj"]
       }
     ],
@@ -618,7 +618,7 @@
       "Problem: what user workflow or compatibility gap requires a public API change?",
       "Package boundary: which v* facade owns the behavior, and why not a neighboring package?",
       "Proposed API: names, signatures, option types, error behavior, and Recommended/Compatibility/Experimental/Deprecated status.",
-      "Alternatives considered: standard library, existing go-knifer helper, internal-only helper, or external package.",
+      "Alternatives considered: standard library, existing knifer-go helper, internal-only helper, or external package.",
       "Safety and errors: trust-boundary handling, context/cancellation needs, panic policy, and errors.Is/errors.As contract.",
       "Examples and docs: godoc, Example functions, quickstart matrix, docs/api/tools.json, and ai-context metadata updates.",
       "Validation: focused tests, fuzz/property checks when applicable, API snapshot update, tools generation, and benchmark/benchstat evidence for hot paths."
@@ -943,31 +943,31 @@
     "repository_threshold": 75.2,
     "security_sensitive_min_threshold": 80.0,
     "package_thresholds": {
-      "github.com/imajinyun/go-knifer/vbean": 90.0,
-      "github.com/imajinyun/go-knifer/vcache": 90.0,
-      "github.com/imajinyun/go-knifer/vconf": 75.0,
-      "github.com/imajinyun/go-knifer/vcrypto": 70.0,
-      "github.com/imajinyun/go-knifer/vdate": 85.0,
-      "github.com/imajinyun/go-knifer/vfile": 85.0,
-      "github.com/imajinyun/go-knifer/vform": 90.0,
-      "github.com/imajinyun/go-knifer/vhttp": 75.0,
-      "github.com/imajinyun/go-knifer/vimg": 90.0,
-      "github.com/imajinyun/go-knifer/vresty": 65.0,
-      "github.com/imajinyun/go-knifer/vset": 80.0,
-      "github.com/imajinyun/go-knifer/vsys": 90.0,
-      "github.com/imajinyun/go-knifer/vurl": 80.0,
-      "github.com/imajinyun/go-knifer/vzip": 80.0,
-      "github.com/imajinyun/go-knifer/internal/bean": 75.0,
-      "github.com/imajinyun/go-knifer/internal/db": 60.0,
-      "github.com/imajinyun/go-knifer/internal/httpx/http": 75.0,
-      "github.com/imajinyun/go-knifer/internal/httpx/internal/shared": 80.0,
-      "github.com/imajinyun/go-knifer/internal/httpx/resty": 75.0,
-      "github.com/imajinyun/go-knifer/internal/mask": 95.0,
-      "github.com/imajinyun/go-knifer/internal/net": 80.0,
-      "github.com/imajinyun/go-knifer/internal/obj": 90.0,
-      "github.com/imajinyun/go-knifer/internal/template": 95.0,
-      "github.com/imajinyun/go-knifer/internal/url": 80.0,
-      "github.com/imajinyun/go-knifer/internal/validator": 100.0
+      "github.com/imajinyun/knifer-go/vbean": 90.0,
+      "github.com/imajinyun/knifer-go/vcache": 90.0,
+      "github.com/imajinyun/knifer-go/vconf": 75.0,
+      "github.com/imajinyun/knifer-go/vcrypto": 70.0,
+      "github.com/imajinyun/knifer-go/vdate": 85.0,
+      "github.com/imajinyun/knifer-go/vfile": 85.0,
+      "github.com/imajinyun/knifer-go/vform": 90.0,
+      "github.com/imajinyun/knifer-go/vhttp": 75.0,
+      "github.com/imajinyun/knifer-go/vimg": 90.0,
+      "github.com/imajinyun/knifer-go/vresty": 65.0,
+      "github.com/imajinyun/knifer-go/vset": 80.0,
+      "github.com/imajinyun/knifer-go/vsys": 90.0,
+      "github.com/imajinyun/knifer-go/vurl": 80.0,
+      "github.com/imajinyun/knifer-go/vzip": 80.0,
+      "github.com/imajinyun/knifer-go/internal/bean": 75.0,
+      "github.com/imajinyun/knifer-go/internal/db": 60.0,
+      "github.com/imajinyun/knifer-go/internal/httpx/http": 75.0,
+      "github.com/imajinyun/knifer-go/internal/httpx/internal/shared": 80.0,
+      "github.com/imajinyun/knifer-go/internal/httpx/resty": 75.0,
+      "github.com/imajinyun/knifer-go/internal/mask": 95.0,
+      "github.com/imajinyun/knifer-go/internal/net": 80.0,
+      "github.com/imajinyun/knifer-go/internal/obj": 90.0,
+      "github.com/imajinyun/knifer-go/internal/template": 95.0,
+      "github.com/imajinyun/knifer-go/internal/url": 80.0,
+      "github.com/imajinyun/knifer-go/internal/validator": 100.0
     }
   },
   "public_facades": [

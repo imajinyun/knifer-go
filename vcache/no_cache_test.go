@@ -3,7 +3,7 @@ package vcache_test
 import (
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vcache"
+	"github.com/imajinyun/knifer-go/vcache"
 )
 
 func TestFacadeNoCache(t *testing.T) {

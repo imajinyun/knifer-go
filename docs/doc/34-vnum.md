@@ -35,7 +35,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vnum"
+	"github.com/imajinyun/knifer-go/vnum"
 )
 
 func main() {
@@ -54,7 +54,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vnum"
+	"github.com/imajinyun/knifer-go/vnum"
 )
 
 func main() {
@@ -73,7 +73,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vnum"
+	"github.com/imajinyun/knifer-go/vnum"
 )
 
 func main() {
@@ -95,7 +95,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vnum"
+	"github.com/imajinyun/knifer-go/vnum"
 )
 
 func main() {

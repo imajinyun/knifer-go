@@ -10,7 +10,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/internal/httpx/internal/shared"
+	"github.com/imajinyun/knifer-go/internal/httpx/internal/shared"
 	grestry "resty.dev/v3"
 )
 

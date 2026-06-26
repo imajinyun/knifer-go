@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/imajinyun/go-knifer/internal/constraint"
+	"github.com/imajinyun/knifer-go/internal/constraint"
 )
 
 // AbsInteger returns the absolute value of v, or the zero value when the result

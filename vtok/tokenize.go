@@ -3,7 +3,7 @@ package vtok
 import (
 	"context"
 
-	tokenizeimpl "github.com/imajinyun/go-knifer/internal/tokenize"
+	tokenizeimpl "github.com/imajinyun/knifer-go/internal/tokenize"
 )
 
 // Mode describes a provider-specific tokenization mode.

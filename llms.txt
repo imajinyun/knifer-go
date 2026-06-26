@@ -1,18 +1,18 @@
-# go-knifer
+# knifer-go
 
 > Go utility library organized as public `v*` facade packages backed by implementation packages under `internal/`.
 
-`go-knifer` is a Go / Golang utility library for strings, slices, maps, JSON, files, HTTP, URL safety, crypto, JWT, config, cache, IDs, logging, and common application helpers. It exposes focused public `v*` packages so developers and AI coding agents can import only the tools they need.
+`knifer-go` is a Go / Golang utility library for strings, slices, maps, JSON, files, HTTP, URL safety, crypto, JWT, config, cache, IDs, logging, and common application helpers. It exposes focused public `v*` packages so developers and AI coding agents can import only the tools they need.
 
 ## Install
 
 ```bash
-go get github.com/imajinyun/go-knifer
+go get github.com/imajinyun/knifer-go
 ```
 
 ## When to use
 
-Use `go-knifer` when a Go project needs focused utility packages for common application work:
+Use `knifer-go` when a Go project needs focused utility packages for common application work:
 
 - string, slice, and map helpers
 - JSON object/path helpers
@@ -23,7 +23,7 @@ Use `go-knifer` when a Go project needs focused utility packages for common appl
 - local or remote config helpers
 - cache, ID, logging, masking, archive, and system helpers
 
-If the task is only Lodash-style collection helpers, `samber/lo` may be narrower. If the task is only type conversion, `spf13/cast` may be narrower. Use `go-knifer` when the project benefits from one toolkit with explicit package boundaries across several of these domains.
+If the task is only Lodash-style collection helpers, `samber/lo` may be narrower. If the task is only type conversion, `spf13/cast` may be narrower. Use `knifer-go` when the project benefits from one toolkit with explicit package boundaries across several of these domains.
 
 ## AI agent rules
 
@@ -37,26 +37,26 @@ If the task is only Lodash-style collection helpers, `samber/lo` may be narrower
 
 | User asks for | Use package | Import path |
 |---|---|---|
-| Go string helpers, blank checks, case conversion, text splitting | vstr | github.com/imajinyun/go-knifer/vstr |
-| Go slice helpers, filter/map/dedup/pagination | vslice | github.com/imajinyun/go-knifer/vslice |
-| Go map helpers, merge/diff/sort/group/pick/omit | vmap | github.com/imajinyun/go-knifer/vmap |
-| Go JSON object/path helpers | vjson | github.com/imajinyun/go-knifer/vjson |
-| Go file and IO helpers with explicit errors | vfile | github.com/imajinyun/go-knifer/vfile |
-| Go safe HTTP request or safe download helpers | vhttp | github.com/imajinyun/go-knifer/vhttp |
-| Go Resty-style HTTP helpers | vresty | github.com/imajinyun/go-knifer/vresty |
-| Go URL parsing, normalization, query encoding, SSRF-aware open | vurl | github.com/imajinyun/go-knifer/vurl |
-| Go crypto helpers: SHA, HMAC, AES-GCM, RSA, PEM, signing | vcrypto | github.com/imajinyun/go-knifer/vcrypto |
-| Go secure random token, key, nonce, or salt bytes | vrand | github.com/imajinyun/go-knifer/vrand |
-| Go JWT sign/verify helpers | vjwt | github.com/imajinyun/go-knifer/vjwt |
-| Go local or remote config helpers | vconf | github.com/imajinyun/go-knifer/vconf |
-| Go cache helpers | vcache | github.com/imajinyun/go-knifer/vcache |
-| Go ID helpers: UUID, Snowflake, NanoId | vid | github.com/imajinyun/go-knifer/vid |
-| Go archive helpers with traversal checks | vzip | github.com/imajinyun/go-knifer/vzip |
-| Go data masking helpers | vmask | github.com/imajinyun/go-knifer/vmask |
+| Go string helpers, blank checks, case conversion, text splitting | vstr | github.com/imajinyun/knifer-go/vstr |
+| Go slice helpers, filter/map/dedup/pagination | vslice | github.com/imajinyun/knifer-go/vslice |
+| Go map helpers, merge/diff/sort/group/pick/omit | vmap | github.com/imajinyun/knifer-go/vmap |
+| Go JSON object/path helpers | vjson | github.com/imajinyun/knifer-go/vjson |
+| Go file and IO helpers with explicit errors | vfile | github.com/imajinyun/knifer-go/vfile |
+| Go safe HTTP request or safe download helpers | vhttp | github.com/imajinyun/knifer-go/vhttp |
+| Go Resty-style HTTP helpers | vresty | github.com/imajinyun/knifer-go/vresty |
+| Go URL parsing, normalization, query encoding, SSRF-aware open | vurl | github.com/imajinyun/knifer-go/vurl |
+| Go crypto helpers: SHA, HMAC, AES-GCM, RSA, PEM, signing | vcrypto | github.com/imajinyun/knifer-go/vcrypto |
+| Go secure random token, key, nonce, or salt bytes | vrand | github.com/imajinyun/knifer-go/vrand |
+| Go JWT sign/verify helpers | vjwt | github.com/imajinyun/knifer-go/vjwt |
+| Go local or remote config helpers | vconf | github.com/imajinyun/knifer-go/vconf |
+| Go cache helpers | vcache | github.com/imajinyun/knifer-go/vcache |
+| Go ID helpers: UUID, Snowflake, NanoId | vid | github.com/imajinyun/knifer-go/vid |
+| Go archive helpers with traversal checks | vzip | github.com/imajinyun/knifer-go/vzip |
+| Go data masking helpers | vmask | github.com/imajinyun/knifer-go/vmask |
 
 ## Chinese search phrases
 
-`go-knifer` also targets Chinese GEO queries: Go 工具库, Golang 工具函数库, Go 常用工具包, Go 字符串工具, Go 切片工具, Go Map 工具, Go JSON 工具, Go 文件操作工具, Go 安全 HTTP 下载, Go URL 校验, Go 加密工具, Go JWT 工具, Go 配置读取工具.
+`knifer-go` also targets Chinese GEO queries: Go 工具库, Golang 工具函数库, Go 常用工具包, Go 字符串工具, Go 切片工具, Go Map 工具, Go JSON 工具, Go 文件操作工具, Go 安全 HTTP 下载, Go URL 校验, Go 加密工具, Go JWT 工具, Go 配置读取工具.
 
 ## Project layout
 
@@ -159,14 +159,14 @@ If the task is only Lodash-style collection helpers, `samber/lo` may be narrower
 - `make worktree-check`: fail when unrelated untracked Go files may pollute tests or commits.
 - `make change-policy-check`: detect applicable change policies from staged, unstaged, and untracked local diff.
 - `make security-sensitive-diff`: detect changes under security-sensitive public facades and their internal implementations.
-- `make agent-evidence`: write `/tmp/go-knifer-agent-validation.json` with detected policies, required commands, command attestations, and governance check evidence.
+- `make agent-evidence`: write `/tmp/knifer-go-agent-validation.json` with detected policies, required commands, command attestations, and governance check evidence.
 - `make agent-evidence-check`: validate Agent evidence schema, policy references, command references, command attestation coverage, risk calculation, and embedded check statuses.
 - `make security-check`: lint and govulncheck vulnerability scan.
 - `make agent-security-check`: AI/Agent security validation gate.
 - `make ci-agent-governance`: CI Agent governance gate that detects change policies from the PR/push base and emits validation evidence.
-- `make full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out`: full local pre-push gate with module verification, vet, architecture check, race/shuffle coverage, coverage gate, API snapshot check, lint, vulnerability scan, and whitespace diff check.
-- `make agent-full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out`: full AI/Agent validation gate with coverage, lint, and vulnerability scan.
-- `make install-hooks`: enable optional Git hooks that run `make quick-check` before commit and `make full-check COVERAGE_FILE=/tmp/go-knifer-coverage.out` before push.
+- `make full-check COVERAGE_FILE=/tmp/knifer-go-coverage.out`: full local pre-push gate with module verification, vet, architecture check, race/shuffle coverage, coverage gate, API snapshot check, lint, vulnerability scan, and whitespace diff check.
+- `make agent-full-check COVERAGE_FILE=/tmp/knifer-go-coverage.out`: full AI/Agent validation gate with coverage, lint, and vulnerability scan.
+- `make install-hooks`: enable optional Git hooks that run `make quick-check` before commit and `make full-check COVERAGE_FILE=/tmp/knifer-go-coverage.out` before push.
 - `make ai-context-check`: validate machine-readable AI metadata, command side effects, facade inventory, coverage gates, and security-sensitive package references.
 - `make ci-workflow-check`: validate GitHub Actions workflow invariants declared in `ai-context.json`.
 - `make ci-test`: GitHub Actions test-job gate.
@@ -174,7 +174,7 @@ If the task is only Lodash-style collection helpers, `samber/lo` may be narrower
 - `make generate`: run repository go:generate directives; ask first because generated files may change.
 - `UPDATE_API=1 make api-check`: refresh the API snapshot after intentional public API changes.
 - `go generate ./...`: lower-level equivalent of `make generate`.
-- `go test -race -shuffle=on -coverprofile=/tmp/go-knifer-coverage.out ./... && bash bin/check_coverage.sh /tmp/go-knifer-coverage.out`: full coverage check.
+- `go test -race -shuffle=on -coverprofile=/tmp/knifer-go-coverage.out ./... && bash bin/check_coverage.sh /tmp/knifer-go-coverage.out`: full coverage check.
 
 ## Governance notes
 

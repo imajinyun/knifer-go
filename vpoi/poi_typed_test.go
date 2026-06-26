@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/imajinyun/go-knifer/vpoi"
+	"github.com/imajinyun/knifer-go/vpoi"
 )
 
 func TestExcelFacadeTypedRowsAndCells(t *testing.T) {

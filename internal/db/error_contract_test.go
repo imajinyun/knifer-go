@@ -3,7 +3,7 @@ package db
 import (
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 func TestDBErrorContract(t *testing.T) {

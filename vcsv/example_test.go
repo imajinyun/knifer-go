@@ -3,7 +3,7 @@ package vcsv_test
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vcsv"
+	"github.com/imajinyun/knifer-go/vcsv"
 )
 
 func ExampleReadString() {

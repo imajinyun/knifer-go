@@ -4,7 +4,7 @@ import (
 	"io"
 	"io/fs"
 
-	fileimpl "github.com/imajinyun/go-knifer/internal/file"
+	fileimpl "github.com/imajinyun/knifer-go/internal/file"
 )
 
 // WriteOption customizes file write helpers.

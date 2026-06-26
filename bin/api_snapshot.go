@@ -11,7 +11,7 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-const modulePath = "github.com/imajinyun/go-knifer"
+const modulePath = "github.com/imajinyun/knifer-go"
 
 type apiSnapshotPackage struct {
 	importPath string

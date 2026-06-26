@@ -34,7 +34,7 @@ Recommended split:
 
 - Use `vform` when code needs a small predicate for one value, or when a `vbean.Decode`/`vbean.DecodeResult` flow wants to validate selected fields explicitly after conversion.
 - Use `go-playground/validator/v10` when the validation contract belongs on struct tags and must traverse nested request/config DTOs.
-- Do not add `go-playground/validator` to `go-knifer` itself for this direction decision; keeping it as an application dependency avoids increasing the base module dependency graph for users who only need string predicates.
+- Do not add `go-playground/validator` to `knifer-go` itself for this direction decision; keeping it as an application dependency avoids increasing the base module dependency graph for users who only need string predicates.
 
 ```go
 package main
@@ -65,7 +65,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vform"
+	"github.com/imajinyun/knifer-go/vform"
 )
 
 func main() {
@@ -83,7 +83,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vform"
+	"github.com/imajinyun/knifer-go/vform"
 )
 
 func main() {
@@ -102,7 +102,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/imajinyun/go-knifer/vform"
+	"github.com/imajinyun/knifer-go/vform"
 )
 
 func main() {
@@ -161,7 +161,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/imajinyun/go-knifer/vform"
+	"github.com/imajinyun/knifer-go/vform"
 )
 
 func main() {

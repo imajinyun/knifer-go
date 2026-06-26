@@ -3,7 +3,7 @@ package bean
 import (
 	"fmt"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 // BeanError represents an error produced by bean mapping helpers.
@@ -24,7 +24,7 @@ func (e *BeanError) Error() string {
 	return e.Msg
 }
 
-// ErrorCode returns the go-knifer error code.
+// ErrorCode returns the knifer-go error code.
 func (e *BeanError) ErrorCode() knifer.ErrCode {
 	if e == nil {
 		return ""

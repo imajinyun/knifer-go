@@ -6,7 +6,7 @@ import (
 	"mime/multipart"
 	"net/http"
 
-	netimpl "github.com/imajinyun/go-knifer/internal/net"
+	netimpl "github.com/imajinyun/knifer-go/internal/net"
 )
 
 // NewUploadSetting returns a default upload setting.

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	knifer "github.com/imajinyun/go-knifer"
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 func sqlErr(_ string, _ []any, err error) error { return err }

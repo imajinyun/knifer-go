@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/imajinyun/go-knifer/vnet"
+	"github.com/imajinyun/knifer-go/vnet"
 )
 
 type recordingDialer struct {

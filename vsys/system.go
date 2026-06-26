@@ -6,7 +6,7 @@ import (
 	"os/user"
 	"runtime"
 
-	"github.com/imajinyun/go-knifer/internal/system"
+	"github.com/imajinyun/knifer-go/internal/system"
 )
 
 // HostInfo describes current host information.

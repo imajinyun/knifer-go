@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/imajinyun/go-knifer/vnum"
+	"github.com/imajinyun/knifer-go/vnum"
 )
 
 type sequenceReader struct {
