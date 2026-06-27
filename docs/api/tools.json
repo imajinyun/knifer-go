@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 55,
     "function_count": 2687,
-    "functions_with_examples": 1270,
+    "functions_with_examples": 1275,
     "context_aware_functions": 36,
     "returns_error_functions": 638,
     "variadic_functions": 787,
@@ -3339,8 +3339,8 @@
       "synopsis": "Package vcodec provides public APIs for encoding and decoding utilities.",
       "summary": {
         "function_count": 29,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 17.2,
+        "functions_with_examples": 10,
+        "example_coverage_percent": 34.5,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
@@ -3360,7 +3360,7 @@
           "avoid_when": "Avoid for trivial in-memory code where the standard library is clearer."
         },
         {
-          "name": "Base64Encode",
+          "name": "Base32Encode",
           "use_when": "Use first for concise trusted-input workflows in vcodec.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec."
         },
@@ -3370,12 +3370,12 @@
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec."
         },
         {
-          "name": "Base32Encode",
+          "name": "Base32EncodeWithEncoding",
           "use_when": "Use first for concise trusted-input workflows in vcodec.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec."
         },
         {
-          "name": "Base32EncodeWithEncoding",
+          "name": "Base58Decode",
           "use_when": "Use first for concise trusted-input workflows in vcodec.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec."
         }
@@ -3387,7 +3387,7 @@
           "rationale": "Prefer when callers must distinguish invalid input or provider failure from default values."
         },
         {
-          "name": "Base64Encode",
+          "name": "Base32Encode",
           "profile": "day-one",
           "rationale": "Start here for concise, trusted-input use cases in this package."
         }
@@ -3454,7 +3454,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleBase32Encode"
+          ]
         },
         {
           "name": "Base32EncodeWithEncoding",
@@ -3540,7 +3543,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleBase58Encode"
+          ]
         },
         {
           "name": "Base58EncodeWithAlphabet",
@@ -3602,7 +3608,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleBase62Encode"
+          ]
         },
         {
           "name": "Base64Decode",
@@ -3938,7 +3947,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleMorseEncode"
+          ]
         },
         {
           "name": "ROT13",
@@ -3957,7 +3969,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleROT13"
+          ]
         },
         {
           "name": "ROT47",

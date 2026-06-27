@@ -44,3 +44,57 @@ func ExampleHexDecodeStr() {
 	// go
 	// <nil>
 }
+
+func ExampleBase32Encode() {
+	encoded := vcodec.Base32Encode([]byte("go"))
+	decoded, _ := vcodec.Base32Decode(encoded)
+
+	fmt.Println(encoded)
+	fmt.Println(string(decoded))
+	// Output:
+	// M5XQ====
+	// go
+}
+
+func ExampleBase58Encode() {
+	encoded := vcodec.Base58Encode([]byte("hello world"))
+	decoded, _ := vcodec.Base58Decode(encoded)
+
+	fmt.Println(encoded)
+	fmt.Println(string(decoded))
+	// Output:
+	// StV1DL6CwTryKyV
+	// hello world
+}
+
+func ExampleBase62Encode() {
+	encoded := vcodec.Base62Encode([]byte("hello"))
+	decoded, _ := vcodec.Base62Decode(encoded)
+
+	fmt.Println(encoded)
+	fmt.Println(string(decoded))
+	// Output:
+	// 7tQLFHz
+	// hello
+}
+
+func ExampleMorseEncode() {
+	encoded, _ := vcodec.MorseEncode("SOS 1")
+	decoded, _ := vcodec.MorseDecode(encoded)
+
+	fmt.Println(encoded)
+	fmt.Println(decoded)
+	// Output:
+	// ... --- ... / .----
+	// SOS 1
+}
+
+func ExampleROT13() {
+	encoded := vcodec.ROT13("hello")
+
+	fmt.Println(encoded)
+	fmt.Println(vcodec.ROT13(encoded))
+	// Output:
+	// uryyb
+	// hello
+}

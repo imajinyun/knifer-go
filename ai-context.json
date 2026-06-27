@@ -523,7 +523,7 @@
       "recommended_profile_schema": "recommended_entrypoints profiles: day-one, safe, error, options, compatibility; golden_path lists 1-7 APIs with use_when and avoid_when guidance",
       "package_count": 55,
       "function_count": 2687,
-      "functions_with_examples": 1270,
+      "functions_with_examples": 1275,
       "context_aware_functions": 36,
       "returns_error_functions": 638,
       "status_counts": {
@@ -659,7 +659,7 @@
       "vbool": { "primary": ["And", "Negate", "Or", "ToInt"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vcache": { "primary": ["NewFIFOWithOptions", "NewFIFO", "NewFIFOWithTimeout", "NewLFU", "NewLFUWithOptions"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vcli": { "primary": ["Output", "Colorize", "WithColorMode", "NewFlagParser", "RenderHelp"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
-      "vcodec": { "primary": ["Base32Decode", "Base64Encode", "Base32DecodeWithEncoding", "Base32Encode", "Base32EncodeWithEncoding"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
+      "vcodec": { "primary": ["Base32Decode", "Base32Encode", "Base32DecodeWithEncoding", "Base32EncodeWithEncoding", "Base58Decode"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vconf": { "primary": ["LoadRemoteSafe", "Base64Decrypt", "Merge", "Load", "LoadFiles"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vconv": { "primary": ["ToBoolE", "ToBoolDefaultWithOptions", "ToBool", "ToBoolDefault", "ToBoolEWithOptions"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vcron": { "primary": ["CronRestart", "ConfigureDefaultScheduler", "NewCronError", "MustNewPattern", "CronLaunchingCount"], "advanced": [], "compatibility": ["MustNewPattern"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },

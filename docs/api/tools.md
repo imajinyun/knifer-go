@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
 | Functions | 2687 |
-| Functions with examples | 1270 |
+| Functions with examples | 1275 |
 | Context-aware functions | 36 |
 | Functions returning error | 638 |
 | Variadic functions | 787 |
@@ -337,37 +337,37 @@ Import path: `github.com/imajinyun/knifer-go/vcodec`
 
 Package vcodec provides public APIs for encoding and decoding utilities.
 
-Quality: 29 functions · 5 with examples · 17.2% example coverage · statuses: recommended=29, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=15, internal=14, empty=0
+Quality: 29 functions · 10 with examples · 34.5% example coverage · statuses: recommended=29, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=15, internal=14, empty=0
 
 Recommended entrypoints:
 
 | Function | Profile | Rationale |
 | --- | --- | --- |
 | `Base32Decode` | error | Prefer when callers must distinguish invalid input or provider failure from default values. |
-| `Base64Encode` | day-one | Start here for concise, trusted-input use cases in this package. |
+| `Base32Encode` | day-one | Start here for concise, trusted-input use cases in this package. |
 
 Golden path API set:
 
 | Function | Use when | Avoid when |
 | --- | --- | --- |
 | `Base32Decode` | Use first when callers must observe invalid input or provider failure. | Avoid for trivial in-memory code where the standard library is clearer. |
-| `Base64Encode` | Use first for concise trusted-input workflows in vcodec. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec. |
-| `Base32DecodeWithEncoding` | Use first for concise trusted-input workflows in vcodec. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec. |
 | `Base32Encode` | Use first for concise trusted-input workflows in vcodec. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec. |
+| `Base32DecodeWithEncoding` | Use first for concise trusted-input workflows in vcodec. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec. |
 | `Base32EncodeWithEncoding` | Use first for concise trusted-input workflows in vcodec. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec. |
+| `Base58Decode` | Use first for concise trusted-input workflows in vcodec. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec. |
 
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
 | `Base32Decode` | `func Base32Decode(s string) ([]byte, error)` | recommended | Base32Decode decodes a standard Base32 string. | facade | — |
 | `Base32DecodeWithEncoding` | `func Base32DecodeWithEncoding(s string, encoding Base32Encoding) ([]byte, error)` | recommended | Base32DecodeWithEncoding decodes a Base32 string with the requested alphabet. | facade | — |
-| `Base32Encode` | `func Base32Encode(data []byte) string` | recommended | Base32Encode encodes bytes with standard Base32 encoding. | facade | — |
+| `Base32Encode` | `func Base32Encode(data []byte) string` | recommended | Base32Encode encodes bytes with standard Base32 encoding. | facade | `ExampleBase32Encode` |
 | `Base32EncodeWithEncoding` | `func Base32EncodeWithEncoding(data []byte, encoding Base32Encoding) string` | recommended | Base32EncodeWithEncoding encodes bytes with the requested Base32 alphabet. | facade | — |
 | `Base58Decode` | `func Base58Decode(s string) ([]byte, error)` | recommended | Base58Decode decodes a Bitcoin Base58 string. | facade | — |
 | `Base58DecodeWithAlphabet` | `func Base58DecodeWithAlphabet(s string, alphabet Base58Alphabet) ([]byte, error)` | recommended | Base58DecodeWithAlphabet decodes a Base58 string with a supported alphabet. | facade | — |
-| `Base58Encode` | `func Base58Encode(data []byte) string` | recommended | Base58Encode encodes bytes with the Bitcoin Base58 alphabet. | facade | — |
+| `Base58Encode` | `func Base58Encode(data []byte) string` | recommended | Base58Encode encodes bytes with the Bitcoin Base58 alphabet. | facade | `ExampleBase58Encode` |
 | `Base58EncodeWithAlphabet` | `func Base58EncodeWithAlphabet(data []byte, alphabet Base58Alphabet) string` | recommended | Base58EncodeWithAlphabet encodes bytes with a supported Base58 alphabet. | facade | — |
 | `Base62Decode` | `func Base62Decode(s string) ([]byte, error)` | recommended | Base62Decode decodes a Base62 string. | facade | — |
-| `Base62Encode` | `func Base62Encode(data []byte) string` | recommended | Base62Encode encodes bytes with a URL-friendly Base62 alphabet. | facade | — |
+| `Base62Encode` | `func Base62Encode(data []byte) string` | recommended | Base62Encode encodes bytes with a URL-friendly Base62 alphabet. | facade | `ExampleBase62Encode` |
 | `Base64Decode` | `func Base64Decode(s string) ([]byte, error)` | recommended | Base64Decode decodes a standard Base64 string. | internal | `ExampleBase64Decode` |
 | `Base64DecodeStr` | `func Base64DecodeStr(s string) (string, error)` | recommended | Base64DecodeStr decodes a standard Base64 string and returns text. | internal | — |
 | `Base64DecodeWithEncoding` | `func Base64DecodeWithEncoding(s string, enc *base64.Encoding) ([]byte, error)` | recommended | Base64DecodeWithEncoding decodes a Base64 string with enc. | internal | — |
@@ -383,8 +383,8 @@ Golden path API set:
 | `HexEncode` | `func HexEncode(data []byte) string` | recommended | HexEncode encodes bytes as a lowercase hexadecimal string. | internal | `ExampleHexEncode` |
 | `HexEncodeStr` | `func HexEncodeStr(s string) string` | recommended | HexEncodeStr encodes a string as lowercase hexadecimal text. | internal | — |
 | `MorseDecode` | `func MorseDecode(s string) (string, error)` | recommended | MorseDecode decodes Morse code using spaces between letters and "/" between words. | facade | — |
-| `MorseEncode` | `func MorseEncode(s string) (string, error)` | recommended | MorseEncode encodes supported ASCII letters, digits, and punctuation as Morse code. | facade | — |
-| `ROT13` | `func ROT13(s string) string` | recommended | ROT13 applies the ROT13 substitution to ASCII letters. | facade | — |
+| `MorseEncode` | `func MorseEncode(s string) (string, error)` | recommended | MorseEncode encodes supported ASCII letters, digits, and punctuation as Morse code. | facade | `ExampleMorseEncode` |
+| `ROT13` | `func ROT13(s string) string` | recommended | ROT13 applies the ROT13 substitution to ASCII letters. | facade | `ExampleROT13` |
 | `ROT47` | `func ROT47(s string) string` | recommended | ROT47 applies the ROT47 substitution to printable ASCII characters. | facade | — |
 | `ROTN` | `func ROTN(s string, n int) string` | recommended | ROTN applies a Caesar shift to ASCII letters. | facade | — |
 
