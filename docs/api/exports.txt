@@ -1583,13 +1583,19 @@ github.com/imajinyun/knifer-go/vimg
   func BarcodeSVG(content string, format BarcodeFormat, opts ...BarcodeOption) (string, error)
   func CanDecodeBarcodeFormat(format BarcodeFormat) bool
   func CanEncodeBarcodeFormat(format BarcodeFormat) bool
+  func CompressJPEG(w io.Writer, img image.Image, quality int) error
   func ConvertFormat(w io.Writer, r io.Reader, format string) error
+  func Crop(img image.Image, x int, y int, width int, height int) (image.Image, error)
+  func CropCenter(img image.Image, width int, height int) (image.Image, error)
   func DecodeBarcode(r io.Reader, opts ...DecodeOption) (*DecodeResult, error)
   func DecodeBarcodeImage(img image.Image, opts ...DecodeOption) (*DecodeResult, error)
   func DecodeQRCode(r io.Reader, opts ...DecodeOption) (*DecodeResult, error)
   func DecodeQRCodeImage(img image.Image, opts ...DecodeOption) (*DecodeResult, error)
+  func FlipHorizontal(img image.Image) (image.Image, error)
+  func FlipVertical(img image.Image) (image.Image, error)
   func GenMathGeneratorWithOptions(generator *MathGenerator, opts ...GeneratorOption) string
   func GenRandomGeneratorWithOptions(generator *RandomGenerator, opts ...GeneratorOption) string
+  func Grayscale(img image.Image) (image.Image, error)
   func Info(r io.Reader) (width int, height int, format string, err error)
   func NewCircleCaptcha(width int, height int) *CircleCaptcha
   func NewCircleCaptchaWith(width int, height int, codeCount int, circleCount int) *CircleCaptcha
@@ -1614,6 +1620,10 @@ github.com/imajinyun/knifer-go/vimg
   func QRCodeImage(content string, opts ...QRCodeOption) (image.Image, error)
   func QRCodePNG(content string, opts ...QRCodeOption) ([]byte, error)
   func QRCodeSVG(content string, opts ...QRCodeOption) (string, error)
+  func Resize(img image.Image, width int, height int) (image.Image, error)
+  func Rotate180(img image.Image) (image.Image, error)
+  func Rotate270(img image.Image) (image.Image, error)
+  func Rotate90(img image.Image) (image.Image, error)
   func SupportedDecodeBarcodeFormats() []BarcodeFormat
   func SupportedEncodeBarcodeFormats() []BarcodeFormat
   func Thumbnail(w io.Writer, r io.Reader, maxEdge int, format string) error

@@ -11,6 +11,8 @@ Captcha image bytes are returned as defensive copies, so callers can inspect or 
 | Read dimensions and format | `Info` | Decodes image configuration without transforming pixels. |
 | Convert image format | `ConvertFormat` | Use when the original dimensions should be preserved and only encoding changes. |
 | Generate thumbnails | `Thumbnail` | Resizes to a maximum edge and writes in the requested format. |
+| Transform pixels in memory | `Resize`, `Crop`, `CropCenter`, `FlipHorizontal`, `Rotate90`, `Grayscale` | Use for small in-memory operations before choosing the final encoder. |
+| Encode JPEG with explicit quality | `CompressJPEG` | Use when callers already have an `image.Image` and need direct JPEG quality control. |
 | Generate QR codes | `QRCodePNG`, `QRCodeSVG`, `QRCodeBytes`, `QRCodeImage` | QR helpers wrap barcode helpers with `BarcodeFormatQRCode`. |
 | Generate non-QR barcodes | `BarcodePNG`, `BarcodeSVG`, `BarcodeASCII`, `BarcodeBytes` | Check `CanEncodeBarcodeFormat` before exposing user-selected formats. |
 | Add a QR logo | `WithQRCodeLogo`, `WithQRCodeLogoSize`, `WithQRCodeLogoRatio` | Use high error correction and test scanability after adding logos. |
@@ -22,6 +24,7 @@ Captcha image bytes are returned as defensive copies, so callers can inspect or 
 ## Image safety checklist
 
 - Bound uploaded image size before passing readers to decoders; image decoding can allocate based on dimensions and format.
+- Pixel operations return new images and can allocate width x height buffers; validate dimensions before applying them to user-controlled images.
 - Validate barcode formats with `CanEncodeBarcodeFormat` and `CanDecodeBarcodeFormat` before accepting user configuration.
 - Keep QR logo size conservative and use `QRErrorCorrectionHigh` when embedding logos, then verify with real scanners.
 - Use `WithDecodeFormats` to limit barcode decoding to expected symbologies instead of accepting every supported reader.
@@ -92,6 +95,49 @@ func main() {
 		panic(err)
 	}
 	fmt.Println(jpegOut.Len() > 0, thumb.Len() > 0)
+}
+```
+
+## Transform images in memory
+
+```go
+package main
+
+import (
+	"bytes"
+	"fmt"
+	"image"
+	"image/color"
+
+	"github.com/imajinyun/knifer-go/vimg"
+)
+
+func main() {
+	img := image.NewRGBA(image.Rect(0, 0, 4, 2))
+	img.Set(0, 0, color.RGBA{R: 255, A: 255})
+
+	resized, err := vimg.Resize(img, 8, 4)
+	if err != nil {
+		panic(err)
+	}
+	cropped, err := vimg.CropCenter(resized, 4, 2)
+	if err != nil {
+		panic(err)
+	}
+	rotated, err := vimg.Rotate90(cropped)
+	if err != nil {
+		panic(err)
+	}
+	gray, err := vimg.Grayscale(rotated)
+	if err != nil {
+		panic(err)
+	}
+
+	var jpegOut bytes.Buffer
+	if err := vimg.CompressJPEG(&jpegOut, gray, 82); err != nil {
+		panic(err)
+	}
+	fmt.Println(gray.Bounds().Dx(), gray.Bounds().Dy(), jpegOut.Len() > 0)
 }
 ```
 

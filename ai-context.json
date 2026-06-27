@@ -522,19 +522,19 @@
       "schema": "1.7",
       "recommended_profile_schema": "recommended_entrypoints profiles: day-one, safe, error, options, compatibility; golden_path lists 1-7 APIs with use_when and avoid_when guidance",
       "package_count": 55,
-      "function_count": 2677,
-      "functions_with_examples": 1263,
+      "function_count": 2687,
+      "functions_with_examples": 1270,
       "context_aware_functions": 36,
-      "returns_error_functions": 628,
+      "returns_error_functions": 638,
       "status_counts": {
         "compatibility": 22,
         "deprecated": 0,
         "experimental": 0,
-        "recommended": 2655
+        "recommended": 2665
       },
       "synopsis_sources": {
         "empty": 0,
-        "facade": 2024,
+        "facade": 2034,
         "internal": 653
       },
       "regenerate_command": "tools_update",

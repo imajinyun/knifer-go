@@ -143,6 +143,58 @@ func ExampleInfo() {
 	// Output: 2 3 png <nil>
 }
 
+func ExampleResize() {
+	img := image.NewRGBA(image.Rect(0, 0, 2, 1))
+	resized, err := vimg.Resize(img, 4, 2)
+	fmt.Println(resized.Bounds().Dx(), resized.Bounds().Dy(), err)
+	// Output: 4 2 <nil>
+}
+
+func ExampleCrop() {
+	img := image.NewRGBA(image.Rect(0, 0, 4, 3))
+	cropped, err := vimg.Crop(img, 1, 1, 2, 1)
+	fmt.Println(cropped.Bounds().Dx(), cropped.Bounds().Dy(), err)
+	// Output: 2 1 <nil>
+}
+
+func ExampleCropCenter() {
+	img := image.NewRGBA(image.Rect(0, 0, 5, 3))
+	cropped, err := vimg.CropCenter(img, 3, 1)
+	fmt.Println(cropped.Bounds().Dx(), cropped.Bounds().Dy(), err)
+	// Output: 3 1 <nil>
+}
+
+func ExampleFlipHorizontal() {
+	img := image.NewRGBA(image.Rect(0, 0, 2, 1))
+	flipped, err := vimg.FlipHorizontal(img)
+	fmt.Println(flipped.Bounds().Dx(), flipped.Bounds().Dy(), err)
+	// Output: 2 1 <nil>
+}
+
+func ExampleRotate90() {
+	img := image.NewRGBA(image.Rect(0, 0, 3, 2))
+	rotated, err := vimg.Rotate90(img)
+	fmt.Println(rotated.Bounds().Dx(), rotated.Bounds().Dy(), err)
+	// Output: 2 3 <nil>
+}
+
+func ExampleGrayscale() {
+	img := image.NewRGBA(image.Rect(0, 0, 1, 1))
+	img.Set(0, 0, color.RGBA{R: 200, G: 100, B: 50, A: 255})
+	gray, err := vimg.Grayscale(img)
+	r, g, b, _ := gray.At(0, 0).RGBA()
+	fmt.Println(r == g, g == b, err)
+	// Output: true true <nil>
+}
+
+func ExampleCompressJPEG() {
+	img := image.NewRGBA(image.Rect(0, 0, 8, 8))
+	var out bytes.Buffer
+	err := vimg.CompressJPEG(&out, img, 80)
+	fmt.Println(out.Len() > 0, err)
+	// Output: true <nil>
+}
+
 func ExampleNewCircleCaptcha() {
 	c := vimg.NewCircleCaptcha(100, 40)
 	fmt.Println(c.Width, c.Height, len(c.Code()))

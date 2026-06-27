@@ -3,20 +3,20 @@
   "module": "github.com/imajinyun/knifer-go",
   "summary": {
     "package_count": 55,
-    "function_count": 2677,
-    "functions_with_examples": 1263,
+    "function_count": 2687,
+    "functions_with_examples": 1270,
     "context_aware_functions": 36,
-    "returns_error_functions": 628,
+    "returns_error_functions": 638,
     "variadic_functions": 787,
     "status_counts": {
       "compatibility": 22,
       "deprecated": 0,
       "experimental": 0,
-      "recommended": 2655
+      "recommended": 2665
     },
     "synopsis_sources": {
       "empty": 0,
-      "facade": 2024,
+      "facade": 2034,
       "internal": 653
     }
   },
@@ -22809,18 +22809,18 @@
       "name": "vimg",
       "synopsis": "Package vimg provides public APIs for image utilities.",
       "summary": {
-        "function_count": 91,
-        "functions_with_examples": 91,
-        "example_coverage_percent": 100,
+        "function_count": 101,
+        "functions_with_examples": 98,
+        "example_coverage_percent": 97,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
           "experimental": 0,
-          "recommended": 91
+          "recommended": 101
         },
         "synopsis_sources": {
           "empty": 0,
-          "facade": 91,
+          "facade": 101,
           "internal": 0
         }
       },
@@ -23143,6 +23143,36 @@
           ]
         },
         {
+          "name": "CompressJPEG",
+          "signature": "func CompressJPEG(w io.Writer, img image.Image, quality int) error",
+          "synopsis": "CompressJPEG encodes img as JPEG with quality in [1,100].",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "w",
+              "type": "io.Writer"
+            },
+            {
+              "name": "img",
+              "type": "image.Image"
+            },
+            {
+              "name": "quality",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleCompressJPEG"
+          ]
+        },
+        {
           "name": "ConvertFormat",
           "signature": "func ConvertFormat(w io.Writer, r io.Reader, format string) error",
           "synopsis": "ConvertFormat decodes r and re-encodes it into the target format.",
@@ -23170,6 +23200,76 @@
           "variadic": false,
           "examples": [
             "ExampleConvertFormat"
+          ]
+        },
+        {
+          "name": "Crop",
+          "signature": "func Crop(img image.Image, x int, y int, width int, height int) (image.Image, error)",
+          "synopsis": "Crop returns the rectangular region of img starting at x,y with width,height.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "img",
+              "type": "image.Image"
+            },
+            {
+              "name": "x",
+              "type": "int"
+            },
+            {
+              "name": "y",
+              "type": "int"
+            },
+            {
+              "name": "width",
+              "type": "int"
+            },
+            {
+              "name": "height",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "image.Image",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleCrop"
+          ]
+        },
+        {
+          "name": "CropCenter",
+          "signature": "func CropCenter(img image.Image, width int, height int) (image.Image, error)",
+          "synopsis": "CropCenter returns the centered width x height region of img.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "img",
+              "type": "image.Image"
+            },
+            {
+              "name": "width",
+              "type": "int"
+            },
+            {
+              "name": "height",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "image.Image",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleCropCenter"
           ]
         },
         {
@@ -23281,6 +23381,49 @@
           ]
         },
         {
+          "name": "FlipHorizontal",
+          "signature": "func FlipHorizontal(img image.Image) (image.Image, error)",
+          "synopsis": "FlipHorizontal mirrors img left-to-right.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "img",
+              "type": "image.Image"
+            }
+          ],
+          "results": [
+            "image.Image",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleFlipHorizontal"
+          ]
+        },
+        {
+          "name": "FlipVertical",
+          "signature": "func FlipVertical(img image.Image) (image.Image, error)",
+          "synopsis": "FlipVertical mirrors img top-to-bottom.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "img",
+              "type": "image.Image"
+            }
+          ],
+          "results": [
+            "image.Image",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
           "name": "GenMathGeneratorWithOptions",
           "signature": "func GenMathGeneratorWithOptions(generator *MathGenerator, opts ...GeneratorOption) string",
           "synopsis": "GenMathGeneratorWithOptions generates a math captcha string with per-call options.",
@@ -23330,6 +23473,29 @@
           "variadic": true,
           "examples": [
             "ExampleGenRandomGeneratorWithOptions"
+          ]
+        },
+        {
+          "name": "Grayscale",
+          "signature": "func Grayscale(img image.Image) (image.Image, error)",
+          "synopsis": "Grayscale returns a grayscale copy of img while preserving alpha.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "img",
+              "type": "image.Image"
+            }
+          ],
+          "results": [
+            "image.Image",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleGrayscale"
           ]
         },
         {
@@ -24002,6 +24168,100 @@
           "variadic": true,
           "examples": [
             "ExampleQRCodeSVG"
+          ]
+        },
+        {
+          "name": "Resize",
+          "signature": "func Resize(img image.Image, width int, height int) (image.Image, error)",
+          "synopsis": "Resize returns img scaled to width x height using nearest-neighbor sampling.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "img",
+              "type": "image.Image"
+            },
+            {
+              "name": "width",
+              "type": "int"
+            },
+            {
+              "name": "height",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "image.Image",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleResize"
+          ]
+        },
+        {
+          "name": "Rotate180",
+          "signature": "func Rotate180(img image.Image) (image.Image, error)",
+          "synopsis": "Rotate180 rotates img 180 degrees.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "img",
+              "type": "image.Image"
+            }
+          ],
+          "results": [
+            "image.Image",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "Rotate270",
+          "signature": "func Rotate270(img image.Image) (image.Image, error)",
+          "synopsis": "Rotate270 rotates img 270 degrees clockwise.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "img",
+              "type": "image.Image"
+            }
+          ],
+          "results": [
+            "image.Image",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "Rotate90",
+          "signature": "func Rotate90(img image.Image) (image.Image, error)",
+          "synopsis": "Rotate90 rotates img 90 degrees clockwise.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "img",
+              "type": "image.Image"
+            }
+          ],
+          "results": [
+            "image.Image",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleRotate90"
           ]
         },
         {

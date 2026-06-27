@@ -246,6 +246,150 @@ func TestThumbnailPortrait(t *testing.T) {
 	}
 }
 
+func TestImageOperations(t *testing.T) {
+	src := image.NewRGBA(image.Rect(0, 0, 3, 2))
+	red := color.RGBA{R: 255, A: 255}
+	green := color.RGBA{G: 255, A: 255}
+	blue := color.RGBA{B: 255, A: 255}
+	yellow := color.RGBA{R: 255, G: 255, A: 255}
+	src.Set(0, 0, red)
+	src.Set(1, 0, green)
+	src.Set(2, 0, blue)
+	src.Set(0, 1, yellow)
+
+	cropped, err := Crop(src, 1, 0, 2, 1)
+	if err != nil {
+		t.Fatalf("Crop error = %v", err)
+	}
+	if cropped.Bounds().Dx() != 2 || cropped.Bounds().Dy() != 1 {
+		t.Fatalf("Crop bounds = %v, want 2x1", cropped.Bounds())
+	}
+	assertSameColor(t, cropped.At(0, 0), green)
+
+	center, err := CropCenter(src, 1, 2)
+	if err != nil {
+		t.Fatalf("CropCenter error = %v", err)
+	}
+	if center.Bounds().Dx() != 1 || center.Bounds().Dy() != 2 {
+		t.Fatalf("CropCenter bounds = %v, want 1x2", center.Bounds())
+	}
+	assertSameColor(t, center.At(0, 0), green)
+
+	horizontal, err := FlipHorizontal(src)
+	if err != nil {
+		t.Fatalf("FlipHorizontal error = %v", err)
+	}
+	assertSameColor(t, horizontal.At(2, 0), red)
+
+	vertical, err := FlipVertical(src)
+	if err != nil {
+		t.Fatalf("FlipVertical error = %v", err)
+	}
+	assertSameColor(t, vertical.At(0, 1), red)
+}
+
+func TestImageRotateResizeGrayscaleAndJPEG(t *testing.T) {
+	src := image.NewRGBA(image.Rect(0, 0, 2, 1))
+	red := color.RGBA{R: 255, A: 255}
+	blue := color.RGBA{B: 255, A: 255}
+	src.Set(0, 0, red)
+	src.Set(1, 0, blue)
+
+	rot90, err := Rotate90(src)
+	if err != nil {
+		t.Fatalf("Rotate90 error = %v", err)
+	}
+	if rot90.Bounds().Dx() != 1 || rot90.Bounds().Dy() != 2 {
+		t.Fatalf("Rotate90 bounds = %v, want 1x2", rot90.Bounds())
+	}
+	assertSameColor(t, rot90.At(0, 0), red)
+
+	rot180, err := Rotate180(src)
+	if err != nil {
+		t.Fatalf("Rotate180 error = %v", err)
+	}
+	assertSameColor(t, rot180.At(1, 0), red)
+
+	rot270, err := Rotate270(src)
+	if err != nil {
+		t.Fatalf("Rotate270 error = %v", err)
+	}
+	if rot270.Bounds().Dx() != 1 || rot270.Bounds().Dy() != 2 {
+		t.Fatalf("Rotate270 bounds = %v, want 1x2", rot270.Bounds())
+	}
+	assertSameColor(t, rot270.At(0, 0), blue)
+
+	resized, err := Resize(src, 4, 2)
+	if err != nil {
+		t.Fatalf("Resize error = %v", err)
+	}
+	if resized.Bounds().Dx() != 4 || resized.Bounds().Dy() != 2 {
+		t.Fatalf("Resize bounds = %v, want 4x2", resized.Bounds())
+	}
+	assertSameColor(t, resized.At(0, 0), red)
+	assertSameColor(t, resized.At(3, 1), blue)
+
+	gray, err := Grayscale(src)
+	if err != nil {
+		t.Fatalf("Grayscale error = %v", err)
+	}
+	r, g, b, _ := gray.At(0, 0).RGBA()
+	if r != g || g != b {
+		t.Fatalf("Grayscale channels = %d/%d/%d, want equal", r, g, b)
+	}
+
+	out := &bytes.Buffer{}
+	if err := CompressJPEG(out, src, 80); err != nil {
+		t.Fatalf("CompressJPEG error = %v", err)
+	}
+	if _, err := jpeg.DecodeConfig(out); err != nil {
+		t.Fatalf("CompressJPEG output is not JPEG: %v", err)
+	}
+}
+
+func TestImageOperationInvalidInput(t *testing.T) {
+	img := image.NewRGBA(image.Rect(0, 0, 2, 2))
+	tests := []struct {
+		name string
+		err  error
+	}{
+		{name: "resize nil", err: imageErr(Resize(nil, 1, 1))},
+		{name: "resize invalid", err: imageErr(Resize(img, 0, 1))},
+		{name: "crop nil", err: imageErr(Crop(nil, 0, 0, 1, 1))},
+		{name: "crop invalid size", err: imageErr(Crop(img, 0, 0, 0, 1))},
+		{name: "crop outside", err: imageErr(Crop(img, 1, 1, 2, 2))},
+		{name: "flip nil", err: imageErr(FlipHorizontal(nil))},
+		{name: "rotate nil", err: imageErr(Rotate90(nil))},
+		{name: "gray nil", err: imageErr(Grayscale(nil))},
+		{name: "compress nil writer", err: CompressJPEG(nil, img, 80)},
+		{name: "compress nil image", err: CompressJPEG(&bytes.Buffer{}, nil, 80)},
+		{name: "compress bad quality", err: CompressJPEG(&bytes.Buffer{}, img, 0)},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			code, ok := knifer.CodeOf(tt.err)
+			if !ok {
+				t.Fatalf("error = %v, want CodeCarrier", tt.err)
+			}
+			if code != knifer.ErrCodeInvalidInput {
+				t.Fatalf("code = %v, want %v", code, knifer.ErrCodeInvalidInput)
+			}
+		})
+	}
+}
+
+func assertSameColor(t *testing.T, got color.Color, want color.RGBA) {
+	t.Helper()
+	r, g, b, a := got.RGBA()
+	if uint8(r>>8) != want.R || uint8(g>>8) != want.G || uint8(b>>8) != want.B || uint8(a>>8) != want.A {
+		t.Fatalf("color = rgba(%d,%d,%d,%d), want %+v", uint8(r>>8), uint8(g>>8), uint8(b>>8), uint8(a>>8), want)
+	}
+}
+
+func imageErr(_ image.Image, err error) error {
+	return err
+}
+
 func BenchmarkThumbnailPNG(b *testing.B) {
 	src := makePNG(320, 240)
 	b.ReportAllocs()

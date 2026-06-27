@@ -11,16 +11,16 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Schema | 1.7 |
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
-| Functions | 2677 |
-| Functions with examples | 1263 |
+| Functions | 2687 |
+| Functions with examples | 1270 |
 | Context-aware functions | 36 |
-| Functions returning error | 628 |
+| Functions returning error | 638 |
 | Variadic functions | 787 |
-| API status: recommended | 2655 |
+| API status: recommended | 2665 |
 | API status: compatibility | 22 |
 | API status: experimental | 0 |
 | API status: deprecated | 0 |
-| Synopsis source: facade | 2024 |
+| Synopsis source: facade | 2034 |
 | Synopsis source: internal | 653 |
 | Synopsis source: empty | 0 |
 
@@ -1707,7 +1707,7 @@ Import path: `github.com/imajinyun/knifer-go/vimg`
 
 Package vimg provides public APIs for image utilities.
 
-Quality: 91 functions · 91 with examples · 100.0% example coverage · statuses: recommended=91, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=91, internal=0, empty=0
+Quality: 101 functions · 98 with examples · 97.0% example coverage · statuses: recommended=101, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=101, internal=0, empty=0
 
 Recommended entrypoints:
 
@@ -1738,13 +1738,19 @@ Golden path API set:
 | `BarcodeSVG` | `func BarcodeSVG(content string, format BarcodeFormat, opts ...BarcodeOption) (string, error)` | recommended | BarcodeSVG returns an SVG rendering for content encoded with format. | facade | `ExampleBarcodeSVG` |
 | `CanDecodeBarcodeFormat` | `func CanDecodeBarcodeFormat(format BarcodeFormat) bool` | recommended | CanDecodeBarcodeFormat reports whether format is supported for decoding. | facade | `ExampleCanDecodeBarcodeFormat` |
 | `CanEncodeBarcodeFormat` | `func CanEncodeBarcodeFormat(format BarcodeFormat) bool` | recommended | CanEncodeBarcodeFormat reports whether format is supported for generation. | facade | `ExampleCanEncodeBarcodeFormat` |
+| `CompressJPEG` | `func CompressJPEG(w io.Writer, img image.Image, quality int) error` | recommended | CompressJPEG encodes img as JPEG with quality in [1,100]. | facade | `ExampleCompressJPEG` |
 | `ConvertFormat` | `func ConvertFormat(w io.Writer, r io.Reader, format string) error` | recommended | ConvertFormat decodes r and re-encodes it into the target format. | facade | `ExampleConvertFormat` |
+| `Crop` | `func Crop(img image.Image, x int, y int, width int, height int) (image.Image, error)` | recommended | Crop returns the rectangular region of img starting at x,y with width,height. | facade | `ExampleCrop` |
+| `CropCenter` | `func CropCenter(img image.Image, width int, height int) (image.Image, error)` | recommended | CropCenter returns the centered width x height region of img. | facade | `ExampleCropCenter` |
 | `DecodeBarcode` | `func DecodeBarcode(r io.Reader, opts ...DecodeOption) (*DecodeResult, error)` | recommended | DecodeBarcode decodes one barcode from a raster image stream. | facade | `ExampleDecodeBarcode` |
 | `DecodeBarcodeImage` | `func DecodeBarcodeImage(img image.Image, opts ...DecodeOption) (*DecodeResult, error)` | recommended | DecodeBarcodeImage decodes one barcode from img. | facade | `ExampleDecodeBarcodeImage` |
 | `DecodeQRCode` | `func DecodeQRCode(r io.Reader, opts ...DecodeOption) (*DecodeResult, error)` | recommended | DecodeQRCode decodes one QR code from a raster image stream. | facade | `ExampleDecodeQRCode` |
 | `DecodeQRCodeImage` | `func DecodeQRCodeImage(img image.Image, opts ...DecodeOption) (*DecodeResult, error)` | recommended | DecodeQRCodeImage decodes one QR code from img. | facade | `ExampleDecodeQRCodeImage` |
+| `FlipHorizontal` | `func FlipHorizontal(img image.Image) (image.Image, error)` | recommended | FlipHorizontal mirrors img left-to-right. | facade | `ExampleFlipHorizontal` |
+| `FlipVertical` | `func FlipVertical(img image.Image) (image.Image, error)` | recommended | FlipVertical mirrors img top-to-bottom. | facade | — |
 | `GenMathGeneratorWithOptions` | `func GenMathGeneratorWithOptions(generator *MathGenerator, opts ...GeneratorOption) string` | recommended | GenMathGeneratorWithOptions generates a math captcha string with per-call options. | facade | `ExampleGenMathGeneratorWithOptions` |
 | `GenRandomGeneratorWithOptions` | `func GenRandomGeneratorWithOptions(generator *RandomGenerator, opts ...GeneratorOption) string` | recommended | GenRandomGeneratorWithOptions generates a random captcha string with per-call options. | facade | `ExampleGenRandomGeneratorWithOptions` |
+| `Grayscale` | `func Grayscale(img image.Image) (image.Image, error)` | recommended | Grayscale returns a grayscale copy of img while preserving alpha. | facade | `ExampleGrayscale` |
 | `Info` | `func Info(r io.Reader) (width int, height int, format string, err error)` | recommended | Info returns the width, height and detected format of the raster image available from r. | facade | `ExampleInfo` |
 | `NewCircleCaptcha` | `func NewCircleCaptcha(width int, height int) *CircleCaptcha` | recommended | NewCircleCaptcha creates a circle-interference captcha. | facade | `ExampleNewCircleCaptcha` |
 | `NewCircleCaptchaWith` | `func NewCircleCaptchaWith(width int, height int, codeCount int, circleCount int) *CircleCaptcha` | recommended | NewCircleCaptchaWith creates a circle-interference captcha with options. | facade | `ExampleNewCircleCaptchaWith` |
@@ -1769,6 +1775,10 @@ Golden path API set:
 | `QRCodeImage` | `func QRCodeImage(content string, opts ...QRCodeOption) (image.Image, error)` | recommended | QRCodeImage returns a raster QR image. | facade | `ExampleQRCodeImage` |
 | `QRCodePNG` | `func QRCodePNG(content string, opts ...QRCodeOption) ([]byte, error)` | recommended | QRCodePNG returns PNG bytes for a QR code. | facade | `ExampleQRCodePNG` |
 | `QRCodeSVG` | `func QRCodeSVG(content string, opts ...QRCodeOption) (string, error)` | recommended | QRCodeSVG returns an SVG rendering for a QR code. | facade | `ExampleQRCodeSVG` |
+| `Resize` | `func Resize(img image.Image, width int, height int) (image.Image, error)` | recommended | Resize returns img scaled to width x height using nearest-neighbor sampling. | facade | `ExampleResize` |
+| `Rotate180` | `func Rotate180(img image.Image) (image.Image, error)` | recommended | Rotate180 rotates img 180 degrees. | facade | — |
+| `Rotate270` | `func Rotate270(img image.Image) (image.Image, error)` | recommended | Rotate270 rotates img 270 degrees clockwise. | facade | — |
+| `Rotate90` | `func Rotate90(img image.Image) (image.Image, error)` | recommended | Rotate90 rotates img 90 degrees clockwise. | facade | `ExampleRotate90` |
 | `SupportedDecodeBarcodeFormats` | `func SupportedDecodeBarcodeFormats() []BarcodeFormat` | recommended | SupportedDecodeBarcodeFormats returns the barcode formats supported for decoding. | facade | `ExampleSupportedDecodeBarcodeFormats` |
 | `SupportedEncodeBarcodeFormats` | `func SupportedEncodeBarcodeFormats() []BarcodeFormat` | recommended | SupportedEncodeBarcodeFormats returns the barcode formats supported for generation. | facade | `ExampleSupportedEncodeBarcodeFormats` |
 | `Thumbnail` | `func Thumbnail(w io.Writer, r io.Reader, maxEdge int, format string) error` | recommended | Thumbnail decodes a raster image from r and writes a downscaled copy to w. | facade | `ExampleThumbnail` |

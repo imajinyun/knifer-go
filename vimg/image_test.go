@@ -63,6 +63,64 @@ func TestConvertFormatFacade(t *testing.T) {
 	}
 }
 
+func TestImageOpsFacade(t *testing.T) {
+	src := image.NewRGBA(image.Rect(0, 0, 3, 2))
+	src.Set(0, 0, color.RGBA{R: 255, A: 255})
+	src.Set(1, 0, color.RGBA{G: 255, A: 255})
+	src.Set(2, 0, color.RGBA{B: 255, A: 255})
+
+	resized, err := Resize(src, 6, 4)
+	if err != nil {
+		t.Fatalf("Resize: %v", err)
+	}
+	if resized.Bounds().Dx() != 6 || resized.Bounds().Dy() != 4 {
+		t.Fatalf("Resize bounds = %v, want 6x4", resized.Bounds())
+	}
+
+	cropped, err := Crop(src, 1, 0, 2, 1)
+	if err != nil {
+		t.Fatalf("Crop: %v", err)
+	}
+	if cropped.Bounds().Dx() != 2 || cropped.Bounds().Dy() != 1 {
+		t.Fatalf("Crop bounds = %v, want 2x1", cropped.Bounds())
+	}
+
+	center, err := CropCenter(src, 1, 2)
+	if err != nil {
+		t.Fatalf("CropCenter: %v", err)
+	}
+	if center.Bounds().Dx() != 1 || center.Bounds().Dy() != 2 {
+		t.Fatalf("CropCenter bounds = %v, want 1x2", center.Bounds())
+	}
+
+	if _, err := FlipHorizontal(src); err != nil {
+		t.Fatalf("FlipHorizontal: %v", err)
+	}
+	if _, err := FlipVertical(src); err != nil {
+		t.Fatalf("FlipVertical: %v", err)
+	}
+	if _, err := Rotate90(src); err != nil {
+		t.Fatalf("Rotate90: %v", err)
+	}
+	if _, err := Rotate180(src); err != nil {
+		t.Fatalf("Rotate180: %v", err)
+	}
+	if _, err := Rotate270(src); err != nil {
+		t.Fatalf("Rotate270: %v", err)
+	}
+	if _, err := Grayscale(src); err != nil {
+		t.Fatalf("Grayscale: %v", err)
+	}
+
+	out := &bytes.Buffer{}
+	if err := CompressJPEG(out, src, 85); err != nil {
+		t.Fatalf("CompressJPEG: %v", err)
+	}
+	if out.Len() == 0 {
+		t.Fatal("CompressJPEG: empty output")
+	}
+}
+
 func TestThumbnailBadArgs(t *testing.T) {
 	if err := Thumbnail(nil, bytes.NewReader(makePNG(8, 8)), 8, "png"); err == nil {
 		t.Fatal("expected error for nil writer")

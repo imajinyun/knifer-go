@@ -7,6 +7,7 @@
 package vimg
 
 import (
+	"image"
 	"io"
 
 	"github.com/imajinyun/knifer-go/internal/imgx"
@@ -30,4 +31,54 @@ func ConvertFormat(w io.Writer, r io.Reader, format string) error {
 // available from r.
 func Info(r io.Reader) (width, height int, format string, err error) {
 	return imgx.Info(r)
+}
+
+// Resize returns img scaled to width x height using nearest-neighbor sampling.
+func Resize(img image.Image, width, height int) (image.Image, error) {
+	return imgx.Resize(img, width, height)
+}
+
+// Crop returns the rectangular region of img starting at x,y with width,height.
+func Crop(img image.Image, x, y, width, height int) (image.Image, error) {
+	return imgx.Crop(img, x, y, width, height)
+}
+
+// CropCenter returns the centered width x height region of img.
+func CropCenter(img image.Image, width, height int) (image.Image, error) {
+	return imgx.CropCenter(img, width, height)
+}
+
+// FlipHorizontal mirrors img left-to-right.
+func FlipHorizontal(img image.Image) (image.Image, error) {
+	return imgx.FlipHorizontal(img)
+}
+
+// FlipVertical mirrors img top-to-bottom.
+func FlipVertical(img image.Image) (image.Image, error) {
+	return imgx.FlipVertical(img)
+}
+
+// Rotate90 rotates img 90 degrees clockwise.
+func Rotate90(img image.Image) (image.Image, error) {
+	return imgx.Rotate90(img)
+}
+
+// Rotate180 rotates img 180 degrees.
+func Rotate180(img image.Image) (image.Image, error) {
+	return imgx.Rotate180(img)
+}
+
+// Rotate270 rotates img 270 degrees clockwise.
+func Rotate270(img image.Image) (image.Image, error) {
+	return imgx.Rotate270(img)
+}
+
+// Grayscale returns a grayscale copy of img while preserving alpha.
+func Grayscale(img image.Image) (image.Image, error) {
+	return imgx.Grayscale(img)
+}
+
+// CompressJPEG encodes img as JPEG with quality in [1,100].
+func CompressJPEG(w io.Writer, img image.Image, quality int) error {
+	return imgx.CompressJPEG(w, img, quality)
 }
