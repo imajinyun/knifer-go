@@ -440,3 +440,36 @@ func ExampleWithEmojiReplacer() {
 	fmt.Printf("%q\n", vstr.RemoveEmojiWithOptions("launch :rocket:", vstr.WithEmojiReplacer(replacer)))
 	// Output: "launch "
 }
+
+func ExampleHasBOM() {
+	data := []byte{0xEF, 0xBB, 0xBF, 'g', 'o'}
+	fmt.Println(vstr.HasBOM(data))
+	fmt.Println(vstr.HasBOM([]byte("go")))
+	// Output:
+	// UTF-8
+	//
+}
+
+func ExampleStripBOM() {
+	data := []byte{0xEF, 0xBB, 0xBF, 'g', 'o'}
+	fmt.Printf("%q\n", vstr.StripBOM(data))
+	// Output: "go"
+}
+
+func ExampleToUTF8() {
+	text, err := vstr.ToUTF8([]byte{0xE9}, "iso-8859-1")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(text))
+	// Output: é
+}
+
+func ExampleFromUTF8() {
+	encoded, err := vstr.FromUTF8([]byte("é"), "iso-8859-1")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%X\n", encoded)
+	// Output: E9
+}

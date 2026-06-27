@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
 | Functions | 2687 |
-| Functions with examples | 1281 |
+| Functions with examples | 1285 |
 | Context-aware functions | 36 |
 | Functions returning error | 638 |
 | Variadic functions | 787 |
@@ -3598,7 +3598,7 @@ Import path: `github.com/imajinyun/knifer-go/vstr`
 
 Package vstr provides public APIs for string and text utilities.
 
-Quality: 68 functions · 64 with examples · 94.1% example coverage · statuses: recommended=68, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=4, internal=64, empty=0
+Quality: 68 functions · 68 with examples · 100.0% example coverage · statuses: recommended=68, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=4, internal=64, empty=0
 
 Recommended entrypoints:
 
@@ -3637,9 +3637,9 @@ Golden path API set:
 | `EscapeHTML` | `func EscapeHTML(s string) string` | recommended | EscapeHTML escapes common HTML-sensitive characters without depending on the HTTP package. | internal | `ExampleEscapeHTML` |
 | `EscapeUnicode` | `func EscapeUnicode(s string) string` | recommended | EscapeUnicode escapes non-ASCII runes as Java-style \\uXXXX sequences. | internal | `ExampleEscapeUnicode` |
 | `Format` | `func Format(template string, args ...any) string` | recommended | Format mimics the utility toolkit StrUtil.format by replacing {} placeholders in order. | internal | `ExampleFormat` |
-| `FromUTF8` | `func FromUTF8(data []byte, to string) ([]byte, error)` | recommended | FromUTF8 converts UTF-8 data to the named charset. | facade | — |
+| `FromUTF8` | `func FromUTF8(data []byte, to string) ([]byte, error)` | recommended | FromUTF8 converts UTF-8 data to the named charset. | facade | `ExampleFromUTF8` |
 | `HammingDistance64` | `func HammingDistance64(a uint64, b uint64) int` | recommended | HammingDistance64 returns the number of different bits between a and b. | internal | `ExampleHammingDistance64` |
-| `HasBOM` | `func HasBOM(data []byte) BOMType` | recommended | HasBOM returns the supported byte order mark at the beginning of data. | facade | — |
+| `HasBOM` | `func HasBOM(data []byte) BOMType` | recommended | HasBOM returns the supported byte order mark at the beginning of data. | facade | `ExampleHasBOM` |
 | `HasBlank` | `func HasBlank(strs ...string) bool` | recommended | HasBlank reports whether any string is blank. | internal | `ExampleHasBlank` |
 | `HasEmpty` | `func HasEmpty(strs ...string) bool` | recommended | HasEmpty reports whether any string is empty. | internal | `ExampleHasEmpty` |
 | `IsAllBlank` | `func IsAllBlank(strs ...string) bool` | recommended | IsAllBlank reports whether all strings are blank. | internal | `ExampleIsAllBlank` |
@@ -3671,14 +3671,14 @@ Golden path API set:
 | `Split` | `func Split(s string, sep string) []string` | recommended | Split splits s by sep and returns an empty slice for an empty input string. | internal | `ExampleSplit` |
 | `SplitTrim` | `func SplitTrim(s string, sep string) []string` | recommended | SplitTrim splits s, trims each part, and drops blank parts. | internal | `ExampleSplitTrim` |
 | `StartsWith` | `func StartsWith(s string, prefix string) bool` | recommended | StartsWith reports whether s starts with prefix. | internal | `ExampleStartsWith` |
-| `StripBOM` | `func StripBOM(data []byte) []byte` | recommended | StripBOM returns data without a supported leading byte order mark. | facade | — |
+| `StripBOM` | `func StripBOM(data []byte) []byte` | recommended | StripBOM returns data without a supported leading byte order mark. | facade | `ExampleStripBOM` |
 | `Sub` | `func Sub(s string, fromIndex int, toIndex int) string` | recommended | Sub returns a substring by rune indexes and supports negative indexes from the end. | internal | `ExampleSub` |
 | `SubAfter` | `func SubAfter(s string, sep string, isLastSeparator bool) string` | recommended | SubAfter returns the text after sep. | internal | `ExampleSubAfter` |
 | `SubBefore` | `func SubBefore(s string, sep string, isLastSeparator bool) string` | recommended | SubBefore returns the text before sep. | internal | `ExampleSubBefore` |
 | `ToCamelCase` | `func ToCamelCase(s string) string` | recommended | ToCamelCase converts separators to lower camel case, for example hello_world -> helloWorld. | internal | `ExampleToCamelCase` |
 | `ToKebabCase` | `func ToKebabCase(s string) string` | recommended | ToKebabCase converts camel case or separators to kebab case, for example HelloWorld -> hello-world. | internal | `ExampleToKebabCase` |
 | `ToPascalCase` | `func ToPascalCase(s string) string` | recommended | ToPascalCase converts separators to upper camel case, for example hello_world -> HelloWorld. | internal | `ExampleToPascalCase` |
-| `ToUTF8` | `func ToUTF8(data []byte, from string) ([]byte, error)` | recommended | ToUTF8 converts data from the named charset to UTF-8. | facade | — |
+| `ToUTF8` | `func ToUTF8(data []byte, from string) ([]byte, error)` | recommended | ToUTF8 converts data from the named charset to UTF-8. | facade | `ExampleToUTF8` |
 | `ToUnderlineCase` | `func ToUnderlineCase(s string) string` | recommended | ToUnderlineCase converts camel case or separators to snake case, for example HelloWorld -> hello_world. | internal | `ExampleToUnderlineCase` |
 | `Trim` | `func Trim(s string) string` | recommended | Trim removes leading and trailing white space. | internal | `ExampleTrim` |
 | `TrimEnd` | `func TrimEnd(s string) string` | recommended | TrimEnd removes trailing white space. | internal | `ExampleTrimEnd` |

@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 55,
     "function_count": 2687,
-    "functions_with_examples": 1281,
+    "functions_with_examples": 1285,
     "context_aware_functions": 36,
     "returns_error_functions": 638,
     "variadic_functions": 787,
@@ -53842,8 +53842,8 @@
       "synopsis": "Package vstr provides public APIs for string and text utilities.",
       "summary": {
         "function_count": 68,
-        "functions_with_examples": 64,
-        "example_coverage_percent": 94.1,
+        "functions_with_examples": 68,
+        "example_coverage_percent": 100,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
@@ -54357,7 +54357,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleFromUTF8"
+          ]
         },
         {
           "name": "HammingDistance64",
@@ -54402,7 +54405,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleHasBOM"
+          ]
         },
         {
           "name": "HasBlank",
@@ -55167,7 +55173,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleStripBOM"
+          ]
         },
         {
           "name": "Sub",
@@ -55347,7 +55356,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleToUTF8"
+          ]
         },
         {
           "name": "ToUnderlineCase",
