@@ -13,6 +13,7 @@ Choose helpers by the business rule you are expressing: formatting/parsing, cale
 | Calculate calendar boundaries | `BeginOfDay`, `EndOfDay`, `BeginOfMonth`, `EndOfYear` | Boundaries follow the `time.Time` location carried by the input. |
 | Move by calendar units | `OffsetDay`, `OffsetMonth`, related offset helpers | Calendar offsets are not always fixed durations because months and daylight-saving transitions vary. |
 | Compare business dates | `BetweenDays`, `IsSameDay`, related comparison helpers | Prefer semantic helpers over manual duration division when calendar days are intended. |
+| Work with Chinese lunar dates | `SolarToLunar`, `LunarToSolar`, `LeapMonth`, `SolarTerm` | Supports 1900-2100 with table-driven lunar month data and deterministic solar-term day lookup. |
 
 ## Date/time correctness checklist
 
@@ -21,11 +22,13 @@ Choose helpers by the business rule you are expressing: formatting/parsing, cale
 - Use calendar offset helpers for dates, and duration arithmetic for elapsed time. Mixing the two can produce off-by-one-day bugs.
 - Preserve the input location when calculating day, month, or year boundaries unless you intentionally normalize to UTC.
 - Treat parse errors as validation failures and surface them to the caller instead of falling back to zero time silently.
+- Lunar helpers are calendar-conversion utilities, not astrology or locale formatting engines. Keep display text decisions in the application layer.
 
 ## When not to use vdate
 
 - Use `time` directly for timers, deadlines, monotonic-clock comparisons, and low-level duration arithmetic.
 - Use a domain calendar library when business days, holidays, fiscal calendars, or locale-specific week rules matter.
+- Use a dedicated astronomical calendar when sub-day solar-term instants or observatory-grade precision are required.
 - Use strict protocol parsers when input must follow RFC3339, Unix timestamps, or another externally defined format exactly.
 - Avoid calendar helpers for elapsed-time measurement; use `time.Since`, `Sub`, or monotonic-aware `time.Time` values.
 
@@ -158,5 +161,49 @@ func main() {
 
 	fmt.Println(vdate.BetweenDays(start, nextWeek))
 	fmt.Println(vdate.IsSameDay(start, nextMonth))
+}
+```
+
+## Convert Chinese lunar dates
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/imajinyun/knifer-go/vdate"
+)
+
+func main() {
+	lunar, err := vdate.SolarToLunar(2024, 2, 10)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(lunar.Year, lunar.Month, lunar.Day, lunar.YearGanZhi, lunar.Zodiac)
+
+	solar, err := vdate.LunarToSolar(2024, 1, 1, false)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(solar.Year, solar.Month, solar.Day)
+}
+```
+
+## Query leap months and solar terms
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/imajinyun/knifer-go/vdate"
+)
+
+func main() {
+	fmt.Println(vdate.LeapMonth(2020))
+	fmt.Println(vdate.IsLeapMonth(2020, 4))
+	fmt.Println(vdate.SolarTerm(2024, 4, 4))
 }
 ```

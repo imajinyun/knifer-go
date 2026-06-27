@@ -3,21 +3,21 @@
   "module": "github.com/imajinyun/knifer-go",
   "summary": {
     "package_count": 55,
-    "function_count": 2666,
-    "functions_with_examples": 1260,
+    "function_count": 2677,
+    "functions_with_examples": 1263,
     "context_aware_functions": 36,
-    "returns_error_functions": 626,
+    "returns_error_functions": 628,
     "variadic_functions": 787,
     "status_counts": {
       "compatibility": 22,
       "deprecated": 0,
       "experimental": 0,
-      "recommended": 2644
+      "recommended": 2655
     },
     "synopsis_sources": {
       "empty": 0,
       "facade": 2024,
-      "internal": 642
+      "internal": 653
     }
   },
   "packages": [
@@ -9563,24 +9563,24 @@
       "name": "vdate",
       "synopsis": "Package vdate provides public APIs for date/time utilities.",
       "summary": {
-        "function_count": 29,
-        "functions_with_examples": 16,
-        "example_coverage_percent": 55.2,
+        "function_count": 40,
+        "functions_with_examples": 19,
+        "example_coverage_percent": 47.5,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
           "experimental": 0,
-          "recommended": 29
+          "recommended": 40
         },
         "synopsis_sources": {
           "empty": 0,
           "facade": 0,
-          "internal": 29
+          "internal": 40
         }
       },
       "golden_path": [
         {
-          "name": "Parse",
+          "name": "LunarToSolar",
           "use_when": "Use first when callers must observe invalid input or provider failure.",
           "avoid_when": "Avoid for trivial in-memory code where the standard library is clearer."
         },
@@ -9607,7 +9607,7 @@
       ],
       "recommended_entrypoints": [
         {
-          "name": "Parse",
+          "name": "LunarToSolar",
           "profile": "error",
           "rationale": "Prefer when callers must distinguish invalid input or provider failure from default values."
         },
@@ -9714,6 +9714,33 @@
           "examples": [
             "ExampleBetweenDays"
           ]
+        },
+        {
+          "name": "DayGanZhi",
+          "signature": "func DayGanZhi(year int, month int, day int) string",
+          "synopsis": "DayGanZhi returns the sexagenary cycle name for a Gregorian date.",
+          "synopsis_source": "internal",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "year",
+              "type": "int"
+            },
+            {
+              "name": "month",
+              "type": "int"
+            },
+            {
+              "name": "day",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "string"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
         },
         {
           "name": "EndOfDay",
@@ -9868,6 +9895,29 @@
           "variadic": false
         },
         {
+          "name": "IsLeapMonth",
+          "signature": "func IsLeapMonth(year int, month int) bool",
+          "synopsis": "IsLeapMonth reports whether month is the leap month in the lunar year.",
+          "synopsis_source": "internal",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "year",
+              "type": "int"
+            },
+            {
+              "name": "month",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "bool"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
           "name": "IsSameDay",
           "signature": "func IsSameDay(a time.Time, b time.Time) bool",
           "synopsis": "IsSameDay reports whether two times fall on the same calendar day.",
@@ -9892,6 +9942,129 @@
           "examples": [
             "ExampleIsSameDay"
           ]
+        },
+        {
+          "name": "LeapMonth",
+          "signature": "func LeapMonth(year int) int",
+          "synopsis": "LeapMonth returns the leap lunar month for year, or 0 when the year has none.",
+          "synopsis_source": "internal",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "year",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "int"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "LunarMonthDays",
+          "signature": "func LunarMonthDays(year int, month int, isLeapMonth bool) int",
+          "synopsis": "LunarMonthDays returns the day count for a lunar month.",
+          "synopsis_source": "internal",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "year",
+              "type": "int"
+            },
+            {
+              "name": "month",
+              "type": "int"
+            },
+            {
+              "name": "isLeapMonth",
+              "type": "bool"
+            }
+          ],
+          "results": [
+            "int"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "LunarToSolar",
+          "signature": "func LunarToSolar(year int, month int, day int, isLeapMonth bool) (SolarDate, error)",
+          "synopsis": "LunarToSolar converts a Chinese lunar date to the Gregorian calendar.",
+          "synopsis_source": "internal",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "year",
+              "type": "int"
+            },
+            {
+              "name": "month",
+              "type": "int"
+            },
+            {
+              "name": "day",
+              "type": "int"
+            },
+            {
+              "name": "isLeapMonth",
+              "type": "bool"
+            }
+          ],
+          "results": [
+            "SolarDate",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleLunarToSolar"
+          ]
+        },
+        {
+          "name": "LunarYearDays",
+          "signature": "func LunarYearDays(year int) int",
+          "synopsis": "LunarYearDays returns the day count for the lunar year.",
+          "synopsis_source": "internal",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "year",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "int"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "MonthGanZhi",
+          "signature": "func MonthGanZhi(year int, month int) string",
+          "synopsis": "MonthGanZhi returns an approximate sexagenary cycle name for a Gregorian month.",
+          "synopsis_source": "internal",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "year",
+              "type": "int"
+            },
+            {
+              "name": "month",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "string"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
         },
         {
           "name": "Now",
@@ -10175,6 +10348,67 @@
           "variadic": true
         },
         {
+          "name": "SolarTerm",
+          "signature": "func SolarTerm(year int, month int, day int) string",
+          "synopsis": "SolarTerm returns the solar term name that falls on the Gregorian date.",
+          "synopsis_source": "internal",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "year",
+              "type": "int"
+            },
+            {
+              "name": "month",
+              "type": "int"
+            },
+            {
+              "name": "day",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "string"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleSolarTerm"
+          ]
+        },
+        {
+          "name": "SolarToLunar",
+          "signature": "func SolarToLunar(year int, month int, day int) (LunarDate, error)",
+          "synopsis": "SolarToLunar converts a Gregorian date to the Chinese lunar calendar.",
+          "synopsis_source": "internal",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "year",
+              "type": "int"
+            },
+            {
+              "name": "month",
+              "type": "int"
+            },
+            {
+              "name": "day",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "LunarDate",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleSolarToLunar"
+          ]
+        },
+        {
           "name": "Today",
           "signature": "func Today() time.Time",
           "synopsis": "Today returns the start of the current day.",
@@ -10261,6 +10495,44 @@
           ],
           "results": [
             "ParseOption"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "YearGanZhi",
+          "signature": "func YearGanZhi(year int) string",
+          "synopsis": "YearGanZhi returns the sexagenary cycle name for year.",
+          "synopsis_source": "internal",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "year",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "string"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "Zodiac",
+          "signature": "func Zodiac(year int) string",
+          "synopsis": "Zodiac returns the Chinese zodiac animal for a Gregorian or lunar year.",
+          "synopsis_source": "internal",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "year",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "string"
           ],
           "returns_error": false,
           "context_aware": false,

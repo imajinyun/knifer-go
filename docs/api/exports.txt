@@ -732,6 +732,7 @@ github.com/imajinyun/knifer-go/vdate
   func BeginOfMonth(t time.Time) time.Time
   func BeginOfYear(t time.Time) time.Time
   func BetweenDays(a time.Time, b time.Time) int
+  func DayGanZhi(year int, month int, day int) string
   func EndOfDay(t time.Time) time.Time
   func EndOfMonth(t time.Time) time.Time
   func EndOfYear(t time.Time) time.Time
@@ -739,7 +740,13 @@ github.com/imajinyun/knifer-go/vdate
   func FormatDateOnly(t time.Time) string
   func FormatNorm(t time.Time) string
   func FormatTimeOnly(t time.Time) string
+  func IsLeapMonth(year int, month int) bool
   func IsSameDay(a time.Time, b time.Time) bool
+  func LeapMonth(year int) int
+  func LunarMonthDays(year int, month int, isLeapMonth bool) int
+  func LunarToSolar(year int, month int, day int, isLeapMonth bool) (SolarDate, error)
+  func LunarYearDays(year int) int
+  func MonthGanZhi(year int, month int) string
   func Now() time.Time
   func NowWithOptions(opts ...NowOption) time.Time
   func OffsetDay(t time.Time, days int) time.Time
@@ -752,14 +759,20 @@ github.com/imajinyun/knifer-go/vdate
   func ParseLayout(s string, layout string) (time.Time, error)
   func ParseLayoutWithOptions(s string, layout string, opts ...ParseOption) (time.Time, error)
   func ParseWithOptions(s string, opts ...ParseOption) (time.Time, error)
+  func SolarTerm(year int, month int, day int) string
+  func SolarToLunar(year int, month int, day int) (LunarDate, error)
   func Today() time.Time
   func TodayWithOptions(opts ...NowOption) time.Time
   func WithClock(clock func() time.Time) NowOption
   func WithLocation(location *time.Location) ParseOption
   func WithParseInLocationFunc(parser func(layout string, value string, location *time.Location) (time.Time, error)) ParseOption
+  func YearGanZhi(year int) string
+  func Zodiac(year int) string
   type Error = github.com/imajinyun/knifer-go/internal/date.DateError
+  type LunarDate = github.com/imajinyun/knifer-go/internal/date.LunarDate
   type NowOption = github.com/imajinyun/knifer-go/internal/date.NowOption
   type ParseOption = github.com/imajinyun/knifer-go/internal/date.ParseOption
+  type SolarDate = github.com/imajinyun/knifer-go/internal/date.SolarDate
 
 github.com/imajinyun/knifer-go/vdb
   const And github.com/imajinyun/knifer-go/internal/db.LogicalOperator = "AND"

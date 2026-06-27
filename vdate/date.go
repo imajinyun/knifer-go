@@ -15,6 +15,12 @@ type ParseOption = dateimpl.ParseOption
 // NowOption customizes current-time helpers.
 type NowOption = dateimpl.NowOption
 
+// SolarDate represents a Gregorian calendar date.
+type SolarDate = dateimpl.SolarDate
+
+// LunarDate represents a Chinese lunar calendar date.
+type LunarDate = dateimpl.LunarDate
+
 const (
 	NormPattern         = dateimpl.NormPattern
 	NormDatePattern     = dateimpl.NormDatePattern
@@ -66,3 +72,31 @@ func OffsetMinute(t time.Time, minutes int) time.Time { return dateimpl.OffsetMi
 func OffsetSecond(t time.Time, seconds int) time.Time { return dateimpl.OffsetSecond(t, seconds) }
 func BetweenDays(a, b time.Time) int                  { return dateimpl.BetweenDays(a, b) }
 func IsSameDay(a, b time.Time) bool                   { return dateimpl.IsSameDay(a, b) }
+
+func SolarToLunar(year, month, day int) (LunarDate, error) {
+	return dateimpl.SolarToLunar(year, month, day)
+}
+
+func LunarToSolar(year, month, day int, isLeapMonth bool) (SolarDate, error) {
+	return dateimpl.LunarToSolar(year, month, day, isLeapMonth)
+}
+
+func LeapMonth(year int) int { return dateimpl.LeapMonth(year) }
+
+func IsLeapMonth(year, month int) bool { return dateimpl.IsLeapMonth(year, month) }
+
+func LunarMonthDays(year, month int, isLeapMonth bool) int {
+	return dateimpl.LunarMonthDays(year, month, isLeapMonth)
+}
+
+func LunarYearDays(year int) int { return dateimpl.LunarYearDays(year) }
+
+func Zodiac(year int) string { return dateimpl.Zodiac(year) }
+
+func YearGanZhi(year int) string { return dateimpl.YearGanZhi(year) }
+
+func MonthGanZhi(year, month int) string { return dateimpl.MonthGanZhi(year, month) }
+
+func DayGanZhi(year, month, day int) string { return dateimpl.DayGanZhi(year, month, day) }
+
+func SolarTerm(year, month, day int) string { return dateimpl.SolarTerm(year, month, day) }

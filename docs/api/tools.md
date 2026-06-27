@@ -11,17 +11,17 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Schema | 1.7 |
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
-| Functions | 2666 |
-| Functions with examples | 1260 |
+| Functions | 2677 |
+| Functions with examples | 1263 |
 | Context-aware functions | 36 |
-| Functions returning error | 626 |
+| Functions returning error | 628 |
 | Variadic functions | 787 |
-| API status: recommended | 2644 |
+| API status: recommended | 2655 |
 | API status: compatibility | 22 |
 | API status: experimental | 0 |
 | API status: deprecated | 0 |
 | Synopsis source: facade | 2024 |
-| Synopsis source: internal | 642 |
+| Synopsis source: internal | 653 |
 | Synopsis source: empty | 0 |
 
 ## Packages
@@ -758,13 +758,13 @@ Import path: `github.com/imajinyun/knifer-go/vdate`
 
 Package vdate provides public APIs for date/time utilities.
 
-Quality: 29 functions · 16 with examples · 55.2% example coverage · statuses: recommended=29, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=0, internal=29, empty=0
+Quality: 40 functions · 19 with examples · 47.5% example coverage · statuses: recommended=40, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=0, internal=40, empty=0
 
 Recommended entrypoints:
 
 | Function | Profile | Rationale |
 | --- | --- | --- |
-| `Parse` | error | Prefer when callers must distinguish invalid input or provider failure from default values. |
+| `LunarToSolar` | error | Prefer when callers must distinguish invalid input or provider failure from default values. |
 | `NowWithOptions` | options | Prefer when providers, limits, parsers, or policies must be reviewable at the call site. |
 | `BeginOfDay` | day-one | Start here for concise, trusted-input use cases in this package. |
 
@@ -772,7 +772,7 @@ Golden path API set:
 
 | Function | Use when | Avoid when |
 | --- | --- | --- |
-| `Parse` | Use first when callers must observe invalid input or provider failure. | Avoid for trivial in-memory code where the standard library is clearer. |
+| `LunarToSolar` | Use first when callers must observe invalid input or provider failure. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `NowWithOptions` | Use first when policies, providers, parsers, limits, or clocks must be explicit. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `BeginOfDay` | Use first for concise trusted-input workflows in vdate. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vdate. |
 | `BeginOfMonth` | Use first for concise trusted-input workflows in vdate. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vdate. |
@@ -784,6 +784,7 @@ Golden path API set:
 | `BeginOfMonth` | `func BeginOfMonth(t time.Time) time.Time` | recommended | BeginOfMonth returns the first instant of t's month. | internal | `ExampleBeginOfMonth` |
 | `BeginOfYear` | `func BeginOfYear(t time.Time) time.Time` | recommended | BeginOfYear returns the first instant of t's year. | internal | `ExampleBeginOfYear` |
 | `BetweenDays` | `func BetweenDays(a time.Time, b time.Time) int` | recommended | BetweenDays returns the absolute whole-day distance between two times. | internal | `ExampleBetweenDays` |
+| `DayGanZhi` | `func DayGanZhi(year int, month int, day int) string` | recommended | DayGanZhi returns the sexagenary cycle name for a Gregorian date. | internal | — |
 | `EndOfDay` | `func EndOfDay(t time.Time) time.Time` | recommended | EndOfDay returns the last nanosecond of t's day. | internal | `ExampleEndOfDay` |
 | `EndOfMonth` | `func EndOfMonth(t time.Time) time.Time` | recommended | EndOfMonth returns the last nanosecond of t's month. | internal | `ExampleEndOfMonth` |
 | `EndOfYear` | `func EndOfYear(t time.Time) time.Time` | recommended | EndOfYear returns the last nanosecond of t's year. | internal | `ExampleEndOfYear` |
@@ -791,7 +792,13 @@ Golden path API set:
 | `FormatDateOnly` | `func FormatDateOnly(t time.Time) string` | recommended | FormatDateOnly formats t as yyyy-MM-dd. | internal | — |
 | `FormatNorm` | `func FormatNorm(t time.Time) string` | recommended | FormatDateNorm formats t as yyyy-MM-dd HH:mm:ss. | internal | `ExampleFormatNorm` |
 | `FormatTimeOnly` | `func FormatTimeOnly(t time.Time) string` | recommended | FormatTimeOnly formats t as HH:mm:ss. | internal | — |
+| `IsLeapMonth` | `func IsLeapMonth(year int, month int) bool` | recommended | IsLeapMonth reports whether month is the leap month in the lunar year. | internal | — |
 | `IsSameDay` | `func IsSameDay(a time.Time, b time.Time) bool` | recommended | IsSameDay reports whether two times fall on the same calendar day. | internal | `ExampleIsSameDay` |
+| `LeapMonth` | `func LeapMonth(year int) int` | recommended | LeapMonth returns the leap lunar month for year, or 0 when the year has none. | internal | — |
+| `LunarMonthDays` | `func LunarMonthDays(year int, month int, isLeapMonth bool) int` | recommended | LunarMonthDays returns the day count for a lunar month. | internal | — |
+| `LunarToSolar` | `func LunarToSolar(year int, month int, day int, isLeapMonth bool) (SolarDate, error)` | recommended | LunarToSolar converts a Chinese lunar date to the Gregorian calendar. | internal | `ExampleLunarToSolar` |
+| `LunarYearDays` | `func LunarYearDays(year int) int` | recommended | LunarYearDays returns the day count for the lunar year. | internal | — |
+| `MonthGanZhi` | `func MonthGanZhi(year int, month int) string` | recommended | MonthGanZhi returns an approximate sexagenary cycle name for a Gregorian month. | internal | — |
 | `Now` | `func Now() time.Time` | recommended | Now returns the current local time. | internal | — |
 | `NowWithOptions` | `func NowWithOptions(opts ...NowOption) time.Time` | recommended | NowWithOptions returns the current time using options. | internal | — |
 | `OffsetDay` | `func OffsetDay(t time.Time, days int) time.Time` | recommended | OffsetDay offsets t by days. | internal | `ExampleOffsetDay` |
@@ -804,11 +811,15 @@ Golden path API set:
 | `ParseLayout` | `func ParseLayout(s string, layout string) (time.Time, error)` | recommended | ParseDateLayout parses s with the specified Go layout in the local time zone. | internal | `ExampleParseLayout` |
 | `ParseLayoutWithOptions` | `func ParseLayoutWithOptions(s string, layout string, opts ...ParseOption) (time.Time, error)` | recommended | ParseDateLayoutWithOptions parses s with the specified Go layout and explicit options. | internal | — |
 | `ParseWithOptions` | `func ParseWithOptions(s string, opts ...ParseOption) (time.Time, error)` | recommended | ParseDateWithOptions parses common date/time formats with explicit options. | internal | — |
+| `SolarTerm` | `func SolarTerm(year int, month int, day int) string` | recommended | SolarTerm returns the solar term name that falls on the Gregorian date. | internal | `ExampleSolarTerm` |
+| `SolarToLunar` | `func SolarToLunar(year int, month int, day int) (LunarDate, error)` | recommended | SolarToLunar converts a Gregorian date to the Chinese lunar calendar. | internal | `ExampleSolarToLunar` |
 | `Today` | `func Today() time.Time` | recommended | Today returns the start of the current day. | internal | — |
 | `TodayWithOptions` | `func TodayWithOptions(opts ...NowOption) time.Time` | recommended | TodayWithOptions returns the start of the current day using options. | internal | `ExampleTodayWithOptions` |
 | `WithClock` | `func WithClock(clock func() time.Time) NowOption` | recommended | WithClock sets the time source used by NowWithOptions and TodayWithOptions. | internal | — |
 | `WithLocation` | `func WithLocation(location *time.Location) ParseOption` | recommended | WithLocation sets the time zone used when parsing layouts without zone information. | internal | — |
 | `WithParseInLocationFunc` | `func WithParseInLocationFunc(parser func(layout string, value string, location *time.Location) (time.Time, error)) ParseOption` | recommended | WithParseInLocationFunc sets the parser used for layout-based date parsing. | internal | — |
+| `YearGanZhi` | `func YearGanZhi(year int) string` | recommended | YearGanZhi returns the sexagenary cycle name for year. | internal | — |
+| `Zodiac` | `func Zodiac(year int) string` | recommended | Zodiac returns the Chinese zodiac animal for a Gregorian or lunar year. | internal | — |
 
 ### vdb
 

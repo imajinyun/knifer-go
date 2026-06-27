@@ -129,3 +129,29 @@ func ExampleIsSameDay() {
 	// true
 	// false
 }
+
+func ExampleSolarToLunar() {
+	lunar, err := vdate.SolarToLunar(2024, 2, 10)
+	fmt.Println(lunar.Year, lunar.Month, lunar.Day, lunar.YearGanZhi, lunar.Zodiac)
+	fmt.Println(err)
+	// Output:
+	// 2024 1 1 甲辰 龙
+	// <nil>
+}
+
+func ExampleLunarToSolar() {
+	solar, err := vdate.LunarToSolar(2024, 1, 1, false)
+	fmt.Println(solar.Year, solar.Month, solar.Day)
+	fmt.Println(err)
+	// Output:
+	// 2024 2 10
+	// <nil>
+}
+
+func ExampleSolarTerm() {
+	fmt.Println(vdate.SolarTerm(2024, 4, 4))
+	fmt.Println(vdate.SolarTerm(2024, 4, 5))
+	// Output:
+	// 清明
+	//
+}
