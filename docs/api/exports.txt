@@ -392,6 +392,20 @@ github.com/imajinyun/knifer-go/vcli
   var ErrUsage error
 
 github.com/imajinyun/knifer-go/vcodec
+  const Base32HexEncoding Base32Encoding = "hex"
+  const Base32StdEncoding Base32Encoding = "std"
+  const Base58BitcoinAlphabet Base58Alphabet = "bitcoin"
+  const Base58FlickrAlphabet Base58Alphabet = "flickr"
+  func Base32Decode(s string) ([]byte, error)
+  func Base32DecodeWithEncoding(s string, encoding Base32Encoding) ([]byte, error)
+  func Base32Encode(data []byte) string
+  func Base32EncodeWithEncoding(data []byte, encoding Base32Encoding) string
+  func Base58Decode(s string) ([]byte, error)
+  func Base58DecodeWithAlphabet(s string, alphabet Base58Alphabet) ([]byte, error)
+  func Base58Encode(data []byte) string
+  func Base58EncodeWithAlphabet(data []byte, alphabet Base58Alphabet) string
+  func Base62Decode(s string) ([]byte, error)
+  func Base62Encode(data []byte) string
   func Base64Decode(s string) ([]byte, error)
   func Base64DecodeStr(s string) (string, error)
   func Base64DecodeWithEncoding(s string, enc *encoding/base64.Encoding) ([]byte, error)
@@ -406,6 +420,13 @@ github.com/imajinyun/knifer-go/vcodec
   func HexDecodeStr(s string) (string, error)
   func HexEncode(data []byte) string
   func HexEncodeStr(s string) string
+  func MorseDecode(s string) (string, error)
+  func MorseEncode(s string) (string, error)
+  func ROT13(s string) string
+  func ROT47(s string) string
+  func ROTN(s string, n int) string
+  type Base32Encoding = github.com/imajinyun/knifer-go/internal/codec.Base32Encoding
+  type Base58Alphabet = github.com/imajinyun/knifer-go/internal/codec.Base58Alphabet
   type Error = github.com/imajinyun/knifer-go/internal/codec.CodecError
 
 github.com/imajinyun/knifer-go/vconf
@@ -953,6 +974,14 @@ github.com/imajinyun/knifer-go/verr
 
 github.com/imajinyun/knifer-go/vfile
   const DefaultMaxBytes int64 = 67108864
+  const FileCategoryArchive FileCategory = "archive"
+  const FileCategoryAudio FileCategory = "audio"
+  const FileCategoryDocument FileCategory = "document"
+  const FileCategoryExecutable FileCategory = "executable"
+  const FileCategoryFont FileCategory = "font"
+  const FileCategoryImage FileCategory = "image"
+  const FileCategoryUnknown FileCategory = "unknown"
+  const FileCategoryVideo FileCategory = "video"
   func AppendFileString(path string, content string, opts ...WriteOption) error
   func AppendFileStringWithOptions(path string, content string, opts ...WriteOption) error
   func CloseQuietly(c io.Closer)
@@ -962,13 +991,21 @@ github.com/imajinyun/knifer-go/vfile
   func CopyWithOptions(dst io.Writer, src io.Reader, opts ...ReadOption) (int64, error)
   func Del(path string) error
   func DelWithOptions(path string, opts ...DeleteOption) error
+  func DetectFileType(r io.Reader) (FileType, error)
+  func DetectFileTypeBytes(data []byte) FileType
+  func DetectFileTypeFromPath(path string) (FileType, error)
   func Exists(path string) bool
   func ExistsWithOptions(path string, opts ...StatOption) bool
   func Extension(path string) string
+  func IsArchive(ft FileType) bool
+  func IsAudio(ft FileType) bool
   func IsDirectory(path string) bool
   func IsDirectoryWithOptions(path string, opts ...StatOption) bool
+  func IsDocument(ft FileType) bool
   func IsFile(path string) bool
   func IsFileWithOptions(path string, opts ...StatOption) bool
+  func IsImage(ft FileType) bool
+  func IsVideo(ft FileType) bool
   func MainName(path string) string
   func Mkdir(dir string, opts ...DirOption) error
   func MkdirWithOptions(dir string, opts ...DirOption) error
@@ -994,6 +1031,7 @@ github.com/imajinyun/knifer-go/vfile
   func Touch(path string, opts ...WriteOption) error
   func TouchWithOptions(path string, opts ...WriteOption) error
   func WithBufferSize(n int) ReadOption
+  func WithCharset(charset string) ReadOption
   func WithCreateParents(create bool) WriteOption
   func WithDirPerm(perm io/fs.FileMode) WriteOption
   func WithFilePerm(perm io/fs.FileMode) WriteOption
@@ -1015,6 +1053,8 @@ github.com/imajinyun/knifer-go/vfile
   type DeleteOption = github.com/imajinyun/knifer-go/internal/file.DeleteOption
   type DirOption = github.com/imajinyun/knifer-go/internal/file.DirOption
   type Error = github.com/imajinyun/knifer-go/internal/file.FileError
+  type FileCategory = github.com/imajinyun/knifer-go/internal/file.FileCategory
+  type FileType = github.com/imajinyun/knifer-go/internal/file.FileType
   type MkdirAllFunc = github.com/imajinyun/knifer-go/internal/file.MkdirAllFunc
   type OpenFileFunc = github.com/imajinyun/knifer-go/internal/file.OpenFileFunc
   type OpenFunc = github.com/imajinyun/knifer-go/internal/file.OpenFunc
@@ -1023,6 +1063,7 @@ github.com/imajinyun/knifer-go/vfile
   type StatFunc = github.com/imajinyun/knifer-go/internal/file.StatFunc
   type StatOption = github.com/imajinyun/knifer-go/internal/file.StatOption
   type WriteOption = github.com/imajinyun/knifer-go/internal/file.WriteOption
+  var UnknownFileType github.com/imajinyun/knifer-go/internal/file.FileType
 
 github.com/imajinyun/knifer-go/vform
   func IsChinese(s string) bool
@@ -1071,6 +1112,24 @@ github.com/imajinyun/knifer-go/vftp
   var ErrMissingProvider error
   var ErrTransferLimitExceeded error
 
+github.com/imajinyun/knifer-go/vgeo
+  const BD09 CoordType = "BD09"
+  const BD09MC CoordType = "BD09MC"
+  const GCJ02 CoordType = "GCJ02"
+  const WGS84 CoordType = "WGS84"
+  func BD09ToGCJ02(coord Coord) Coord
+  func BD09ToWGS84(coord Coord) Coord
+  func Convert(coord Coord, fromType CoordType, toType CoordType) (Coord, error)
+  func Distance(a Coord, b Coord) float64
+  func GCJ02ToBD09(coord Coord) Coord
+  func GCJ02ToWGS84(coord Coord) Coord
+  func InChina(lng float64, lat float64) bool
+  func WGS84ToBD09(coord Coord) Coord
+  func WGS84ToGCJ02(coord Coord) Coord
+  type Coord = github.com/imajinyun/knifer-go/internal/geo.Coord
+  type CoordType = github.com/imajinyun/knifer-go/internal/geo.CoordType
+  type Error = github.com/imajinyun/knifer-go/internal/geo.Error
+
 github.com/imajinyun/knifer-go/vhan
   const ToneStyleDefault github.com/imajinyun/knifer-go/internal/pinyin.ToneStyle = ""
   const ToneStyleMark github.com/imajinyun/knifer-go/internal/pinyin.ToneStyle = "mark"
@@ -1107,10 +1166,17 @@ github.com/imajinyun/knifer-go/vhash
   func HfIpHash(s string) int64
   func JavaDefaultHash(s string) int32
   func JsHash(s string) int32
+  func NewConsistentHash(opts ...ConsistentHashOption) *ConsistentHash
   func PjwHash(s string) int32
   func RsHash(s string) int32
   func SdbmHash(s string) int32
   func TianlHash(s string) int64
+  func WithHashFunc(hashFunc func([]byte) uint64) ConsistentHashOption
+  func WithReplicaCount(n int) ConsistentHashOption
+  func WithVirtualNodes(n int) ConsistentHashOption
+  type ConsistentHash = github.com/imajinyun/knifer-go/internal/hash.ConsistentHash
+  type ConsistentHashOption = github.com/imajinyun/knifer-go/internal/hash.ConsistentHashOption
+  type Error = github.com/imajinyun/knifer-go/internal/hash.Error
 
 github.com/imajinyun/knifer-go/vhttp
   const ContentTypeEventStream ContentType = "text/event-stream"
@@ -1429,6 +1495,7 @@ github.com/imajinyun/knifer-go/vident
   func Hide(idCard string, start int, end int) string
   func IsValidBirthday(s string) bool
   func IsValidBirthdayWithOptions(s string, opts ...BirthOption) bool
+  func IsValidCreditCode(code string) bool
   func IsValidHKIDCard(idCard string) bool
   func IsValidHKIDCardWithOptions(idCard string, opts ...IDCardOption) bool
   func IsValidIDCard(idCard string) bool
@@ -1442,6 +1509,7 @@ github.com/imajinyun/knifer-go/vident
   func IsValidTWIDCard(idCard string) bool
   func IsValidTWIDCardWithOptions(idCard string, opts ...IDCardOption) bool
   func Month(idCard string) (int, bool)
+  func ParseCreditCode(code string) (CreditCodeInfo, error)
   func ParseIDCard(idCard string) (IDCardInfo, bool)
   func ParseRegionCard(idCard string) (RegionCardInfo, bool)
   func ParseRegionCardWithOptions(idCard string, opts ...IDCardOption) (RegionCardInfo, bool)
@@ -1459,6 +1527,7 @@ github.com/imajinyun/knifer-go/vident
   func Year(idCard string) (int, bool)
   type AgeOption = github.com/imajinyun/knifer-go/internal/identity.AgeOption
   type BirthOption = github.com/imajinyun/knifer-go/internal/identity.BirthOption
+  type CreditCodeInfo = github.com/imajinyun/knifer-go/internal/identity.CreditCodeInfo
   type Gender = github.com/imajinyun/knifer-go/internal/identity.Gender
   type IDCardInfo = github.com/imajinyun/knifer-go/internal/identity.IDCardInfo
   type IDCardOption = github.com/imajinyun/knifer-go/internal/identity.IDCardOption
@@ -2605,10 +2674,16 @@ github.com/imajinyun/knifer-go/vrand
   func StringUpper(n int) string
   func StringUpperWithOptions(n int, opts ...RandomOption) string
   func StringWithOptions(n int, opts ...RandomOption) string
+  func WeightedPickN[T any](items []T, weights []float64, n int, opts ...WeightedOption) ([]T, error)
+  func WeightedPickUniqueN[T any](items []T, weights []float64, n int, opts ...WeightedOption) ([]T, error)
+  func WeightedPick[T any](items []T, weights []float64, opts ...WeightedOption) (T, error)
   func WithRandomReader(reader io.Reader) RandomOption
   func WithRandomSource(source *math/rand.Rand) RandomOption
   func WithStrictCryptoRandom() RandomOption
+  func WithWeightedPrecision(precision float64) WeightedOption
+  func WithWeightedRandSource(source *math/rand.Rand) WeightedOption
   type RandomOption = github.com/imajinyun/knifer-go/internal/rand.RandomOption
+  type WeightedOption = github.com/imajinyun/knifer-go/internal/rand.WeightedOption
 
 github.com/imajinyun/knifer-go/vref
   func GetConstructor(target any) reflect.Value
@@ -3170,6 +3245,12 @@ github.com/imajinyun/knifer-go/vssh
   var ErrTransferLimitExceeded error
 
 github.com/imajinyun/knifer-go/vstr
+  const BOMNone BOMType = ""
+  const BOMUTF16BE BOMType = "UTF-16BE"
+  const BOMUTF16LE BOMType = "UTF-16LE"
+  const BOMUTF32BE BOMType = "UTF-32BE"
+  const BOMUTF32LE BOMType = "UTF-32LE"
+  const BOMUTF8 BOMType = "UTF-8"
   func AddPrefixIfNot(s string, prefix string) string
   func AddSuffixIfNot(s string, suffix string) string
   func AntPathMatch(pattern string, path string) bool
@@ -3187,7 +3268,9 @@ github.com/imajinyun/knifer-go/vstr
   func EscapeHTML(s string) string
   func EscapeUnicode(s string) string
   func Format(template string, args ...any) string
+  func FromUTF8(data []byte, to string) ([]byte, error)
   func HammingDistance64(a uint64, b uint64) int
+  func HasBOM(data []byte) BOMType
   func HasBlank(strs ...string) bool
   func HasEmpty(strs ...string) bool
   func IsAllBlank(strs ...string) bool
@@ -3219,12 +3302,14 @@ github.com/imajinyun/knifer-go/vstr
   func Split(s string, sep string) []string
   func SplitTrim(s string, sep string) []string
   func StartsWith(s string, prefix string) bool
+  func StripBOM(data []byte) []byte
   func Sub(s string, fromIndex int, toIndex int) string
   func SubAfter(s string, sep string, isLastSeparator bool) string
   func SubBefore(s string, sep string, isLastSeparator bool) string
   func ToCamelCase(s string) string
   func ToKebabCase(s string) string
   func ToPascalCase(s string) string
+  func ToUTF8(data []byte, from string) ([]byte, error)
   func ToUnderlineCase(s string) string
   func Trim(s string) string
   func TrimEnd(s string) string
@@ -3234,6 +3319,7 @@ github.com/imajinyun/knifer-go/vstr
   func UnescapeUnicode(s string) string
   func WithEmojiMatcher(matcher func(string) bool) EmojiOption
   func WithEmojiReplacer(replacer func(string) string) EmojiOption
+  type BOMType = github.com/imajinyun/knifer-go/internal/str.BOMType
   type EmojiOption = github.com/imajinyun/knifer-go/internal/str.EmojiOption
 
 github.com/imajinyun/knifer-go/vsys

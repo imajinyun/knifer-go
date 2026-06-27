@@ -1,6 +1,10 @@
 package codec
 
-import knifer "github.com/imajinyun/knifer-go"
+import (
+	"errors"
+
+	knifer "github.com/imajinyun/knifer-go"
+)
 
 // CodecError represents an error produced by codec helpers.
 type CodecError struct {
@@ -60,3 +64,5 @@ func wrapCodecError(code knifer.ErrCode, msg string, cause error) error {
 func invalidCodecInput(msg string, cause error) error {
 	return wrapCodecError(knifer.ErrCodeInvalidInput, msg, cause)
 }
+
+var errInvalidAlphabetChar = errors.New("invalid alphabet character")

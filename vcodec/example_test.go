@@ -9,11 +9,11 @@ import (
 func ExampleBase64Encode() {
 	encoded := vcodec.Base64Encode([]byte("knifer-go"))
 	fmt.Println(encoded)
-	// Output: Z28ta25pZmVy
+	// Output: a25pZmVyLWdv
 }
 
 func ExampleBase64Decode() {
-	decoded, _ := vcodec.Base64Decode("Z28ta25pZmVy")
+	decoded, _ := vcodec.Base64Decode("a25pZmVyLWdv")
 	fmt.Println(string(decoded))
 	// Output: knifer-go
 }

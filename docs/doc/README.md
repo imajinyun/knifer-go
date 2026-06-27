@@ -108,6 +108,7 @@ The project follows an “internal implementation + public facade” layout: `in
 | [`verr`](16-verr.md) | `github.com/imajinyun/knifer-go/verr` | Error helpers: panic recovery, aggregation, multierror matching, stack capture/formatting, injectable logging/stack/exit/timer/runner providers, and optional logrus/Sentry integration. |
 | [`vfile`](17-vfile.md) | `github.com/imajinyun/knifer-go/vfile` | File and IO helpers: read/write/copy, lines, mkdir/touch/delete, filename helpers, quiet close, and provider-backed file-system operations. |
 | [`vform`](18-vform.md) | `github.com/imajinyun/knifer-go/vform` | Form and input validation helpers: email, mobile, URL, IPv4/IPv6, ID card, Chinese text, number strings, and matcher providers. |
+| [`vgeo`](55-vgeo.md) | `github.com/imajinyun/knifer-go/vgeo` | Coordinate conversion helpers: WGS-84, GCJ-02, BD-09, rough China-bound checks, and Haversine distance. |
 | [`vftp`](19-vftp.md) | `github.com/imajinyun/knifer-go/vftp` | FTP adapter helpers: provider-injected listing, in-memory download/upload contracts, request validation, transfer limits, and defensive copies. |
 | [`vhan`](20-vhan.md) | `github.com/imajinyun/knifer-go/vhan` | Han text adapter helpers: provider-injected Chinese-to-pinyin conversion and initials extraction, request validation, input limits, and defensive copies. |
 | [`vhash`](21-vhash.md) | `github.com/imajinyun/knifer-go/vhash` | Non-cryptographic hash helpers: additive, FNV, injectable 32-bit providers, and classic string hashes. |

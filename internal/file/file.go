@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+
+	strutil "github.com/imajinyun/knifer-go/internal/str"
 )
 
 const DefaultMaxBytes int64 = 64 << 20
@@ -38,6 +40,7 @@ type fileConfig struct {
 	stat             StatFunc
 	mkdirAll         MkdirAllFunc
 	removeAll        RemoveAllFunc
+	charset          string
 }
 
 // Option customizes file helpers.
@@ -127,6 +130,11 @@ func WithInitialLineBuffer(n int) ReadOption { return func(c *fileConfig) { c.in
 
 // WithMaxLineBytes sets the maximum scanner token size for line reads.
 func WithMaxLineBytes(n int) ReadOption { return func(c *fileConfig) { c.maxLineBytes = n } }
+
+// WithCharset converts file string and line reads from charset to UTF-8.
+func WithCharset(charset string) ReadOption {
+	return func(c *fileConfig) { c.charset = charset }
+}
 
 // WithOpen sets the function used to open files for reading.
 func WithOpen(open OpenFunc) Option {
@@ -231,9 +239,16 @@ func ReadString(r io.Reader) (string, error) { return ReadStringWithOptions(r) }
 
 // ReadStringWithOptions reads data from r as a string with per-call read options.
 func ReadStringWithOptions(r io.Reader, opts ...ReadOption) (string, error) {
-	b, err := ReadAllWithOptions(r, opts...)
+	cfg := applyReadOptions(opts)
+	b, err := readAllLimit(r, cfg.maxBytes)
 	if err != nil {
 		return "", err
+	}
+	if cfg.charset != "" {
+		b, err = decodeCharset(b, cfg.charset)
+		if err != nil {
+			return "", err
+		}
 	}
 	return string(b), nil
 }
@@ -243,7 +258,19 @@ func ReadLines(r io.Reader) ([]string, error) { return ReadLinesWithOptions(r) }
 
 // ReadLinesWithOptions reads all lines from r with per-call line options.
 func ReadLinesWithOptions(r io.Reader, opts ...ReadOption) ([]string, error) {
-	return readLinesWithConfig(r, applyReadOptions(opts))
+	cfg := applyReadOptions(opts)
+	if cfg.charset == "" {
+		return readLinesWithConfig(r, cfg)
+	}
+	data, err := readAllLimit(r, cfg.maxBytes)
+	if err != nil {
+		return nil, err
+	}
+	data, err = decodeCharset(data, cfg.charset)
+	if err != nil {
+		return nil, err
+	}
+	return readLinesWithConfig(bytes.NewReader(data), cfg)
 }
 
 // ReadChunks reads r in chunks and invokes handle for each chunk.
@@ -324,9 +351,21 @@ func FileReadString(path string) (string, error) { return FileReadStringWithOpti
 
 // FileReadStringWithOptions reads a file as a string with per-call read options.
 func FileReadStringWithOptions(path string, opts ...ReadOption) (string, error) {
-	b, err := FileReadBytesWithOptions(path, opts...)
+	cfg := applyReadOptions(opts)
+	f, err := cfg.open(path)
 	if err != nil {
-		return "", err
+		return "", wrapFileIO("read file "+path, err)
+	}
+	defer CloseQuietly(f)
+	b, err := readAllLimit(f, cfg.maxBytes)
+	if err != nil {
+		return "", wrapFileIO("read file "+path, err)
+	}
+	if cfg.charset != "" {
+		b, err = decodeCharset(b, cfg.charset)
+		if err != nil {
+			return "", err
+		}
 	}
 	return string(b), nil
 }
@@ -357,6 +396,18 @@ func FileReadLinesWithOptions(path string, opts ...ReadOption) ([]string, error)
 		return nil, wrapFileIO("open file "+path, err)
 	}
 	defer CloseQuietly(f)
+	if cfg.charset != "" {
+		data, err := readAllLimit(f, cfg.maxBytes)
+		if err != nil {
+			return nil, wrapFileIO("read file "+path, err)
+		}
+		data, err = decodeCharset(data, cfg.charset)
+		if err != nil {
+			return nil, err
+		}
+		lines, err := readLinesWithConfig(bytes.NewReader(data), cfg)
+		return lines, wrapFileIO("read lines from file "+path, err)
+	}
 	lines, err := readLinesWithConfig(f, cfg)
 	return lines, wrapFileIO("read lines from file "+path, err)
 }
@@ -676,3 +727,7 @@ func FileSizeWithOptions(path string, opts ...StatOption) int64 {
 
 // ReaderFromString converts a string to an io.Reader.
 func ReaderFromString(s string) io.Reader { return bytes.NewBufferString(s) }
+
+func decodeCharset(data []byte, charset string) ([]byte, error) {
+	return strutil.ToUTF8(data, charset)
+}

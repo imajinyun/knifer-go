@@ -10,17 +10,17 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | --- | ---: |
 | Schema | 1.7 |
 | Module | `github.com/imajinyun/knifer-go` |
-| Packages | 54 |
-| Functions | 2618 |
-| Functions with examples | 1253 |
+| Packages | 55 |
+| Functions | 2666 |
+| Functions with examples | 1260 |
 | Context-aware functions | 36 |
-| Functions returning error | 610 |
-| Variadic functions | 783 |
-| API status: recommended | 2596 |
+| Functions returning error | 626 |
+| Variadic functions | 787 |
+| API status: recommended | 2644 |
 | API status: compatibility | 22 |
 | API status: experimental | 0 |
 | API status: deprecated | 0 |
-| Synopsis source: facade | 1976 |
+| Synopsis source: facade | 2024 |
 | Synopsis source: internal | 642 |
 | Synopsis source: empty | 0 |
 
@@ -337,27 +337,37 @@ Import path: `github.com/imajinyun/knifer-go/vcodec`
 
 Package vcodec provides public APIs for encoding and decoding utilities.
 
-Quality: 14 functions · 5 with examples · 35.7% example coverage · statuses: recommended=14, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=0, internal=14, empty=0
+Quality: 29 functions · 5 with examples · 17.2% example coverage · statuses: recommended=29, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=15, internal=14, empty=0
 
 Recommended entrypoints:
 
 | Function | Profile | Rationale |
 | --- | --- | --- |
-| `Base64Decode` | error | Prefer when callers must distinguish invalid input or provider failure from default values. |
+| `Base32Decode` | error | Prefer when callers must distinguish invalid input or provider failure from default values. |
 | `Base64Encode` | day-one | Start here for concise, trusted-input use cases in this package. |
 
 Golden path API set:
 
 | Function | Use when | Avoid when |
 | --- | --- | --- |
-| `Base64Decode` | Use first when callers must observe invalid input or provider failure. | Avoid for trivial in-memory code where the standard library is clearer. |
+| `Base32Decode` | Use first when callers must observe invalid input or provider failure. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `Base64Encode` | Use first for concise trusted-input workflows in vcodec. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec. |
-| `Base64DecodeStr` | Use first for concise trusted-input workflows in vcodec. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec. |
-| `Base64DecodeWithEncoding` | Use first for concise trusted-input workflows in vcodec. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec. |
-| `Base64EncodeStr` | Use first for concise trusted-input workflows in vcodec. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec. |
+| `Base32DecodeWithEncoding` | Use first for concise trusted-input workflows in vcodec. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec. |
+| `Base32Encode` | Use first for concise trusted-input workflows in vcodec. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec. |
+| `Base32EncodeWithEncoding` | Use first for concise trusted-input workflows in vcodec. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec. |
 
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
+| `Base32Decode` | `func Base32Decode(s string) ([]byte, error)` | recommended | Base32Decode decodes a standard Base32 string. | facade | — |
+| `Base32DecodeWithEncoding` | `func Base32DecodeWithEncoding(s string, encoding Base32Encoding) ([]byte, error)` | recommended | Base32DecodeWithEncoding decodes a Base32 string with the requested alphabet. | facade | — |
+| `Base32Encode` | `func Base32Encode(data []byte) string` | recommended | Base32Encode encodes bytes with standard Base32 encoding. | facade | — |
+| `Base32EncodeWithEncoding` | `func Base32EncodeWithEncoding(data []byte, encoding Base32Encoding) string` | recommended | Base32EncodeWithEncoding encodes bytes with the requested Base32 alphabet. | facade | — |
+| `Base58Decode` | `func Base58Decode(s string) ([]byte, error)` | recommended | Base58Decode decodes a Bitcoin Base58 string. | facade | — |
+| `Base58DecodeWithAlphabet` | `func Base58DecodeWithAlphabet(s string, alphabet Base58Alphabet) ([]byte, error)` | recommended | Base58DecodeWithAlphabet decodes a Base58 string with a supported alphabet. | facade | — |
+| `Base58Encode` | `func Base58Encode(data []byte) string` | recommended | Base58Encode encodes bytes with the Bitcoin Base58 alphabet. | facade | — |
+| `Base58EncodeWithAlphabet` | `func Base58EncodeWithAlphabet(data []byte, alphabet Base58Alphabet) string` | recommended | Base58EncodeWithAlphabet encodes bytes with a supported Base58 alphabet. | facade | — |
+| `Base62Decode` | `func Base62Decode(s string) ([]byte, error)` | recommended | Base62Decode decodes a Base62 string. | facade | — |
+| `Base62Encode` | `func Base62Encode(data []byte) string` | recommended | Base62Encode encodes bytes with a URL-friendly Base62 alphabet. | facade | — |
 | `Base64Decode` | `func Base64Decode(s string) ([]byte, error)` | recommended | Base64Decode decodes a standard Base64 string. | internal | `ExampleBase64Decode` |
 | `Base64DecodeStr` | `func Base64DecodeStr(s string) (string, error)` | recommended | Base64DecodeStr decodes a standard Base64 string and returns text. | internal | — |
 | `Base64DecodeWithEncoding` | `func Base64DecodeWithEncoding(s string, enc *base64.Encoding) ([]byte, error)` | recommended | Base64DecodeWithEncoding decodes a Base64 string with enc. | internal | — |
@@ -372,6 +382,11 @@ Golden path API set:
 | `HexDecodeStr` | `func HexDecodeStr(s string) (string, error)` | recommended | HexDecodeStr decodes a hexadecimal string and returns text. | internal | `ExampleHexDecodeStr` |
 | `HexEncode` | `func HexEncode(data []byte) string` | recommended | HexEncode encodes bytes as a lowercase hexadecimal string. | internal | `ExampleHexEncode` |
 | `HexEncodeStr` | `func HexEncodeStr(s string) string` | recommended | HexEncodeStr encodes a string as lowercase hexadecimal text. | internal | — |
+| `MorseDecode` | `func MorseDecode(s string) (string, error)` | recommended | MorseDecode decodes Morse code using spaces between letters and "/" between words. | facade | — |
+| `MorseEncode` | `func MorseEncode(s string) (string, error)` | recommended | MorseEncode encodes supported ASCII letters, digits, and punctuation as Morse code. | facade | — |
+| `ROT13` | `func ROT13(s string) string` | recommended | ROT13 applies the ROT13 substitution to ASCII letters. | facade | — |
+| `ROT47` | `func ROT47(s string) string` | recommended | ROT47 applies the ROT47 substitution to printable ASCII characters. | facade | — |
+| `ROTN` | `func ROTN(s string, n int) string` | recommended | ROTN applies a Caesar shift to ASCII letters. | facade | — |
 
 ### vconf
 
@@ -1035,7 +1050,7 @@ Import path: `github.com/imajinyun/knifer-go/vfile`
 
 Package vfile provides public APIs for file and IO utilities.
 
-Quality: 59 functions · 59 with examples · 100.0% example coverage · statuses: recommended=59, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=53, internal=6, empty=0
+Quality: 68 functions · 59 with examples · 86.8% example coverage · statuses: recommended=68, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=62, internal=6, empty=0
 
 Recommended entrypoints:
 
@@ -1066,13 +1081,21 @@ Golden path API set:
 | `CopyWithOptions` | `func CopyWithOptions(dst io.Writer, src io.Reader, opts ...ReadOption) (int64, error)` | recommended | IoCopyWithOptions copies from src to dst using per-call read options. | internal | `ExampleCopyWithOptions` |
 | `Del` | `func Del(path string) error` | recommended | Del removes path recursively. | facade | `ExampleDel` |
 | `DelWithOptions` | `func DelWithOptions(path string, opts ...DeleteOption) error` | recommended | DelWithOptions removes path recursively using per-call delete options. | facade | `ExampleDelWithOptions` |
+| `DetectFileType` | `func DetectFileType(r io.Reader) (FileType, error)` | recommended | DetectFileType detects a file type from leading magic-number bytes. | facade | — |
+| `DetectFileTypeBytes` | `func DetectFileTypeBytes(data []byte) FileType` | recommended | DetectFileTypeBytes detects a file type from bytes already in memory. | facade | — |
+| `DetectFileTypeFromPath` | `func DetectFileTypeFromPath(path string) (FileType, error)` | recommended | DetectFileTypeFromPath detects a file type by opening path and reading its header. | facade | — |
 | `Exists` | `func Exists(path string) bool` | recommended | Exists reports whether a file or directory exists at path. | facade | `ExampleExists` |
 | `ExistsWithOptions` | `func ExistsWithOptions(path string, opts ...StatOption) bool` | recommended | ExistsWithOptions reports whether a file or directory exists using per-call stat options. | facade | `ExampleExistsWithOptions` |
 | `Extension` | `func Extension(path string) string` | recommended | Extension returns the file extension without the leading dot, or an empty string when absent. | internal | `ExampleExtension` |
+| `IsArchive` | `func IsArchive(ft FileType) bool` | recommended | IsArchive reports whether ft is an archive file type. | facade | — |
+| `IsAudio` | `func IsAudio(ft FileType) bool` | recommended | IsAudio reports whether ft is an audio file type. | facade | — |
 | `IsDirectory` | `func IsDirectory(path string) bool` | recommended | IsDirectory reports whether path exists and is a directory. | facade | `ExampleIsDirectory` |
 | `IsDirectoryWithOptions` | `func IsDirectoryWithOptions(path string, opts ...StatOption) bool` | recommended | IsDirectoryWithOptions reports whether path exists and is a directory using per-call stat options. | facade | `ExampleIsDirectoryWithOptions` |
+| `IsDocument` | `func IsDocument(ft FileType) bool` | recommended | IsDocument reports whether ft is a document file type. | facade | — |
 | `IsFile` | `func IsFile(path string) bool` | recommended | IsFile reports whether path exists and is a regular file. | facade | `ExampleIsFile` |
 | `IsFileWithOptions` | `func IsFileWithOptions(path string, opts ...StatOption) bool` | recommended | IsFileWithOptions reports whether path exists and is a regular file using per-call stat options. | facade | `ExampleIsFileWithOptions` |
+| `IsImage` | `func IsImage(ft FileType) bool` | recommended | IsImage reports whether ft is an image file type. | facade | — |
+| `IsVideo` | `func IsVideo(ft FileType) bool` | recommended | IsVideo reports whether ft is a video file type. | facade | — |
 | `MainName` | `func MainName(path string) string` | recommended | MainName returns the file name without its extension; parent directories are ignored. | internal | `ExampleMainName` |
 | `Mkdir` | `func Mkdir(dir string, opts ...DirOption) error` | recommended | Mkdir creates dir with directory options. | facade | `ExampleMkdir` |
 | `MkdirWithOptions` | `func MkdirWithOptions(dir string, opts ...DirOption) error` | recommended | MkdirWithOptions creates dir with per-call directory options. | facade | `ExampleMkdirWithOptions` |
@@ -1098,6 +1121,7 @@ Golden path API set:
 | `Touch` | `func Touch(path string, opts ...WriteOption) error` | recommended | Touch creates path when missing and updates its timestamp. | facade | `ExampleTouch` |
 | `TouchWithOptions` | `func TouchWithOptions(path string, opts ...WriteOption) error` | recommended | TouchWithOptions creates path when missing using per-call write options. | facade | `ExampleTouchWithOptions` |
 | `WithBufferSize` | `func WithBufferSize(n int) ReadOption` | recommended | WithBufferSize sets the buffer size used by chunk reads and limited copies. | facade | `ExampleWithBufferSize` |
+| `WithCharset` | `func WithCharset(charset string) ReadOption` | recommended | WithCharset converts file string and line reads from charset to UTF-8. | facade | — |
 | `WithCreateParents` | `func WithCreateParents(create bool) WriteOption` | recommended | WithCreateParents controls whether parent directories are created automatically. | facade | `ExampleWithCreateParents` |
 | `WithDirPerm` | `func WithDirPerm(perm fs.FileMode) WriteOption` | recommended | WithDirPerm sets the parent-directory permission used when creating directories. | facade | `ExampleWithDirPerm` |
 | `WithFilePerm` | `func WithFilePerm(perm fs.FileMode) WriteOption` | recommended | WithFilePerm sets the file permission used when creating files. | facade | `ExampleWithFilePerm` |
@@ -1197,6 +1221,43 @@ Golden path API set:
 | `Upload` | `func Upload(ctx context.Context, provider Provider, request UploadRequest) (UploadResponse, error)` | recommended | Upload validates request and delegates to provider through a short-lived Client. | facade | `ExampleUpload` |
 | `WithProvider` | `func WithProvider(provider Provider) Option` | recommended | WithProvider sets the provider used by list, download, and upload calls. | facade | `ExampleWithProvider` |
 
+### vgeo
+
+Import path: `github.com/imajinyun/knifer-go/vgeo`
+
+Package vgeo provides public APIs for coordinate conversion utilities.
+
+Quality: 9 functions · 7 with examples · 77.8% example coverage · statuses: recommended=9, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=9, internal=0, empty=0
+
+Recommended entrypoints:
+
+| Function | Profile | Rationale |
+| --- | --- | --- |
+| `Convert` | error | Prefer when callers must distinguish invalid input or provider failure from default values. |
+| `BD09ToGCJ02` | day-one | Start here for concise, trusted-input use cases in this package. |
+
+Golden path API set:
+
+| Function | Use when | Avoid when |
+| --- | --- | --- |
+| `Convert` | Use first when callers must observe invalid input or provider failure. | Avoid for trivial in-memory code where the standard library is clearer. |
+| `BD09ToGCJ02` | Use first for concise trusted-input workflows in vgeo. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo. |
+| `BD09ToWGS84` | Use first for concise trusted-input workflows in vgeo. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo. |
+| `Distance` | Use first for concise trusted-input workflows in vgeo. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo. |
+| `GCJ02ToBD09` | Use first for concise trusted-input workflows in vgeo. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo. |
+
+| Function | Signature | Status | Synopsis | Source | Examples |
+| --- | --- | --- | --- | --- | --- |
+| `BD09ToGCJ02` | `func BD09ToGCJ02(coord Coord) Coord` | recommended | BD09ToGCJ02 converts BD-09 coordinates to GCJ-02. | facade | `ExampleBD09ToGCJ02` |
+| `BD09ToWGS84` | `func BD09ToWGS84(coord Coord) Coord` | recommended | BD09ToWGS84 converts BD-09 coordinates to WGS-84. | facade | `ExampleBD09ToWGS84` |
+| `Convert` | `func Convert(coord Coord, fromType CoordType, toType CoordType) (Coord, error)` | recommended | Convert converts coord between supported coordinate systems. | facade | `ExampleConvert` |
+| `Distance` | `func Distance(a Coord, b Coord) float64` | recommended | Distance returns the great-circle distance between two coordinates in meters. | facade | `ExampleDistance` |
+| `GCJ02ToBD09` | `func GCJ02ToBD09(coord Coord) Coord` | recommended | GCJ02ToBD09 converts GCJ-02 coordinates to BD-09. | facade | `ExampleGCJ02ToBD09` |
+| `GCJ02ToWGS84` | `func GCJ02ToWGS84(coord Coord) Coord` | recommended | GCJ02ToWGS84 converts GCJ-02 coordinates back to WGS-84. | facade | — |
+| `InChina` | `func InChina(lng float64, lat float64) bool` | recommended | InChina reports whether a longitude/latitude pair falls inside a rough mainland China bounding box. | facade | `ExampleInChina` |
+| `WGS84ToBD09` | `func WGS84ToBD09(coord Coord) Coord` | recommended | WGS84ToBD09 converts WGS-84 coordinates to BD-09. | facade | — |
+| `WGS84ToGCJ02` | `func WGS84ToGCJ02(coord Coord) Coord` | recommended | WGS84ToGCJ02 converts GPS coordinates to GCJ-02. | facade | `ExampleWGS84ToGCJ02` |
+
 ### vhan
 
 Import path: `github.com/imajinyun/knifer-go/vhan`
@@ -1235,23 +1296,24 @@ Import path: `github.com/imajinyun/knifer-go/vhash`
 
 Package vhash provides public APIs for hash utilities.
 
-Quality: 16 functions · 5 with examples · 31.3% example coverage · statuses: recommended=16, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=16, internal=0, empty=0
+Quality: 20 functions · 5 with examples · 25.0% example coverage · statuses: recommended=20, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=20, internal=0, empty=0
 
 Recommended entrypoints:
 
 | Function | Profile | Rationale |
 | --- | --- | --- |
+| `NewConsistentHash` | options | Prefer when providers, limits, parsers, or policies must be reviewable at the call site. |
 | `AdditiveHash` | day-one | Start here for concise, trusted-input use cases in this package. |
 
 Golden path API set:
 
 | Function | Use when | Avoid when |
 | --- | --- | --- |
+| `NewConsistentHash` | Use first when policies, providers, parsers, limits, or clocks must be explicit. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `AdditiveHash` | Use first for concise trusted-input workflows in vhash. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vhash. |
 | `ApHash` | Use first for concise trusted-input workflows in vhash. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vhash. |
 | `BkdrHash` | Use first for concise trusted-input workflows in vhash. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vhash. |
 | `DjbHash` | Use first for concise trusted-input workflows in vhash. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vhash. |
-| `ElfHash` | Use first for concise trusted-input workflows in vhash. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vhash. |
 
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
@@ -1267,10 +1329,14 @@ Golden path API set:
 | `HfIpHash` | `func HfIpHash(s string) int64` | recommended | HfIpHash calculates a hash using the HFIP algorithm. | facade | — |
 | `JavaDefaultHash` | `func JavaDefaultHash(s string) int32` | recommended | JavaDefaultHash calculates a hash equivalent to Java String.hashCode. | facade | `ExampleJavaDefaultHash` |
 | `JsHash` | `func JsHash(s string) int32` | recommended | JsHash calculates a hash using the JS algorithm. | facade | — |
+| `NewConsistentHash` | `func NewConsistentHash(opts ...ConsistentHashOption) *ConsistentHash` | recommended | NewConsistentHash creates an empty consistent hash ring. | facade | — |
 | `PjwHash` | `func PjwHash(s string) int32` | recommended | PjwHash calculates a hash using the PJW algorithm. | facade | — |
 | `RsHash` | `func RsHash(s string) int32` | recommended | RsHash calculates a hash using the RS algorithm. | facade | — |
 | `SdbmHash` | `func SdbmHash(s string) int32` | recommended | SdbmHash calculates a hash using the SDBM algorithm. | facade | — |
 | `TianlHash` | `func TianlHash(s string) int64` | recommended | TianlHash calculates a hash using the TianL algorithm. | facade | — |
+| `WithHashFunc` | `func WithHashFunc(hashFunc func([]byte) uint64) ConsistentHashOption` | recommended | WithHashFunc sets the hash function used by the ring. | facade | — |
+| `WithReplicaCount` | `func WithReplicaCount(n int) ConsistentHashOption` | recommended | WithReplicaCount sets the number of virtual nodes per real node. | facade | — |
+| `WithVirtualNodes` | `func WithVirtualNodes(n int) ConsistentHashOption` | recommended | WithVirtualNodes sets the number of virtual nodes per real node. | facade | — |
 
 ### vhttp
 
@@ -1551,12 +1617,13 @@ Import path: `github.com/imajinyun/knifer-go/vident`
 
 Package vident provides identity and legal identifier helpers.
 
-Quality: 48 functions · 11 with examples · 22.9% example coverage · statuses: recommended=48, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=48, internal=0, empty=0
+Quality: 50 functions · 11 with examples · 22.0% example coverage · statuses: recommended=50, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=50, internal=0, empty=0
 
 Recommended entrypoints:
 
 | Function | Profile | Rationale |
 | --- | --- | --- |
+| `ParseCreditCode` | error | Prefer when callers must distinguish invalid input or provider failure from default values. |
 | `AgeWithOptions` | options | Prefer when providers, limits, parsers, or policies must be reviewable at the call site. |
 | `AgeAt` | day-one | Start here for concise, trusted-input use cases in this package. |
 
@@ -1564,11 +1631,11 @@ Golden path API set:
 
 | Function | Use when | Avoid when |
 | --- | --- | --- |
+| `ParseCreditCode` | Use first when callers must observe invalid input or provider failure. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `AgeWithOptions` | Use first when policies, providers, parsers, limits, or clocks must be explicit. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `AgeAt` | Use first for concise trusted-input workflows in vident. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vident. |
 | `Age` | Use first for concise trusted-input workflows in vident. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vident. |
 | `BirthDate` | Use first for concise trusted-input workflows in vident. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vident. |
-| `BirthDateWithOptions` | Use first for concise trusted-input workflows in vident. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vident. |
 
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
@@ -1592,6 +1659,7 @@ Golden path API set:
 | `Hide` | `func Hide(idCard string, start int, end int) string` | recommended | Hide replaces runes in [start, end) with '*'. | facade | `ExampleHide` |
 | `IsValidBirthday` | `func IsValidBirthday(s string) bool` | recommended | IsValidBirthday reports whether s is a valid yyyyMMdd date. | facade | — |
 | `IsValidBirthdayWithOptions` | `func IsValidBirthdayWithOptions(s string, opts ...BirthOption) bool` | recommended | IsValidBirthdayWithOptions reports whether s is a valid yyyyMMdd date using custom parsing options. | facade | — |
+| `IsValidCreditCode` | `func IsValidCreditCode(code string) bool` | recommended | IsValidCreditCode reports whether code is a valid unified social credit code. | facade | — |
 | `IsValidHKIDCard` | `func IsValidHKIDCard(idCard string) bool` | recommended | IsValidHKIDCard reports whether idCard is a valid Hong Kong identity card number. | facade | — |
 | `IsValidHKIDCardWithOptions` | `func IsValidHKIDCardWithOptions(idCard string, opts ...IDCardOption) bool` | recommended | IsValidHKIDCardWithOptions reports whether idCard is a valid Hong Kong identity card number with options. | facade | — |
 | `IsValidIDCard` | `func IsValidIDCard(idCard string) bool` | recommended | IsValidIDCard reports whether idCard is a valid 18-digit, 15-digit, or Hong Kong/Macau/Taiwan card number. | facade | — |
@@ -1605,6 +1673,7 @@ Golden path API set:
 | `IsValidTWIDCard` | `func IsValidTWIDCard(idCard string) bool` | recommended | IsValidTWIDCard reports whether idCard is a valid Taiwan identity card number. | facade | — |
 | `IsValidTWIDCardWithOptions` | `func IsValidTWIDCardWithOptions(idCard string, opts ...IDCardOption) bool` | recommended | IsValidTWIDCardWithOptions reports whether idCard is a valid Taiwan identity card number with options. | facade | — |
 | `Month` | `func Month(idCard string) (int, bool)` | recommended | Month returns the birth month encoded in idCard. | facade | — |
+| `ParseCreditCode` | `func ParseCreditCode(code string) (CreditCodeInfo, error)` | recommended | ParseCreditCode validates and splits a unified social credit code. | facade | — |
 | `ParseIDCard` | `func ParseIDCard(idCard string) (IDCardInfo, bool)` | recommended | ParseIDCard parses a valid 15- or 18-digit mainland China identity card number. | facade | `ExampleParseIDCard` |
 | `ParseRegionCard` | `func ParseRegionCard(idCard string) (RegionCardInfo, bool)` | recommended | ParseRegionCard validates a Hong Kong, Macau or Taiwan identity card number. | facade | `ExampleParseRegionCard` |
 | `ParseRegionCardWithOptions` | `func ParseRegionCardWithOptions(idCard string, opts ...IDCardOption) (RegionCardInfo, bool)` | recommended | ParseRegionCardWithOptions validates a Hong Kong, Macau or Taiwan identity card number with options. | facade | — |
@@ -2830,7 +2899,7 @@ Import path: `github.com/imajinyun/knifer-go/vrand`
 
 Package vrand provides public APIs for random value utilities.
 
-Quality: 29 functions · 9 with examples · 31.0% example coverage · statuses: recommended=28, compatibility=1, experimental=0, deprecated=0 · synopsis sources: facade=18, internal=11, empty=0
+Quality: 34 functions · 9 with examples · 26.5% example coverage · statuses: recommended=33, compatibility=1, experimental=0, deprecated=0 · synopsis sources: facade=23, internal=11, empty=0
 
 Recommended entrypoints:
 
@@ -2879,9 +2948,14 @@ Golden path API set:
 | `StringUpper` | `func StringUpper(n int) string` | recommended | StringUpper returns a pseudo-random mixed-case alphanumeric string of length n. | facade | — |
 | `StringUpperWithOptions` | `func StringUpperWithOptions(n int, opts ...RandomOption) string` | recommended | RandomStringUpperWithOptions returns a random mixed-case alphanumeric string with per-call options. | internal | — |
 | `StringWithOptions` | `func StringWithOptions(n int, opts ...RandomOption) string` | recommended | RandomStringWithOptions returns a random string from BaseCharNumber with per-call options. | internal | — |
+| `WeightedPick` | `func WeightedPick[T any](items []T, weights []float64, opts ...WeightedOption) (T, error)` | recommended | WeightedPick picks one item according to weights. | facade | — |
+| `WeightedPickN` | `func WeightedPickN[T any](items []T, weights []float64, n int, opts ...WeightedOption) ([]T, error)` | recommended | WeightedPickN picks n items with replacement according to weights. | facade | — |
+| `WeightedPickUniqueN` | `func WeightedPickUniqueN[T any](items []T, weights []float64, n int, opts ...WeightedOption) ([]T, error)` | recommended | WeightedPickUniqueN picks n unique items without replacement according to weights. | facade | — |
 | `WithRandomReader` | `func WithRandomReader(reader io.Reader) RandomOption` | recommended | WithRandomReader sets the byte source used by BytesWithOptions and SecureBytesWithOptions. | facade | — |
 | `WithRandomSource` | `func WithRandomSource(source *rand.Rand) RandomOption` | compatibility | WithRandomSource sets the pseudo-random source used by numeric, string, element, and compatibility fallback byte helpers. | facade | — |
 | `WithStrictCryptoRandom` | `func WithStrictCryptoRandom() RandomOption` | recommended | WithStrictCryptoRandom makes BytesWithOptions return reader errors instead of falling back to pseudo-random bytes. | facade | — |
+| `WithWeightedPrecision` | `func WithWeightedPrecision(precision float64) WeightedOption` | recommended | WithWeightedPrecision sets the minimum positive total-weight tolerance. | facade | — |
+| `WithWeightedRandSource` | `func WithWeightedRandSource(source *rand.Rand) WeightedOption` | recommended | WithWeightedRandSource sets the pseudo-random source used by weighted helpers. | facade | — |
 
 ### vref
 
@@ -3503,12 +3577,13 @@ Import path: `github.com/imajinyun/knifer-go/vstr`
 
 Package vstr provides public APIs for string and text utilities.
 
-Quality: 64 functions · 64 with examples · 100.0% example coverage · statuses: recommended=64, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=0, internal=64, empty=0
+Quality: 68 functions · 64 with examples · 94.1% example coverage · statuses: recommended=68, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=4, internal=64, empty=0
 
 Recommended entrypoints:
 
 | Function | Profile | Rationale |
 | --- | --- | --- |
+| `FromUTF8` | error | Prefer when callers must distinguish invalid input or provider failure from default values. |
 | `ContainsEmojiWithOptions` | options | Prefer when providers, limits, parsers, or policies must be reviewable at the call site. |
 | `AddPrefixIfNot` | day-one | Start here for concise, trusted-input use cases in this package. |
 
@@ -3516,11 +3591,11 @@ Golden path API set:
 
 | Function | Use when | Avoid when |
 | --- | --- | --- |
+| `FromUTF8` | Use first when callers must observe invalid input or provider failure. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `ContainsEmojiWithOptions` | Use first when policies, providers, parsers, limits, or clocks must be explicit. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `AddPrefixIfNot` | Use first for concise trusted-input workflows in vstr. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vstr. |
 | `AddSuffixIfNot` | Use first for concise trusted-input workflows in vstr. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vstr. |
 | `AntPathMatch` | Use first for concise trusted-input workflows in vstr. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vstr. |
-| `AntPathMatchWithSeparator` | Use first for concise trusted-input workflows in vstr. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vstr. |
 
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
@@ -3541,7 +3616,9 @@ Golden path API set:
 | `EscapeHTML` | `func EscapeHTML(s string) string` | recommended | EscapeHTML escapes common HTML-sensitive characters without depending on the HTTP package. | internal | `ExampleEscapeHTML` |
 | `EscapeUnicode` | `func EscapeUnicode(s string) string` | recommended | EscapeUnicode escapes non-ASCII runes as Java-style \\uXXXX sequences. | internal | `ExampleEscapeUnicode` |
 | `Format` | `func Format(template string, args ...any) string` | recommended | Format mimics the utility toolkit StrUtil.format by replacing {} placeholders in order. | internal | `ExampleFormat` |
+| `FromUTF8` | `func FromUTF8(data []byte, to string) ([]byte, error)` | recommended | FromUTF8 converts UTF-8 data to the named charset. | facade | — |
 | `HammingDistance64` | `func HammingDistance64(a uint64, b uint64) int` | recommended | HammingDistance64 returns the number of different bits between a and b. | internal | `ExampleHammingDistance64` |
+| `HasBOM` | `func HasBOM(data []byte) BOMType` | recommended | HasBOM returns the supported byte order mark at the beginning of data. | facade | — |
 | `HasBlank` | `func HasBlank(strs ...string) bool` | recommended | HasBlank reports whether any string is blank. | internal | `ExampleHasBlank` |
 | `HasEmpty` | `func HasEmpty(strs ...string) bool` | recommended | HasEmpty reports whether any string is empty. | internal | `ExampleHasEmpty` |
 | `IsAllBlank` | `func IsAllBlank(strs ...string) bool` | recommended | IsAllBlank reports whether all strings are blank. | internal | `ExampleIsAllBlank` |
@@ -3573,12 +3650,14 @@ Golden path API set:
 | `Split` | `func Split(s string, sep string) []string` | recommended | Split splits s by sep and returns an empty slice for an empty input string. | internal | `ExampleSplit` |
 | `SplitTrim` | `func SplitTrim(s string, sep string) []string` | recommended | SplitTrim splits s, trims each part, and drops blank parts. | internal | `ExampleSplitTrim` |
 | `StartsWith` | `func StartsWith(s string, prefix string) bool` | recommended | StartsWith reports whether s starts with prefix. | internal | `ExampleStartsWith` |
+| `StripBOM` | `func StripBOM(data []byte) []byte` | recommended | StripBOM returns data without a supported leading byte order mark. | facade | — |
 | `Sub` | `func Sub(s string, fromIndex int, toIndex int) string` | recommended | Sub returns a substring by rune indexes and supports negative indexes from the end. | internal | `ExampleSub` |
 | `SubAfter` | `func SubAfter(s string, sep string, isLastSeparator bool) string` | recommended | SubAfter returns the text after sep. | internal | `ExampleSubAfter` |
 | `SubBefore` | `func SubBefore(s string, sep string, isLastSeparator bool) string` | recommended | SubBefore returns the text before sep. | internal | `ExampleSubBefore` |
 | `ToCamelCase` | `func ToCamelCase(s string) string` | recommended | ToCamelCase converts separators to lower camel case, for example hello_world -> helloWorld. | internal | `ExampleToCamelCase` |
 | `ToKebabCase` | `func ToKebabCase(s string) string` | recommended | ToKebabCase converts camel case or separators to kebab case, for example HelloWorld -> hello-world. | internal | `ExampleToKebabCase` |
 | `ToPascalCase` | `func ToPascalCase(s string) string` | recommended | ToPascalCase converts separators to upper camel case, for example hello_world -> HelloWorld. | internal | `ExampleToPascalCase` |
+| `ToUTF8` | `func ToUTF8(data []byte, from string) ([]byte, error)` | recommended | ToUTF8 converts data from the named charset to UTF-8. | facade | — |
 | `ToUnderlineCase` | `func ToUnderlineCase(s string) string` | recommended | ToUnderlineCase converts camel case or separators to snake case, for example HelloWorld -> hello_world. | internal | `ExampleToUnderlineCase` |
 | `Trim` | `func Trim(s string) string` | recommended | Trim removes leading and trailing white space. | internal | `ExampleTrim` |
 | `TrimEnd` | `func TrimEnd(s string) string` | recommended | TrimEnd removes trailing white space. | internal | `ExampleTrimEnd` |

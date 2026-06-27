@@ -618,17 +618,6 @@ func WriteAnyRowsToBuffer(sheet string, rows [][]any, opts ...WriteOption) (*byt
 	return f.WriteToBuffer()
 }
 
-func readFirstSheetRows(f *excelize.File) ([][]string, error) {
-	if f == nil {
-		return nil, invalidWorkbookError()
-	}
-	sheets := f.GetSheetList()
-	if len(sheets) == 0 {
-		return nil, ErrNoSheet
-	}
-	return readSheetRows(f, sheets[0])
-}
-
 func readRowsWithConfig(f *excelize.File, cfg readConfig) ([][]string, error) {
 	if f == nil {
 		return nil, invalidWorkbookError()
@@ -641,10 +630,6 @@ func readRowsWithConfig(f *excelize.File, cfg readConfig) ([][]string, error) {
 		return nil, ErrNoSheet
 	}
 	return readSheetRowsWithConfig(f, sheets[0], cfg)
-}
-
-func readSheetRows(f *excelize.File, sheet string) ([][]string, error) {
-	return readSheetRowsWithConfig(f, sheet, defaultReadConfig())
 }
 
 func readSheetRowsWithConfig(f *excelize.File, sheet string, cfg readConfig) ([][]string, error) {

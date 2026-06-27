@@ -2,21 +2,21 @@
   "schema": "1.7",
   "module": "github.com/imajinyun/knifer-go",
   "summary": {
-    "package_count": 54,
-    "function_count": 2618,
-    "functions_with_examples": 1253,
+    "package_count": 55,
+    "function_count": 2666,
+    "functions_with_examples": 1260,
     "context_aware_functions": 36,
-    "returns_error_functions": 610,
-    "variadic_functions": 783,
+    "returns_error_functions": 626,
+    "variadic_functions": 787,
     "status_counts": {
       "compatibility": 22,
       "deprecated": 0,
       "experimental": 0,
-      "recommended": 2596
+      "recommended": 2644
     },
     "synopsis_sources": {
       "empty": 0,
-      "facade": 1976,
+      "facade": 2024,
       "internal": 642
     }
   },
@@ -3338,24 +3338,24 @@
       "name": "vcodec",
       "synopsis": "Package vcodec provides public APIs for encoding and decoding utilities.",
       "summary": {
-        "function_count": 14,
+        "function_count": 29,
         "functions_with_examples": 5,
-        "example_coverage_percent": 35.7,
+        "example_coverage_percent": 17.2,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
           "experimental": 0,
-          "recommended": 14
+          "recommended": 29
         },
         "synopsis_sources": {
           "empty": 0,
-          "facade": 0,
+          "facade": 15,
           "internal": 14
         }
       },
       "golden_path": [
         {
-          "name": "Base64Decode",
+          "name": "Base32Decode",
           "use_when": "Use first when callers must observe invalid input or provider failure.",
           "avoid_when": "Avoid for trivial in-memory code where the standard library is clearer."
         },
@@ -3365,24 +3365,24 @@
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec."
         },
         {
-          "name": "Base64DecodeStr",
+          "name": "Base32DecodeWithEncoding",
           "use_when": "Use first for concise trusted-input workflows in vcodec.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec."
         },
         {
-          "name": "Base64DecodeWithEncoding",
+          "name": "Base32Encode",
           "use_when": "Use first for concise trusted-input workflows in vcodec.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec."
         },
         {
-          "name": "Base64EncodeStr",
+          "name": "Base32EncodeWithEncoding",
           "use_when": "Use first for concise trusted-input workflows in vcodec.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcodec."
         }
       ],
       "recommended_entrypoints": [
         {
-          "name": "Base64Decode",
+          "name": "Base32Decode",
           "profile": "error",
           "rationale": "Prefer when callers must distinguish invalid input or provider failure from default values."
         },
@@ -3393,6 +3393,217 @@
         }
       ],
       "functions": [
+        {
+          "name": "Base32Decode",
+          "signature": "func Base32Decode(s string) ([]byte, error)",
+          "synopsis": "Base32Decode decodes a standard Base32 string.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "s",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "[]byte",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "Base32DecodeWithEncoding",
+          "signature": "func Base32DecodeWithEncoding(s string, encoding Base32Encoding) ([]byte, error)",
+          "synopsis": "Base32DecodeWithEncoding decodes a Base32 string with the requested alphabet.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "s",
+              "type": "string"
+            },
+            {
+              "name": "encoding",
+              "type": "Base32Encoding"
+            }
+          ],
+          "results": [
+            "[]byte",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "Base32Encode",
+          "signature": "func Base32Encode(data []byte) string",
+          "synopsis": "Base32Encode encodes bytes with standard Base32 encoding.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "data",
+              "type": "[]byte"
+            }
+          ],
+          "results": [
+            "string"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "Base32EncodeWithEncoding",
+          "signature": "func Base32EncodeWithEncoding(data []byte, encoding Base32Encoding) string",
+          "synopsis": "Base32EncodeWithEncoding encodes bytes with the requested Base32 alphabet.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "data",
+              "type": "[]byte"
+            },
+            {
+              "name": "encoding",
+              "type": "Base32Encoding"
+            }
+          ],
+          "results": [
+            "string"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "Base58Decode",
+          "signature": "func Base58Decode(s string) ([]byte, error)",
+          "synopsis": "Base58Decode decodes a Bitcoin Base58 string.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "s",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "[]byte",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "Base58DecodeWithAlphabet",
+          "signature": "func Base58DecodeWithAlphabet(s string, alphabet Base58Alphabet) ([]byte, error)",
+          "synopsis": "Base58DecodeWithAlphabet decodes a Base58 string with a supported alphabet.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "s",
+              "type": "string"
+            },
+            {
+              "name": "alphabet",
+              "type": "Base58Alphabet"
+            }
+          ],
+          "results": [
+            "[]byte",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "Base58Encode",
+          "signature": "func Base58Encode(data []byte) string",
+          "synopsis": "Base58Encode encodes bytes with the Bitcoin Base58 alphabet.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "data",
+              "type": "[]byte"
+            }
+          ],
+          "results": [
+            "string"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "Base58EncodeWithAlphabet",
+          "signature": "func Base58EncodeWithAlphabet(data []byte, alphabet Base58Alphabet) string",
+          "synopsis": "Base58EncodeWithAlphabet encodes bytes with a supported Base58 alphabet.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "data",
+              "type": "[]byte"
+            },
+            {
+              "name": "alphabet",
+              "type": "Base58Alphabet"
+            }
+          ],
+          "results": [
+            "string"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "Base62Decode",
+          "signature": "func Base62Decode(s string) ([]byte, error)",
+          "synopsis": "Base62Decode decodes a Base62 string.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "s",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "[]byte",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "Base62Encode",
+          "signature": "func Base62Encode(data []byte) string",
+          "synopsis": "Base62Encode encodes bytes with a URL-friendly Base62 alphabet.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "data",
+              "type": "[]byte"
+            }
+          ],
+          "results": [
+            "string"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
         {
           "name": "Base64Decode",
           "signature": "func Base64Decode(s string) ([]byte, error)",
@@ -3680,6 +3891,107 @@
             {
               "name": "s",
               "type": "string"
+            }
+          ],
+          "results": [
+            "string"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "MorseDecode",
+          "signature": "func MorseDecode(s string) (string, error)",
+          "synopsis": "MorseDecode decodes Morse code using spaces between letters and \"/\" between words.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "s",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "string",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "MorseEncode",
+          "signature": "func MorseEncode(s string) (string, error)",
+          "synopsis": "MorseEncode encodes supported ASCII letters, digits, and punctuation as Morse code.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "s",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "string",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "ROT13",
+          "signature": "func ROT13(s string) string",
+          "synopsis": "ROT13 applies the ROT13 substitution to ASCII letters.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "s",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "string"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "ROT47",
+          "signature": "func ROT47(s string) string",
+          "synopsis": "ROT47 applies the ROT47 substitution to printable ASCII characters.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "s",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "string"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "ROTN",
+          "signature": "func ROTN(s string, n int) string",
+          "synopsis": "ROTN applies a Caesar shift to ASCII letters.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "s",
+              "type": "string"
+            },
+            {
+              "name": "n",
+              "type": "int"
             }
           ],
           "results": [
@@ -13226,18 +13538,18 @@
       "name": "vfile",
       "synopsis": "Package vfile provides public APIs for file and IO utilities.",
       "summary": {
-        "function_count": 59,
+        "function_count": 68,
         "functions_with_examples": 59,
-        "example_coverage_percent": 100,
+        "example_coverage_percent": 86.8,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
           "experimental": 0,
-          "recommended": 59
+          "recommended": 68
         },
         "synopsis_sources": {
           "empty": 0,
-          "facade": 53,
+          "facade": 62,
           "internal": 6
         }
       },
@@ -13532,6 +13844,65 @@
           ]
         },
         {
+          "name": "DetectFileType",
+          "signature": "func DetectFileType(r io.Reader) (FileType, error)",
+          "synopsis": "DetectFileType detects a file type from leading magic-number bytes.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "r",
+              "type": "io.Reader"
+            }
+          ],
+          "results": [
+            "FileType",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "DetectFileTypeBytes",
+          "signature": "func DetectFileTypeBytes(data []byte) FileType",
+          "synopsis": "DetectFileTypeBytes detects a file type from bytes already in memory.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "data",
+              "type": "[]byte"
+            }
+          ],
+          "results": [
+            "FileType"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "DetectFileTypeFromPath",
+          "signature": "func DetectFileTypeFromPath(path string) (FileType, error)",
+          "synopsis": "DetectFileTypeFromPath detects a file type by opening path and reading its header.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "path",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "FileType",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
           "name": "Exists",
           "signature": "func Exists(path string) bool",
           "synopsis": "Exists reports whether a file or directory exists at path.",
@@ -13602,6 +13973,44 @@
           ]
         },
         {
+          "name": "IsArchive",
+          "signature": "func IsArchive(ft FileType) bool",
+          "synopsis": "IsArchive reports whether ft is an archive file type.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "ft",
+              "type": "FileType"
+            }
+          ],
+          "results": [
+            "bool"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "IsAudio",
+          "signature": "func IsAudio(ft FileType) bool",
+          "synopsis": "IsAudio reports whether ft is an audio file type.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "ft",
+              "type": "FileType"
+            }
+          ],
+          "results": [
+            "bool"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
           "name": "IsDirectory",
           "signature": "func IsDirectory(path string) bool",
           "synopsis": "IsDirectory reports whether path exists and is a directory.",
@@ -13650,6 +14059,25 @@
           ]
         },
         {
+          "name": "IsDocument",
+          "signature": "func IsDocument(ft FileType) bool",
+          "synopsis": "IsDocument reports whether ft is a document file type.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "ft",
+              "type": "FileType"
+            }
+          ],
+          "results": [
+            "bool"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
           "name": "IsFile",
           "signature": "func IsFile(path string) bool",
           "synopsis": "IsFile reports whether path exists and is a regular file.",
@@ -13696,6 +14124,44 @@
           "examples": [
             "ExampleIsFileWithOptions"
           ]
+        },
+        {
+          "name": "IsImage",
+          "signature": "func IsImage(ft FileType) bool",
+          "synopsis": "IsImage reports whether ft is an image file type.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "ft",
+              "type": "FileType"
+            }
+          ],
+          "results": [
+            "bool"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "IsVideo",
+          "signature": "func IsVideo(ft FileType) bool",
+          "synopsis": "IsVideo reports whether ft is a video file type.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "ft",
+              "type": "FileType"
+            }
+          ],
+          "results": [
+            "bool"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
         },
         {
           "name": "MainName",
@@ -14326,6 +14792,25 @@
           "examples": [
             "ExampleWithBufferSize"
           ]
+        },
+        {
+          "name": "WithCharset",
+          "signature": "func WithCharset(charset string) ReadOption",
+          "synopsis": "WithCharset converts file string and line reads from charset to UTF-8.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "charset",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "ReadOption"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
         },
         {
           "name": "WithCreateParents",
@@ -15395,6 +15880,277 @@
       ]
     },
     {
+      "import_path": "github.com/imajinyun/knifer-go/vgeo",
+      "name": "vgeo",
+      "synopsis": "Package vgeo provides public APIs for coordinate conversion utilities.",
+      "summary": {
+        "function_count": 9,
+        "functions_with_examples": 7,
+        "example_coverage_percent": 77.8,
+        "status_counts": {
+          "compatibility": 0,
+          "deprecated": 0,
+          "experimental": 0,
+          "recommended": 9
+        },
+        "synopsis_sources": {
+          "empty": 0,
+          "facade": 9,
+          "internal": 0
+        }
+      },
+      "golden_path": [
+        {
+          "name": "Convert",
+          "use_when": "Use first when callers must observe invalid input or provider failure.",
+          "avoid_when": "Avoid for trivial in-memory code where the standard library is clearer."
+        },
+        {
+          "name": "BD09ToGCJ02",
+          "use_when": "Use first for concise trusted-input workflows in vgeo.",
+          "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo."
+        },
+        {
+          "name": "BD09ToWGS84",
+          "use_when": "Use first for concise trusted-input workflows in vgeo.",
+          "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo."
+        },
+        {
+          "name": "Distance",
+          "use_when": "Use first for concise trusted-input workflows in vgeo.",
+          "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo."
+        },
+        {
+          "name": "GCJ02ToBD09",
+          "use_when": "Use first for concise trusted-input workflows in vgeo.",
+          "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo."
+        }
+      ],
+      "recommended_entrypoints": [
+        {
+          "name": "Convert",
+          "profile": "error",
+          "rationale": "Prefer when callers must distinguish invalid input or provider failure from default values."
+        },
+        {
+          "name": "BD09ToGCJ02",
+          "profile": "day-one",
+          "rationale": "Start here for concise, trusted-input use cases in this package."
+        }
+      ],
+      "functions": [
+        {
+          "name": "BD09ToGCJ02",
+          "signature": "func BD09ToGCJ02(coord Coord) Coord",
+          "synopsis": "BD09ToGCJ02 converts BD-09 coordinates to GCJ-02.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "coord",
+              "type": "Coord"
+            }
+          ],
+          "results": [
+            "Coord"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleBD09ToGCJ02"
+          ]
+        },
+        {
+          "name": "BD09ToWGS84",
+          "signature": "func BD09ToWGS84(coord Coord) Coord",
+          "synopsis": "BD09ToWGS84 converts BD-09 coordinates to WGS-84.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "coord",
+              "type": "Coord"
+            }
+          ],
+          "results": [
+            "Coord"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleBD09ToWGS84"
+          ]
+        },
+        {
+          "name": "Convert",
+          "signature": "func Convert(coord Coord, fromType CoordType, toType CoordType) (Coord, error)",
+          "synopsis": "Convert converts coord between supported coordinate systems.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "coord",
+              "type": "Coord"
+            },
+            {
+              "name": "fromType",
+              "type": "CoordType"
+            },
+            {
+              "name": "toType",
+              "type": "CoordType"
+            }
+          ],
+          "results": [
+            "Coord",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleConvert"
+          ]
+        },
+        {
+          "name": "Distance",
+          "signature": "func Distance(a Coord, b Coord) float64",
+          "synopsis": "Distance returns the great-circle distance between two coordinates in meters.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "a",
+              "type": "Coord"
+            },
+            {
+              "name": "b",
+              "type": "Coord"
+            }
+          ],
+          "results": [
+            "float64"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleDistance"
+          ]
+        },
+        {
+          "name": "GCJ02ToBD09",
+          "signature": "func GCJ02ToBD09(coord Coord) Coord",
+          "synopsis": "GCJ02ToBD09 converts GCJ-02 coordinates to BD-09.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "coord",
+              "type": "Coord"
+            }
+          ],
+          "results": [
+            "Coord"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleGCJ02ToBD09"
+          ]
+        },
+        {
+          "name": "GCJ02ToWGS84",
+          "signature": "func GCJ02ToWGS84(coord Coord) Coord",
+          "synopsis": "GCJ02ToWGS84 converts GCJ-02 coordinates back to WGS-84.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "coord",
+              "type": "Coord"
+            }
+          ],
+          "results": [
+            "Coord"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "InChina",
+          "signature": "func InChina(lng float64, lat float64) bool",
+          "synopsis": "InChina reports whether a longitude/latitude pair falls inside a rough mainland China bounding box.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "lng",
+              "type": "float64"
+            },
+            {
+              "name": "lat",
+              "type": "float64"
+            }
+          ],
+          "results": [
+            "bool"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleInChina"
+          ]
+        },
+        {
+          "name": "WGS84ToBD09",
+          "signature": "func WGS84ToBD09(coord Coord) Coord",
+          "synopsis": "WGS84ToBD09 converts WGS-84 coordinates to BD-09.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "coord",
+              "type": "Coord"
+            }
+          ],
+          "results": [
+            "Coord"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "WGS84ToGCJ02",
+          "signature": "func WGS84ToGCJ02(coord Coord) Coord",
+          "synopsis": "WGS84ToGCJ02 converts GPS coordinates to GCJ-02.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "coord",
+              "type": "Coord"
+            }
+          ],
+          "results": [
+            "Coord"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false,
+          "examples": [
+            "ExampleWGS84ToGCJ02"
+          ]
+        }
+      ]
+    },
+    {
       "import_path": "github.com/imajinyun/knifer-go/vhan",
       "name": "vhan",
       "synopsis": "Package vhan provides provider-neutral Han text romanization helpers.",
@@ -15567,22 +16323,27 @@
       "name": "vhash",
       "synopsis": "Package vhash provides public APIs for hash utilities.",
       "summary": {
-        "function_count": 16,
+        "function_count": 20,
         "functions_with_examples": 5,
-        "example_coverage_percent": 31.3,
+        "example_coverage_percent": 25,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
           "experimental": 0,
-          "recommended": 16
+          "recommended": 20
         },
         "synopsis_sources": {
           "empty": 0,
-          "facade": 16,
+          "facade": 20,
           "internal": 0
         }
       },
       "golden_path": [
+        {
+          "name": "NewConsistentHash",
+          "use_when": "Use first when policies, providers, parsers, limits, or clocks must be explicit.",
+          "avoid_when": "Avoid for trivial in-memory code where the standard library is clearer."
+        },
         {
           "name": "AdditiveHash",
           "use_when": "Use first for concise trusted-input workflows in vhash.",
@@ -15602,14 +16363,14 @@
           "name": "DjbHash",
           "use_when": "Use first for concise trusted-input workflows in vhash.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vhash."
-        },
-        {
-          "name": "ElfHash",
-          "use_when": "Use first for concise trusted-input workflows in vhash.",
-          "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vhash."
         }
       ],
       "recommended_entrypoints": [
+        {
+          "name": "NewConsistentHash",
+          "profile": "options",
+          "rationale": "Prefer when providers, limits, parsers, or policies must be reviewable at the call site."
+        },
         {
           "name": "AdditiveHash",
           "profile": "day-one",
@@ -15869,6 +16630,25 @@
           "variadic": false
         },
         {
+          "name": "NewConsistentHash",
+          "signature": "func NewConsistentHash(opts ...ConsistentHashOption) *ConsistentHash",
+          "synopsis": "NewConsistentHash creates an empty consistent hash ring.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "opts",
+              "type": "...ConsistentHashOption"
+            }
+          ],
+          "results": [
+            "*ConsistentHash"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": true
+        },
+        {
           "name": "PjwHash",
           "signature": "func PjwHash(s string) int32",
           "synopsis": "PjwHash calculates a hash using the PJW algorithm.",
@@ -15939,6 +16719,63 @@
           ],
           "results": [
             "int64"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "WithHashFunc",
+          "signature": "func WithHashFunc(hashFunc func([]byte) uint64) ConsistentHashOption",
+          "synopsis": "WithHashFunc sets the hash function used by the ring.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "hashFunc",
+              "type": "func([]byte) uint64"
+            }
+          ],
+          "results": [
+            "ConsistentHashOption"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "WithReplicaCount",
+          "signature": "func WithReplicaCount(n int) ConsistentHashOption",
+          "synopsis": "WithReplicaCount sets the number of virtual nodes per real node.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "n",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "ConsistentHashOption"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "WithVirtualNodes",
+          "signature": "func WithVirtualNodes(n int) ConsistentHashOption",
+          "synopsis": "WithVirtualNodes sets the number of virtual nodes per real node.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "n",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "ConsistentHashOption"
           ],
           "returns_error": false,
           "context_aware": false,
@@ -20551,22 +21388,27 @@
       "name": "vident",
       "synopsis": "Package vident provides identity and legal identifier helpers.",
       "summary": {
-        "function_count": 48,
+        "function_count": 50,
         "functions_with_examples": 11,
-        "example_coverage_percent": 22.9,
+        "example_coverage_percent": 22,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
           "experimental": 0,
-          "recommended": 48
+          "recommended": 50
         },
         "synopsis_sources": {
           "empty": 0,
-          "facade": 48,
+          "facade": 50,
           "internal": 0
         }
       },
       "golden_path": [
+        {
+          "name": "ParseCreditCode",
+          "use_when": "Use first when callers must observe invalid input or provider failure.",
+          "avoid_when": "Avoid for trivial in-memory code where the standard library is clearer."
+        },
         {
           "name": "AgeWithOptions",
           "use_when": "Use first when policies, providers, parsers, limits, or clocks must be explicit.",
@@ -20586,14 +21428,14 @@
           "name": "BirthDate",
           "use_when": "Use first for concise trusted-input workflows in vident.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vident."
-        },
-        {
-          "name": "BirthDateWithOptions",
-          "use_when": "Use first for concise trusted-input workflows in vident.",
-          "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vident."
         }
       ],
       "recommended_entrypoints": [
+        {
+          "name": "ParseCreditCode",
+          "profile": "error",
+          "rationale": "Prefer when callers must distinguish invalid input or provider failure from default values."
+        },
         {
           "name": "AgeWithOptions",
           "profile": "options",
@@ -21066,6 +21908,25 @@
           "variadic": true
         },
         {
+          "name": "IsValidCreditCode",
+          "signature": "func IsValidCreditCode(code string) bool",
+          "synopsis": "IsValidCreditCode reports whether code is a valid unified social credit code.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "code",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "bool"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
           "name": "IsValidHKIDCard",
           "signature": "func IsValidHKIDCard(idCard string) bool",
           "synopsis": "IsValidHKIDCard reports whether idCard is a valid Hong Kong identity card number.",
@@ -21342,6 +22203,26 @@
             "bool"
           ],
           "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "ParseCreditCode",
+          "signature": "func ParseCreditCode(code string) (CreditCodeInfo, error)",
+          "synopsis": "ParseCreditCode validates and splits a unified social credit code.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "code",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "CreditCodeInfo",
+            "error"
+          ],
+          "returns_error": true,
           "context_aware": false,
           "variadic": false
         },
@@ -41805,18 +42686,18 @@
       "name": "vrand",
       "synopsis": "Package vrand provides public APIs for random value utilities.",
       "summary": {
-        "function_count": 29,
+        "function_count": 34,
         "functions_with_examples": 9,
-        "example_coverage_percent": 31,
+        "example_coverage_percent": 26.5,
         "status_counts": {
           "compatibility": 1,
           "deprecated": 0,
           "experimental": 0,
-          "recommended": 28
+          "recommended": 33
         },
         "synopsis_sources": {
           "empty": 0,
-          "facade": 18,
+          "facade": 23,
           "internal": 11
         }
       },
@@ -42414,6 +43295,98 @@
           "variadic": true
         },
         {
+          "name": "WeightedPick",
+          "signature": "func WeightedPick[T any](items []T, weights []float64, opts ...WeightedOption) (T, error)",
+          "synopsis": "WeightedPick picks one item according to weights.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "items",
+              "type": "[]T"
+            },
+            {
+              "name": "weights",
+              "type": "[]float64"
+            },
+            {
+              "name": "opts",
+              "type": "...WeightedOption"
+            }
+          ],
+          "results": [
+            "T",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": true
+        },
+        {
+          "name": "WeightedPickN",
+          "signature": "func WeightedPickN[T any](items []T, weights []float64, n int, opts ...WeightedOption) ([]T, error)",
+          "synopsis": "WeightedPickN picks n items with replacement according to weights.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "items",
+              "type": "[]T"
+            },
+            {
+              "name": "weights",
+              "type": "[]float64"
+            },
+            {
+              "name": "n",
+              "type": "int"
+            },
+            {
+              "name": "opts",
+              "type": "...WeightedOption"
+            }
+          ],
+          "results": [
+            "[]T",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": true
+        },
+        {
+          "name": "WeightedPickUniqueN",
+          "signature": "func WeightedPickUniqueN[T any](items []T, weights []float64, n int, opts ...WeightedOption) ([]T, error)",
+          "synopsis": "WeightedPickUniqueN picks n unique items without replacement according to weights.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "items",
+              "type": "[]T"
+            },
+            {
+              "name": "weights",
+              "type": "[]float64"
+            },
+            {
+              "name": "n",
+              "type": "int"
+            },
+            {
+              "name": "opts",
+              "type": "...WeightedOption"
+            }
+          ],
+          "results": [
+            "[]T",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": true
+        },
+        {
           "name": "WithRandomReader",
           "signature": "func WithRandomReader(reader io.Reader) RandomOption",
           "synopsis": "WithRandomReader sets the byte source used by BytesWithOptions and SecureBytesWithOptions.",
@@ -42459,6 +43432,44 @@
           "status": "recommended",
           "results": [
             "RandomOption"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "WithWeightedPrecision",
+          "signature": "func WithWeightedPrecision(precision float64) WeightedOption",
+          "synopsis": "WithWeightedPrecision sets the minimum positive total-weight tolerance.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "precision",
+              "type": "float64"
+            }
+          ],
+          "results": [
+            "WeightedOption"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "WithWeightedRandSource",
+          "signature": "func WithWeightedRandSource(source *rand.Rand) WeightedOption",
+          "synopsis": "WithWeightedRandSource sets the pseudo-random source used by weighted helpers.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "source",
+              "type": "*rand.Rand"
+            }
+          ],
+          "results": [
+            "WeightedOption"
           ],
           "returns_error": false,
           "context_aware": false,
@@ -52265,22 +53276,27 @@
       "name": "vstr",
       "synopsis": "Package vstr provides public APIs for string and text utilities.",
       "summary": {
-        "function_count": 64,
+        "function_count": 68,
         "functions_with_examples": 64,
-        "example_coverage_percent": 100,
+        "example_coverage_percent": 94.1,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
           "experimental": 0,
-          "recommended": 64
+          "recommended": 68
         },
         "synopsis_sources": {
           "empty": 0,
-          "facade": 0,
+          "facade": 4,
           "internal": 64
         }
       },
       "golden_path": [
+        {
+          "name": "FromUTF8",
+          "use_when": "Use first when callers must observe invalid input or provider failure.",
+          "avoid_when": "Avoid for trivial in-memory code where the standard library is clearer."
+        },
         {
           "name": "ContainsEmojiWithOptions",
           "use_when": "Use first when policies, providers, parsers, limits, or clocks must be explicit.",
@@ -52300,14 +53316,14 @@
           "name": "AntPathMatch",
           "use_when": "Use first for concise trusted-input workflows in vstr.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vstr."
-        },
-        {
-          "name": "AntPathMatchWithSeparator",
-          "use_when": "Use first for concise trusted-input workflows in vstr.",
-          "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vstr."
         }
       ],
       "recommended_entrypoints": [
+        {
+          "name": "FromUTF8",
+          "profile": "error",
+          "rationale": "Prefer when callers must distinguish invalid input or provider failure from default values."
+        },
         {
           "name": "ContainsEmojiWithOptions",
           "profile": "options",
@@ -52755,6 +53771,30 @@
           ]
         },
         {
+          "name": "FromUTF8",
+          "signature": "func FromUTF8(data []byte, to string) ([]byte, error)",
+          "synopsis": "FromUTF8 converts UTF-8 data to the named charset.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "data",
+              "type": "[]byte"
+            },
+            {
+              "name": "to",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "[]byte",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
           "name": "HammingDistance64",
           "signature": "func HammingDistance64(a uint64, b uint64) int",
           "synopsis": "HammingDistance64 returns the number of different bits between a and b.",
@@ -52779,6 +53819,25 @@
           "examples": [
             "ExampleHammingDistance64"
           ]
+        },
+        {
+          "name": "HasBOM",
+          "signature": "func HasBOM(data []byte) BOMType",
+          "synopsis": "HasBOM returns the supported byte order mark at the beginning of data.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "data",
+              "type": "[]byte"
+            }
+          ],
+          "results": [
+            "BOMType"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
         },
         {
           "name": "HasBlank",
@@ -53527,6 +54586,25 @@
           ]
         },
         {
+          "name": "StripBOM",
+          "signature": "func StripBOM(data []byte) []byte",
+          "synopsis": "StripBOM returns data without a supported leading byte order mark.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "data",
+              "type": "[]byte"
+            }
+          ],
+          "results": [
+            "[]byte"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
           "name": "Sub",
           "signature": "func Sub(s string, fromIndex int, toIndex int) string",
           "synopsis": "Sub returns a substring by rune indexes and supports negative indexes from the end.",
@@ -53681,6 +54759,30 @@
           "examples": [
             "ExampleToPascalCase"
           ]
+        },
+        {
+          "name": "ToUTF8",
+          "signature": "func ToUTF8(data []byte, from string) ([]byte, error)",
+          "synopsis": "ToUTF8 converts data from the named charset to UTF-8.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "data",
+              "type": "[]byte"
+            },
+            {
+              "name": "from",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "[]byte",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false
         },
         {
           "name": "ToUnderlineCase",

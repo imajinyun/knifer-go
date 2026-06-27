@@ -31,8 +31,8 @@ func ExampleCount() {
 }
 
 func ExampleContains() {
-	fmt.Println(vregex.Contains(`go-\w+`, "hello knifer-go"))
-	fmt.Println(vregex.Contains(`go-\w+`, "hello knifer"))
+	fmt.Println(vregex.Contains(`knifer-\w+`, "hello knifer-go"))
+	fmt.Println(vregex.Contains(`knifer-\w+`, "hello knifer"))
 	// Output:
 	// true
 	// false

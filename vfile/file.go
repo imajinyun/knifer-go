@@ -65,6 +65,9 @@ func WithInitialLineBuffer(n int) ReadOption { return fileimpl.WithInitialLineBu
 // WithMaxLineBytes sets the maximum scanner token size for line reads.
 func WithMaxLineBytes(n int) ReadOption { return fileimpl.WithMaxLineBytes(n) }
 
+// WithCharset converts file string and line reads from charset to UTF-8.
+func WithCharset(charset string) ReadOption { return fileimpl.WithCharset(charset) }
+
 // WithOpen sets the function used to open files for reading.
 func WithOpen(open OpenFunc) ReadOption { return fileimpl.WithOpen(open) }
 

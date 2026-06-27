@@ -521,20 +521,20 @@
       "path": "docs/api/tools.json",
       "schema": "1.7",
       "recommended_profile_schema": "recommended_entrypoints profiles: day-one, safe, error, options, compatibility; golden_path lists 1-7 APIs with use_when and avoid_when guidance",
-      "package_count": 54,
-      "function_count": 2618,
-      "functions_with_examples": 1253,
+      "package_count": 55,
+      "function_count": 2666,
+      "functions_with_examples": 1260,
       "context_aware_functions": 36,
-      "returns_error_functions": 610,
+      "returns_error_functions": 626,
       "status_counts": {
         "compatibility": 22,
         "deprecated": 0,
         "experimental": 0,
-        "recommended": 2596
+        "recommended": 2644
       },
       "synopsis_sources": {
         "empty": 0,
-        "facade": 1976,
+        "facade": 2024,
         "internal": 642
       },
       "regenerate_command": "tools_update",
@@ -632,7 +632,7 @@
   },
   "dependency_tiers": {
     "core_facades": [
-      "vbean", "vblf", "vbool", "vcache", "vcli", "vcodec", "vconf", "vconv", "vcron", "vcrypto", "vcsv", "vdate", "vdb", "vdfa", "vfile", "vform", "vhash", "vhttp", "vid", "vident", "vjob", "vjson", "vjwt", "vlog", "vmail", "vmap", "vmask", "vnet", "vnum", "vobj", "vpass", "vrand", "vref", "vregex", "vsem", "vset", "vskt", "vslice", "vstr", "vsys", "vtpl", "vurl", "vver", "vxml", "vzip"
+      "vbean", "vblf", "vbool", "vcache", "vcli", "vcodec", "vconf", "vconv", "vcron", "vcrypto", "vcsv", "vdate", "vdb", "vdfa", "vfile", "vform", "vgeo", "vhash", "vhttp", "vid", "vident", "vjob", "vjson", "vjwt", "vlog", "vmail", "vmap", "vmask", "vnet", "vnum", "vobj", "vpass", "vrand", "vref", "vregex", "vsem", "vset", "vskt", "vslice", "vstr", "vsys", "vtpl", "vurl", "vver", "vxml", "vzip"
     ],
     "heavy_extension_facades": ["verr", "vimg", "vpoi", "vresty"],
     "provider_contract_facades": ["vai", "vftp", "vhan", "vssh", "vtok"],
@@ -659,7 +659,7 @@
       "vbool": { "primary": ["And", "Negate", "Or", "ToInt"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vcache": { "primary": ["NewFIFOWithOptions", "NewFIFO", "NewFIFOWithTimeout", "NewLFU", "NewLFUWithOptions"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vcli": { "primary": ["Output", "Colorize", "WithColorMode", "NewFlagParser", "RenderHelp"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
-      "vcodec": { "primary": ["Base64Decode", "Base64Encode", "Base64DecodeStr", "Base64DecodeWithEncoding", "Base64EncodeStr"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
+      "vcodec": { "primary": ["Base32Decode", "Base64Encode", "Base32DecodeWithEncoding", "Base32Encode", "Base32EncodeWithEncoding"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vconf": { "primary": ["LoadRemoteSafe", "Base64Decrypt", "Merge", "Load", "LoadFiles"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vconv": { "primary": ["ToBoolE", "ToBoolDefaultWithOptions", "ToBool", "ToBoolDefault", "ToBoolEWithOptions"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vcron": { "primary": ["CronRestart", "ConfigureDefaultScheduler", "NewCronError", "MustNewPattern", "CronLaunchingCount"], "advanced": [], "compatibility": ["MustNewPattern"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
@@ -671,11 +671,12 @@
       "verr": { "primary": ["Recover", "GetStackTraceWithOptions", "ErrorIs", "MustExit", "ConfigureDefaultLogFunc"], "advanced": [], "compatibility": ["MustExit", "MustExitWithOptions"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
       "vfile": { "primary": ["AppendFileString", "ExistsWithOptions", "CloseQuietly", "AppendFileStringWithOptions", "Copy"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vform": { "primary": ["IsChineseWithOptions", "IsEmail", "IsChinese", "IsEmailWithOptions", "IsIDCard"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
+      "vgeo": { "primary": ["BD09ToGCJ02", "BD09ToWGS84", "Convert", "Distance", "GCJ02ToBD09"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vftp": { "primary": ["Download", "New", "WithProvider", "List", "Upload"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
-      "vhash": { "primary": ["AdditiveHash", "ApHash", "BkdrHash", "DjbHash", "ElfHash"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
+      "vhash": { "primary": ["NewConsistentHash", "AdditiveHash", "ApHash", "BkdrHash", "DjbHash"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vhttp": { "primary": ["DeleteSafe", "Download", "CleanHTMLWithOptions", "AddGlobalHeader", "BuildBasicAuth"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vid": { "primary": ["ConfigureDefaultSnowflake", "GetSnowflakeNextID", "FastSimpleUUID", "ConfigureDefaultFallbackRandomSourceProvider", "CreateSnowflake"], "advanced": [], "compatibility": ["FastSimpleUUID", "FastSimpleUUIDWithOptions", "FastUUID", "FastUUIDWithOptions", "UUID"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
-      "vident": { "primary": ["AgeWithOptions", "AgeAt", "Age", "BirthDate", "BirthDateWithOptions"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
+      "vident": { "primary": ["ParseCreditCode", "AgeWithOptions", "AgeAt", "Age", "BirthDate"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vimg": { "primary": ["BarcodeASCII", "GenMathGeneratorWithOptions", "CanDecodeBarcodeFormat", "BarcodeASCIIWithChars", "BarcodeBase64Data"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vjob": { "primary": ["NewMapE", "NewBatch", "NewBatchSingle", "NewMap", "NewMapKeys"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vjson": { "primary": ["Parse", "FormatWithOptions", "CreateConfig", "Format", "GetByPath"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
@@ -689,7 +690,7 @@
       "vobj": { "primary": ["Clone", "CloneIfPossibleWithOptions", "Apply", "Equals", "Accept"], "advanced": [], "compatibility": ["Equals", "HasNull", "IsNotNull", "IsNull", "MustDeserialize"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
       "vpass": { "primary": ["Analyze", "IsStrong", "IsWeak", "Score", "StrengthOf"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vhan": { "primary": ["Convert", "New", "WithProvider", "Initials"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
-      "vpoi": { "primary": ["ReadRows", "WithOpenOptions", "WithReadSheet", "IsValidSheetName", "ReadRowsFromReader"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
+      "vpoi": { "primary": ["ReadCells", "WithOpenOptions", "WithReadSheet", "IsValidSheetName", "ReadCellsFromReader"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vrand": { "primary": ["BytesWithOptions", "BoolWithOptions", "Ele", "WithRandomSource", "Bool"], "advanced": [], "compatibility": ["WithRandomSource"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
       "vref": { "primary": ["Invoke", "GetFieldValueWithOptions", "GetFieldValue", "GetConstructorsDirectly", "GetConstructor"], "advanced": [], "compatibility": ["GetConstructorsDirectly", "GetFieldName", "IsOuterClassField", "RemoveFinalModify", "SetFieldValueWithOptions"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
       "vregex": { "primary": ["ContainsWithOptions", "Contains", "ContainsRe", "Count", "CountRe"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
@@ -699,7 +700,7 @@
       "vskt": { "primary": ["ChannelDial", "NewSocketConfigWithOptions", "GetRemoteAddress", "ChannelDialWithOptions", "ChannelUtilDial"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vslice": { "primary": ["FilterErr", "Associate", "SliceToMap", "Chunk", "Compact"], "advanced": [], "compatibility": ["SliceToMap"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
       "vssh": { "primary": ["Download", "New", "WithProvider", "List", "Run"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
-      "vstr": { "primary": ["ContainsEmojiWithOptions", "AddPrefixIfNot", "AddSuffixIfNot", "AntPathMatch", "AntPathMatchWithSeparator"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
+      "vstr": { "primary": ["FromUTF8", "ContainsEmojiWithOptions", "AddPrefixIfNot", "AddSuffixIfNot", "AntPathMatch"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vsys": { "primary": ["CurrentPIDWithOptions", "DumpSystemInfoTo", "CurrentPID", "DumpSystemInfo", "DumpSystemInfoWithOptions"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vtpl": { "primary": ["Render", "NewHTMLEngine", "WithFuncMap", "NewTextEngine", "RenderTemplate"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vtok": { "primary": ["Keywords", "New", "WithProvider", "Tokenize"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
@@ -730,6 +731,7 @@
       "verr": { "grade": "heavy", "rationale": "Heavy extension facade for optional Sentry and Logrus integrations." },
       "vfile": { "grade": "core", "rationale": "Core facade for file and IO; should avoid non-allowlisted runtime dependencies." },
       "vform": { "grade": "core", "rationale": "Core facade for form/input validation; should avoid non-allowlisted runtime dependencies." },
+      "vgeo": { "grade": "core", "rationale": "Core facade for coordinate conversion; should avoid non-allowlisted runtime dependencies." },
       "vftp": { "grade": "adapter", "rationale": "Provider contract facade for FTP adapters; keeps concrete clients outside core." },
       "vhash": { "grade": "core", "rationale": "Core facade for non-cryptographic hashes; should avoid non-allowlisted runtime dependencies." },
       "vhttp": { "grade": "core", "rationale": "Core facade for HTTP; should avoid non-allowlisted runtime dependencies." },
@@ -807,7 +809,7 @@
     },
     "domain_helpers": {
       "purpose": "Focused small-domain helpers with narrow behavior and low dependency expectations.",
-      "packages": ["vblf", "vbool", "vcache", "vcodec", "vcsv", "vdate", "vform", "vhash", "vident", "vnum", "vref", "vsem", "vver"],
+      "packages": ["vblf", "vbool", "vcache", "vcodec", "vcsv", "vdate", "vform", "vgeo", "vhash", "vident", "vnum", "vref", "vsem", "vver"],
       "required_focus": ["package-level examples", "edge-case tests", "core dependency discipline"],
       "required_tests": ["contract", "example", "benchmark"]
     }
@@ -989,6 +991,7 @@
     { "package": "verr", "domain": "error handling", "internal": "internal/errx" },
     { "package": "vfile", "domain": "file and IO", "internal": "internal/file" },
     { "package": "vform", "domain": "form/input validation", "internal": "internal/validator" },
+    { "package": "vgeo", "domain": "coordinate conversion", "internal": "internal/geo" },
     { "package": "vftp", "domain": "FTP adapters", "internal": "internal/ftp" },
     { "package": "vhash", "domain": "non-cryptographic hashes", "internal": "internal/hash" },
     { "package": "vhttp", "domain": "HTTP", "internal": "internal/httpx" },
