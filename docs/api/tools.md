@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
 | Functions | 2687 |
-| Functions with examples | 1275 |
+| Functions with examples | 1278 |
 | Context-aware functions | 36 |
 | Functions returning error | 638 |
 | Variadic functions | 787 |
@@ -2920,7 +2920,7 @@ Import path: `github.com/imajinyun/knifer-go/vrand`
 
 Package vrand provides public APIs for random value utilities.
 
-Quality: 34 functions · 9 with examples · 26.5% example coverage · statuses: recommended=33, compatibility=1, experimental=0, deprecated=0 · synopsis sources: facade=23, internal=11, empty=0
+Quality: 34 functions · 12 with examples · 35.3% example coverage · statuses: recommended=33, compatibility=1, experimental=0, deprecated=0 · synopsis sources: facade=23, internal=11, empty=0
 
 Recommended entrypoints:
 
@@ -2969,9 +2969,9 @@ Golden path API set:
 | `StringUpper` | `func StringUpper(n int) string` | recommended | StringUpper returns a pseudo-random mixed-case alphanumeric string of length n. | facade | — |
 | `StringUpperWithOptions` | `func StringUpperWithOptions(n int, opts ...RandomOption) string` | recommended | RandomStringUpperWithOptions returns a random mixed-case alphanumeric string with per-call options. | internal | — |
 | `StringWithOptions` | `func StringWithOptions(n int, opts ...RandomOption) string` | recommended | RandomStringWithOptions returns a random string from BaseCharNumber with per-call options. | internal | — |
-| `WeightedPick` | `func WeightedPick[T any](items []T, weights []float64, opts ...WeightedOption) (T, error)` | recommended | WeightedPick picks one item according to weights. | facade | — |
-| `WeightedPickN` | `func WeightedPickN[T any](items []T, weights []float64, n int, opts ...WeightedOption) ([]T, error)` | recommended | WeightedPickN picks n items with replacement according to weights. | facade | — |
-| `WeightedPickUniqueN` | `func WeightedPickUniqueN[T any](items []T, weights []float64, n int, opts ...WeightedOption) ([]T, error)` | recommended | WeightedPickUniqueN picks n unique items without replacement according to weights. | facade | — |
+| `WeightedPick` | `func WeightedPick[T any](items []T, weights []float64, opts ...WeightedOption) (T, error)` | recommended | WeightedPick picks one item according to weights. | facade | `ExampleWeightedPick` |
+| `WeightedPickN` | `func WeightedPickN[T any](items []T, weights []float64, n int, opts ...WeightedOption) ([]T, error)` | recommended | WeightedPickN picks n items with replacement according to weights. | facade | `ExampleWeightedPickN` |
+| `WeightedPickUniqueN` | `func WeightedPickUniqueN[T any](items []T, weights []float64, n int, opts ...WeightedOption) ([]T, error)` | recommended | WeightedPickUniqueN picks n unique items without replacement according to weights. | facade | `ExampleWeightedPickUniqueN` |
 | `WithRandomReader` | `func WithRandomReader(reader io.Reader) RandomOption` | recommended | WithRandomReader sets the byte source used by BytesWithOptions and SecureBytesWithOptions. | facade | — |
 | `WithRandomSource` | `func WithRandomSource(source *rand.Rand) RandomOption` | compatibility | WithRandomSource sets the pseudo-random source used by numeric, string, element, and compatibility fallback byte helpers. | facade | — |
 | `WithStrictCryptoRandom` | `func WithStrictCryptoRandom() RandomOption` | recommended | WithStrictCryptoRandom makes BytesWithOptions return reader errors instead of falling back to pseudo-random bytes. | facade | — |

@@ -69,3 +69,44 @@ func ExampleEleWithOptions() {
 	fmt.Println(vrand.EleWithOptions([]string{"a", "b", "c"}, vrand.WithRandomSource(source)))
 	// Output: c
 }
+
+func ExampleWeightedPick() {
+	item, err := vrand.WeightedPick(
+		[]string{"cold", "hot"},
+		[]float64{0, 10},
+		vrand.WithWeightedRandSource(mathrand.New(mathrand.NewSource(1))),
+	)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(item)
+	// Output: hot
+}
+
+func ExampleWeightedPickN() {
+	items, err := vrand.WeightedPickN(
+		[]string{"a", "b", "c"},
+		[]float64{0, 1, 0},
+		3,
+		vrand.WithWeightedRandSource(mathrand.New(mathrand.NewSource(1))),
+	)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(items)
+	// Output: [b b b]
+}
+
+func ExampleWeightedPickUniqueN() {
+	items, err := vrand.WeightedPickUniqueN(
+		[]string{"red", "green", "blue"},
+		[]float64{1, 1, 1},
+		2,
+		vrand.WithWeightedRandSource(mathrand.New(mathrand.NewSource(2))),
+	)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(len(items), items[0] != items[1])
+	// Output: 2 true
+}

@@ -523,7 +523,7 @@
       "recommended_profile_schema": "recommended_entrypoints profiles: day-one, safe, error, options, compatibility; golden_path lists 1-7 APIs with use_when and avoid_when guidance",
       "package_count": 55,
       "function_count": 2687,
-      "functions_with_examples": 1275,
+      "functions_with_examples": 1278,
       "context_aware_functions": 36,
       "returns_error_functions": 638,
       "status_counts": {

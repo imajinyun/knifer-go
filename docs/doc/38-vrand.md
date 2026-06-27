@@ -17,6 +17,7 @@ Choose helpers by whether the value is security-sensitive or only needs pseudo-r
 | Pseudo-random strings from built-in alphabets | `String`, `Numbers`, `StringUpper` | Good for non-secret placeholders and examples. |
 | Pseudo-random strings from a custom alphabet | `StringFrom` | Ensure the alphabet is non-empty and suitable for the downstream format. |
 | Select an element from a slice | `Ele` | Decide how empty slices should be handled before calling. |
+| Weighted pseudo-random selection | `WeightedPick`, `WeightedPickN`, `WeightedPickUniqueN` | Use for simulations, scheduling, experiments, and sampling where weights are non-secret business inputs. |
 | Deterministic tests | `WithRandomSource` | Inject `math/rand` sources only for reproducible non-security helpers. |
 
 ## Randomness safety checklist
@@ -27,6 +28,8 @@ Choose helpers by whether the value is security-sensitive or only needs pseudo-r
 - Keep deterministic random sources limited to examples and tests; never inject them into secret generation paths.
 - Check secure-random errors and fail closed if the operating system randomness source is unavailable.
 - Consider entropy length explicitly: 16 bytes can be enough for many identifiers, while long-lived keys or tokens often need 32 bytes or more.
+- Treat weighted helpers as pseudo-random sampling APIs. They are not a way to generate secrets, hide probabilities, or make security decisions.
+- Validate weighted inputs: item and weight slices must have matching lengths, weights must be finite and non-negative, and the total weight must be positive.
 
 ## Related packages
 
@@ -40,6 +43,7 @@ Choose helpers by whether the value is security-sensitive or only needs pseudo-r
 - Use a domain-specific statistical or simulation library when the distribution, seeding, reproducibility, or sampling method must be controlled precisely.
 - Use `crypto/rand` or cryptographic protocols directly when interoperability requires exact byte generation or encoding behavior.
 - Avoid deterministic `WithRandomSource` outside tests, examples, simulations, and non-security reproducibility workflows.
+- Avoid `WeightedPick*` for lotteries, security controls, access decisions, or regulated randomness unless your domain requirements explicitly accept pseudo-random sampling and the implementation has been reviewed for that use.
 - Avoid shrinking secure random bytes into a small custom alphabet unless the entropy budget has been reviewed.
 
 ## Benchmarks and trade-offs
@@ -50,7 +54,7 @@ Measure secure random generation locally with the focused benchmark suite:
 go test -bench=. -benchmem -run=^$ ./vrand ./internal/rand
 ```
 
-The suite covers secure byte generation. Treat benchmark output as a local baseline rather than a universal performance claim. For non-security helpers, benchmark the specific distribution and source injection you plan to use.
+The suite covers secure byte generation and weighted selection paths. Treat benchmark output as a local baseline rather than a universal performance claim. For non-security helpers, benchmark the specific distribution and source injection you plan to use.
 
 ## FAQ
 
@@ -65,6 +69,10 @@ It exists for deterministic tests, examples, simulations, and compatibility beha
 ### How should I produce a URL-safe secret token?
 
 Generate secure bytes first, then encode them with URL-safe Base64 or another audited encoding. Do not build a secret token by repeatedly choosing pseudo-random characters.
+
+### Can I use weighted helpers for security-sensitive selection?
+
+No. Weighted helpers use pseudo-random selection semantics and are intended for sampling, simulations, routing, experiments, and scheduling. Use a reviewed cryptographic or domain-specific mechanism when the selection affects authentication, authorization, money movement, or other security-sensitive decisions.
 
 ## Generate numbers and booleans
 
@@ -119,6 +127,76 @@ import (
 func main() {
 	items := []string{"go", "knifer", "tool"}
 	fmt.Println(vrand.Ele(items))
+}
+```
+
+## Choose weighted random elements
+
+Use weighted helpers when business inputs define relative likelihood. `WeightedPick`
+returns one item, `WeightedPickN` samples with replacement, and
+`WeightedPickUniqueN` samples without replacement. Inject a weighted random
+source only for deterministic tests and examples.
+
+```go
+package main
+
+import (
+	"fmt"
+	mathrand "math/rand"
+
+	"github.com/imajinyun/knifer-go/vrand"
+)
+
+func main() {
+	source := mathrand.New(mathrand.NewSource(1))
+	item, err := vrand.WeightedPick(
+		[]string{"cold", "hot"},
+		[]float64{0, 10},
+		vrand.WithWeightedRandSource(source),
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(item)
+}
+```
+
+## Sample multiple weighted values
+
+```go
+package main
+
+import (
+	"fmt"
+	mathrand "math/rand"
+
+	"github.com/imajinyun/knifer-go/vrand"
+)
+
+func main() {
+	withReplacement, err := vrand.WeightedPickN(
+		[]string{"a", "b", "c"},
+		[]float64{0, 1, 0},
+		3,
+		vrand.WithWeightedRandSource(mathrand.New(mathrand.NewSource(1))),
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	unique, err := vrand.WeightedPickUniqueN(
+		[]string{"red", "green", "blue"},
+		[]float64{1, 1, 1},
+		2,
+		vrand.WithWeightedRandSource(mathrand.New(mathrand.NewSource(2))),
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println(withReplacement)
+	fmt.Println(len(unique))
 }
 ```
 

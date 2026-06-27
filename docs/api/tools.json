@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 55,
     "function_count": 2687,
-    "functions_with_examples": 1275,
+    "functions_with_examples": 1278,
     "context_aware_functions": 36,
     "returns_error_functions": 638,
     "variadic_functions": 787,
@@ -43234,8 +43234,8 @@
       "synopsis": "Package vrand provides public APIs for random value utilities.",
       "summary": {
         "function_count": 34,
-        "functions_with_examples": 9,
-        "example_coverage_percent": 26.5,
+        "functions_with_examples": 12,
+        "example_coverage_percent": 35.3,
         "status_counts": {
           "compatibility": 1,
           "deprecated": 0,
@@ -43867,7 +43867,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWeightedPick"
+          ]
         },
         {
           "name": "WeightedPickN",
@@ -43899,7 +43902,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWeightedPickN"
+          ]
         },
         {
           "name": "WeightedPickUniqueN",
@@ -43931,7 +43937,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWeightedPickUniqueN"
+          ]
         },
         {
           "name": "WithRandomReader",
