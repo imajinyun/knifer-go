@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 55,
     "function_count": 2687,
-    "functions_with_examples": 1285,
+    "functions_with_examples": 1289,
     "context_aware_functions": 36,
     "returns_error_functions": 638,
     "variadic_functions": 787,
@@ -16620,8 +16620,8 @@
       "synopsis": "Package vhash provides public APIs for hash utilities.",
       "summary": {
         "function_count": 20,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 25,
+        "functions_with_examples": 9,
+        "example_coverage_percent": 45,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
@@ -16942,7 +16942,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewConsistentHash"
+          ]
         },
         {
           "name": "PjwHash",
@@ -17037,7 +17040,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithHashFunc"
+          ]
         },
         {
           "name": "WithReplicaCount",
@@ -17056,7 +17062,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithReplicaCount"
+          ]
         },
         {
           "name": "WithVirtualNodes",
@@ -17075,7 +17084,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithVirtualNodes"
+          ]
         }
       ]
     },

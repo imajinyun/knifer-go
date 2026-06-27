@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
 | Functions | 2687 |
-| Functions with examples | 1285 |
+| Functions with examples | 1289 |
 | Context-aware functions | 36 |
 | Functions returning error | 638 |
 | Variadic functions | 787 |
@@ -1307,7 +1307,7 @@ Import path: `github.com/imajinyun/knifer-go/vhash`
 
 Package vhash provides public APIs for hash utilities.
 
-Quality: 20 functions · 5 with examples · 25.0% example coverage · statuses: recommended=20, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=20, internal=0, empty=0
+Quality: 20 functions · 9 with examples · 45.0% example coverage · statuses: recommended=20, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=20, internal=0, empty=0
 
 Recommended entrypoints:
 
@@ -1340,14 +1340,14 @@ Golden path API set:
 | `HfIpHash` | `func HfIpHash(s string) int64` | recommended | HfIpHash calculates a hash using the HFIP algorithm. | facade | — |
 | `JavaDefaultHash` | `func JavaDefaultHash(s string) int32` | recommended | JavaDefaultHash calculates a hash equivalent to Java String.hashCode. | facade | `ExampleJavaDefaultHash` |
 | `JsHash` | `func JsHash(s string) int32` | recommended | JsHash calculates a hash using the JS algorithm. | facade | — |
-| `NewConsistentHash` | `func NewConsistentHash(opts ...ConsistentHashOption) *ConsistentHash` | recommended | NewConsistentHash creates an empty consistent hash ring. | facade | — |
+| `NewConsistentHash` | `func NewConsistentHash(opts ...ConsistentHashOption) *ConsistentHash` | recommended | NewConsistentHash creates an empty consistent hash ring. | facade | `ExampleNewConsistentHash` |
 | `PjwHash` | `func PjwHash(s string) int32` | recommended | PjwHash calculates a hash using the PJW algorithm. | facade | — |
 | `RsHash` | `func RsHash(s string) int32` | recommended | RsHash calculates a hash using the RS algorithm. | facade | — |
 | `SdbmHash` | `func SdbmHash(s string) int32` | recommended | SdbmHash calculates a hash using the SDBM algorithm. | facade | — |
 | `TianlHash` | `func TianlHash(s string) int64` | recommended | TianlHash calculates a hash using the TianL algorithm. | facade | — |
-| `WithHashFunc` | `func WithHashFunc(hashFunc func([]byte) uint64) ConsistentHashOption` | recommended | WithHashFunc sets the hash function used by the ring. | facade | — |
-| `WithReplicaCount` | `func WithReplicaCount(n int) ConsistentHashOption` | recommended | WithReplicaCount sets the number of virtual nodes per real node. | facade | — |
-| `WithVirtualNodes` | `func WithVirtualNodes(n int) ConsistentHashOption` | recommended | WithVirtualNodes sets the number of virtual nodes per real node. | facade | — |
+| `WithHashFunc` | `func WithHashFunc(hashFunc func([]byte) uint64) ConsistentHashOption` | recommended | WithHashFunc sets the hash function used by the ring. | facade | `ExampleWithHashFunc` |
+| `WithReplicaCount` | `func WithReplicaCount(n int) ConsistentHashOption` | recommended | WithReplicaCount sets the number of virtual nodes per real node. | facade | `ExampleWithReplicaCount` |
+| `WithVirtualNodes` | `func WithVirtualNodes(n int) ConsistentHashOption` | recommended | WithVirtualNodes sets the number of virtual nodes per real node. | facade | `ExampleWithVirtualNodes` |
 
 ### vhttp
 
