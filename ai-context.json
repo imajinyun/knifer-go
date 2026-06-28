@@ -523,7 +523,7 @@
       "recommended_profile_schema": "recommended_entrypoints profiles: day-one, safe, error, options, compatibility; golden_path lists 1-7 APIs with use_when and avoid_when guidance",
       "package_count": 55,
       "function_count": 2687,
-      "functions_with_examples": 1373,
+      "functions_with_examples": 1395,
       "context_aware_functions": 36,
       "returns_error_functions": 638,
       "status_counts": {
@@ -691,7 +691,7 @@
       "vpass": { "primary": ["Analyze", "IsStrong", "IsWeak", "Score", "StrengthOf"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vhan": { "primary": ["Convert", "New", "WithProvider", "Initials"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vpoi": { "primary": ["ReadCells", "WithOpenOptions", "WithReadSheet", "IsValidSheetName", "ReadCellsFromReader"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
-      "vrand": { "primary": ["BytesWithOptions", "BoolWithOptions", "Ele", "WithRandomSource", "Bool"], "advanced": [], "compatibility": ["WithRandomSource"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
+      "vrand": { "primary": ["BytesWithOptions", "BoolWithOptions", "Bool", "WithRandomSource", "ConfigureDefaultRandomSourceProvider"], "advanced": [], "compatibility": ["WithRandomSource"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
       "vref": { "primary": ["Invoke", "GetFieldValueWithOptions", "GetFieldValue", "GetConstructorsDirectly", "GetConstructor"], "advanced": [], "compatibility": ["GetConstructorsDirectly", "GetFieldName", "IsOuterClassField", "RemoveFinalModify", "SetFieldValueWithOptions"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
       "vregex": { "primary": ["ContainsWithOptions", "Contains", "ContainsRe", "Count", "CountRe"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vresty": { "primary": ["DeleteSafe", "Download", "Delete", "AddGlobalHeader", "BuildBasicAuth"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },

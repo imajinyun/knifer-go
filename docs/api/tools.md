@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
 | Functions | 2687 |
-| Functions with examples | 1373 |
+| Functions with examples | 1395 |
 | Context-aware functions | 36 |
 | Functions returning error | 638 |
 | Variadic functions | 787 |
@@ -2920,7 +2920,7 @@ Import path: `github.com/imajinyun/knifer-go/vrand`
 
 Package vrand provides public APIs for random value utilities.
 
-Quality: 34 functions · 12 with examples · 35.3% example coverage · statuses: recommended=33, compatibility=1, experimental=0, deprecated=0 · synopsis sources: facade=23, internal=11, empty=0
+Quality: 34 functions · 34 with examples · 100.0% example coverage · statuses: recommended=33, compatibility=1, experimental=0, deprecated=0 · synopsis sources: facade=23, internal=11, empty=0
 
 Recommended entrypoints:
 
@@ -2928,7 +2928,7 @@ Recommended entrypoints:
 | --- | --- | --- |
 | `BytesWithOptions` | error | Prefer when callers must distinguish invalid input or provider failure from default values. |
 | `BoolWithOptions` | options | Prefer when providers, limits, parsers, or policies must be reviewable at the call site. |
-| `Ele` | day-one | Start here for concise, trusted-input use cases in this package. |
+| `Bool` | day-one | Start here for concise, trusted-input use cases in this package. |
 | `WithRandomSource` | compatibility | Compatibility API; use only when preserving existing call-site semantics. |
 
 Golden path API set:
@@ -2937,46 +2937,46 @@ Golden path API set:
 | --- | --- | --- |
 | `BytesWithOptions` | Use first when callers must observe invalid input or provider failure. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `BoolWithOptions` | Use first when policies, providers, parsers, limits, or clocks must be explicit. | Avoid for trivial in-memory code where the standard library is clearer. |
-| `Ele` | Use first for concise trusted-input workflows in vrand. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vrand. |
-| `WithRandomSource` | Use only to preserve existing call-site behavior during migration. | Avoid for new code when a Recommended, Safe, E, or WithOptions variant exists. |
 | `Bool` | Use first for concise trusted-input workflows in vrand. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vrand. |
+| `WithRandomSource` | Use only to preserve existing call-site behavior during migration. | Avoid for new code when a Recommended, Safe, E, or WithOptions variant exists. |
+| `ConfigureDefaultRandomSourceProvider` | Use first for concise trusted-input workflows in vrand. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vrand. |
 
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
-| `Bool` | `func Bool() bool` | recommended | Bool returns a pseudo-random boolean. | facade | — |
-| `BoolWithOptions` | `func BoolWithOptions(opts ...RandomOption) bool` | recommended | RandomBoolWithOptions returns a random boolean with per-call options. | internal | — |
+| `Bool` | `func Bool() bool` | recommended | Bool returns a pseudo-random boolean. | facade | `ExampleBool` |
+| `BoolWithOptions` | `func BoolWithOptions(opts ...RandomOption) bool` | recommended | RandomBoolWithOptions returns a random boolean with per-call options. | internal | `ExampleBoolWithOptions` |
 | `BytesWithOptions` | `func BytesWithOptions(n int, opts ...RandomOption) ([]byte, error)` | recommended | RandomBytesWithOptions returns n random bytes with per-call options. | internal | `ExampleBytesWithOptions` |
-| `ConfigureDefaultRandomSourceProvider` | `func ConfigureDefaultRandomSourceProvider(provider func() *rand.Rand)` | recommended | ConfigureDefaultRandomSourceProvider sets the provider used to lazily create the package-level pseudo-random source. | facade | — |
+| `ConfigureDefaultRandomSourceProvider` | `func ConfigureDefaultRandomSourceProvider(provider func() *rand.Rand)` | recommended | ConfigureDefaultRandomSourceProvider sets the provider used to lazily create the package-level pseudo-random source. | facade | `ExampleConfigureDefaultRandomSourceProvider` |
 | `Ele` | `func Ele[T any](a []T) T` | recommended | Ele returns a pseudo-random element from a, or the zero value when a is empty. | facade | `ExampleEle` |
 | `EleWithOptions` | `func EleWithOptions[T any](a []T, opts ...RandomOption) T` | recommended | RandomEleWithOptions returns a random element with per-call options, or the zero value for an empty slice. | internal | `ExampleEleWithOptions` |
-| `Float` | `func Float() float64` | recommended | Float returns a pseudo-random float64 in [0.0, 1.0). | facade | — |
-| `FloatWithOptions` | `func FloatWithOptions(opts ...RandomOption) float64` | recommended | RandomFloatWithOptions returns a random float64 in [0.0, 1.0) with per-call options. | internal | — |
-| `Int` | `func Int(max int) int` | recommended | Int returns a pseudo-random integer in [0, max), or 0 when max is non-positive. | facade | — |
+| `Float` | `func Float() float64` | recommended | Float returns a pseudo-random float64 in [0.0, 1.0). | facade | `ExampleFloat` |
+| `FloatWithOptions` | `func FloatWithOptions(opts ...RandomOption) float64` | recommended | RandomFloatWithOptions returns a random float64 in [0.0, 1.0) with per-call options. | internal | `ExampleFloatWithOptions` |
+| `Int` | `func Int(max int) int` | recommended | Int returns a pseudo-random integer in [0, max), or 0 when max is non-positive. | facade | `ExampleInt` |
 | `IntRange` | `func IntRange(min int, max int) int` | recommended | IntRange returns a pseudo-random integer in [min, max), or min when max <= min. | facade | `ExampleIntRange` |
-| `IntRangeWithOptions` | `func IntRangeWithOptions(min int, max int, opts ...RandomOption) int` | recommended | RandomIntRangeWithOptions returns a random integer in [min, max) with per-call options. | internal | — |
+| `IntRangeWithOptions` | `func IntRangeWithOptions(min int, max int, opts ...RandomOption) int` | recommended | RandomIntRangeWithOptions returns a random integer in [min, max) with per-call options. | internal | `ExampleIntRangeWithOptions` |
 | `IntWithOptions` | `func IntWithOptions(max int, opts ...RandomOption) int` | recommended | RandomIntWithOptions returns a random integer in [0, max) with per-call options. | internal | `ExampleIntWithOptions` |
-| `Long` | `func Long() int64` | recommended | Long returns a non-negative pseudo-random int64. | facade | — |
-| `LongWithOptions` | `func LongWithOptions(opts ...RandomOption) int64` | recommended | RandomLongWithOptions returns a non-negative random int64 with per-call options. | internal | — |
-| `Numbers` | `func Numbers(n int) string` | recommended | Numbers returns a pseudo-random numeric string of length n. | facade | — |
-| `NumbersWithOptions` | `func NumbersWithOptions(n int, opts ...RandomOption) string` | recommended | RandomNumbersWithOptions returns a random numeric string with per-call options. | internal | — |
-| `ResetDefaultRandomSource` | `func ResetDefaultRandomSource()` | recommended | ResetDefaultRandomSource restores the time-seeded default source provider and clears cached state. | facade | — |
+| `Long` | `func Long() int64` | recommended | Long returns a non-negative pseudo-random int64. | facade | `ExampleLong` |
+| `LongWithOptions` | `func LongWithOptions(opts ...RandomOption) int64` | recommended | RandomLongWithOptions returns a non-negative random int64 with per-call options. | internal | `ExampleLongWithOptions` |
+| `Numbers` | `func Numbers(n int) string` | recommended | Numbers returns a pseudo-random numeric string of length n. | facade | `ExampleNumbers` |
+| `NumbersWithOptions` | `func NumbersWithOptions(n int, opts ...RandomOption) string` | recommended | RandomNumbersWithOptions returns a random numeric string with per-call options. | internal | `ExampleNumbersWithOptions` |
+| `ResetDefaultRandomSource` | `func ResetDefaultRandomSource()` | recommended | ResetDefaultRandomSource restores the time-seeded default source provider and clears cached state. | facade | `ExampleResetDefaultRandomSource` |
 | `SecureBytes` | `func SecureBytes(n int) ([]byte, error)` | recommended | SecureBytes returns n cryptographically secure random bytes and fails closed on entropy errors. | facade | `ExampleSecureBytes` |
 | `SecureBytesWithOptions` | `func SecureBytesWithOptions(n int, opts ...RandomOption) ([]byte, error)` | recommended | SecureBytesWithOptions returns n cryptographically secure random bytes with per-call options. | facade | `ExampleSecureBytesWithOptions` |
-| `SetSeed` | `func SetSeed(seed int64)` | recommended | SetSeed resets the package-level pseudo-random source seed for reproducible non-security helpers. | facade | — |
+| `SetSeed` | `func SetSeed(seed int64)` | recommended | SetSeed resets the package-level pseudo-random source seed for reproducible non-security helpers. | facade | `ExampleSetSeed` |
 | `String` | `func String(n int) string` | recommended | String returns a pseudo-random lowercase alphanumeric string of length n. | facade | `ExampleString` |
 | `StringFrom` | `func StringFrom(charset string, n int) string` | recommended | StringFrom builds a pseudo-random string by sampling runes from charset. | facade | `ExampleStringFrom` |
-| `StringFromWithOptions` | `func StringFromWithOptions(charset string, n int, opts ...RandomOption) string` | recommended | RandomStringFromWithOptions builds a random string by sampling runes from charset with per-call options. | internal | — |
-| `StringUpper` | `func StringUpper(n int) string` | recommended | StringUpper returns a pseudo-random mixed-case alphanumeric string of length n. | facade | — |
-| `StringUpperWithOptions` | `func StringUpperWithOptions(n int, opts ...RandomOption) string` | recommended | RandomStringUpperWithOptions returns a random mixed-case alphanumeric string with per-call options. | internal | — |
-| `StringWithOptions` | `func StringWithOptions(n int, opts ...RandomOption) string` | recommended | RandomStringWithOptions returns a random string from BaseCharNumber with per-call options. | internal | — |
+| `StringFromWithOptions` | `func StringFromWithOptions(charset string, n int, opts ...RandomOption) string` | recommended | RandomStringFromWithOptions builds a random string by sampling runes from charset with per-call options. | internal | `ExampleStringFromWithOptions` |
+| `StringUpper` | `func StringUpper(n int) string` | recommended | StringUpper returns a pseudo-random mixed-case alphanumeric string of length n. | facade | `ExampleStringUpper` |
+| `StringUpperWithOptions` | `func StringUpperWithOptions(n int, opts ...RandomOption) string` | recommended | RandomStringUpperWithOptions returns a random mixed-case alphanumeric string with per-call options. | internal | `ExampleStringUpperWithOptions` |
+| `StringWithOptions` | `func StringWithOptions(n int, opts ...RandomOption) string` | recommended | RandomStringWithOptions returns a random string from BaseCharNumber with per-call options. | internal | `ExampleStringWithOptions` |
 | `WeightedPick` | `func WeightedPick[T any](items []T, weights []float64, opts ...WeightedOption) (T, error)` | recommended | WeightedPick picks one item according to weights. | facade | `ExampleWeightedPick` |
 | `WeightedPickN` | `func WeightedPickN[T any](items []T, weights []float64, n int, opts ...WeightedOption) ([]T, error)` | recommended | WeightedPickN picks n items with replacement according to weights. | facade | `ExampleWeightedPickN` |
 | `WeightedPickUniqueN` | `func WeightedPickUniqueN[T any](items []T, weights []float64, n int, opts ...WeightedOption) ([]T, error)` | recommended | WeightedPickUniqueN picks n unique items without replacement according to weights. | facade | `ExampleWeightedPickUniqueN` |
-| `WithRandomReader` | `func WithRandomReader(reader io.Reader) RandomOption` | recommended | WithRandomReader sets the byte source used by BytesWithOptions and SecureBytesWithOptions. | facade | — |
-| `WithRandomSource` | `func WithRandomSource(source *rand.Rand) RandomOption` | compatibility | WithRandomSource sets the pseudo-random source used by numeric, string, element, and compatibility fallback byte helpers. | facade | — |
-| `WithStrictCryptoRandom` | `func WithStrictCryptoRandom() RandomOption` | recommended | WithStrictCryptoRandom makes BytesWithOptions return reader errors instead of falling back to pseudo-random bytes. | facade | — |
-| `WithWeightedPrecision` | `func WithWeightedPrecision(precision float64) WeightedOption` | recommended | WithWeightedPrecision sets the minimum positive total-weight tolerance. | facade | — |
-| `WithWeightedRandSource` | `func WithWeightedRandSource(source *rand.Rand) WeightedOption` | recommended | WithWeightedRandSource sets the pseudo-random source used by weighted helpers. | facade | — |
+| `WithRandomReader` | `func WithRandomReader(reader io.Reader) RandomOption` | recommended | WithRandomReader sets the byte source used by BytesWithOptions and SecureBytesWithOptions. | facade | `ExampleWithRandomReader` |
+| `WithRandomSource` | `func WithRandomSource(source *rand.Rand) RandomOption` | compatibility | WithRandomSource sets the pseudo-random source used by numeric, string, element, and compatibility fallback byte helpers. | facade | `ExampleWithRandomSource` |
+| `WithStrictCryptoRandom` | `func WithStrictCryptoRandom() RandomOption` | recommended | WithStrictCryptoRandom makes BytesWithOptions return reader errors instead of falling back to pseudo-random bytes. | facade | `ExampleWithStrictCryptoRandom` |
+| `WithWeightedPrecision` | `func WithWeightedPrecision(precision float64) WeightedOption` | recommended | WithWeightedPrecision sets the minimum positive total-weight tolerance. | facade | `ExampleWithWeightedPrecision` |
+| `WithWeightedRandSource` | `func WithWeightedRandSource(source *rand.Rand) WeightedOption` | recommended | WithWeightedRandSource sets the pseudo-random source used by weighted helpers. | facade | `ExampleWithWeightedRandSource` |
 
 ### vref
 

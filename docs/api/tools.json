@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 55,
     "function_count": 2687,
-    "functions_with_examples": 1373,
+    "functions_with_examples": 1395,
     "context_aware_functions": 36,
     "returns_error_functions": 638,
     "variadic_functions": 787,
@@ -43507,8 +43507,8 @@
       "synopsis": "Package vrand provides public APIs for random value utilities.",
       "summary": {
         "function_count": 34,
-        "functions_with_examples": 12,
-        "example_coverage_percent": 35.3,
+        "functions_with_examples": 34,
+        "example_coverage_percent": 100,
         "status_counts": {
           "compatibility": 1,
           "deprecated": 0,
@@ -43533,7 +43533,7 @@
           "avoid_when": "Avoid for trivial in-memory code where the standard library is clearer."
         },
         {
-          "name": "Ele",
+          "name": "Bool",
           "use_when": "Use first for concise trusted-input workflows in vrand.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vrand."
         },
@@ -43543,7 +43543,7 @@
           "avoid_when": "Avoid for new code when a Recommended, Safe, E, or WithOptions variant exists."
         },
         {
-          "name": "Bool",
+          "name": "ConfigureDefaultRandomSourceProvider",
           "use_when": "Use first for concise trusted-input workflows in vrand.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vrand."
         }
@@ -43560,7 +43560,7 @@
           "rationale": "Prefer when providers, limits, parsers, or policies must be reviewable at the call site."
         },
         {
-          "name": "Ele",
+          "name": "Bool",
           "profile": "day-one",
           "rationale": "Start here for concise, trusted-input use cases in this package."
         },
@@ -43582,7 +43582,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleBool"
+          ]
         },
         {
           "name": "BoolWithOptions",
@@ -43601,7 +43604,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleBoolWithOptions"
+          ]
         },
         {
           "name": "BytesWithOptions",
@@ -43644,7 +43650,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleConfigureDefaultRandomSourceProvider"
+          ]
         },
         {
           "name": "Ele",
@@ -43705,7 +43714,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleFloat"
+          ]
         },
         {
           "name": "FloatWithOptions",
@@ -43724,7 +43736,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleFloatWithOptions"
+          ]
         },
         {
           "name": "Int",
@@ -43743,7 +43758,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleInt"
+          ]
         },
         {
           "name": "IntRange",
@@ -43796,7 +43814,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleIntRangeWithOptions"
+          ]
         },
         {
           "name": "IntWithOptions",
@@ -43835,7 +43856,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleLong"
+          ]
         },
         {
           "name": "LongWithOptions",
@@ -43854,7 +43878,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleLongWithOptions"
+          ]
         },
         {
           "name": "Numbers",
@@ -43873,7 +43900,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNumbers"
+          ]
         },
         {
           "name": "NumbersWithOptions",
@@ -43896,7 +43926,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNumbersWithOptions"
+          ]
         },
         {
           "name": "ResetDefaultRandomSource",
@@ -43906,7 +43939,10 @@
           "status": "recommended",
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleResetDefaultRandomSource"
+          ]
         },
         {
           "name": "SecureBytes",
@@ -43972,7 +44008,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSetSeed"
+          ]
         },
         {
           "name": "String",
@@ -44047,7 +44086,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleStringFromWithOptions"
+          ]
         },
         {
           "name": "StringUpper",
@@ -44066,7 +44108,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleStringUpper"
+          ]
         },
         {
           "name": "StringUpperWithOptions",
@@ -44089,7 +44134,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleStringUpperWithOptions"
+          ]
         },
         {
           "name": "StringWithOptions",
@@ -44112,7 +44160,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleStringWithOptions"
+          ]
         },
         {
           "name": "WeightedPick",
@@ -44232,7 +44283,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithRandomReader"
+          ]
         },
         {
           "name": "WithRandomSource",
@@ -44251,7 +44305,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithRandomSource"
+          ]
         },
         {
           "name": "WithStrictCryptoRandom",
@@ -44264,7 +44321,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithStrictCryptoRandom"
+          ]
         },
         {
           "name": "WithWeightedPrecision",
@@ -44283,7 +44343,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithWeightedPrecision"
+          ]
         },
         {
           "name": "WithWeightedRandSource",
@@ -44302,7 +44365,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithWeightedRandSource"
+          ]
         }
       ]
     },

@@ -143,6 +143,7 @@ package main
 import (
 	"fmt"
 	mathrand "math/rand"
+	"strings"
 
 	"github.com/imajinyun/knifer-go/vrand"
 )
@@ -159,6 +160,28 @@ func main() {
 	}
 
 	fmt.Println(item)
+}
+```
+
+When very small floating-point weights should be treated as absent, configure a
+positive precision threshold and handle the resulting validation error.
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/imajinyun/knifer-go/vrand"
+)
+
+func main() {
+	_, err := vrand.WeightedPick(
+		[]string{"tiny"},
+		[]float64{1e-15},
+		vrand.WithWeightedPrecision(1e-12),
+	)
+	fmt.Println(err != nil)
 }
 ```
 
@@ -225,5 +248,12 @@ func main() {
 
 	source := mathrand.New(mathrand.NewSource(1))
 	fmt.Println(vrand.IntWithOptions(100, vrand.WithRandomSource(source)))
+
+	strict, err := vrand.BytesWithOptions(
+		4,
+		vrand.WithRandomReader(strings.NewReader("x")),
+		vrand.WithStrictCryptoRandom(),
+	)
+	fmt.Println(len(strict), err != nil)
 }
 ```
