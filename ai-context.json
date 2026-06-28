@@ -906,7 +906,7 @@
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
     "faq_path": "docs/doc/daily-json-file-faq.md",
     "sprint": 25,
-    "status": "active",
+    "status": "completed",
     "packages": ["vjson", "vfile"],
     "required_questions": [
       "When should I use vjson instead of encoding/json?",
@@ -914,6 +914,23 @@
       "How should I handle untrusted JSON input?",
       "How should I handle untrusted file paths?",
       "When should I choose bounded reads or explicit errors?"
+    ],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
+  "star_domain_no_missing_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "sprint": 26,
+    "status": "active",
+    "domains": [
+      "Safe HTTP (`vhttp`, `vresty`, `vurl`)",
+      "Safe crypto (`vcrypto`, `vrand`, `vjwt`)",
+      "Daily JSON/file (`vjson`, `vfile`)"
+    ],
+    "status_columns": [
+      "Recommended API docs status",
+      "FAQ status",
+      "Comparison page status",
+      "Cookbook status"
     ],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
   },

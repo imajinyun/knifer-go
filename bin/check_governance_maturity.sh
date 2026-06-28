@@ -538,6 +538,77 @@ def validate_daily_json_file_faq_governance() -> None:
 			add_error(f"{roadmap_path} Sprint 25 row missing package(s): " + ", ".join(missing_from_sprint))
 
 
+def validate_star_domain_no_missing_governance() -> None:
+	governance = require_mapping(ai_context.get("star_domain_no_missing_governance"), "star_domain_no_missing_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("star_domain_no_missing_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	sprint = governance.get("sprint")
+	if sprint != 26:
+		add_error("star_domain_no_missing_governance.sprint must be 26")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("star_domain_no_missing_governance.status must be active or completed")
+	domains = require_string_list(governance.get("domains"), "star_domain_no_missing_governance.domains")
+	expected_domains = [
+		"Safe HTTP (`vhttp`, `vresty`, `vurl`)",
+		"Safe crypto (`vcrypto`, `vrand`, `vjwt`)",
+		"Daily JSON/file (`vjson`, `vfile`)",
+	]
+	if domains != expected_domains:
+		add_error("star_domain_no_missing_governance.domains must be ordered as: " + ", ".join(expected_domains))
+	status_columns = require_string_list(
+		governance.get("status_columns"),
+		"star_domain_no_missing_governance.status_columns",
+	)
+	expected_status_columns = [
+		"Recommended API docs status",
+		"FAQ status",
+		"Comparison page status",
+		"Cookbook status",
+	]
+	if status_columns != expected_status_columns:
+		add_error("star_domain_no_missing_governance.status_columns must be ordered as: " + ", ".join(expected_status_columns))
+	required_checks = require_string_list(governance.get("required_checks"), "star_domain_no_missing_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"star_domain_no_missing_governance.required_checks must include {check}")
+
+	scorecard_rows = {
+		row.get("Domain", ""): row
+		for row in extract_markdown_rows(root / roadmap_path, "90-Day Star Domain Scorecard")
+	}
+	for domain in domains:
+		row = scorecard_rows.get(domain)
+		if row is None:
+			add_error(f"{roadmap_path} scorecard missing governed domain {domain}")
+			continue
+		for column in status_columns:
+			value = row.get(column)
+			if value is None:
+				add_error(f"{roadmap_path} {domain} missing governed status column {column}")
+				continue
+			if "Missing" in value:
+				add_error(f"{roadmap_path} {domain} {column} must not contain Missing")
+			if "Present" not in value:
+				add_error(f"{roadmap_path} {domain} {column} must contain Present")
+
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_26_rows = [row for row in sprint_rows if row.get("Sprint") == "26"]
+	if len(sprint_26_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 26 row")
+	else:
+		sprint_26 = sprint_26_rows[0]
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_26.get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 26 status must be {expected_status}")
+		sprint_text = " ".join(sprint_26.values())
+		for required_phrase in ("star-domain", "Missing", "governance"):
+			if required_phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 26 row must mention {required_phrase!r}")
+
+
 def validate_example_depth_governance() -> None:
 	governance = require_mapping(ai_context.get("example_depth_governance"), "example_depth_governance")
 	sprint = governance.get("sprint")
@@ -937,6 +1008,7 @@ if not bench_only:
 	validate_safe_http_cookbook_governance()
 	validate_safe_crypto_cookbook_governance()
 	validate_daily_json_file_faq_governance()
+	validate_star_domain_no_missing_governance()
 	validate_example_depth_governance()
 	validate_api_convergence()
 	validate_lifecycle()

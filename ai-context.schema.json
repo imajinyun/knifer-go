@@ -22,6 +22,7 @@
     "safe_http_cookbook_governance",
     "safe_crypto_cookbook_governance",
     "daily_json_file_faq_governance",
+    "star_domain_no_missing_governance",
     "error_model",
     "dynamic_semantic_contracts",
     "v1_readiness",
@@ -255,6 +256,19 @@
         "status": { "type": "string", "enum": ["active", "completed"] },
         "packages": { "$ref": "#/$defs/string_array" },
         "required_questions": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "star_domain_no_missing_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "sprint", "status", "domains", "status_columns", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "domains": { "$ref": "#/$defs/string_array" },
+        "status_columns": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
       },
       "additionalProperties": false

@@ -89,7 +89,8 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 22 | Completed | Large Facade Example Depth Governance | Enforced non-regression baselines for `vhttp`, `vnet`, `vnum`, `vresty`, and `vzip`; implementation passes raised `vnum` to 53, `vzip` to 68, `vnet` to 97, `vhttp` to 146, and `vresty` to 120 covered APIs. |
 | 23 | Completed | Safe HTTP Cookbook Governance | Added cookbook-grade scenario guidance for `vhttp`, `vresty`, and `vurl`, then guarded the lane with generated catalog and governance evidence. |
 | 24 | Completed | Safe Crypto Cookbook Governance | Added cookbook-grade scenario and comparison guidance for `vcrypto`, `vrand`, and `vjwt`, then guarded the lane with governance evidence. |
-| 25 | Active | Daily JSON/File FAQ Governance | Add cross-package FAQ guidance for `vjson` and `vfile`, then guard the lane with governance evidence. |
+| 25 | Completed | Daily JSON/File FAQ Governance | Added cross-package FAQ guidance for `vjson` and `vfile`, then guarded the lane with governance evidence. |
+| 26 | Active | Star-Domain No-Missing Governance | Enforce that star-domain Recommended API docs, FAQ, comparison page, and cookbook status columns no longer contain `Missing` once the lanes have governance evidence. |
 
 ## Active workflow
 
@@ -99,7 +100,9 @@ Sprint 23 completed Safe HTTP cookbook depth: `safe_http_cookbook_governance` re
 
 Sprint 24 completed Safe Crypto cookbook depth: `safe_crypto_cookbook_governance` records the governed cookbook path, required scenarios, required checks, and scorecard status for `vcrypto`, `vrand`, and `vjwt`.
 
-Sprint 25 is now the active governance lane for Daily JSON/file FAQ depth. It should turn the Daily JSON/file scorecard's missing FAQ status into machine-checked boundary guidance for `vjson` and `vfile`.
+Sprint 25 completed Daily JSON/file FAQ depth: `daily_json_file_faq_governance` records the governed FAQ path, required questions, required checks, and scorecard status for `vjson` and `vfile`.
+
+Sprint 26 is now the active governance lane for star-domain no-missing status. It should keep Recommended API docs, FAQ, comparison page, and cookbook status cells from regressing to `Missing` after the star-domain lanes have governance evidence.
 
 Recommended roadmap loop:
 
