@@ -60,6 +60,9 @@ var fileSignatures = []fileSignature{
 	{prefix: []byte{0x4D, 0x4D, 0x00, 0x2A}, fileType: FileType{MIME: "image/tiff", Extension: ".tif", Category: FileCategoryImage}},
 	{prefix: []byte("%PDF-"), fileType: FileType{MIME: "application/pdf", Extension: ".pdf", Category: FileCategoryDocument}},
 	{prefix: []byte("PK\x03\x04"), fileType: FileType{MIME: "application/zip", Extension: ".zip", Category: FileCategoryArchive}, matchFunc: matchZipFamily},
+	{prefix: []byte{0x50, 0x4B, 0x03, 0x04}, fileType: FileType{MIME: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", Extension: ".docx", Category: FileCategoryDocument}, matchFunc: matchOOXMLWord},
+	{prefix: []byte{0x50, 0x4B, 0x03, 0x04}, fileType: FileType{MIME: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", Extension: ".xlsx", Category: FileCategoryDocument}, matchFunc: matchOOXMLSpreadsheet},
+	{prefix: []byte{0x50, 0x4B, 0x03, 0x04}, fileType: FileType{MIME: "application/vnd.openxmlformats-officedocument.presentationml.presentation", Extension: ".pptx", Category: FileCategoryDocument}, matchFunc: matchOOXMLPresentation},
 	{prefix: []byte("Rar!\x1A\x07\x00"), fileType: FileType{MIME: "application/vnd.rar", Extension: ".rar", Category: FileCategoryArchive}},
 	{prefix: []byte("7z\xBC\xAF\x27\x1C"), fileType: FileType{MIME: "application/x-7z-compressed", Extension: ".7z", Category: FileCategoryArchive}},
 	{prefix: []byte{0x1F, 0x8B, 0x08}, fileType: FileType{MIME: "application/gzip", Extension: ".gz", Category: FileCategoryArchive}},
@@ -73,7 +76,6 @@ var fileSignatures = []fileSignature{
 	{prefix: []byte{0x1A, 0x45, 0xDF, 0xA3}, fileType: FileType{MIME: "video/webm", Extension: ".webm", Category: FileCategoryVideo}},
 	{prefix: []byte{0x00, 0x00, 0x01, 0xBA}, fileType: FileType{MIME: "video/mpeg", Extension: ".mpg", Category: FileCategoryVideo}},
 	{prefix: []byte{0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1}, fileType: FileType{MIME: "application/vnd.ms-office", Extension: ".doc", Category: FileCategoryDocument}},
-	{prefix: []byte{0x50, 0x4B, 0x03, 0x04}, fileType: FileType{MIME: "application/vnd.openxmlformats-officedocument", Extension: ".docx", Category: FileCategoryDocument}, matchFunc: matchOOXML},
 	{prefix: []byte{0x00, 0x01, 0x00, 0x00}, fileType: FileType{MIME: "font/ttf", Extension: ".ttf", Category: FileCategoryFont}},
 	{prefix: []byte("OTTO"), fileType: FileType{MIME: "font/otf", Extension: ".otf", Category: FileCategoryFont}},
 	{prefix: []byte{0x7F, 'E', 'L', 'F'}, fileType: FileType{MIME: "application/x-elf", Extension: ".elf", Category: FileCategoryExecutable}},
@@ -154,8 +156,17 @@ func matchZipFamily(data []byte) bool {
 }
 
 func matchOOXML(data []byte) bool {
-	return bytes.Contains(data, []byte("[Content_Types].xml")) ||
-		bytes.Contains(data, []byte("word/")) ||
-		bytes.Contains(data, []byte("xl/")) ||
-		bytes.Contains(data, []byte("ppt/"))
+	return matchOOXMLWord(data) || matchOOXMLSpreadsheet(data) || matchOOXMLPresentation(data)
+}
+
+func matchOOXMLWord(data []byte) bool {
+	return bytes.Contains(data, []byte("word/"))
+}
+
+func matchOOXMLSpreadsheet(data []byte) bool {
+	return bytes.Contains(data, []byte("xl/"))
+}
+
+func matchOOXMLPresentation(data []byte) bool {
+	return bytes.Contains(data, []byte("ppt/"))
 }
