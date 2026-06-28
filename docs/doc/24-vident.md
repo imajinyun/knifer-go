@@ -162,7 +162,15 @@ func main() {
 	region, ok := vident.ParseRegionCard("A123456(3)")
 	fmt.Println(region.Region, region.Valid, ok)
 
+	macau, ok := vident.ParseRegionCardWithOptions("1571234(5)")
+	fmt.Println(macau.Region, macau.Valid, ok)
+
+	fmt.Println(vident.IsValidHKIDCard("A123456(3)"))
 	fmt.Println(vident.IsValidTWIDCard("A123456789"))
+	fmt.Println(vident.IsValidTWIDCardWithOptions(
+		"A123456789",
+		vident.WithTWCardMatcher(func(card string) bool { return len(card) == 10 }),
+	))
 	fmt.Println(vident.Hide("11010519491231002X", 6, 14))
 
 	rejected := vident.IsValidIDCard18WithOptions(
@@ -172,6 +180,8 @@ func main() {
 	fmt.Println(rejected)
 }
 ```
+
+Use `WithHKCardMatcher`, `WithMacauCardMatcher`, and `WithTWCardMatcher` when a product has stricter document-format policy than the package defaults, or when tests need to force region-specific reject paths.
 
 ## Validate unified social credit codes
 

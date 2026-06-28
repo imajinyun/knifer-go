@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
 | Functions | 2687 |
-| Functions with examples | 1346 |
+| Functions with examples | 1354 |
 | Context-aware functions | 36 |
 | Functions returning error | 638 |
 | Variadic functions | 787 |
@@ -1628,7 +1628,7 @@ Import path: `github.com/imajinyun/knifer-go/vident`
 
 Package vident provides identity and legal identifier helpers.
 
-Quality: 50 functions · 42 with examples · 84.0% example coverage · statuses: recommended=50, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=50, internal=0, empty=0
+Quality: 50 functions · 50 with examples · 100.0% example coverage · statuses: recommended=50, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=50, internal=0, empty=0
 
 Recommended entrypoints:
 
@@ -1671,8 +1671,8 @@ Golden path API set:
 | `IsValidBirthday` | `func IsValidBirthday(s string) bool` | recommended | IsValidBirthday reports whether s is a valid yyyyMMdd date. | facade | `ExampleIsValidBirthday` |
 | `IsValidBirthdayWithOptions` | `func IsValidBirthdayWithOptions(s string, opts ...BirthOption) bool` | recommended | IsValidBirthdayWithOptions reports whether s is a valid yyyyMMdd date using custom parsing options. | facade | `ExampleIsValidBirthdayWithOptions` |
 | `IsValidCreditCode` | `func IsValidCreditCode(code string) bool` | recommended | IsValidCreditCode reports whether code is a valid unified social credit code. | facade | `ExampleIsValidCreditCode` |
-| `IsValidHKIDCard` | `func IsValidHKIDCard(idCard string) bool` | recommended | IsValidHKIDCard reports whether idCard is a valid Hong Kong identity card number. | facade | — |
-| `IsValidHKIDCardWithOptions` | `func IsValidHKIDCardWithOptions(idCard string, opts ...IDCardOption) bool` | recommended | IsValidHKIDCardWithOptions reports whether idCard is a valid Hong Kong identity card number with options. | facade | — |
+| `IsValidHKIDCard` | `func IsValidHKIDCard(idCard string) bool` | recommended | IsValidHKIDCard reports whether idCard is a valid Hong Kong identity card number. | facade | `ExampleIsValidHKIDCard` |
+| `IsValidHKIDCardWithOptions` | `func IsValidHKIDCardWithOptions(idCard string, opts ...IDCardOption) bool` | recommended | IsValidHKIDCardWithOptions reports whether idCard is a valid Hong Kong identity card number with options. | facade | `ExampleIsValidHKIDCardWithOptions` |
 | `IsValidIDCard` | `func IsValidIDCard(idCard string) bool` | recommended | IsValidIDCard reports whether idCard is a valid 18-digit, 15-digit, or Hong Kong/Macau/Taiwan card number. | facade | `ExampleIsValidIDCard` |
 | `IsValidIDCard15` | `func IsValidIDCard15(idCard string) bool` | recommended | IsValidIDCard15 reports whether idCard is a valid 15-digit mainland China identity card number. | facade | `ExampleIsValidIDCard15` |
 | `IsValidIDCard15WithOptions` | `func IsValidIDCard15WithOptions(idCard string, opts ...IDCardOption) bool` | recommended | IsValidIDCard15WithOptions reports whether idCard is a valid 15-digit mainland China identity card number with options. | facade | `ExampleIsValidIDCard15WithOptions` |
@@ -1681,13 +1681,13 @@ Golden path API set:
 | `IsValidIDCard18WithIgnoreCaseAndOptions` | `func IsValidIDCard18WithIgnoreCaseAndOptions(idCard string, ignoreCase bool, opts ...IDCardOption) bool` | recommended | IsValidIDCard18WithIgnoreCaseAndOptions validates an 18-digit identity card number with options. | facade | `ExampleIsValidIDCard18WithIgnoreCaseAndOptions` |
 | `IsValidIDCard18WithOptions` | `func IsValidIDCard18WithOptions(idCard string, opts ...IDCardOption) bool` | recommended | IsValidIDCard18WithOptions reports whether idCard is a valid 18-digit mainland China identity card number with options. | facade | `ExampleIsValidIDCard18WithOptions` |
 | `IsValidIDCardWithOptions` | `func IsValidIDCardWithOptions(idCard string, opts ...IDCardOption) bool` | recommended | IsValidIDCardWithOptions reports whether idCard is valid with options. | facade | `ExampleIsValidIDCardWithOptions` |
-| `IsValidTWIDCard` | `func IsValidTWIDCard(idCard string) bool` | recommended | IsValidTWIDCard reports whether idCard is a valid Taiwan identity card number. | facade | — |
-| `IsValidTWIDCardWithOptions` | `func IsValidTWIDCardWithOptions(idCard string, opts ...IDCardOption) bool` | recommended | IsValidTWIDCardWithOptions reports whether idCard is a valid Taiwan identity card number with options. | facade | — |
+| `IsValidTWIDCard` | `func IsValidTWIDCard(idCard string) bool` | recommended | IsValidTWIDCard reports whether idCard is a valid Taiwan identity card number. | facade | `ExampleIsValidTWIDCard` |
+| `IsValidTWIDCardWithOptions` | `func IsValidTWIDCardWithOptions(idCard string, opts ...IDCardOption) bool` | recommended | IsValidTWIDCardWithOptions reports whether idCard is a valid Taiwan identity card number with options. | facade | `ExampleIsValidTWIDCardWithOptions` |
 | `Month` | `func Month(idCard string) (int, bool)` | recommended | Month returns the birth month encoded in idCard. | facade | `ExampleMonth` |
 | `ParseCreditCode` | `func ParseCreditCode(code string) (CreditCodeInfo, error)` | recommended | ParseCreditCode validates and splits a unified social credit code. | facade | `ExampleParseCreditCode` |
 | `ParseIDCard` | `func ParseIDCard(idCard string) (IDCardInfo, bool)` | recommended | ParseIDCard parses a valid 15- or 18-digit mainland China identity card number. | facade | `ExampleParseIDCard` |
 | `ParseRegionCard` | `func ParseRegionCard(idCard string) (RegionCardInfo, bool)` | recommended | ParseRegionCard validates a Hong Kong, Macau or Taiwan identity card number. | facade | `ExampleParseRegionCard` |
-| `ParseRegionCardWithOptions` | `func ParseRegionCardWithOptions(idCard string, opts ...IDCardOption) (RegionCardInfo, bool)` | recommended | ParseRegionCardWithOptions validates a Hong Kong, Macau or Taiwan identity card number with options. | facade | — |
+| `ParseRegionCardWithOptions` | `func ParseRegionCardWithOptions(idCard string, opts ...IDCardOption) (RegionCardInfo, bool)` | recommended | ParseRegionCardWithOptions validates a Hong Kong, Macau or Taiwan identity card number with options. | facade | `ExampleParseRegionCardWithOptions` |
 | `Province` | `func Province(idCard string) (string, bool)` | recommended | Province returns the province name encoded in a 15- or 18-digit identity card number. | facade | `ExampleProvince` |
 | `ProvinceCode` | `func ProvinceCode(idCard string) (string, bool)` | recommended | ProvinceCode returns the province code encoded in a 15- or 18-digit identity card number. | facade | `ExampleProvinceCode` |
 | `WithAgeClock` | `func WithAgeClock(clock func() time.Time) AgeOption` | recommended | WithAgeClock sets the clock used by AgeWithOptions. | facade | `ExampleWithAgeClock` |
@@ -1696,9 +1696,9 @@ Golden path API set:
 | `WithBirthLocation` | `func WithBirthLocation(location *time.Location) BirthOption` | recommended | WithBirthLocation sets the location used to parse yyyyMMdd birthdays. | facade | `ExampleWithBirthLocation` |
 | `WithBirthParser` | `func WithBirthParser(parser func(layout string, value string, location *time.Location) (time.Time, error)) BirthOption` | recommended | WithBirthParser sets the date parser used by birthday helpers. | facade | `ExampleWithBirthParser` |
 | `WithDigitsMatcher` | `func WithDigitsMatcher(matcher func(string) bool) IDCardOption` | recommended | WithDigitsMatcher sets the decimal-digits matcher used by mainland ID card helpers. | facade | `ExampleWithDigitsMatcher` |
-| `WithHKCardMatcher` | `func WithHKCardMatcher(matcher func(string) bool) IDCardOption` | recommended | WithHKCardMatcher sets the format matcher used by Hong Kong ID card helpers. | facade | — |
-| `WithMacauCardMatcher` | `func WithMacauCardMatcher(matcher func(string) bool) IDCardOption` | recommended | WithMacauCardMatcher sets the format matcher used by Macau ID card helpers. | facade | — |
-| `WithTWCardMatcher` | `func WithTWCardMatcher(matcher func(string) bool) IDCardOption` | recommended | WithTWCardMatcher sets the format matcher used by Taiwan ID card helpers. | facade | — |
+| `WithHKCardMatcher` | `func WithHKCardMatcher(matcher func(string) bool) IDCardOption` | recommended | WithHKCardMatcher sets the format matcher used by Hong Kong ID card helpers. | facade | `ExampleWithHKCardMatcher` |
+| `WithMacauCardMatcher` | `func WithMacauCardMatcher(matcher func(string) bool) IDCardOption` | recommended | WithMacauCardMatcher sets the format matcher used by Macau ID card helpers. | facade | `ExampleWithMacauCardMatcher` |
+| `WithTWCardMatcher` | `func WithTWCardMatcher(matcher func(string) bool) IDCardOption` | recommended | WithTWCardMatcher sets the format matcher used by Taiwan ID card helpers. | facade | `ExampleWithTWCardMatcher` |
 | `Year` | `func Year(idCard string) (int, bool)` | recommended | Year returns the birth year encoded in idCard. | facade | `ExampleYear` |
 
 ### vimg

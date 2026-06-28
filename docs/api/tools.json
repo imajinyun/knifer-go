@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 55,
     "function_count": 2687,
-    "functions_with_examples": 1346,
+    "functions_with_examples": 1354,
     "context_aware_functions": 36,
     "returns_error_functions": 638,
     "variadic_functions": 787,
@@ -21766,8 +21766,8 @@
       "synopsis": "Package vident provides identity and legal identifier helpers.",
       "summary": {
         "function_count": 50,
-        "functions_with_examples": 42,
-        "example_coverage_percent": 84,
+        "functions_with_examples": 50,
+        "example_coverage_percent": 100,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
@@ -22359,7 +22359,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsValidHKIDCard"
+          ]
         },
         {
           "name": "IsValidHKIDCardWithOptions",
@@ -22382,7 +22385,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleIsValidHKIDCardWithOptions"
+          ]
         },
         {
           "name": "IsValidIDCard",
@@ -22601,7 +22607,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsValidTWIDCard"
+          ]
         },
         {
           "name": "IsValidTWIDCardWithOptions",
@@ -22624,7 +22633,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleIsValidTWIDCardWithOptions"
+          ]
         },
         {
           "name": "Month",
@@ -22740,7 +22752,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleParseRegionCardWithOptions"
+          ]
         },
         {
           "name": "Province",
@@ -22937,7 +22952,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithHKCardMatcher"
+          ]
         },
         {
           "name": "WithMacauCardMatcher",
@@ -22956,7 +22974,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithMacauCardMatcher"
+          ]
         },
         {
           "name": "WithTWCardMatcher",
@@ -22975,7 +22996,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithTWCardMatcher"
+          ]
         },
         {
           "name": "Year",

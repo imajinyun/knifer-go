@@ -324,3 +324,75 @@ func ExampleYear() {
 	fmt.Println(year, ok)
 	// Output: 1949 true
 }
+
+func ExampleIsValidHKIDCard() {
+	fmt.Println(vident.IsValidHKIDCard("A123456(3)"))
+	// Output: true
+}
+
+func ExampleIsValidHKIDCardWithOptions() {
+	accepted := vident.IsValidHKIDCardWithOptions("A123456(3)")
+	rejected := vident.IsValidHKIDCardWithOptions(
+		"A123456(3)",
+		vident.WithHKCardMatcher(func(string) bool { return false }),
+	)
+	fmt.Println(accepted, rejected)
+	// Output: true false
+}
+
+func ExampleIsValidTWIDCard() {
+	fmt.Println(vident.IsValidTWIDCard("A123456789"))
+	// Output: true
+}
+
+func ExampleIsValidTWIDCardWithOptions() {
+	accepted := vident.IsValidTWIDCardWithOptions("A123456789")
+	rejected := vident.IsValidTWIDCardWithOptions(
+		"A123456789",
+		vident.WithTWCardMatcher(func(string) bool { return false }),
+	)
+	fmt.Println(accepted, rejected)
+	// Output: true false
+}
+
+func ExampleParseRegionCardWithOptions() {
+	info, ok := vident.ParseRegionCardWithOptions("1571234(5)")
+	rejected, rejectedOK := vident.ParseRegionCardWithOptions(
+		"1571234(5)",
+		vident.WithMacauCardMatcher(func(string) bool { return false }),
+	)
+	fmt.Println(info.Region, info.Valid, ok)
+	fmt.Println(rejected.Region, rejected.Valid, rejectedOK)
+	// Output:
+	// 澳门 true true
+	//  false false
+}
+
+func ExampleWithHKCardMatcher() {
+	accepted := vident.IsValidHKIDCardWithOptions("A123456(3)")
+	rejected := vident.IsValidHKIDCardWithOptions(
+		"A123456(3)",
+		vident.WithHKCardMatcher(func(string) bool { return false }),
+	)
+	fmt.Println(accepted, rejected)
+	// Output: true false
+}
+
+func ExampleWithMacauCardMatcher() {
+	info, ok := vident.ParseRegionCardWithOptions(
+		"1571234(5)",
+		vident.WithMacauCardMatcher(func(card string) bool { return card == "1571234(5)" }),
+	)
+	fmt.Println(info.Region, info.Valid, ok)
+	// Output: 澳门 true true
+}
+
+func ExampleWithTWCardMatcher() {
+	accepted := vident.IsValidTWIDCardWithOptions("A123456789")
+	rejected := vident.IsValidTWIDCardWithOptions(
+		"A123456789",
+		vident.WithTWCardMatcher(func(string) bool { return false }),
+	)
+	fmt.Println(accepted, rejected)
+	// Output: true false
+}
