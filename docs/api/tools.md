@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
 | Functions | 2724 |
-| Functions with examples | 1551 |
+| Functions with examples | 1645 |
 | Context-aware functions | 36 |
 | Functions returning error | 666 |
 | Variadic functions | 794 |
@@ -1389,7 +1389,7 @@ Import path: `github.com/imajinyun/knifer-go/vhttp`
 
 Package vhttp provides public APIs for HTTP utilities.
 
-Quality: 161 functions · 52 with examples · 32.3% example coverage · statuses: recommended=161, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=156, internal=5, empty=0
+Quality: 161 functions · 146 with examples · 90.7% example coverage · statuses: recommended=161, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=156, internal=5, empty=0
 
 Recommended entrypoints:
 
@@ -1416,163 +1416,163 @@ Golden path API set:
 | `BuildBasicAuth` | `func BuildBasicAuth(user string, pass string) string` | recommended | BuildBasicAuth builds a Basic authorization value. | facade | `ExampleBuildBasicAuth` |
 | `BuildContentType` | `func BuildContentType(contentType string, charset string) string` | recommended | BuildContentType delegates to the internal httpx implementation. | facade | `ExampleBuildContentType` |
 | `CleanHTML` | `func CleanHTML(s string) string` | recommended | CleanHTML delegates to the internal httpx implementation. | facade | `ExampleCleanHTML` |
-| `CleanHTMLWithOptions` | `func CleanHTMLWithOptions(s string, opts ...HTMLCleanOption) string` | recommended | CleanHTMLWithOptions removes HTML tags and keeps plain text with options. | internal | — |
-| `CloneGlobalHeaders` | `func CloneGlobalHeaders() http.Header` | recommended | CloneGlobalHeaders returns cloned global headers. | facade | — |
+| `CleanHTMLWithOptions` | `func CleanHTMLWithOptions(s string, opts ...HTMLCleanOption) string` | recommended | CleanHTMLWithOptions removes HTML tags and keeps plain text with options. | internal | `ExampleCleanHTMLWithOptions` |
+| `CloneGlobalHeaders` | `func CloneGlobalHeaders() http.Header` | recommended | CloneGlobalHeaders returns cloned global headers. | facade | `ExampleCloneGlobalHeaders` |
 | `CloseCookie` | `func CloseCookie()` | recommended | CloseCookie delegates to the internal httpx implementation. | facade | `ExampleCloseCookie` |
-| `ConfigureDefaultTransportProvider` | `func ConfigureDefaultTransportProvider(provider func() *http.Transport)` | recommended | ConfigureDefaultTransportProvider sets the provider used to initialize the shared default transport. | facade | — |
-| `ConfigureGlobalConfig` | `func ConfigureGlobalConfig(cfg GlobalConfig)` | recommended | ConfigureGlobalConfig replaces package-level HTTP defaults with cfg. | facade | — |
-| `CreateServer` | `func CreateServer(port int) *SimpleServer` | recommended | CreateServer delegates to the internal httpx implementation. | facade | — |
-| `CreateServerWithOptions` | `func CreateServerWithOptions(port int, opts ...ServerOption) *SimpleServer` | recommended | CreateServerWithOptions creates a simple HTTP server with options. | facade | — |
+| `ConfigureDefaultTransportProvider` | `func ConfigureDefaultTransportProvider(provider func() *http.Transport)` | recommended | ConfigureDefaultTransportProvider sets the provider used to initialize the shared default transport. | facade | `ExampleConfigureDefaultTransportProvider` |
+| `ConfigureGlobalConfig` | `func ConfigureGlobalConfig(cfg GlobalConfig)` | recommended | ConfigureGlobalConfig replaces package-level HTTP defaults with cfg. | facade | `ExampleConfigureGlobalConfig` |
+| `CreateServer` | `func CreateServer(port int) *SimpleServer` | recommended | CreateServer delegates to the internal httpx implementation. | facade | `ExampleCreateServer` |
+| `CreateServerWithOptions` | `func CreateServerWithOptions(port int, opts ...ServerOption) *SimpleServer` | recommended | CreateServerWithOptions creates a simple HTTP server with options. | facade | `ExampleCreateServerWithOptions` |
 | `Delete` | `func Delete(rawURL string, opts ...RequestOption) *Request` | recommended | Delete creates a DELETE request. | facade | `ExampleDelete` |
-| `DeleteSafe` | `func DeleteSafe(rawURL string, opts ...RequestOption) *Request` | recommended | DeleteSafe creates a DELETE request with SSRF-oriented safety checks enabled. | facade | — |
+| `DeleteSafe` | `func DeleteSafe(rawURL string, opts ...RequestOption) *Request` | recommended | DeleteSafe creates a DELETE request with SSRF-oriented safety checks enabled. | facade | `ExampleDeleteSafe` |
 | `Download` | `func Download(rawURL string, w io.Writer) (int64, error)` | recommended | Download downloads rawURL into w. | facade | `ExampleDownload` |
 | `DownloadBytesE` | `func DownloadBytesE(rawURL string) ([]byte, error)` | recommended | DownloadBytesE downloads and returns bytes or an error. | facade | `ExampleDownloadBytesE` |
 | `DownloadBytesEWithOptions` | `func DownloadBytesEWithOptions(rawURL string, opts ...RequestOption) ([]byte, error)` | recommended | DownloadBytesEWithOptions downloads and returns bytes with per-request options or an error. | facade | `ExampleDownloadBytesEWithOptions` |
-| `DownloadBytesSafeE` | `func DownloadBytesSafeE(rawURL string, opts ...RequestOption) ([]byte, error)` | recommended | DownloadBytesSafeE downloads and returns bytes with SSRF-oriented safety checks enabled. | facade | — |
-| `DownloadFile` | `func DownloadFile(rawURL string, dest string, opts ...SaveOption) (int64, error)` | recommended | DownloadFile downloads rawURL to dest. | facade | — |
+| `DownloadBytesSafeE` | `func DownloadBytesSafeE(rawURL string, opts ...RequestOption) ([]byte, error)` | recommended | DownloadBytesSafeE downloads and returns bytes with SSRF-oriented safety checks enabled. | facade | `ExampleDownloadBytesSafeE` |
+| `DownloadFile` | `func DownloadFile(rawURL string, dest string, opts ...SaveOption) (int64, error)` | recommended | DownloadFile downloads rawURL to dest. | facade | `ExampleDownloadFile` |
 | `DownloadFileSafe` | `func DownloadFileSafe(rawURL string, dest string, opts ...SaveOption) (int64, error)` | recommended | DownloadFileSafe downloads rawURL to dest with SSRF-oriented safety checks enabled. | facade | `ExampleDownloadFileSafe` |
-| `DownloadFileSafeWithOptions` | `func DownloadFileSafeWithOptions(rawURL string, dest string, requestOpts []RequestOption, saveOpts ...SaveOption) (int64, error)` | recommended | DownloadFileSafeWithOptions downloads rawURL to dest with SSRF-oriented safety checks enabled. | facade | — |
-| `DownloadFileWithOptions` | `func DownloadFileWithOptions(rawURL string, dest string, requestOpts []RequestOption, saveOpts ...SaveOption) (int64, error)` | recommended | DownloadFileWithOptions downloads rawURL to dest with per-request and per-save options. | facade | — |
+| `DownloadFileSafeWithOptions` | `func DownloadFileSafeWithOptions(rawURL string, dest string, requestOpts []RequestOption, saveOpts ...SaveOption) (int64, error)` | recommended | DownloadFileSafeWithOptions downloads rawURL to dest with SSRF-oriented safety checks enabled. | facade | `ExampleDownloadFileSafeWithOptions` |
+| `DownloadFileWithOptions` | `func DownloadFileWithOptions(rawURL string, dest string, requestOpts []RequestOption, saveOpts ...SaveOption) (int64, error)` | recommended | DownloadFileWithOptions downloads rawURL to dest with per-request and per-save options. | facade | `ExampleDownloadFileWithOptions` |
 | `DownloadSafe` | `func DownloadSafe(rawURL string, w io.Writer, opts ...RequestOption) (int64, error)` | recommended | DownloadSafe downloads rawURL into w with SSRF-oriented safety checks enabled. | facade | `ExampleDownloadSafe` |
 | `DownloadStringE` | `func DownloadStringE(rawURL string, customCharset string) (string, error)` | recommended | DownloadStringE downloads remote text and returns an error on request or read failure. | facade | `ExampleDownloadStringE` |
-| `DownloadStringEWithOptions` | `func DownloadStringEWithOptions(rawURL string, customCharset string, opts ...RequestOption) (string, error)` | recommended | DownloadStringEWithOptions downloads remote text with per-request options and returns an error on failure. | facade | — |
-| `DownloadStringSafeE` | `func DownloadStringSafeE(rawURL string, customCharset string, opts ...RequestOption) (string, error)` | recommended | DownloadStringSafeE downloads remote text with SSRF-oriented safety checks enabled. | facade | — |
-| `DownloadWithOptions` | `func DownloadWithOptions(rawURL string, w io.Writer, opts ...RequestOption) (int64, error)` | recommended | DownloadWithOptions downloads rawURL into w with per-request options. | facade | — |
-| `Errorf` | `func Errorf(format string, args ...any) *Error` | recommended | Errorf delegates to the internal httpx implementation. | facade | — |
-| `ErrorfWithCode` | `func ErrorfWithCode(code knifer.ErrCode, format string, args ...any) *Error` | recommended | ErrorfWithCode creates an HTTP error with an explicit code and formatted message. | facade | — |
+| `DownloadStringEWithOptions` | `func DownloadStringEWithOptions(rawURL string, customCharset string, opts ...RequestOption) (string, error)` | recommended | DownloadStringEWithOptions downloads remote text with per-request options and returns an error on failure. | facade | `ExampleDownloadStringEWithOptions` |
+| `DownloadStringSafeE` | `func DownloadStringSafeE(rawURL string, customCharset string, opts ...RequestOption) (string, error)` | recommended | DownloadStringSafeE downloads remote text with SSRF-oriented safety checks enabled. | facade | `ExampleDownloadStringSafeE` |
+| `DownloadWithOptions` | `func DownloadWithOptions(rawURL string, w io.Writer, opts ...RequestOption) (int64, error)` | recommended | DownloadWithOptions downloads rawURL into w with per-request options. | facade | `ExampleDownloadWithOptions` |
+| `Errorf` | `func Errorf(format string, args ...any) *Error` | recommended | Errorf delegates to the internal httpx implementation. | facade | `ExampleErrorf` |
+| `ErrorfWithCode` | `func ErrorfWithCode(code knifer.ErrCode, format string, args ...any) *Error` | recommended | ErrorfWithCode creates an HTTP error with an explicit code and formatted message. | facade | `ExampleErrorfWithCode` |
 | `FilterHTMLTag` | `func FilterHTMLTag(s string, tagNames ...string) string` | recommended | FilterHTMLTag delegates to the internal httpx implementation. | facade | `ExampleFilterHTMLTag` |
-| `FilterHTMLTagWithOptions` | `func FilterHTMLTagWithOptions(s string, tagNames []string, opts ...HTMLFilterOption) string` | recommended | FilterHTMLTagWithOptions removes the specified HTML tags with options. | internal | — |
+| `FilterHTMLTagWithOptions` | `func FilterHTMLTagWithOptions(s string, tagNames []string, opts ...HTMLFilterOption) string` | recommended | FilterHTMLTagWithOptions removes the specified HTML tags with options. | internal | `ExampleFilterHTMLTagWithOptions` |
 | `Get` | `func Get(rawURL string, opts ...RequestOption) *Request` | recommended | Get creates a GET request. | facade | `ExampleGet` |
-| `GetCharsetFromContentType` | `func GetCharsetFromContentType(ct string) string` | recommended | GetCharsetFromContentType delegates to the internal httpx implementation. | facade | — |
-| `GetCharsetFromContentTypeWithOptions` | `func GetCharsetFromContentTypeWithOptions(ct string, opts ...CharsetOption) string` | recommended | GetCharsetFromContentTypeWithOptions delegates to the internal httpx implementation. | facade | — |
+| `GetCharsetFromContentType` | `func GetCharsetFromContentType(ct string) string` | recommended | GetCharsetFromContentType delegates to the internal httpx implementation. | facade | `ExampleGetCharsetFromContentType` |
+| `GetCharsetFromContentTypeWithOptions` | `func GetCharsetFromContentTypeWithOptions(ct string, opts ...CharsetOption) string` | recommended | GetCharsetFromContentTypeWithOptions delegates to the internal httpx implementation. | facade | `ExampleGetCharsetFromContentTypeWithOptions` |
 | `GetCharsetFromHTML` | `func GetCharsetFromHTML(html string) string` | recommended | GetCharsetFromHTML delegates to the internal httpx implementation. | facade | `ExampleGetCharsetFromHTML` |
-| `GetCharsetFromHTMLWithOptions` | `func GetCharsetFromHTMLWithOptions(html string, opts ...CharsetOption) string` | recommended | GetCharsetFromHTMLWithOptions delegates to the internal httpx implementation. | facade | — |
+| `GetCharsetFromHTMLWithOptions` | `func GetCharsetFromHTMLWithOptions(html string, opts ...CharsetOption) string` | recommended | GetCharsetFromHTMLWithOptions delegates to the internal httpx implementation. | facade | `ExampleGetCharsetFromHTMLWithOptions` |
 | `GetCookieJar` | `func GetCookieJar() http.CookieJar` | recommended | GetCookieJar delegates to the internal httpx implementation. | facade | — |
-| `GetGlobalBoundary` | `func GetGlobalBoundary() string` | recommended | GetGlobalBoundary delegates to the internal httpx implementation. | facade | — |
-| `GetGlobalFollowRedirects` | `func GetGlobalFollowRedirects() bool` | recommended | GetGlobalFollowRedirects delegates to the internal httpx implementation. | facade | — |
-| `GetGlobalMaxRedirects` | `func GetGlobalMaxRedirects() int` | recommended | GetGlobalMaxRedirects delegates to the internal httpx implementation. | facade | — |
-| `GetGlobalMaxResponseBytes` | `func GetGlobalMaxResponseBytes() int64` | recommended | GetGlobalMaxResponseBytes returns the global maximum response bytes read by response Bytes/Body helpers. | facade | — |
-| `GetGlobalTimeout` | `func GetGlobalTimeout() time.Duration` | recommended | GetGlobalTimeout returns the global HTTP timeout. | facade | — |
-| `GetGlobalUserAgent` | `func GetGlobalUserAgent() string` | recommended | GetGlobalUserAgent delegates to the internal httpx implementation. | facade | — |
-| `GetMimeType` | `func GetMimeType(filename string) string` | recommended | GetMimeType delegates to the internal httpx implementation. | facade | — |
+| `GetGlobalBoundary` | `func GetGlobalBoundary() string` | recommended | GetGlobalBoundary delegates to the internal httpx implementation. | facade | `ExampleGetGlobalBoundary` |
+| `GetGlobalFollowRedirects` | `func GetGlobalFollowRedirects() bool` | recommended | GetGlobalFollowRedirects delegates to the internal httpx implementation. | facade | `ExampleGetGlobalFollowRedirects` |
+| `GetGlobalMaxRedirects` | `func GetGlobalMaxRedirects() int` | recommended | GetGlobalMaxRedirects delegates to the internal httpx implementation. | facade | `ExampleGetGlobalMaxRedirects` |
+| `GetGlobalMaxResponseBytes` | `func GetGlobalMaxResponseBytes() int64` | recommended | GetGlobalMaxResponseBytes returns the global maximum response bytes read by response Bytes/Body helpers. | facade | `ExampleGetGlobalMaxResponseBytes` |
+| `GetGlobalTimeout` | `func GetGlobalTimeout() time.Duration` | recommended | GetGlobalTimeout returns the global HTTP timeout. | facade | `ExampleGetGlobalTimeout` |
+| `GetGlobalUserAgent` | `func GetGlobalUserAgent() string` | recommended | GetGlobalUserAgent delegates to the internal httpx implementation. | facade | `ExampleGetGlobalUserAgent` |
+| `GetMimeType` | `func GetMimeType(filename string) string` | recommended | GetMimeType delegates to the internal httpx implementation. | facade | `ExampleGetMimeType` |
 | `GetSafe` | `func GetSafe(rawURL string, opts ...RequestOption) *Request` | recommended | GetSafe creates a GET request with SSRF-oriented safety checks enabled. | facade | `ExampleGetSafe` |
 | `GetStringE` | `func GetStringE(rawURL string) (string, error)` | recommended | GetStringE sends a GET request and returns response body as string or an error. | facade | `ExampleGetStringE` |
 | `GetStringEWithOptions` | `func GetStringEWithOptions(rawURL string, opts ...RequestOption) (string, error)` | recommended | GetStringEWithOptions sends a GET request with options and returns response body as string or an error. | facade | `ExampleGetStringEWithOptions` |
 | `GetStringSafeE` | `func GetStringSafeE(rawURL string, opts ...RequestOption) (string, error)` | recommended | GetStringSafeE sends a safe GET request and returns response body as string or an error. | facade | `ExampleGetStringSafeE` |
 | `GetWithParamsE` | `func GetWithParamsE(rawURL string, params map[string]any) (string, error)` | recommended | GetWithParamsE sends a GET request with form parameters and returns response body or an error. | facade | `ExampleGetWithParamsE` |
-| `GetWithParamsEWithOptions` | `func GetWithParamsEWithOptions(rawURL string, params map[string]any, opts ...RequestOption) (string, error)` | recommended | GetWithParamsEWithOptions sends a GET request with form parameters and custom options, returning body or error. | facade | — |
+| `GetWithParamsEWithOptions` | `func GetWithParamsEWithOptions(rawURL string, params map[string]any, opts ...RequestOption) (string, error)` | recommended | GetWithParamsEWithOptions sends a GET request with form parameters and custom options, returning body or error. | facade | `ExampleGetWithParamsEWithOptions` |
 | `GetWithTimeoutE` | `func GetWithTimeoutE(rawURL string, timeout time.Duration) (string, error)` | recommended | GetWithTimeoutE sends a GET request with a timeout and returns response body or an error. | facade | `ExampleGetWithTimeoutE` |
-| `GetWithTimeoutEWithOptions` | `func GetWithTimeoutEWithOptions(rawURL string, timeout time.Duration, opts ...RequestOption) (string, error)` | recommended | GetWithTimeoutEWithOptions sends a GET request with a timeout and custom options, returning body or error. | facade | — |
-| `GuessContentType` | `func GuessContentType(body string) ContentType` | recommended | GuessContentType delegates to the internal httpx implementation. | facade | — |
+| `GetWithTimeoutEWithOptions` | `func GetWithTimeoutEWithOptions(rawURL string, timeout time.Duration, opts ...RequestOption) (string, error)` | recommended | GetWithTimeoutEWithOptions sends a GET request with a timeout and custom options, returning body or error. | facade | `ExampleGetWithTimeoutEWithOptions` |
+| `GuessContentType` | `func GuessContentType(body string) ContentType` | recommended | GuessContentType delegates to the internal httpx implementation. | facade | `ExampleGuessContentType` |
 | `HTMLEscape` | `func HTMLEscape(s string) string` | recommended | HTMLEscape delegates to the internal httpx implementation. | facade | `ExampleHTMLEscape` |
 | `HTMLUnescape` | `func HTMLUnescape(s string) string` | recommended | HTMLUnescape delegates to the internal httpx implementation. | facade | `ExampleHTMLUnescape` |
 | `Head` | `func Head(rawURL string, opts ...RequestOption) *Request` | recommended | Head creates a HEAD request. | facade | `ExampleHead` |
-| `HeadSafe` | `func HeadSafe(rawURL string, opts ...RequestOption) *Request` | recommended | HeadSafe creates a HEAD request with SSRF-oriented safety checks enabled. | facade | — |
-| `IsDefaultContentType` | `func IsDefaultContentType(contentType string) bool` | recommended | IsDefaultContentType delegates to the internal httpx implementation. | facade | — |
-| `IsFormURLEncoded` | `func IsFormURLEncoded(contentType string) bool` | recommended | IsFormURLEncoded delegates to the internal httpx implementation. | facade | — |
-| `IsGlobalDecodeURL` | `func IsGlobalDecodeURL() bool` | recommended | IsGlobalDecodeURL delegates to the internal httpx implementation. | facade | — |
-| `IsIgnoreEOFError` | `func IsIgnoreEOFError() bool` | recommended | IsIgnoreEOFError delegates to the internal httpx implementation. | facade | — |
+| `HeadSafe` | `func HeadSafe(rawURL string, opts ...RequestOption) *Request` | recommended | HeadSafe creates a HEAD request with SSRF-oriented safety checks enabled. | facade | `ExampleHeadSafe` |
+| `IsDefaultContentType` | `func IsDefaultContentType(contentType string) bool` | recommended | IsDefaultContentType delegates to the internal httpx implementation. | facade | `ExampleIsDefaultContentType` |
+| `IsFormURLEncoded` | `func IsFormURLEncoded(contentType string) bool` | recommended | IsFormURLEncoded delegates to the internal httpx implementation. | facade | `ExampleIsFormURLEncoded` |
+| `IsGlobalDecodeURL` | `func IsGlobalDecodeURL() bool` | recommended | IsGlobalDecodeURL delegates to the internal httpx implementation. | facade | `ExampleIsGlobalDecodeURL` |
+| `IsIgnoreEOFError` | `func IsIgnoreEOFError() bool` | recommended | IsIgnoreEOFError delegates to the internal httpx implementation. | facade | `ExampleIsIgnoreEOFError` |
 | `IsRedirected` | `func IsRedirected(status int) bool` | recommended | IsRedirected delegates to the internal httpx implementation. | facade | `ExampleIsRedirected` |
-| `NewClient` | `func NewClient(opts ...ClientOption) *Client` | recommended | NewClient creates a request factory using the current global configuration snapshot. | facade | — |
-| `NewClientWithConfig` | `func NewClientWithConfig(cfg GlobalConfig, opts ...RequestOption) *Client` | recommended | NewClientWithConfig creates a request factory from an explicit configuration snapshot. | facade | — |
+| `NewClient` | `func NewClient(opts ...ClientOption) *Client` | recommended | NewClient creates a request factory using the current global configuration snapshot. | facade | `ExampleNewClient` |
+| `NewClientWithConfig` | `func NewClientWithConfig(cfg GlobalConfig, opts ...RequestOption) *Client` | recommended | NewClientWithConfig creates a request factory from an explicit configuration snapshot. | facade | `ExampleNewClientWithConfig` |
 | `NewError` | `func NewError(msg string, cause error) *Error` | recommended | NewError delegates to the internal httpx implementation. | facade | `ExampleNewError` |
-| `NewErrorWithCode` | `func NewErrorWithCode(code knifer.ErrCode, msg string, cause error) *Error` | recommended | NewErrorWithCode creates an HTTP error with an explicit knifer-go code. | facade | — |
-| `NewIsolatedClient` | `func NewIsolatedClient(opts ...ClientOption) *Client` | recommended | NewIsolatedClient creates a request factory without reading package-level global defaults. | facade | — |
-| `NewIsolatedRequest` | `func NewIsolatedRequest(method Method, rawURL string, opts ...RequestOption) *Request` | recommended | NewIsolatedRequest creates a request without reading package-level global defaults. | facade | — |
+| `NewErrorWithCode` | `func NewErrorWithCode(code knifer.ErrCode, msg string, cause error) *Error` | recommended | NewErrorWithCode creates an HTTP error with an explicit knifer-go code. | facade | `ExampleNewErrorWithCode` |
+| `NewIsolatedClient` | `func NewIsolatedClient(opts ...ClientOption) *Client` | recommended | NewIsolatedClient creates a request factory without reading package-level global defaults. | facade | `ExampleNewIsolatedClient` |
+| `NewIsolatedRequest` | `func NewIsolatedRequest(method Method, rawURL string, opts ...RequestOption) *Request` | recommended | NewIsolatedRequest creates a request without reading package-level global defaults. | facade | `ExampleNewIsolatedRequest` |
 | `NewRequest` | `func NewRequest(method Method, rawURL string, opts ...RequestOption) *Request` | recommended | NewRequest creates a request by method. | facade | `ExampleNewRequest`, `ExampleNewRequest_customHeader` |
-| `NewRequestWithConfig` | `func NewRequestWithConfig(method Method, rawURL string, cfg GlobalConfig, opts ...RequestOption) *Request` | recommended | NewRequestWithConfig creates a request from an explicit global configuration snapshot. | facade | — |
+| `NewRequestWithConfig` | `func NewRequestWithConfig(method Method, rawURL string, cfg GlobalConfig, opts ...RequestOption) *Request` | recommended | NewRequestWithConfig creates a request from an explicit global configuration snapshot. | facade | `ExampleNewRequestWithConfig` |
 | `NewSafeRequest` | `func NewSafeRequest(method Method, rawURL string, opts ...RequestOption) *Request` | recommended | NewSafeRequest creates a request with SSRF-oriented safety checks enabled. | facade | `ExampleNewSafeRequest` |
-| `NewSimpleServer` | `func NewSimpleServer(port int) *SimpleServer` | recommended | NewSimpleServer creates a simple HTTP server on port. | facade | — |
-| `NewSimpleServerAddr` | `func NewSimpleServerAddr(addr string) *SimpleServer` | recommended | NewSimpleServerAddr delegates to the internal httpx implementation. | facade | — |
-| `NewSimpleServerAddrWithOptions` | `func NewSimpleServerAddrWithOptions(addr string, opts ...ServerOption) *SimpleServer` | recommended | NewSimpleServerAddrWithOptions creates a simple HTTP server on addr with options. | facade | — |
-| `NewSimpleServerWithOptions` | `func NewSimpleServerWithOptions(port int, opts ...ServerOption) *SimpleServer` | recommended | NewSimpleServerWithOptions creates a simple HTTP server on port with options. | facade | — |
+| `NewSimpleServer` | `func NewSimpleServer(port int) *SimpleServer` | recommended | NewSimpleServer creates a simple HTTP server on port. | facade | `ExampleNewSimpleServer` |
+| `NewSimpleServerAddr` | `func NewSimpleServerAddr(addr string) *SimpleServer` | recommended | NewSimpleServerAddr delegates to the internal httpx implementation. | facade | `ExampleNewSimpleServerAddr` |
+| `NewSimpleServerAddrWithOptions` | `func NewSimpleServerAddrWithOptions(addr string, opts ...ServerOption) *SimpleServer` | recommended | NewSimpleServerAddrWithOptions creates a simple HTTP server on addr with options. | facade | `ExampleNewSimpleServerAddrWithOptions` |
+| `NewSimpleServerWithOptions` | `func NewSimpleServerWithOptions(port int, opts ...ServerOption) *SimpleServer` | recommended | NewSimpleServerWithOptions creates a simple HTTP server on port with options. | facade | `ExampleNewSimpleServerWithOptions` |
 | `Options` | `func Options(rawURL string, opts ...RequestOption) *Request` | recommended | Options creates an OPTIONS request. | facade | `ExampleOptions` |
-| `OptionsSafe` | `func OptionsSafe(rawURL string, opts ...RequestOption) *Request` | recommended | OptionsSafe creates an OPTIONS request with SSRF-oriented safety checks enabled. | facade | — |
+| `OptionsSafe` | `func OptionsSafe(rawURL string, opts ...RequestOption) *Request` | recommended | OptionsSafe creates an OPTIONS request with SSRF-oriented safety checks enabled. | facade | `ExampleOptionsSafe` |
 | `ParseUserAgent` | `func ParseUserAgent(ua string) *UserAgent` | recommended | ParseUserAgent parses a User-Agent string. | facade | `ExampleParseUserAgent` |
 | `Patch` | `func Patch(rawURL string, opts ...RequestOption) *Request` | recommended | Patch creates a PATCH request. | facade | `ExamplePatch` |
-| `PatchSafe` | `func PatchSafe(rawURL string, opts ...RequestOption) *Request` | recommended | PatchSafe creates a PATCH request with SSRF-oriented safety checks enabled. | facade | — |
+| `PatchSafe` | `func PatchSafe(rawURL string, opts ...RequestOption) *Request` | recommended | PatchSafe creates a PATCH request with SSRF-oriented safety checks enabled. | facade | `ExamplePatchSafe` |
 | `Post` | `func Post(rawURL string, opts ...RequestOption) *Request` | recommended | Post creates a POST request. | facade | `ExamplePost` |
 | `PostFormE` | `func PostFormE(rawURL string, params map[string]any) (string, error)` | recommended | PostFormE posts form parameters and returns response body or an error. | facade | `ExamplePostFormE` |
-| `PostFormEWithOptions` | `func PostFormEWithOptions(rawURL string, params map[string]any, opts ...RequestOption) (string, error)` | recommended | PostFormEWithOptions posts form parameters with options and returns response body or an error. | facade | — |
-| `PostFormSafeE` | `func PostFormSafeE(rawURL string, params map[string]any, opts ...RequestOption) (string, error)` | recommended | PostFormSafeE posts form parameters with SSRF-oriented safety checks enabled. | facade | — |
+| `PostFormEWithOptions` | `func PostFormEWithOptions(rawURL string, params map[string]any, opts ...RequestOption) (string, error)` | recommended | PostFormEWithOptions posts form parameters with options and returns response body or an error. | facade | `ExamplePostFormEWithOptions` |
+| `PostFormSafeE` | `func PostFormSafeE(rawURL string, params map[string]any, opts ...RequestOption) (string, error)` | recommended | PostFormSafeE posts form parameters with SSRF-oriented safety checks enabled. | facade | `ExamplePostFormSafeE` |
 | `PostJSONE` | `func PostJSONE(rawURL string, jsonStr string) (string, error)` | recommended | PostJSONE posts JSON body and returns response body or an error. | facade | `ExamplePostJSONE` |
 | `PostJSONEWithOptions` | `func PostJSONEWithOptions(rawURL string, jsonStr string, opts ...RequestOption) (string, error)` | recommended | PostJSONEWithOptions posts JSON body with options and returns response body or an error. | facade | `ExamplePostJSONEWithOptions` |
-| `PostJSONSafeE` | `func PostJSONSafeE(rawURL string, jsonStr string, opts ...RequestOption) (string, error)` | recommended | PostJSONSafeE posts JSON body with SSRF-oriented safety checks enabled. | facade | — |
+| `PostJSONSafeE` | `func PostJSONSafeE(rawURL string, jsonStr string, opts ...RequestOption) (string, error)` | recommended | PostJSONSafeE posts JSON body with SSRF-oriented safety checks enabled. | facade | `ExamplePostJSONSafeE` |
 | `PostSafe` | `func PostSafe(rawURL string, opts ...RequestOption) *Request` | recommended | PostSafe creates a POST request with SSRF-oriented safety checks enabled. | facade | `ExamplePostSafe` |
 | `PostStringE` | `func PostStringE(rawURL string, body string) (string, error)` | recommended | PostStringE posts a string body and returns response body or an error. | facade | `ExamplePostStringE` |
 | `PostStringEWithOptions` | `func PostStringEWithOptions(rawURL string, body string, opts ...RequestOption) (string, error)` | recommended | PostStringEWithOptions posts a string body with options and returns response body or an error. | facade | `ExamplePostStringEWithOptions` |
-| `PostStringSafeE` | `func PostStringSafeE(rawURL string, body string, opts ...RequestOption) (string, error)` | recommended | PostStringSafeE posts a string body with SSRF-oriented safety checks enabled. | facade | — |
+| `PostStringSafeE` | `func PostStringSafeE(rawURL string, body string, opts ...RequestOption) (string, error)` | recommended | PostStringSafeE posts a string body with SSRF-oriented safety checks enabled. | facade | `ExamplePostStringSafeE` |
 | `Put` | `func Put(rawURL string, opts ...RequestOption) *Request` | recommended | Put creates a PUT request. | facade | `ExamplePut` |
-| `PutSafe` | `func PutSafe(rawURL string, opts ...RequestOption) *Request` | recommended | PutSafe creates a PUT request with SSRF-oriented safety checks enabled. | facade | — |
+| `PutSafe` | `func PutSafe(rawURL string, opts ...RequestOption) *Request` | recommended | PutSafe creates a PUT request with SSRF-oriented safety checks enabled. | facade | `ExamplePutSafe` |
 | `RemoveGlobalHeader` | `func RemoveGlobalHeader(name string)` | recommended | RemoveGlobalHeader removes a global HTTP header. | facade | `ExampleRemoveGlobalHeader` |
-| `ResetDefaultTransport` | `func ResetDefaultTransport()` | recommended | ResetDefaultTransport clears the cached shared default transport and restores the standard provider. | facade | — |
-| `ResetGlobalConfig` | `func ResetGlobalConfig()` | recommended | ResetGlobalConfig restores package-level HTTP defaults, including headers and cookie jar. | facade | — |
-| `ResetServerStarters` | `func ResetServerStarters()` | recommended | ResetServerStarters clears pending starter functions registered while applying server options. | facade | — |
+| `ResetDefaultTransport` | `func ResetDefaultTransport()` | recommended | ResetDefaultTransport clears the cached shared default transport and restores the standard provider. | facade | `ExampleResetDefaultTransport` |
+| `ResetGlobalConfig` | `func ResetGlobalConfig()` | recommended | ResetGlobalConfig restores package-level HTTP defaults, including headers and cookie jar. | facade | `ExampleResetGlobalConfig` |
+| `ResetServerStarters` | `func ResetServerStarters()` | recommended | ResetServerStarters clears pending starter functions registered while applying server options. | facade | `ExampleResetServerStarters` |
 | `SetCookieJar` | `func SetCookieJar(jar http.CookieJar)` | recommended | SetCookieJar delegates to the internal httpx implementation. | facade | `ExampleSetCookieJar` |
-| `SetGlobalBoundary` | `func SetGlobalBoundary(b string)` | recommended | SetGlobalBoundary delegates to the internal httpx implementation. | facade | — |
-| `SetGlobalDecodeURL` | `func SetGlobalDecodeURL(b bool)` | recommended | SetGlobalDecodeURL delegates to the internal httpx implementation. | facade | — |
-| `SetGlobalFollowRedirects` | `func SetGlobalFollowRedirects(b bool)` | recommended | SetGlobalFollowRedirects delegates to the internal httpx implementation. | facade | — |
+| `SetGlobalBoundary` | `func SetGlobalBoundary(b string)` | recommended | SetGlobalBoundary delegates to the internal httpx implementation. | facade | `ExampleSetGlobalBoundary` |
+| `SetGlobalDecodeURL` | `func SetGlobalDecodeURL(b bool)` | recommended | SetGlobalDecodeURL delegates to the internal httpx implementation. | facade | `ExampleSetGlobalDecodeURL` |
+| `SetGlobalFollowRedirects` | `func SetGlobalFollowRedirects(b bool)` | recommended | SetGlobalFollowRedirects delegates to the internal httpx implementation. | facade | `ExampleSetGlobalFollowRedirects` |
 | `SetGlobalHeader` | `func SetGlobalHeader(name string, value string)` | recommended | SetGlobalHeader sets a global HTTP header. | facade | `ExampleSetGlobalHeader` |
-| `SetGlobalMaxRedirects` | `func SetGlobalMaxRedirects(n int)` | recommended | SetGlobalMaxRedirects delegates to the internal httpx implementation. | facade | — |
-| `SetGlobalMaxResponseBytes` | `func SetGlobalMaxResponseBytes(n int64)` | recommended | SetGlobalMaxResponseBytes sets the global maximum response bytes read by response Bytes/Body helpers. | facade | — |
-| `SetGlobalTimeout` | `func SetGlobalTimeout(d time.Duration)` | recommended | SetGlobalTimeout sets the global HTTP timeout. | facade | — |
-| `SetGlobalUserAgent` | `func SetGlobalUserAgent(ua string)` | recommended | SetGlobalUserAgent delegates to the internal httpx implementation. | facade | — |
-| `SetIgnoreEOFError` | `func SetIgnoreEOFError(b bool)` | recommended | SetIgnoreEOFError delegates to the internal httpx implementation. | facade | — |
-| `SnapshotGlobalConfig` | `func SnapshotGlobalConfig() GlobalConfig` | recommended | SnapshotGlobalConfig returns a consistent copy of the current package-level HTTP defaults. | facade | — |
+| `SetGlobalMaxRedirects` | `func SetGlobalMaxRedirects(n int)` | recommended | SetGlobalMaxRedirects delegates to the internal httpx implementation. | facade | `ExampleSetGlobalMaxRedirects` |
+| `SetGlobalMaxResponseBytes` | `func SetGlobalMaxResponseBytes(n int64)` | recommended | SetGlobalMaxResponseBytes sets the global maximum response bytes read by response Bytes/Body helpers. | facade | `ExampleSetGlobalMaxResponseBytes` |
+| `SetGlobalTimeout` | `func SetGlobalTimeout(d time.Duration)` | recommended | SetGlobalTimeout sets the global HTTP timeout. | facade | `ExampleSetGlobalTimeout` |
+| `SetGlobalUserAgent` | `func SetGlobalUserAgent(ua string)` | recommended | SetGlobalUserAgent delegates to the internal httpx implementation. | facade | `ExampleSetGlobalUserAgent` |
+| `SetIgnoreEOFError` | `func SetIgnoreEOFError(b bool)` | recommended | SetIgnoreEOFError delegates to the internal httpx implementation. | facade | `ExampleSetIgnoreEOFError` |
+| `SnapshotGlobalConfig` | `func SnapshotGlobalConfig() GlobalConfig` | recommended | SnapshotGlobalConfig returns a consistent copy of the current package-level HTTP defaults. | facade | `ExampleSnapshotGlobalConfig` |
 | `WithAllowedHosts` | `func WithAllowedHosts(hosts ...string) RequestOption` | recommended | WithAllowedHosts restricts Safe requests to the provided host names. | facade | `ExampleWithAllowedHosts` |
-| `WithAsyncRunner` | `func WithAsyncRunner(runner func(func())) ServerOption` | recommended | WithAsyncRunner sets the function used by StartAsync to launch the serving task. | facade | — |
-| `WithAutoDecodeResponse` | `func WithAutoDecodeResponse(autoDecode bool) RequestOption` | recommended | WithAutoDecodeResponse controls whether response bodies are decoded by Content-Encoding. | facade | — |
+| `WithAsyncRunner` | `func WithAsyncRunner(runner func(func())) ServerOption` | recommended | WithAsyncRunner sets the function used by StartAsync to launch the serving task. | facade | `ExampleWithAsyncRunner` |
+| `WithAutoDecodeResponse` | `func WithAutoDecodeResponse(autoDecode bool) RequestOption` | recommended | WithAutoDecodeResponse controls whether response bodies are decoded by Content-Encoding. | facade | `ExampleWithAutoDecodeResponse` |
 | `WithBaseContext` | `func WithBaseContext(baseContext func(net.Listener) context.Context) ServerOption` | recommended | WithBaseContext sets the server base context function. | facade | — |
-| `WithCharset` | `func WithCharset(charset string) RequestOption` | recommended | WithCharset sets a per-request charset at construction time. | facade | — |
-| `WithCharsetRegexp` | `func WithCharsetRegexp(re *regexp.Regexp) CharsetOption` | recommended | WithCharsetRegexp sets the regexp used by GetCharsetFromContentTypeWithOptions. | facade | — |
-| `WithClient` | `func WithClient(c *http.Client) RequestOption` | recommended | WithClient sets a per-request HTTP client and takes precedence over WithTransport and WithTLSConfig. | facade | — |
-| `WithClientGlobalConfig` | `func WithClientGlobalConfig(cfg GlobalConfig) ClientOption` | recommended | WithClientGlobalConfig sets the configuration snapshot used by a Client. | facade | — |
-| `WithClientRequestOptions` | `func WithClientRequestOptions(opts ...RequestOption) ClientOption` | recommended | WithClientRequestOptions sets request options applied to every request created by a Client. | facade | — |
+| `WithCharset` | `func WithCharset(charset string) RequestOption` | recommended | WithCharset sets a per-request charset at construction time. | facade | `ExampleWithCharset` |
+| `WithCharsetRegexp` | `func WithCharsetRegexp(re *regexp.Regexp) CharsetOption` | recommended | WithCharsetRegexp sets the regexp used by GetCharsetFromContentTypeWithOptions. | facade | `ExampleWithCharsetRegexp` |
+| `WithClient` | `func WithClient(c *http.Client) RequestOption` | recommended | WithClient sets a per-request HTTP client and takes precedence over WithTransport and WithTLSConfig. | facade | `ExampleWithClient` |
+| `WithClientGlobalConfig` | `func WithClientGlobalConfig(cfg GlobalConfig) ClientOption` | recommended | WithClientGlobalConfig sets the configuration snapshot used by a Client. | facade | `ExampleWithClientGlobalConfig` |
+| `WithClientRequestOptions` | `func WithClientRequestOptions(opts ...RequestOption) ClientOption` | recommended | WithClientRequestOptions sets request options applied to every request created by a Client. | facade | `ExampleWithClientRequestOptions` |
 | `WithConnContext` | `func WithConnContext(connContext func(context.Context, net.Conn) context.Context) ServerOption` | recommended | WithConnContext sets the server connection context function. | facade | — |
-| `WithContentDecoder` | `func WithContentDecoder(encoding string, decoder func(io.Reader) (io.ReadCloser, error)) RequestOption` | recommended | WithContentDecoder registers a per-request response body decoder for encoding. | facade | — |
-| `WithContentType` | `func WithContentType(ct string) RequestOption` | recommended | WithContentType sets a per-request Content-Type at construction time. | facade | — |
-| `WithCookieJar` | `func WithCookieJar(jar http.CookieJar) RequestOption` | recommended | WithCookieJar sets a per-request CookieJar. | facade | — |
+| `WithContentDecoder` | `func WithContentDecoder(encoding string, decoder func(io.Reader) (io.ReadCloser, error)) RequestOption` | recommended | WithContentDecoder registers a per-request response body decoder for encoding. | facade | `ExampleWithContentDecoder` |
+| `WithContentType` | `func WithContentType(ct string) RequestOption` | recommended | WithContentType sets a per-request Content-Type at construction time. | facade | `ExampleWithContentType` |
+| `WithCookieJar` | `func WithCookieJar(jar http.CookieJar) RequestOption` | recommended | WithCookieJar sets a per-request CookieJar. | facade | `ExampleWithCookieJar` |
 | `WithFileServerFactory` | `func WithFileServerFactory(factory func(http.FileSystem) http.Handler) StaticOption` | recommended | WithFileServerFactory sets the handler factory used by SetRootWithOptions. | facade | — |
-| `WithFollowRedirects` | `func WithFollowRedirects(b bool) RequestOption` | recommended | WithFollowRedirects sets per-request redirect behavior. | facade | — |
-| `WithGlobalConfig` | `func WithGlobalConfig(cfg GlobalConfig) RequestOption` | recommended | WithGlobalConfig initializes request defaults from a captured global configuration snapshot. | facade | — |
-| `WithHTMLCommentRegexp` | `func WithHTMLCommentRegexp(re *regexp.Regexp) HTMLCleanOption` | recommended | WithHTMLCommentRegexp sets the comment regexp used by CleanHTMLWithOptions. | internal | — |
-| `WithHTMLFilterCompileFunc` | `func WithHTMLFilterCompileFunc(compile func(string) (*regexp.Regexp, error)) HTMLFilterOption` | recommended | WithHTMLFilterCompileFunc sets the compiler used by FilterHTMLTagWithOptions. | internal | — |
-| `WithHTMLTagRegexp` | `func WithHTMLTagRegexp(re *regexp.Regexp) HTMLCleanOption` | recommended | WithHTMLTagRegexp sets the tag regexp used by CleanHTMLWithOptions. | internal | — |
+| `WithFollowRedirects` | `func WithFollowRedirects(b bool) RequestOption` | recommended | WithFollowRedirects sets per-request redirect behavior. | facade | `ExampleWithFollowRedirects` |
+| `WithGlobalConfig` | `func WithGlobalConfig(cfg GlobalConfig) RequestOption` | recommended | WithGlobalConfig initializes request defaults from a captured global configuration snapshot. | facade | `ExampleWithGlobalConfig` |
+| `WithHTMLCommentRegexp` | `func WithHTMLCommentRegexp(re *regexp.Regexp) HTMLCleanOption` | recommended | WithHTMLCommentRegexp sets the comment regexp used by CleanHTMLWithOptions. | internal | `ExampleWithHTMLCommentRegexp` |
+| `WithHTMLFilterCompileFunc` | `func WithHTMLFilterCompileFunc(compile func(string) (*regexp.Regexp, error)) HTMLFilterOption` | recommended | WithHTMLFilterCompileFunc sets the compiler used by FilterHTMLTagWithOptions. | internal | `ExampleWithHTMLFilterCompileFunc` |
+| `WithHTMLTagRegexp` | `func WithHTMLTagRegexp(re *regexp.Regexp) HTMLCleanOption` | recommended | WithHTMLTagRegexp sets the tag regexp used by CleanHTMLWithOptions. | internal | `ExampleWithHTMLTagRegexp` |
 | `WithHTTPServer` | `func WithHTTPServer(server *http.Server) ServerOption` | recommended | WithHTTPServer copies supported settings from server into the created SimpleServer. | facade | — |
 | `WithHeader` | `func WithHeader(name string, value string) RequestOption` | recommended | WithHeader sets one per-request header. | facade | `ExampleWithHeader` |
 | `WithHeaders` | `func WithHeaders(headers map[string]string) RequestOption` | recommended | WithHeaders sets per-request headers in batch. | facade | `ExampleWithHeaders` |
-| `WithIdleTimeout` | `func WithIdleTimeout(timeout time.Duration) ServerOption` | recommended | WithIdleTimeout sets the server idle timeout. | facade | — |
-| `WithListenAndServeFunc` | `func WithListenAndServeFunc(listenAndServe ListenAndServeFunc) ServerOption` | recommended | WithListenAndServeFunc sets the function used to start serving. | facade | — |
+| `WithIdleTimeout` | `func WithIdleTimeout(timeout time.Duration) ServerOption` | recommended | WithIdleTimeout sets the server idle timeout. | facade | `ExampleWithIdleTimeout` |
+| `WithListenAndServeFunc` | `func WithListenAndServeFunc(listenAndServe ListenAndServeFunc) ServerOption` | recommended | WithListenAndServeFunc sets the function used to start serving. | facade | `ExampleWithListenAndServeFunc` |
 | `WithListener` | `func WithListener(listener net.Listener) ServerOption` | recommended | WithListener sets a listener used by Start and StartAsync instead of ListenAndServe. | facade | — |
 | `WithLookupIP` | `func WithLookupIP(lookupIP func(context.Context, string) ([]net.IP, error)) RequestOption` | recommended | WithLookupIP sets the host resolver used by SSRF-oriented URL validation. | facade | `ExampleWithLookupIP` |
-| `WithMaxRedirects` | `func WithMaxRedirects(n int) RequestOption` | recommended | WithMaxRedirects sets the per-request redirect limit. | facade | — |
-| `WithMaxResponseBytes` | `func WithMaxResponseBytes(maxBytes int64) RequestOption` | recommended | WithMaxResponseBytes limits bytes read by response Bytes/Body helpers. | facade | — |
-| `WithMetaCharsetRegexp` | `func WithMetaCharsetRegexp(re *regexp.Regexp) CharsetOption` | recommended | WithMetaCharsetRegexp sets the regexp used by GetCharsetFromHTMLWithOptions. | facade | — |
+| `WithMaxRedirects` | `func WithMaxRedirects(n int) RequestOption` | recommended | WithMaxRedirects sets the per-request redirect limit. | facade | `ExampleWithMaxRedirects` |
+| `WithMaxResponseBytes` | `func WithMaxResponseBytes(maxBytes int64) RequestOption` | recommended | WithMaxResponseBytes limits bytes read by response Bytes/Body helpers. | facade | `ExampleWithMaxResponseBytes` |
+| `WithMetaCharsetRegexp` | `func WithMetaCharsetRegexp(re *regexp.Regexp) CharsetOption` | recommended | WithMetaCharsetRegexp sets the regexp used by GetCharsetFromHTMLWithOptions. | facade | `ExampleWithMetaCharsetRegexp` |
 | `WithMultipartWriterFactory` | `func WithMultipartWriterFactory(factory MultipartWriterFactory) RequestOption` | recommended | WithMultipartWriterFactory sets the multipart writer factory used when building multipart request bodies. | facade | — |
-| `WithReadHeaderTimeout` | `func WithReadHeaderTimeout(timeout time.Duration) ServerOption` | recommended | WithReadHeaderTimeout sets the server read-header timeout. | facade | — |
-| `WithReadTimeout` | `func WithReadTimeout(timeout time.Duration) ServerOption` | recommended | WithReadTimeout sets the server read timeout. | facade | — |
-| `WithRequestFactory` | `func WithRequestFactory(newRequest NewRequestFunc) RequestOption` | recommended | WithRequestFactory sets the HTTP request factory used at execution time. | facade | — |
+| `WithReadHeaderTimeout` | `func WithReadHeaderTimeout(timeout time.Duration) ServerOption` | recommended | WithReadHeaderTimeout sets the server read-header timeout. | facade | `ExampleWithReadHeaderTimeout` |
+| `WithReadTimeout` | `func WithReadTimeout(timeout time.Duration) ServerOption` | recommended | WithReadTimeout sets the server read timeout. | facade | `ExampleWithReadTimeout` |
+| `WithRequestFactory` | `func WithRequestFactory(newRequest NewRequestFunc) RequestOption` | recommended | WithRequestFactory sets the HTTP request factory used at execution time. | facade | `ExampleWithRequestFactory` |
 | `WithResponseReadAllFunc` | `func WithResponseReadAllFunc(readAll func(io.Reader) ([]byte, error)) RequestOption` | recommended | WithResponseReadAllFunc sets the reader used by response Bytes/Body helpers. | facade | `ExampleWithResponseReadAllFunc` |
-| `WithSaveCreateParents` | `func WithSaveCreateParents(create bool) SaveOption` | recommended | WithSaveCreateParents controls whether parent directories are created automatically. | facade | — |
-| `WithSaveDefaultFilename` | `func WithSaveDefaultFilename(name string) SaveOption` | recommended | WithSaveDefaultFilename sets the fallback file name used when dest is a directory. | facade | — |
+| `WithSaveCreateParents` | `func WithSaveCreateParents(create bool) SaveOption` | recommended | WithSaveCreateParents controls whether parent directories are created automatically. | facade | `ExampleWithSaveCreateParents` |
+| `WithSaveDefaultFilename` | `func WithSaveDefaultFilename(name string) SaveOption` | recommended | WithSaveDefaultFilename sets the fallback file name used when dest is a directory. | facade | `ExampleWithSaveDefaultFilename` |
 | `WithSaveDirPerm` | `func WithSaveDirPerm(perm fs.FileMode) SaveOption` | recommended | WithSaveDirPerm sets the directory permission used when creating parent directories. | facade | — |
 | `WithSaveFilePerm` | `func WithSaveFilePerm(perm fs.FileMode) SaveOption` | recommended | WithSaveFilePerm sets the file permission used when creating the destination file. | facade | — |
 | `WithSaveMkdirAll` | `func WithSaveMkdirAll(mkdirAll func(string, fs.FileMode) error) SaveOption` | recommended | WithSaveMkdirAll sets the directory creator used when saving responses. | facade | — |
 | `WithSaveOpenFile` | `func WithSaveOpenFile(openFile func(string, int, fs.FileMode) (io.WriteCloser, error)) SaveOption` | recommended | WithSaveOpenFile sets the file opener used when saving responses. | facade | — |
-| `WithSaveOverwrite` | `func WithSaveOverwrite(overwrite bool) SaveOption` | recommended | WithSaveOverwrite controls whether an existing destination file may be replaced. | facade | — |
+| `WithSaveOverwrite` | `func WithSaveOverwrite(overwrite bool) SaveOption` | recommended | WithSaveOverwrite controls whether an existing destination file may be replaced. | facade | `ExampleWithSaveOverwrite` |
 | `WithSaveStat` | `func WithSaveStat(stat func(string) (os.FileInfo, error)) SaveOption` | recommended | WithSaveStat sets the stat provider used to resolve directory destinations. | facade | — |
 | `WithScopedGlobalConfig` | `func WithScopedGlobalConfig(cfg GlobalConfig, fn func())` | recommended | WithScopedGlobalConfig runs fn with cfg installed as package-level HTTP defaults, then restores the previous defaults. | facade | `ExampleWithScopedGlobalConfig` |
-| `WithServerErrorLog` | `func WithServerErrorLog(logger *log.Logger) ServerOption` | recommended | WithServerErrorLog sets the server error logger. | facade | — |
+| `WithServerErrorLog` | `func WithServerErrorLog(logger *log.Logger) ServerOption` | recommended | WithServerErrorLog sets the server error logger. | facade | `ExampleWithServerErrorLog` |
 | `WithStaticFS` | `func WithStaticFS(fileSystem fs.FS) StaticOption` | recommended | WithStaticFS sets an fs.FS used by SetRootWithOptions. | facade | — |
 | `WithStaticFileSystem` | `func WithStaticFileSystem(fileSystem http.FileSystem) StaticOption` | recommended | WithStaticFileSystem sets the file system used by SetRootWithOptions. | facade | — |
 | `WithStaticHandler` | `func WithStaticHandler(handler http.Handler) StaticOption` | recommended | WithStaticHandler sets the static handler directly and takes precedence over file-system options. | facade | — |
-| `WithTLSConfig` | `func WithTLSConfig(cfg *tls.Config) RequestOption` | recommended | WithTLSConfig sets a per-request TLS config. | facade | — |
+| `WithTLSConfig` | `func WithTLSConfig(cfg *tls.Config) RequestOption` | recommended | WithTLSConfig sets a per-request TLS config. | facade | `ExampleWithTLSConfig` |
 | `WithTimeout` | `func WithTimeout(d time.Duration) RequestOption` | recommended | WithTimeout sets a per-request timeout. | facade | `ExampleWithTimeout` |
 | `WithTransport` | `func WithTransport(t http.RoundTripper) RequestOption` | recommended | WithTransport sets a per-request RoundTripper and takes precedence over WithTLSConfig. | facade | `ExampleWithTransport` |
-| `WithTransportProvider` | `func WithTransportProvider(provider func() http.RoundTripper) RequestOption` | recommended | WithTransportProvider sets a per-request RoundTripper provider evaluated when the request is built. | facade | — |
+| `WithTransportProvider` | `func WithTransportProvider(provider func() http.RoundTripper) RequestOption` | recommended | WithTransportProvider sets a per-request RoundTripper provider evaluated when the request is built. | facade | `ExampleWithTransportProvider` |
 | `WithURLPolicy` | `func WithURLPolicy(policy URLPolicy) RequestOption` | recommended | WithURLPolicy sets SSRF-oriented validation for the request URL and redirect targets. | facade | `ExampleWithURLPolicy` |
 | `WithUserAgent` | `func WithUserAgent(ua string) RequestOption` | recommended | WithUserAgent sets a per-request User-Agent. | facade | `ExampleWithUserAgent` |
-| `WithWriteTimeout` | `func WithWriteTimeout(timeout time.Duration) ServerOption` | recommended | WithWriteTimeout sets the server write timeout. | facade | — |
+| `WithWriteTimeout` | `func WithWriteTimeout(timeout time.Duration) ServerOption` | recommended | WithWriteTimeout sets the server write timeout. | facade | `ExampleWithWriteTimeout` |
 
 ### vid
 

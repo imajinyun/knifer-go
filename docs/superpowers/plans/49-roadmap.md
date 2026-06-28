@@ -10,7 +10,7 @@ This baseline is derived from `docs/api/tools.json.summary`. `make governance-ma
 | --- | ---: |
 | Public facade packages | 55 |
 | Public functions | 2724 |
-| Functions with executable examples | 1551 |
+| Functions with executable examples | 1645 |
 | Context-aware functions | 36 |
 | Functions returning errors | 666 |
 | Recommended public functions | 2702 |
@@ -23,7 +23,7 @@ This baseline is derived from `docs/api/tools.json.summary`. `make governance-ma
 
 | Domain | Public functions | Examples | Example ratio | Internal coverage | Facade coverage | Benchmark count | Recommended API docs status | FAQ status | Comparison page status | Cookbook status |
 | --- | ---: | ---: | ---: | --- | --- | ---: | --- | --- | --- | --- |
-| Safe HTTP (`vhttp`, `vresty`, `vurl`) | 364 | 209 | 57.4% | `internal/httpx/http` 85.0%, `internal/httpx/resty` 80.4%, `internal/url` 87.7%, shared helpers 86.8% | `vhttp` 100.0%, `vresty` 100.0%, `vurl` 100.0% | 10 | Present in `docs/doc/README.md`, `docs/doc/22-vhttp.md`, and `docs/doc/41-vresty.md` | Present in `docs/doc/22-vhttp.md` and `docs/doc/41-vresty.md` | Present in `docs/doc/22-vhttp.md` and `docs/doc/41-vresty.md` | Missing |
+| Safe HTTP (`vhttp`, `vresty`, `vurl`) | 364 | 303 | 83.2% | `internal/httpx/http` 85.0%, `internal/httpx/resty` 80.4%, `internal/url` 87.7%, shared helpers 86.8% | `vhttp` 100.0%, `vresty` 100.0%, `vurl` 100.0% | 10 | Present in `docs/doc/README.md`, `docs/doc/22-vhttp.md`, and `docs/doc/41-vresty.md` | Present in `docs/doc/22-vhttp.md` and `docs/doc/41-vresty.md` | Present in `docs/doc/22-vhttp.md` and `docs/doc/41-vresty.md` | Missing |
 | Safe crypto (`vcrypto`, `vrand`, `vjwt`) | 211 | 187 | 88.6% | `internal/crypto` 94.1%, `internal/rand` 94.2%, `internal/jwt` 85.5% | `vcrypto` 100.0%, `vrand` 100.0%, `vjwt` 100.0% | 7 | Present in `docs/doc/11-vcrypto.md` and `docs/doc/38-vrand.md` | Present in `docs/doc/11-vcrypto.md` and `docs/doc/38-vrand.md` | Missing | Missing |
 | Daily JSON/file (`vjson`, `vfile`) | 133 | 133 | 100.0% | `internal/json` 88.9%, `internal/file` 88.6% | `vjson` 100.0%, `vfile` 100.0% | 4 | Present in `docs/doc/27-vjson.md` for JSON and `docs/doc/17-vfile.md` for file workflows | Missing | Present in `docs/doc/27-vjson.md` for JSON stdlib boundary; filesystem safety guidance present in `docs/doc/17-vfile.md` | Present in `docs/doc/27-vjson.md` and `docs/doc/17-vfile.md` |
 
@@ -86,11 +86,11 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 19 | Completed | Conversion Contract Clarity | Added explicit-error scalar conversions to `vconv`, documented weak-input semantics, added overflow-safe E integer narrowing, covered named scalar types, and kept zero/default helpers backward-compatible. |
 | 20 | Completed | Hutool Gap Capability Closure | Completed national crypto, lunar calendar, credit code, coordinate conversion, codec expansion, weighted random, file type detection, BOM/charset, image operations, and consistent hash coverage across facades, docs, examples, and tests. |
 | 21 | Completed | Roadmap Governance Drift Control | Kept roadmap state synchronized with generated API catalog evidence and enforced baseline plus star-domain metric drift through governance gates. |
-| 22 | Active | Large Facade Example Depth Governance | Track `vhttp`, `vnet`, `vnum`, `vresty`, and `vzip` example baselines as non-regression metadata; implementation passes raised `vnum` to 53, `vzip` to 68, and `vnet` to 97 covered APIs. |
+| 22 | Active | Large Facade Example Depth Governance | Track `vhttp`, `vnet`, `vnum`, `vresty`, and `vzip` example baselines as non-regression metadata; implementation passes raised `vnum` to 53, `vzip` to 68, `vnet` to 97, and `vhttp` to 146 covered APIs. |
 
 ## Active workflow
 
-Sprint 21 completed roadmap catalog drift control by validating the Baseline and Star Domain scorecard against the generated API catalog. Sprint 22 is now the active governance synchronization lane for large-facade example depth: `example_depth_governance` records non-regression baselines for `vhttp`, `vnet`, `vnum`, `vresty`, and `vzip`, keeps the roadmap Examples lane aligned with those targets, and has ratcheted `vnum` examples from 23 to 53, `vzip` examples from 22 to 68, and `vnet` examples from 47 to 97 in the generated catalog.
+Sprint 21 completed roadmap catalog drift control by validating the Baseline and Star Domain scorecard against the generated API catalog. Sprint 22 is now the active governance synchronization lane for large-facade example depth: `example_depth_governance` records non-regression baselines for `vhttp`, `vnet`, `vnum`, `vresty`, and `vzip`, keeps the roadmap Examples lane aligned with those targets, and has ratcheted `vnum` examples from 23 to 53, `vzip` examples from 22 to 68, `vnet` examples from 47 to 97, and `vhttp` examples from 52 to 146 in the generated catalog.
 
 Recommended roadmap loop:
 

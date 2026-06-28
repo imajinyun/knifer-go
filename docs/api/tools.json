@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 55,
     "function_count": 2724,
-    "functions_with_examples": 1551,
+    "functions_with_examples": 1645,
     "context_aware_functions": 36,
     "returns_error_functions": 666,
     "variadic_functions": 794,
@@ -18083,8 +18083,8 @@
       "synopsis": "Package vhttp provides public APIs for HTTP utilities.",
       "summary": {
         "function_count": 161,
-        "functions_with_examples": 52,
-        "example_coverage_percent": 32.3,
+        "functions_with_examples": 146,
+        "example_coverage_percent": 90.7,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
@@ -18265,7 +18265,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleCleanHTMLWithOptions"
+          ]
         },
         {
           "name": "CloneGlobalHeaders",
@@ -18278,7 +18281,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCloneGlobalHeaders"
+          ]
         },
         {
           "name": "CloseCookie",
@@ -18307,7 +18313,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleConfigureDefaultTransportProvider"
+          ]
         },
         {
           "name": "ConfigureGlobalConfig",
@@ -18323,7 +18332,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleConfigureGlobalConfig"
+          ]
         },
         {
           "name": "CreateServer",
@@ -18342,7 +18354,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCreateServer"
+          ]
         },
         {
           "name": "CreateServerWithOptions",
@@ -18365,7 +18380,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleCreateServerWithOptions"
+          ]
         },
         {
           "name": "Delete",
@@ -18414,7 +18432,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleDeleteSafe"
+          ]
         },
         {
           "name": "Download",
@@ -18515,7 +18536,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleDownloadBytesSafeE"
+          ]
         },
         {
           "name": "DownloadFile",
@@ -18543,7 +18567,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleDownloadFile"
+          ]
         },
         {
           "name": "DownloadFileSafe",
@@ -18606,7 +18633,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleDownloadFileSafeWithOptions"
+          ]
         },
         {
           "name": "DownloadFileWithOptions",
@@ -18638,7 +18668,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleDownloadFileWithOptions"
+          ]
         },
         {
           "name": "DownloadSafe",
@@ -18724,7 +18757,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleDownloadStringEWithOptions"
+          ]
         },
         {
           "name": "DownloadStringSafeE",
@@ -18752,7 +18788,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleDownloadStringSafeE"
+          ]
         },
         {
           "name": "DownloadWithOptions",
@@ -18780,7 +18819,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleDownloadWithOptions"
+          ]
         },
         {
           "name": "Errorf",
@@ -18803,7 +18845,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleErrorf"
+          ]
         },
         {
           "name": "ErrorfWithCode",
@@ -18830,7 +18875,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleErrorfWithCode"
+          ]
         },
         {
           "name": "FilterHTMLTag",
@@ -18883,7 +18931,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleFilterHTMLTagWithOptions"
+          ]
         },
         {
           "name": "Get",
@@ -18928,7 +18979,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetCharsetFromContentType"
+          ]
         },
         {
           "name": "GetCharsetFromContentTypeWithOptions",
@@ -18951,7 +19005,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetCharsetFromContentTypeWithOptions"
+          ]
         },
         {
           "name": "GetCharsetFromHTML",
@@ -18996,7 +19053,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetCharsetFromHTMLWithOptions"
+          ]
         },
         {
           "name": "GetCookieJar",
@@ -19022,7 +19082,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetGlobalBoundary"
+          ]
         },
         {
           "name": "GetGlobalFollowRedirects",
@@ -19035,7 +19098,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetGlobalFollowRedirects"
+          ]
         },
         {
           "name": "GetGlobalMaxRedirects",
@@ -19048,7 +19114,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetGlobalMaxRedirects"
+          ]
         },
         {
           "name": "GetGlobalMaxResponseBytes",
@@ -19061,7 +19130,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetGlobalMaxResponseBytes"
+          ]
         },
         {
           "name": "GetGlobalTimeout",
@@ -19074,7 +19146,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetGlobalTimeout"
+          ]
         },
         {
           "name": "GetGlobalUserAgent",
@@ -19087,7 +19162,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetGlobalUserAgent"
+          ]
         },
         {
           "name": "GetMimeType",
@@ -19106,7 +19184,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetMimeType"
+          ]
         },
         {
           "name": "GetSafe",
@@ -19264,7 +19345,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetWithParamsEWithOptions"
+          ]
         },
         {
           "name": "GetWithTimeoutE",
@@ -19319,7 +19403,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetWithTimeoutEWithOptions"
+          ]
         },
         {
           "name": "GuessContentType",
@@ -19338,7 +19425,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGuessContentType"
+          ]
         },
         {
           "name": "HTMLEscape",
@@ -19431,7 +19521,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleHeadSafe"
+          ]
         },
         {
           "name": "IsDefaultContentType",
@@ -19450,7 +19543,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsDefaultContentType"
+          ]
         },
         {
           "name": "IsFormURLEncoded",
@@ -19469,7 +19565,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsFormURLEncoded"
+          ]
         },
         {
           "name": "IsGlobalDecodeURL",
@@ -19482,7 +19581,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsGlobalDecodeURL"
+          ]
         },
         {
           "name": "IsIgnoreEOFError",
@@ -19495,7 +19597,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsIgnoreEOFError"
+          ]
         },
         {
           "name": "IsRedirected",
@@ -19536,7 +19641,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewClient"
+          ]
         },
         {
           "name": "NewClientWithConfig",
@@ -19559,7 +19667,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewClientWithConfig"
+          ]
         },
         {
           "name": "NewError",
@@ -19612,7 +19723,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewErrorWithCode"
+          ]
         },
         {
           "name": "NewIsolatedClient",
@@ -19631,7 +19745,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewIsolatedClient"
+          ]
         },
         {
           "name": "NewIsolatedRequest",
@@ -19658,7 +19775,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewIsolatedRequest"
+          ]
         },
         {
           "name": "NewRequest",
@@ -19720,7 +19840,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewRequestWithConfig"
+          ]
         },
         {
           "name": "NewSafeRequest",
@@ -19769,7 +19892,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewSimpleServer"
+          ]
         },
         {
           "name": "NewSimpleServerAddr",
@@ -19788,7 +19914,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewSimpleServerAddr"
+          ]
         },
         {
           "name": "NewSimpleServerAddrWithOptions",
@@ -19811,7 +19940,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewSimpleServerAddrWithOptions"
+          ]
         },
         {
           "name": "NewSimpleServerWithOptions",
@@ -19834,7 +19966,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewSimpleServerWithOptions"
+          ]
         },
         {
           "name": "Options",
@@ -19883,7 +20018,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleOptionsSafe"
+          ]
         },
         {
           "name": "ParseUserAgent",
@@ -19954,7 +20092,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExamplePatchSafe"
+          ]
         },
         {
           "name": "Post",
@@ -20035,7 +20176,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExamplePostFormEWithOptions"
+          ]
         },
         {
           "name": "PostFormSafeE",
@@ -20063,7 +20207,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExamplePostFormSafeE"
+          ]
         },
         {
           "name": "PostJSONE",
@@ -20149,7 +20296,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExamplePostJSONSafeE"
+          ]
         },
         {
           "name": "PostSafe",
@@ -20261,7 +20411,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExamplePostStringSafeE"
+          ]
         },
         {
           "name": "Put",
@@ -20310,7 +20463,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExamplePutSafe"
+          ]
         },
         {
           "name": "RemoveGlobalHeader",
@@ -20339,7 +20495,10 @@
           "status": "recommended",
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleResetDefaultTransport"
+          ]
         },
         {
           "name": "ResetGlobalConfig",
@@ -20349,7 +20508,10 @@
           "status": "recommended",
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleResetGlobalConfig"
+          ]
         },
         {
           "name": "ResetServerStarters",
@@ -20359,7 +20521,10 @@
           "status": "recommended",
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleResetServerStarters"
+          ]
         },
         {
           "name": "SetCookieJar",
@@ -20394,7 +20559,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSetGlobalBoundary"
+          ]
         },
         {
           "name": "SetGlobalDecodeURL",
@@ -20410,7 +20578,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSetGlobalDecodeURL"
+          ]
         },
         {
           "name": "SetGlobalFollowRedirects",
@@ -20426,7 +20597,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSetGlobalFollowRedirects"
+          ]
         },
         {
           "name": "SetGlobalHeader",
@@ -20465,7 +20639,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSetGlobalMaxRedirects"
+          ]
         },
         {
           "name": "SetGlobalMaxResponseBytes",
@@ -20481,7 +20658,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSetGlobalMaxResponseBytes"
+          ]
         },
         {
           "name": "SetGlobalTimeout",
@@ -20497,7 +20677,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSetGlobalTimeout"
+          ]
         },
         {
           "name": "SetGlobalUserAgent",
@@ -20513,7 +20696,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSetGlobalUserAgent"
+          ]
         },
         {
           "name": "SetIgnoreEOFError",
@@ -20529,7 +20715,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSetIgnoreEOFError"
+          ]
         },
         {
           "name": "SnapshotGlobalConfig",
@@ -20542,7 +20731,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSnapshotGlobalConfig"
+          ]
         },
         {
           "name": "WithAllowedHosts",
@@ -20583,7 +20775,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithAsyncRunner"
+          ]
         },
         {
           "name": "WithAutoDecodeResponse",
@@ -20602,7 +20797,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithAutoDecodeResponse"
+          ]
         },
         {
           "name": "WithBaseContext",
@@ -20640,7 +20838,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithCharset"
+          ]
         },
         {
           "name": "WithCharsetRegexp",
@@ -20659,7 +20860,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithCharsetRegexp"
+          ]
         },
         {
           "name": "WithClient",
@@ -20678,7 +20882,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithClient"
+          ]
         },
         {
           "name": "WithClientGlobalConfig",
@@ -20697,7 +20904,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithClientGlobalConfig"
+          ]
         },
         {
           "name": "WithClientRequestOptions",
@@ -20716,7 +20926,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWithClientRequestOptions"
+          ]
         },
         {
           "name": "WithConnContext",
@@ -20758,7 +20971,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithContentDecoder"
+          ]
         },
         {
           "name": "WithContentType",
@@ -20777,7 +20993,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithContentType"
+          ]
         },
         {
           "name": "WithCookieJar",
@@ -20796,7 +21015,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithCookieJar"
+          ]
         },
         {
           "name": "WithFileServerFactory",
@@ -20834,7 +21056,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithFollowRedirects"
+          ]
         },
         {
           "name": "WithGlobalConfig",
@@ -20853,7 +21078,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithGlobalConfig"
+          ]
         },
         {
           "name": "WithHTMLCommentRegexp",
@@ -20872,7 +21100,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithHTMLCommentRegexp"
+          ]
         },
         {
           "name": "WithHTMLFilterCompileFunc",
@@ -20891,7 +21122,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithHTMLFilterCompileFunc"
+          ]
         },
         {
           "name": "WithHTMLTagRegexp",
@@ -20910,7 +21144,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithHTMLTagRegexp"
+          ]
         },
         {
           "name": "WithHTTPServer",
@@ -20996,7 +21233,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithIdleTimeout"
+          ]
         },
         {
           "name": "WithListenAndServeFunc",
@@ -21015,7 +21255,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithListenAndServeFunc"
+          ]
         },
         {
           "name": "WithListener",
@@ -21075,7 +21318,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithMaxRedirects"
+          ]
         },
         {
           "name": "WithMaxResponseBytes",
@@ -21094,7 +21340,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithMaxResponseBytes"
+          ]
         },
         {
           "name": "WithMetaCharsetRegexp",
@@ -21113,7 +21362,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithMetaCharsetRegexp"
+          ]
         },
         {
           "name": "WithMultipartWriterFactory",
@@ -21151,7 +21403,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithReadHeaderTimeout"
+          ]
         },
         {
           "name": "WithReadTimeout",
@@ -21170,7 +21425,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithReadTimeout"
+          ]
         },
         {
           "name": "WithRequestFactory",
@@ -21189,7 +21447,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithRequestFactory"
+          ]
         },
         {
           "name": "WithResponseReadAllFunc",
@@ -21230,7 +21491,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithSaveCreateParents"
+          ]
         },
         {
           "name": "WithSaveDefaultFilename",
@@ -21249,7 +21513,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithSaveDefaultFilename"
+          ]
         },
         {
           "name": "WithSaveDirPerm",
@@ -21344,7 +21611,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithSaveOverwrite"
+          ]
         },
         {
           "name": "WithSaveStat",
@@ -21405,7 +21675,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithServerErrorLog"
+          ]
         },
         {
           "name": "WithStaticFS",
@@ -21481,7 +21754,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithTLSConfig"
+          ]
         },
         {
           "name": "WithTimeout",
@@ -21544,7 +21820,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithTransportProvider"
+          ]
         },
         {
           "name": "WithURLPolicy",
@@ -21607,7 +21886,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithWriteTimeout"
+          ]
         }
       ]
     },
