@@ -3,6 +3,7 @@ package vzip_test
 import (
 	archivezip "archive/zip"
 	"bytes"
+	"compress/flate"
 	"fmt"
 	"io"
 	"os"
@@ -500,4 +501,816 @@ func ExampleGzip_byteSlice() {
 	}
 	fmt.Println(string(plain))
 	// Output: hello
+}
+
+func ExampleAppend() {
+	archivePath, cleanup, err := writeExampleArchive(vzip.EntryData{Name: "base.txt", Data: []byte("base")})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer cleanup()
+
+	extra := filepath.Join(filepath.Dir(archivePath), "extra.txt")
+	if err := os.WriteFile(extra, []byte("extra"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	if err := vzip.Append(archivePath, extra); err != nil {
+		fmt.Println(err)
+		return
+	}
+	data, _ := vzip.GetBytes(archivePath, "extra.txt")
+	fmt.Println(string(data))
+	// Output: extra
+}
+
+func ExampleAppendWithOptions() {
+	archivePath, cleanup, err := writeExampleArchive(vzip.EntryData{Name: "base.txt", Data: []byte("base")})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer cleanup()
+
+	extra := filepath.Join(filepath.Dir(archivePath), "extra.log")
+	if err := os.WriteFile(extra, []byte("skip"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	filter := func(path string, info os.FileInfo) bool {
+		return info.IsDir() || filepath.Ext(path) == ".txt"
+	}
+	err = vzip.AppendWithOptions(archivePath, extra, vzip.WithFileFilter(filter))
+	fmt.Println(err == nil)
+	names, _ := vzip.ListFileNames(archivePath, "")
+	fmt.Println(names)
+	// Output:
+	// true
+	// [base.txt]
+}
+
+func ExampleZip() {
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-zip-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+
+	source := filepath.Join(dir, "source.txt")
+	if err := os.WriteFile(source, []byte("source"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	archivePath, err := vzip.Zip(source)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	data, _ := vzip.GetBytes(archivePath, "source.txt")
+	fmt.Println(string(data))
+	// Output: source
+}
+
+func ExampleZipTo() {
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-zip-to-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+
+	src := filepath.Join(dir, "src")
+	if err := os.MkdirAll(src, 0o755); err != nil {
+		fmt.Println(err)
+		return
+	}
+	if err := os.WriteFile(filepath.Join(src, "keep.txt"), []byte("keep"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	archivePath := filepath.Join(dir, "out.zip")
+	if err := vzip.ZipTo(src, archivePath, true); err != nil {
+		fmt.Println(err)
+		return
+	}
+	data, _ := vzip.GetBytes(archivePath, "src/keep.txt")
+	fmt.Println(string(data))
+	// Output: keep
+}
+
+func ExampleZipFilesWithOptions() {
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-files-options-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+
+	source := filepath.Join(dir, "data.txt")
+	if err := os.WriteFile(source, []byte("data"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	archivePath := filepath.Join(dir, "data.zip")
+	err = vzip.ZipFilesWithOptions(
+		archivePath,
+		false,
+		[]string{source},
+		vzip.WithCompressionLevel(flate.BestSpeed),
+	)
+	fmt.Println(err == nil)
+	data, _ := vzip.GetBytes(archivePath, "data.txt")
+	fmt.Println(string(data))
+	// Output:
+	// true
+	// data
+}
+
+func ExampleZipFilesUsingOptions() {
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-files-using-options-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+
+	source := filepath.Join(dir, "data.txt")
+	if err := os.WriteFile(source, []byte("data"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	archivePath := filepath.Join(dir, "data.zip")
+	if err := vzip.ZipFilesUsingOptions(archivePath, []string{source}, vzip.WithSourceDir(false)); err != nil {
+		fmt.Println(err)
+		return
+	}
+	names, _ := vzip.ListFileNames(archivePath, "")
+	fmt.Println(names)
+	// Output: [data.txt]
+}
+
+func ExampleZipFilesFilterWithOptions() {
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-filter-options-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+
+	keep := filepath.Join(dir, "keep.txt")
+	skip := filepath.Join(dir, "skip.log")
+	if err := os.WriteFile(keep, []byte("keep"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	if err := os.WriteFile(skip, []byte("skip"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	filter := func(path string, info os.FileInfo) bool {
+		return info.IsDir() || filepath.Ext(path) == ".txt"
+	}
+	archivePath := filepath.Join(dir, "filtered.zip")
+	if err := vzip.ZipFilesFilterWithOptions(archivePath, false, filter, []string{keep, skip}); err != nil {
+		fmt.Println(err)
+		return
+	}
+	names, _ := vzip.ListFileNames(archivePath, "")
+	fmt.Println(names)
+	// Output: [keep.txt]
+}
+
+func ExampleZipToWriter() {
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-writer-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+
+	source := filepath.Join(dir, "writer.txt")
+	if err := os.WriteFile(source, []byte("writer"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	var archive bytes.Buffer
+	if err := vzip.ZipToWriter(&archive, false, nil, source); err != nil {
+		fmt.Println(err)
+		return
+	}
+	reader, _ := archivezip.NewReader(bytes.NewReader(archive.Bytes()), int64(archive.Len()))
+	fmt.Println(reader.File[0].Name)
+	// Output: writer.txt
+}
+
+func ExampleZipToWriterWithOptions() {
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-writer-options-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+
+	source := filepath.Join(dir, "writer.txt")
+	if err := os.WriteFile(source, []byte("writer"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	var archive bytes.Buffer
+	err = vzip.ZipToWriterWithOptions(
+		&archive,
+		false,
+		nil,
+		[]string{source},
+		vzip.WithCompressionLevel(flate.BestSpeed),
+	)
+	fmt.Println(err == nil)
+	// Output: true
+}
+
+func ExampleZipToWriterUsingOptions() {
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-writer-using-options-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+
+	source := filepath.Join(dir, "writer.txt")
+	if err := os.WriteFile(source, []byte("writer"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	var archive bytes.Buffer
+	if err := vzip.ZipToWriterUsingOptions(&archive, []string{source}, vzip.WithSourceDir(false)); err != nil {
+		fmt.Println(err)
+		return
+	}
+	reader, _ := archivezip.NewReader(bytes.NewReader(archive.Bytes()), int64(archive.Len()))
+	fmt.Println(reader.File[0].Name)
+	// Output: writer.txt
+}
+
+func ExampleZipEntriesWithOptions() {
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-entries-options-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+
+	archivePath := filepath.Join(dir, "entries.zip")
+	err = vzip.ZipEntriesWithOptions(
+		archivePath,
+		[]vzip.EntryData{{Name: "stored.txt", Data: []byte("stored")}},
+		vzip.WithCompressionMethod(archivezip.Store),
+	)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	reader, _ := vzip.Open(archivePath)
+	defer reader.Close()
+	fmt.Println(reader.File[0].Name, reader.File[0].Method == archivezip.Store)
+	// Output: stored.txt true
+}
+
+func ExampleZipStreams() {
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-streams-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+
+	archivePath := filepath.Join(dir, "streams.zip")
+	if err := vzip.ZipStreams(archivePath, vzip.StreamEntry{Name: "stream.txt", Reader: bytes.NewReader([]byte("stream"))}); err != nil {
+		fmt.Println(err)
+		return
+	}
+	data, _ := vzip.GetBytes(archivePath, "stream.txt")
+	fmt.Println(string(data))
+	// Output: stream
+}
+
+func ExampleZipStreamsWithOptions() {
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-streams-options-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+
+	archivePath := filepath.Join(dir, "streams.zip")
+	err = vzip.ZipStreamsWithOptions(
+		archivePath,
+		[]vzip.StreamEntry{{Name: "stream.txt", Reader: bytes.NewReader([]byte("stream"))}},
+		vzip.WithMaxBytes(16),
+	)
+	fmt.Println(err == nil)
+	data, _ := vzip.GetBytes(archivePath, "stream.txt")
+	fmt.Println(string(data))
+	// Output:
+	// true
+	// stream
+}
+
+func ExampleZipStreamsToWriterWithOptions() {
+	var archive bytes.Buffer
+	err := vzip.ZipStreamsToWriterWithOptions(
+		&archive,
+		[]vzip.StreamEntry{{Name: "stream.txt", Reader: bytes.NewReader([]byte("stream"))}},
+		vzip.WithCompressionLevel(flate.BestSpeed),
+	)
+	fmt.Println(err == nil)
+	// Output: true
+}
+
+func ExampleUnzip() {
+	archivePath, cleanup, err := writeExampleArchive(vzip.EntryData{Name: "hello.txt", Data: []byte("hello")})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer cleanup()
+
+	dest, err := vzip.Unzip(archivePath)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	data, _ := os.ReadFile(filepath.Join(dest, "hello.txt"))
+	fmt.Println(string(data))
+	// Output: hello
+}
+
+func ExampleUnzipToLimit() {
+	archivePath, cleanup, err := writeExampleArchive(vzip.EntryData{Name: "hello.txt", Data: []byte("hello")})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer cleanup()
+
+	dest := filepath.Join(filepath.Dir(archivePath), "limit")
+	err = vzip.UnzipToLimit(archivePath, dest, 32)
+	fmt.Println(err == nil)
+	data, _ := os.ReadFile(filepath.Join(dest, "hello.txt"))
+	fmt.Println(string(data))
+	// Output:
+	// true
+	// hello
+}
+
+func ExampleUnzipReaderToLimit() {
+	var archive bytes.Buffer
+	if err := vzip.ZipEntriesToWriter(&archive, vzip.EntryData{Name: "hello.txt", Data: []byte("hello")}); err != nil {
+		fmt.Println(err)
+		return
+	}
+	reader, _ := archivezip.NewReader(bytes.NewReader(archive.Bytes()), int64(archive.Len()))
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-reader-limit-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+	err = vzip.UnzipReaderToLimit(reader, dir, 32)
+	fmt.Println(err == nil)
+	// Output: true
+}
+
+func ExampleUnzipReaderToWithOptions() {
+	var archive bytes.Buffer
+	if err := vzip.ZipEntriesToWriter(&archive, vzip.EntryData{Name: "hello.txt", Data: []byte("hello")}); err != nil {
+		fmt.Println(err)
+		return
+	}
+	reader, _ := archivezip.NewReader(bytes.NewReader(archive.Bytes()), int64(archive.Len()))
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-reader-options-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+	err = vzip.UnzipReaderToWithOptions(reader, dir, vzip.WithMaxBytes(32))
+	fmt.Println(err == nil)
+	// Output: true
+}
+
+func ExampleUnzipToWithOptions() {
+	archivePath, cleanup, err := writeExampleArchive(vzip.EntryData{Name: "hello.txt", Data: []byte("hello")})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer cleanup()
+
+	dest := filepath.Join(filepath.Dir(archivePath), "options")
+	err = vzip.UnzipToWithOptions(archivePath, dest, vzip.WithMaxBytes(32))
+	fmt.Println(err == nil)
+	// Output: true
+}
+
+func ExampleGetWithOptions() {
+	archivePath, cleanup, err := writeExampleArchive(vzip.EntryData{Name: "data.txt", Data: []byte("payload")})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer cleanup()
+
+	reader, err := vzip.GetWithOptions(archivePath, "data.txt")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer reader.Close()
+	data, _ := io.ReadAll(reader)
+	fmt.Println(string(data))
+	// Output: payload
+}
+
+func ExampleGetBytesWithOptions() {
+	archivePath, cleanup, err := writeExampleArchive(vzip.EntryData{Name: "data.txt", Data: []byte("payload")})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer cleanup()
+
+	data, err := vzip.GetBytesWithOptions(archivePath, "data.txt", vzip.WithMaxBytes(16))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(data))
+	// Output: payload
+}
+
+func ExampleReadWithOptions() {
+	archivePath, cleanup, err := writeExampleArchive(
+		vzip.EntryData{Name: "b.txt", Data: []byte("b")},
+		vzip.EntryData{Name: "a.txt", Data: []byte("a")},
+	)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer cleanup()
+
+	names := make([]string, 0)
+	if err := vzip.ReadWithOptions(archivePath, func(file *archivezip.File) error {
+		names = append(names, file.Name)
+		return nil
+	}); err != nil {
+		fmt.Println(err)
+		return
+	}
+	sort.Strings(names)
+	fmt.Println(names)
+	// Output: [a.txt b.txt]
+}
+
+func ExampleListFileNamesWithOptions() {
+	archivePath, cleanup, err := writeExampleArchive(
+		vzip.EntryData{Name: "config/app.yml", Data: []byte("app")},
+		vzip.EntryData{Name: "config/db.yml", Data: []byte("db")},
+	)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer cleanup()
+
+	names, err := vzip.ListFileNamesWithOptions(archivePath, "config")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	sort.Strings(names)
+	fmt.Println(names)
+	// Output: [app.yml db.yml]
+}
+
+func ExampleGzipWithOptions() {
+	compressed, err := vzip.GzipWithOptions([]byte("hello"), vzip.WithCompressionLevel(flate.BestSpeed))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	plain, _ := vzip.UnGzip(compressed)
+	fmt.Println(string(plain))
+	// Output: hello
+}
+
+func ExampleGunzip() {
+	compressed, _ := vzip.Gzip([]byte("hello"))
+	plain, err := vzip.Gunzip(compressed)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(plain))
+	// Output: hello
+}
+
+func ExampleGzipFile() {
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-gzip-file-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+	source := filepath.Join(dir, "payload.txt")
+	if err := os.WriteFile(source, []byte("payload"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	compressed, err := vzip.GzipFile(source)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	plain, _ := vzip.UnGzip(compressed)
+	fmt.Println(string(plain))
+	// Output: payload
+}
+
+func ExampleGzipFileWithOptions() {
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-gzip-file-options-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+	source := filepath.Join(dir, "payload.txt")
+	if err := os.WriteFile(source, []byte("payload"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	compressed, err := vzip.GzipFileWithOptions(source, vzip.WithMaxBytes(16))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	plain, _ := vzip.UnGzip(compressed)
+	fmt.Println(string(plain))
+	// Output: payload
+}
+
+func ExampleGzipReader() {
+	compressed, err := vzip.GzipReader(bytes.NewReader([]byte("hello")), 5)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	plain, _ := vzip.UnGzip(compressed)
+	fmt.Println(string(plain))
+	// Output: hello
+}
+
+func ExampleGzipReaderWithOptions() {
+	compressed, err := vzip.GzipReaderWithOptions(
+		bytes.NewReader([]byte("hello")),
+		5,
+		vzip.WithCompressionLevel(flate.NoCompression),
+	)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	plain, _ := vzip.UnGzip(compressed)
+	fmt.Println(string(plain))
+	// Output: hello
+}
+
+func ExampleUnGzipWithOptions() {
+	compressed, _ := vzip.Gzip([]byte("hello"))
+	plain, err := vzip.UnGzipWithOptions(compressed, vzip.WithMaxBytes(16))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(plain))
+	// Output: hello
+}
+
+func ExampleUnGzipReader() {
+	compressed, _ := vzip.Gzip([]byte("hello"))
+	plain, err := vzip.UnGzipReader(bytes.NewReader(compressed), 5)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(plain))
+	// Output: hello
+}
+
+func ExampleUnGzipReaderWithOptions() {
+	compressed, _ := vzip.Gzip([]byte("hello"))
+	plain, err := vzip.UnGzipReaderWithOptions(bytes.NewReader(compressed), 5, vzip.WithMaxBytes(16))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(plain))
+	// Output: hello
+}
+
+func ExampleZlib() {
+	compressed, err := vzip.Zlib([]byte("hello"))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	plain, _ := vzip.UnZlib(compressed)
+	fmt.Println(string(plain))
+	// Output: hello
+}
+
+func ExampleZlibFile() {
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-zlib-file-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+	source := filepath.Join(dir, "payload.txt")
+	if err := os.WriteFile(source, []byte("payload"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	compressed, err := vzip.ZlibFile(source, flate.BestSpeed)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	plain, _ := vzip.UnZlib(compressed)
+	fmt.Println(string(plain))
+	// Output: payload
+}
+
+func ExampleZlibFileWithOptions() {
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-zlib-file-options-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+	source := filepath.Join(dir, "payload.txt")
+	if err := os.WriteFile(source, []byte("payload"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	compressed, err := vzip.ZlibFileWithOptions(source, flate.BestSpeed, vzip.WithMaxBytes(16))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	plain, _ := vzip.UnZlib(compressed)
+	fmt.Println(string(plain))
+	// Output: payload
+}
+
+func ExampleZlibLevel() {
+	compressed, err := vzip.ZlibLevel([]byte("hello"), flate.BestSpeed)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	plain, _ := vzip.UnZlib(compressed)
+	fmt.Println(string(plain))
+	// Output: hello
+}
+
+func ExampleZlibLevelWithOptions() {
+	compressed, err := vzip.ZlibLevelWithOptions([]byte("hello"), flate.BestSpeed, vzip.WithMaxBytes(16))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	plain, _ := vzip.UnZlib(compressed)
+	fmt.Println(string(plain))
+	// Output: hello
+}
+
+func ExampleZlibReader() {
+	compressed, err := vzip.ZlibReader(bytes.NewReader([]byte("hello")), flate.BestSpeed, 5)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	plain, _ := vzip.UnZlib(compressed)
+	fmt.Println(string(plain))
+	// Output: hello
+}
+
+func ExampleZlibReaderWithOptions() {
+	compressed, err := vzip.ZlibReaderWithOptions(
+		bytes.NewReader([]byte("hello")),
+		flate.NoCompression,
+		5,
+		vzip.WithMaxBytes(16),
+	)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	plain, _ := vzip.UnZlib(compressed)
+	fmt.Println(string(plain))
+	// Output: hello
+}
+
+func ExampleUnZlib() {
+	compressed, _ := vzip.Zlib([]byte("hello"))
+	plain, err := vzip.UnZlib(compressed)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(plain))
+	// Output: hello
+}
+
+func ExampleUnZlibWithOptions() {
+	compressed, _ := vzip.Zlib([]byte("hello"))
+	plain, err := vzip.UnZlibWithOptions(compressed, vzip.WithMaxBytes(16))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(plain))
+	// Output: hello
+}
+
+func ExampleUnzlib() {
+	compressed, _ := vzip.Zlib([]byte("hello"))
+	plain, err := vzip.Unzlib(compressed)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(plain))
+	// Output: hello
+}
+
+func ExampleUnZlibReader() {
+	compressed, _ := vzip.Zlib([]byte("hello"))
+	plain, err := vzip.UnZlibReader(bytes.NewReader(compressed), 5)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(plain))
+	// Output: hello
+}
+
+func ExampleUnZlibReaderWithOptions() {
+	compressed, _ := vzip.Zlib([]byte("hello"))
+	plain, err := vzip.UnZlibReaderWithOptions(bytes.NewReader(compressed), 5, vzip.WithMaxBytes(16))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(plain))
+	// Output: hello
+}
+
+func ExampleReadFile() {
+	dir, err := os.MkdirTemp("", "knifer-go-vzip-read-file-")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer os.RemoveAll(dir)
+	source := filepath.Join(dir, "payload.txt")
+	if err := os.WriteFile(source, []byte("payload"), 0o644); err != nil {
+		fmt.Println(err)
+		return
+	}
+	data, err := vzip.ReadFile(source)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(data))
+	// Output: payload
+}
+
+func ExampleReadFileWithOptions() {
+	data, err := vzip.ReadFileWithOptions("/virtual/payload.txt", vzip.WithReadFile(func(path string) ([]byte, error) {
+		if path != "/virtual/payload.txt" {
+			return nil, os.ErrNotExist
+		}
+		return []byte("virtual"), nil
+	}))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(data))
+	// Output: virtual
 }

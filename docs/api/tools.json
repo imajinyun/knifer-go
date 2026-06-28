@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 55,
     "function_count": 2724,
-    "functions_with_examples": 1455,
+    "functions_with_examples": 1501,
     "context_aware_functions": 36,
     "returns_error_functions": 666,
     "variadic_functions": 794,
@@ -64133,8 +64133,8 @@
       "synopsis": "Package vzip provides ZIP, gzip, and zlib utilities.",
       "summary": {
         "function_count": 92,
-        "functions_with_examples": 22,
-        "example_coverage_percent": 23.9,
+        "functions_with_examples": 68,
+        "example_coverage_percent": 73.9,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
@@ -64208,7 +64208,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleAppend"
+          ]
         },
         {
           "name": "AppendWithOptions",
@@ -64235,7 +64238,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleAppendWithOptions"
+          ]
         },
         {
           "name": "Get",
@@ -64317,7 +64323,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetBytesWithOptions"
+          ]
         },
         {
           "name": "GetStream",
@@ -64368,7 +64377,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetWithOptions"
+          ]
         },
         {
           "name": "Gunzip",
@@ -64388,7 +64400,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGunzip"
+          ]
         },
         {
           "name": "Gzip",
@@ -64431,7 +64446,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGzipFile"
+          ]
         },
         {
           "name": "GzipFileWithOptions",
@@ -64455,7 +64473,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGzipFileWithOptions"
+          ]
         },
         {
           "name": "GzipReader",
@@ -64479,7 +64500,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGzipReader"
+          ]
         },
         {
           "name": "GzipReaderWithOptions",
@@ -64507,7 +64531,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGzipReaderWithOptions"
+          ]
         },
         {
           "name": "GzipString",
@@ -64554,7 +64581,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGzipWithOptions"
+          ]
         },
         {
           "name": "ListFileNames",
@@ -64609,7 +64639,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleListFileNamesWithOptions"
+          ]
         },
         {
           "name": "NewWriter",
@@ -64724,7 +64757,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleReadFile"
+          ]
         },
         {
           "name": "ReadFileWithOptions",
@@ -64748,7 +64784,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleReadFileWithOptions"
+          ]
         },
         {
           "name": "ReadWithOptions",
@@ -64775,7 +64814,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleReadWithOptions"
+          ]
         },
         {
           "name": "UnGzip",
@@ -64819,7 +64861,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleUnGzipReader"
+          ]
         },
         {
           "name": "UnGzipReaderWithOptions",
@@ -64847,7 +64892,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleUnGzipReaderWithOptions"
+          ]
         },
         {
           "name": "UnGzipString",
@@ -64894,7 +64942,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleUnGzipWithOptions"
+          ]
         },
         {
           "name": "UnZlib",
@@ -64914,7 +64965,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleUnZlib"
+          ]
         },
         {
           "name": "UnZlibReader",
@@ -64938,7 +64992,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleUnZlibReader"
+          ]
         },
         {
           "name": "UnZlibReaderWithOptions",
@@ -64966,7 +65023,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleUnZlibReaderWithOptions"
+          ]
         },
         {
           "name": "UnZlibString",
@@ -65013,7 +65073,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleUnZlibWithOptions"
+          ]
         },
         {
           "name": "Unzip",
@@ -65033,7 +65096,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleUnzip"
+          ]
         },
         {
           "name": "UnzipReaderTo",
@@ -65086,7 +65152,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleUnzipReaderToLimit"
+          ]
         },
         {
           "name": "UnzipReaderToWithOptions",
@@ -65113,7 +65182,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleUnzipReaderToWithOptions"
+          ]
         },
         {
           "name": "UnzipTo",
@@ -65166,7 +65238,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleUnzipToLimit"
+          ]
         },
         {
           "name": "UnzipToWithOptions",
@@ -65193,7 +65268,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleUnzipToWithOptions"
+          ]
         },
         {
           "name": "Unzlib",
@@ -65213,7 +65291,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleUnzlib"
+          ]
         },
         {
           "name": "WithCompressionLevel",
@@ -65651,7 +65732,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleZip"
+          ]
         },
         {
           "name": "ZipBytes",
@@ -65820,7 +65904,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleZipEntriesWithOptions"
+          ]
         },
         {
           "name": "ZipFiles",
@@ -65919,7 +66006,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleZipFilesFilterWithOptions"
+          ]
         },
         {
           "name": "ZipFilesUsingOptions",
@@ -65946,7 +66036,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleZipFilesUsingOptions"
+          ]
         },
         {
           "name": "ZipFilesWithOptions",
@@ -65977,7 +66070,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleZipFilesWithOptions"
+          ]
         },
         {
           "name": "ZipStreams",
@@ -66000,7 +66096,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleZipStreams"
+          ]
         },
         {
           "name": "ZipStreamsToWriter",
@@ -66053,7 +66152,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleZipStreamsToWriterWithOptions"
+          ]
         },
         {
           "name": "ZipStreamsWithOptions",
@@ -66080,7 +66182,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleZipStreamsWithOptions"
+          ]
         },
         {
           "name": "ZipTo",
@@ -66107,7 +66212,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleZipTo"
+          ]
         },
         {
           "name": "ZipToWriter",
@@ -66138,7 +66246,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleZipToWriter"
+          ]
         },
         {
           "name": "ZipToWriterUsingOptions",
@@ -66165,7 +66276,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleZipToWriterUsingOptions"
+          ]
         },
         {
           "name": "ZipToWriterWithOptions",
@@ -66200,7 +66314,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleZipToWriterWithOptions"
+          ]
         },
         {
           "name": "Zlib",
@@ -66220,7 +66337,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleZlib"
+          ]
         },
         {
           "name": "ZlibFile",
@@ -66244,7 +66364,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleZlibFile"
+          ]
         },
         {
           "name": "ZlibFileWithOptions",
@@ -66272,7 +66395,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleZlibFileWithOptions"
+          ]
         },
         {
           "name": "ZlibLevel",
@@ -66296,7 +66422,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleZlibLevel"
+          ]
         },
         {
           "name": "ZlibLevelWithOptions",
@@ -66324,7 +66453,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleZlibLevelWithOptions"
+          ]
         },
         {
           "name": "ZlibReader",
@@ -66352,7 +66484,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleZlibReader"
+          ]
         },
         {
           "name": "ZlibReaderWithOptions",
@@ -66384,7 +66519,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleZlibReaderWithOptions"
+          ]
         },
         {
           "name": "ZlibString",

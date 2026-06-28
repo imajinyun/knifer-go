@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
 | Functions | 2724 |
-| Functions with examples | 1455 |
+| Functions with examples | 1501 |
 | Context-aware functions | 36 |
 | Functions returning error | 666 |
 | Variadic functions | 794 |
@@ -4214,7 +4214,7 @@ Import path: `github.com/imajinyun/knifer-go/vzip`
 
 Package vzip provides ZIP, gzip, and zlib utilities.
 
-Quality: 92 functions · 22 with examples · 23.9% example coverage · statuses: recommended=92, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=92, internal=0, empty=0
+Quality: 92 functions · 68 with examples · 73.9% example coverage · statuses: recommended=92, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=92, internal=0, empty=0
 
 Recommended entrypoints:
 
@@ -4235,48 +4235,48 @@ Golden path API set:
 
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
-| `Append` | `func Append(zipPath string, srcPath string) error` | recommended | Append appends srcPath into zipPath by rewriting the archive. | facade | — |
-| `AppendWithOptions` | `func AppendWithOptions(zipPath string, srcPath string, opts ...ArchiveOption) error` | recommended | AppendWithOptions appends srcPath into zipPath by rewriting the archive with per-call options. | facade | — |
+| `Append` | `func Append(zipPath string, srcPath string) error` | recommended | Append appends srcPath into zipPath by rewriting the archive. | facade | `ExampleAppend` |
+| `AppendWithOptions` | `func AppendWithOptions(zipPath string, srcPath string, opts ...ArchiveOption) error` | recommended | AppendWithOptions appends srcPath into zipPath by rewriting the archive with per-call options. | facade | `ExampleAppendWithOptions` |
 | `Get` | `func Get(zipFile string, name string) (io.ReadCloser, error)` | recommended | Get returns a reader for the named entry in zipFile. | facade | `ExampleGet` |
 | `GetBytes` | `func GetBytes(zipFile string, name string) ([]byte, error)` | recommended | GetBytes returns the content of the named entry in zipFile. | facade | `ExampleGetBytes` |
-| `GetBytesWithOptions` | `func GetBytesWithOptions(zipFile string, name string, opts ...ArchiveOption) ([]byte, error)` | recommended | GetBytesWithOptions returns the content of the named entry in zipFile with per-call options. | facade | — |
+| `GetBytesWithOptions` | `func GetBytesWithOptions(zipFile string, name string, opts ...ArchiveOption) ([]byte, error)` | recommended | GetBytesWithOptions returns the content of the named entry in zipFile with per-call options. | facade | `ExampleGetBytesWithOptions` |
 | `GetStream` | `func GetStream(entry *zip.File) (io.ReadCloser, error)` | recommended | GetStream returns a reader for entry. | facade | `ExampleGetStream` |
-| `GetWithOptions` | `func GetWithOptions(zipFile string, name string, opts ...ArchiveOption) (io.ReadCloser, error)` | recommended | GetWithOptions returns a reader for the named entry in zipFile with per-call options. | facade | — |
-| `Gunzip` | `func Gunzip(data []byte) ([]byte, error)` | recommended | Gunzip decompresses gzip data. | facade | — |
+| `GetWithOptions` | `func GetWithOptions(zipFile string, name string, opts ...ArchiveOption) (io.ReadCloser, error)` | recommended | GetWithOptions returns a reader for the named entry in zipFile with per-call options. | facade | `ExampleGetWithOptions` |
+| `Gunzip` | `func Gunzip(data []byte) ([]byte, error)` | recommended | Gunzip decompresses gzip data. | facade | `ExampleGunzip` |
 | `Gzip` | `func Gzip(data []byte) ([]byte, error)` | recommended | Gzip compresses data using gzip. | facade | `ExampleGzip_byteSlice` |
-| `GzipFile` | `func GzipFile(path string) ([]byte, error)` | recommended | GzipFile compresses a file using gzip and returns compressed bytes. | facade | — |
-| `GzipFileWithOptions` | `func GzipFileWithOptions(path string, opts ...ArchiveOption) ([]byte, error)` | recommended | GzipFileWithOptions compresses a file using gzip and per-call options. | facade | — |
-| `GzipReader` | `func GzipReader(r io.Reader, estimatedLength int) ([]byte, error)` | recommended | GzipReader compresses all bytes from r using gzip. | facade | — |
-| `GzipReaderWithOptions` | `func GzipReaderWithOptions(r io.Reader, estimatedLength int, opts ...ArchiveOption) ([]byte, error)` | recommended | GzipReaderWithOptions compresses all bytes from r using gzip with per-call options. | facade | — |
+| `GzipFile` | `func GzipFile(path string) ([]byte, error)` | recommended | GzipFile compresses a file using gzip and returns compressed bytes. | facade | `ExampleGzipFile` |
+| `GzipFileWithOptions` | `func GzipFileWithOptions(path string, opts ...ArchiveOption) ([]byte, error)` | recommended | GzipFileWithOptions compresses a file using gzip and per-call options. | facade | `ExampleGzipFileWithOptions` |
+| `GzipReader` | `func GzipReader(r io.Reader, estimatedLength int) ([]byte, error)` | recommended | GzipReader compresses all bytes from r using gzip. | facade | `ExampleGzipReader` |
+| `GzipReaderWithOptions` | `func GzipReaderWithOptions(r io.Reader, estimatedLength int, opts ...ArchiveOption) ([]byte, error)` | recommended | GzipReaderWithOptions compresses all bytes from r using gzip with per-call options. | facade | `ExampleGzipReaderWithOptions` |
 | `GzipString` | `func GzipString(content string) ([]byte, error)` | recommended | GzipString compresses text using gzip. | facade | `ExampleGzipString` |
-| `GzipWithOptions` | `func GzipWithOptions(data []byte, opts ...ArchiveOption) ([]byte, error)` | recommended | GzipWithOptions compresses data using gzip with per-call options. | facade | — |
+| `GzipWithOptions` | `func GzipWithOptions(data []byte, opts ...ArchiveOption) ([]byte, error)` | recommended | GzipWithOptions compresses data using gzip with per-call options. | facade | `ExampleGzipWithOptions` |
 | `ListFileNames` | `func ListFileNames(zipFile string, dir string) ([]string, error)` | recommended | ListFileNames returns direct file names under dir inside zipFile. | facade | `ExampleListFileNames` |
-| `ListFileNamesWithOptions` | `func ListFileNamesWithOptions(zipFile string, dir string, opts ...ArchiveOption) ([]string, error)` | recommended | ListFileNamesWithOptions returns direct file names under dir inside zipFile using per-call options. | facade | — |
+| `ListFileNamesWithOptions` | `func ListFileNamesWithOptions(zipFile string, dir string, opts ...ArchiveOption) ([]string, error)` | recommended | ListFileNamesWithOptions returns direct file names under dir inside zipFile using per-call options. | facade | `ExampleListFileNamesWithOptions` |
 | `NewWriter` | `func NewWriter(out io.Writer) *zip.Writer` | recommended | NewWriter returns a ZIP writer for out. | facade | `ExampleNewWriter` |
 | `Open` | `func Open(path string) (*zip.ReadCloser, error)` | recommended | Open opens a ZIP file for reading. | facade | `ExampleOpen` |
 | `OpenWithOptions` | `func OpenWithOptions(path string, opts ...ArchiveOption) (*zip.ReadCloser, error)` | recommended | OpenWithOptions opens a ZIP file for reading with per-call options. | facade | — |
 | `Read` | `func Read(zipFile string, consumer func(*zip.File) error) error` | recommended | Read walks every archive entry and calls consumer. | facade | `ExampleRead` |
-| `ReadFile` | `func ReadFile(path string) ([]byte, error)` | recommended | ReadFile reads a file from disk. | facade | — |
-| `ReadFileWithOptions` | `func ReadFileWithOptions(path string, opts ...ArchiveOption) ([]byte, error)` | recommended | ReadFileWithOptions reads a file using per-call archive options. | facade | — |
-| `ReadWithOptions` | `func ReadWithOptions(zipFile string, consumer func(*zip.File) error, opts ...ArchiveOption) error` | recommended | ReadWithOptions walks every archive entry and calls consumer using per-call options. | facade | — |
+| `ReadFile` | `func ReadFile(path string) ([]byte, error)` | recommended | ReadFile reads a file from disk. | facade | `ExampleReadFile` |
+| `ReadFileWithOptions` | `func ReadFileWithOptions(path string, opts ...ArchiveOption) ([]byte, error)` | recommended | ReadFileWithOptions reads a file using per-call archive options. | facade | `ExampleReadFileWithOptions` |
+| `ReadWithOptions` | `func ReadWithOptions(zipFile string, consumer func(*zip.File) error, opts ...ArchiveOption) error` | recommended | ReadWithOptions walks every archive entry and calls consumer using per-call options. | facade | `ExampleReadWithOptions` |
 | `UnGzip` | `func UnGzip(data []byte) ([]byte, error)` | recommended | UnGzip decompresses gzip data. | facade | — |
-| `UnGzipReader` | `func UnGzipReader(r io.Reader, estimatedLength int) ([]byte, error)` | recommended | UnGzipReader decompresses all gzip bytes from r. | facade | — |
-| `UnGzipReaderWithOptions` | `func UnGzipReaderWithOptions(r io.Reader, estimatedLength int, opts ...ArchiveOption) ([]byte, error)` | recommended | UnGzipReaderWithOptions decompresses gzip bytes from r with per-call options. | facade | — |
+| `UnGzipReader` | `func UnGzipReader(r io.Reader, estimatedLength int) ([]byte, error)` | recommended | UnGzipReader decompresses all gzip bytes from r. | facade | `ExampleUnGzipReader` |
+| `UnGzipReaderWithOptions` | `func UnGzipReaderWithOptions(r io.Reader, estimatedLength int, opts ...ArchiveOption) ([]byte, error)` | recommended | UnGzipReaderWithOptions decompresses gzip bytes from r with per-call options. | facade | `ExampleUnGzipReaderWithOptions` |
 | `UnGzipString` | `func UnGzipString(data []byte) (string, error)` | recommended | UnGzipString decompresses gzip data and returns text. | facade | `ExampleUnGzipString` |
-| `UnGzipWithOptions` | `func UnGzipWithOptions(data []byte, opts ...ArchiveOption) ([]byte, error)` | recommended | UnGzipWithOptions decompresses gzip data with per-call options. | facade | — |
-| `UnZlib` | `func UnZlib(data []byte) ([]byte, error)` | recommended | UnZlib decompresses zlib data. | facade | — |
-| `UnZlibReader` | `func UnZlibReader(r io.Reader, estimatedLength int) ([]byte, error)` | recommended | UnZlibReader decompresses all zlib bytes from r. | facade | — |
-| `UnZlibReaderWithOptions` | `func UnZlibReaderWithOptions(r io.Reader, estimatedLength int, opts ...ArchiveOption) ([]byte, error)` | recommended | UnZlibReaderWithOptions decompresses zlib bytes from r with per-call options. | facade | — |
+| `UnGzipWithOptions` | `func UnGzipWithOptions(data []byte, opts ...ArchiveOption) ([]byte, error)` | recommended | UnGzipWithOptions decompresses gzip data with per-call options. | facade | `ExampleUnGzipWithOptions` |
+| `UnZlib` | `func UnZlib(data []byte) ([]byte, error)` | recommended | UnZlib decompresses zlib data. | facade | `ExampleUnZlib` |
+| `UnZlibReader` | `func UnZlibReader(r io.Reader, estimatedLength int) ([]byte, error)` | recommended | UnZlibReader decompresses all zlib bytes from r. | facade | `ExampleUnZlibReader` |
+| `UnZlibReaderWithOptions` | `func UnZlibReaderWithOptions(r io.Reader, estimatedLength int, opts ...ArchiveOption) ([]byte, error)` | recommended | UnZlibReaderWithOptions decompresses zlib bytes from r with per-call options. | facade | `ExampleUnZlibReaderWithOptions` |
 | `UnZlibString` | `func UnZlibString(data []byte) (string, error)` | recommended | UnZlibString decompresses zlib data and returns text. | facade | `ExampleUnZlibString` |
-| `UnZlibWithOptions` | `func UnZlibWithOptions(data []byte, opts ...ArchiveOption) ([]byte, error)` | recommended | UnZlibWithOptions decompresses zlib data with per-call options. | facade | — |
-| `Unzip` | `func Unzip(zipFile string) (string, error)` | recommended | Unzip extracts zipFile into a sibling directory named after the archive. | facade | — |
+| `UnZlibWithOptions` | `func UnZlibWithOptions(data []byte, opts ...ArchiveOption) ([]byte, error)` | recommended | UnZlibWithOptions decompresses zlib data with per-call options. | facade | `ExampleUnZlibWithOptions` |
+| `Unzip` | `func Unzip(zipFile string) (string, error)` | recommended | Unzip extracts zipFile into a sibling directory named after the archive. | facade | `ExampleUnzip` |
 | `UnzipReaderTo` | `func UnzipReaderTo(r *zip.Reader, destDir string) error` | recommended | UnzipReaderTo extracts archive reader contents into destDir. | facade | `ExampleUnzipReaderTo` |
-| `UnzipReaderToLimit` | `func UnzipReaderToLimit(r *zip.Reader, destDir string, limit int64) error` | recommended | UnzipReaderToLimit extracts archive reader contents into destDir and optionally limits total size. | facade | — |
-| `UnzipReaderToWithOptions` | `func UnzipReaderToWithOptions(r *zip.Reader, destDir string, opts ...ArchiveOption) error` | recommended | UnzipReaderToWithOptions extracts archive reader contents into destDir with per-call options. | facade | — |
+| `UnzipReaderToLimit` | `func UnzipReaderToLimit(r *zip.Reader, destDir string, limit int64) error` | recommended | UnzipReaderToLimit extracts archive reader contents into destDir and optionally limits total size. | facade | `ExampleUnzipReaderToLimit` |
+| `UnzipReaderToWithOptions` | `func UnzipReaderToWithOptions(r *zip.Reader, destDir string, opts ...ArchiveOption) error` | recommended | UnzipReaderToWithOptions extracts archive reader contents into destDir with per-call options. | facade | `ExampleUnzipReaderToWithOptions` |
 | `UnzipTo` | `func UnzipTo(zipFile string, destDir string) error` | recommended | UnzipTo extracts zipFile into destDir. | facade | `ExampleUnzipTo` |
-| `UnzipToLimit` | `func UnzipToLimit(zipFile string, destDir string, limit int64) error` | recommended | UnzipToLimit extracts zipFile into destDir and optionally limits total uncompressed size. | facade | — |
-| `UnzipToWithOptions` | `func UnzipToWithOptions(zipFile string, destDir string, opts ...ArchiveOption) error` | recommended | UnzipToWithOptions extracts zipFile into destDir with per-call options. | facade | — |
-| `Unzlib` | `func Unzlib(data []byte) ([]byte, error)` | recommended | Unzlib decompresses zlib data. | facade | — |
+| `UnzipToLimit` | `func UnzipToLimit(zipFile string, destDir string, limit int64) error` | recommended | UnzipToLimit extracts zipFile into destDir and optionally limits total uncompressed size. | facade | `ExampleUnzipToLimit` |
+| `UnzipToWithOptions` | `func UnzipToWithOptions(zipFile string, destDir string, opts ...ArchiveOption) error` | recommended | UnzipToWithOptions extracts zipFile into destDir with per-call options. | facade | `ExampleUnzipToWithOptions` |
+| `Unzlib` | `func Unzlib(data []byte) ([]byte, error)` | recommended | Unzlib decompresses zlib data. | facade | `ExampleUnzlib` |
 | `WithCompressionLevel` | `func WithCompressionLevel(level int) ArchiveOption` | recommended | WithCompressionLevel sets the deflate compression level used for newly created entries. | facade | — |
 | `WithCompressionMethod` | `func WithCompressionMethod(method uint16) ArchiveOption` | recommended | WithCompressionMethod sets the ZIP compression method used for newly created entries. | facade | — |
 | `WithCreateTemp` | `func WithCreateTemp(createTemp CreateTempFunc) ArchiveOption` | recommended | WithCreateTemp sets the function used to create temporary archives for append operations. | facade | — |
@@ -4299,32 +4299,32 @@ Golden path API set:
 | `WithRename` | `func WithRename(rename RenameFunc) ArchiveOption` | recommended | WithRename sets the function used to move completed temporary archives into place. | facade | — |
 | `WithSourceDir` | `func WithSourceDir(withSrcDir bool) ArchiveOption` | recommended | WithSourceDir controls whether source directory names are included in newly created ZIP archives. | facade | — |
 | `WithStat` | `func WithStat(stat StatFunc) ArchiveOption` | recommended | WithStat sets the function used to inspect existing archive paths. | facade | — |
-| `Zip` | `func Zip(srcPath string) (string, error)` | recommended | Zip creates an archive next to srcPath and returns the archive path. | facade | — |
+| `Zip` | `func Zip(srcPath string) (string, error)` | recommended | Zip creates an archive next to srcPath and returns the archive path. | facade | `ExampleZip` |
 | `ZipBytes` | `func ZipBytes(zipFile string, path string, data []byte) error` | recommended | ZipBytes creates or overwrites zipFile and adds one byte entry. | facade | `ExampleZipBytes` |
 | `ZipData` | `func ZipData(zipFile string, path string, data string) error` | recommended | ZipData creates or overwrites zipFile and adds one text entry. | facade | `ExampleZipData` |
 | `ZipEntries` | `func ZipEntries(zipFile string, entries ...EntryData) error` | recommended | ZipEntries creates or overwrites zipFile and adds in-memory entries. | facade | `ExampleZipEntries` |
 | `ZipEntriesToWriter` | `func ZipEntriesToWriter(out io.Writer, entries ...EntryData) error` | recommended | ZipEntriesToWriter writes in-memory entries into out as a ZIP archive. | facade | `ExampleZipEntriesToWriter` |
 | `ZipEntriesToWriterWithOptions` | `func ZipEntriesToWriterWithOptions(out io.Writer, entries []EntryData, opts ...ArchiveOption) error` | recommended | ZipEntriesToWriterWithOptions writes in-memory entries into out as a ZIP archive with per-call options. | facade | `ExampleZipEntriesToWriterWithOptions` |
-| `ZipEntriesWithOptions` | `func ZipEntriesWithOptions(zipFile string, entries []EntryData, opts ...ArchiveOption) error` | recommended | ZipEntriesWithOptions creates or overwrites zipFile and adds in-memory entries with per-call options. | facade | — |
+| `ZipEntriesWithOptions` | `func ZipEntriesWithOptions(zipFile string, entries []EntryData, opts ...ArchiveOption) error` | recommended | ZipEntriesWithOptions creates or overwrites zipFile and adds in-memory entries with per-call options. | facade | `ExampleZipEntriesWithOptions` |
 | `ZipFiles` | `func ZipFiles(dest string, withSrcDir bool, srcFiles ...string) error` | recommended | ZipFiles creates a ZIP archive from source files or directories. | facade | `ExampleZipFiles` |
 | `ZipFilesFilter` | `func ZipFilesFilter(dest string, withSrcDir bool, filter FileFilter, srcFiles ...string) error` | recommended | ZipFilesFilter creates a ZIP archive and filters source paths. | facade | `ExampleZipFilesFilter` |
-| `ZipFilesFilterWithOptions` | `func ZipFilesFilterWithOptions(dest string, withSrcDir bool, filter FileFilter, srcFiles []string, opts ...ArchiveOption) error` | recommended | ZipFilesFilterWithOptions creates a ZIP archive with source filtering and per-call options. | facade | — |
-| `ZipFilesUsingOptions` | `func ZipFilesUsingOptions(dest string, srcFiles []string, opts ...ArchiveOption) error` | recommended | ZipFilesUsingOptions creates a ZIP archive from source files or directories using only functional options. | facade | — |
-| `ZipFilesWithOptions` | `func ZipFilesWithOptions(dest string, withSrcDir bool, srcFiles []string, opts ...ArchiveOption) error` | recommended | ZipFilesWithOptions creates a ZIP archive from source files or directories with per-call options. | facade | — |
-| `ZipStreams` | `func ZipStreams(zipFile string, entries ...StreamEntry) error` | recommended | ZipStreams creates or overwrites zipFile and adds stream entries. | facade | — |
+| `ZipFilesFilterWithOptions` | `func ZipFilesFilterWithOptions(dest string, withSrcDir bool, filter FileFilter, srcFiles []string, opts ...ArchiveOption) error` | recommended | ZipFilesFilterWithOptions creates a ZIP archive with source filtering and per-call options. | facade | `ExampleZipFilesFilterWithOptions` |
+| `ZipFilesUsingOptions` | `func ZipFilesUsingOptions(dest string, srcFiles []string, opts ...ArchiveOption) error` | recommended | ZipFilesUsingOptions creates a ZIP archive from source files or directories using only functional options. | facade | `ExampleZipFilesUsingOptions` |
+| `ZipFilesWithOptions` | `func ZipFilesWithOptions(dest string, withSrcDir bool, srcFiles []string, opts ...ArchiveOption) error` | recommended | ZipFilesWithOptions creates a ZIP archive from source files or directories with per-call options. | facade | `ExampleZipFilesWithOptions` |
+| `ZipStreams` | `func ZipStreams(zipFile string, entries ...StreamEntry) error` | recommended | ZipStreams creates or overwrites zipFile and adds stream entries. | facade | `ExampleZipStreams` |
 | `ZipStreamsToWriter` | `func ZipStreamsToWriter(out io.Writer, entries ...StreamEntry) error` | recommended | ZipStreamsToWriter writes stream entries into out as a ZIP archive. | facade | `ExampleZipStreamsToWriter` |
-| `ZipStreamsToWriterWithOptions` | `func ZipStreamsToWriterWithOptions(out io.Writer, entries []StreamEntry, opts ...ArchiveOption) error` | recommended | ZipStreamsToWriterWithOptions writes stream entries into out as a ZIP archive with per-call options. | facade | — |
-| `ZipStreamsWithOptions` | `func ZipStreamsWithOptions(zipFile string, entries []StreamEntry, opts ...ArchiveOption) error` | recommended | ZipStreamsWithOptions creates or overwrites zipFile and adds stream entries with per-call options. | facade | — |
-| `ZipTo` | `func ZipTo(srcPath string, zipPath string, withSrcDir bool) error` | recommended | ZipTo creates an archive at zipPath from srcPath. | facade | — |
-| `ZipToWriter` | `func ZipToWriter(out io.Writer, withSrcDir bool, filter FileFilter, srcFiles ...string) error` | recommended | ZipToWriter writes source files or directories into out as a ZIP archive. | facade | — |
-| `ZipToWriterUsingOptions` | `func ZipToWriterUsingOptions(out io.Writer, srcFiles []string, opts ...ArchiveOption) error` | recommended | ZipToWriterUsingOptions writes source files or directories into out using only functional options. | facade | — |
-| `ZipToWriterWithOptions` | `func ZipToWriterWithOptions(out io.Writer, withSrcDir bool, filter FileFilter, srcFiles []string, opts ...ArchiveOption) error` | recommended | ZipToWriterWithOptions writes source files or directories into out as a ZIP archive with per-call options. | facade | — |
-| `Zlib` | `func Zlib(data []byte) ([]byte, error)` | recommended | Zlib compresses data using zlib with the default compression level. | facade | — |
-| `ZlibFile` | `func ZlibFile(path string, level int) ([]byte, error)` | recommended | ZlibFile compresses a file using zlib with the specified compression level. | facade | — |
-| `ZlibFileWithOptions` | `func ZlibFileWithOptions(path string, level int, opts ...ArchiveOption) ([]byte, error)` | recommended | ZlibFileWithOptions compresses a file using zlib with the specified compression level and per-call options. | facade | — |
-| `ZlibLevel` | `func ZlibLevel(data []byte, level int) ([]byte, error)` | recommended | ZlibLevel compresses data using zlib with the specified compression level. | facade | — |
-| `ZlibLevelWithOptions` | `func ZlibLevelWithOptions(data []byte, level int, opts ...ArchiveOption) ([]byte, error)` | recommended | ZlibLevelWithOptions compresses data using zlib with the specified compression level and per-call options. | facade | — |
-| `ZlibReader` | `func ZlibReader(r io.Reader, level int, estimatedLength int) ([]byte, error)` | recommended | ZlibReader compresses all bytes from r using zlib with the specified compression level. | facade | — |
-| `ZlibReaderWithOptions` | `func ZlibReaderWithOptions(r io.Reader, level int, estimatedLength int, opts ...ArchiveOption) ([]byte, error)` | recommended | ZlibReaderWithOptions compresses all bytes from r using zlib with the specified compression level and per-call options. | facade | — |
+| `ZipStreamsToWriterWithOptions` | `func ZipStreamsToWriterWithOptions(out io.Writer, entries []StreamEntry, opts ...ArchiveOption) error` | recommended | ZipStreamsToWriterWithOptions writes stream entries into out as a ZIP archive with per-call options. | facade | `ExampleZipStreamsToWriterWithOptions` |
+| `ZipStreamsWithOptions` | `func ZipStreamsWithOptions(zipFile string, entries []StreamEntry, opts ...ArchiveOption) error` | recommended | ZipStreamsWithOptions creates or overwrites zipFile and adds stream entries with per-call options. | facade | `ExampleZipStreamsWithOptions` |
+| `ZipTo` | `func ZipTo(srcPath string, zipPath string, withSrcDir bool) error` | recommended | ZipTo creates an archive at zipPath from srcPath. | facade | `ExampleZipTo` |
+| `ZipToWriter` | `func ZipToWriter(out io.Writer, withSrcDir bool, filter FileFilter, srcFiles ...string) error` | recommended | ZipToWriter writes source files or directories into out as a ZIP archive. | facade | `ExampleZipToWriter` |
+| `ZipToWriterUsingOptions` | `func ZipToWriterUsingOptions(out io.Writer, srcFiles []string, opts ...ArchiveOption) error` | recommended | ZipToWriterUsingOptions writes source files or directories into out using only functional options. | facade | `ExampleZipToWriterUsingOptions` |
+| `ZipToWriterWithOptions` | `func ZipToWriterWithOptions(out io.Writer, withSrcDir bool, filter FileFilter, srcFiles []string, opts ...ArchiveOption) error` | recommended | ZipToWriterWithOptions writes source files or directories into out as a ZIP archive with per-call options. | facade | `ExampleZipToWriterWithOptions` |
+| `Zlib` | `func Zlib(data []byte) ([]byte, error)` | recommended | Zlib compresses data using zlib with the default compression level. | facade | `ExampleZlib` |
+| `ZlibFile` | `func ZlibFile(path string, level int) ([]byte, error)` | recommended | ZlibFile compresses a file using zlib with the specified compression level. | facade | `ExampleZlibFile` |
+| `ZlibFileWithOptions` | `func ZlibFileWithOptions(path string, level int, opts ...ArchiveOption) ([]byte, error)` | recommended | ZlibFileWithOptions compresses a file using zlib with the specified compression level and per-call options. | facade | `ExampleZlibFileWithOptions` |
+| `ZlibLevel` | `func ZlibLevel(data []byte, level int) ([]byte, error)` | recommended | ZlibLevel compresses data using zlib with the specified compression level. | facade | `ExampleZlibLevel` |
+| `ZlibLevelWithOptions` | `func ZlibLevelWithOptions(data []byte, level int, opts ...ArchiveOption) ([]byte, error)` | recommended | ZlibLevelWithOptions compresses data using zlib with the specified compression level and per-call options. | facade | `ExampleZlibLevelWithOptions` |
+| `ZlibReader` | `func ZlibReader(r io.Reader, level int, estimatedLength int) ([]byte, error)` | recommended | ZlibReader compresses all bytes from r using zlib with the specified compression level. | facade | `ExampleZlibReader` |
+| `ZlibReaderWithOptions` | `func ZlibReaderWithOptions(r io.Reader, level int, estimatedLength int, opts ...ArchiveOption) ([]byte, error)` | recommended | ZlibReaderWithOptions compresses all bytes from r using zlib with the specified compression level and per-call options. | facade | `ExampleZlibReaderWithOptions` |
 | `ZlibString` | `func ZlibString(content string, level int) ([]byte, error)` | recommended | ZlibString compresses text using zlib with the specified compression level. | facade | `ExampleZlibString` |
 
