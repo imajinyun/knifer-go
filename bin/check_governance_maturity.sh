@@ -294,6 +294,12 @@ def validate_roadmap_star_domain_scorecard() -> None:
 
 def validate_example_depth_governance() -> None:
 	governance = require_mapping(ai_context.get("example_depth_governance"), "example_depth_governance")
+	sprint = governance.get("sprint")
+	if sprint != 22:
+		add_error("example_depth_governance.sprint must be 22")
+	status = governance.get("status")
+	if status != "completed":
+		add_error("example_depth_governance.status must be completed")
 	roadmap_path = governance.get("roadmap_path")
 	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
 		add_error("example_depth_governance.roadmap_path must be non-empty")
@@ -355,6 +361,18 @@ def validate_example_depth_governance() -> None:
 	missing_from_lane = [facade for facade in target_facades if f"`{facade}`" not in lane_text]
 	if missing_from_lane:
 		add_error(f"{roadmap_path} Examples lane missing facade(s): " + ", ".join(missing_from_lane))
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_22_rows = [row for row in sprint_rows if row.get("Sprint") == "22"]
+	if len(sprint_22_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 22 row")
+		return
+	sprint_22 = sprint_22_rows[0]
+	if sprint_22.get("Status") != "Completed":
+		add_error(f"{roadmap_path} Sprint 22 status must be Completed")
+	sprint_text = " ".join(sprint_22.values())
+	missing_from_sprint = [facade for facade in target_facades if f"`{facade}`" not in sprint_text]
+	if missing_from_sprint:
+		add_error(f"{roadmap_path} Sprint 22 row missing facade(s): " + ", ".join(missing_from_sprint))
 
 
 def validate_local_governance_gates() -> None:

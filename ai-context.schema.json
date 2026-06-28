@@ -192,9 +192,11 @@
     },
     "example_depth_governance": {
       "type": "object",
-      "required": ["roadmap_path", "roadmap_lane", "target_facades", "non_regression", "first_implementation_facade", "target_after_first_pass", "baseline"],
+      "required": ["roadmap_path", "sprint", "status", "roadmap_lane", "target_facades", "non_regression", "first_implementation_facade", "target_after_first_pass", "baseline"],
       "properties": {
         "roadmap_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["completed"] },
         "roadmap_lane": { "type": "string", "minLength": 1 },
         "target_facades": { "$ref": "#/$defs/string_array" },
         "non_regression": { "type": "boolean" },

@@ -86,11 +86,14 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 19 | Completed | Conversion Contract Clarity | Added explicit-error scalar conversions to `vconv`, documented weak-input semantics, added overflow-safe E integer narrowing, covered named scalar types, and kept zero/default helpers backward-compatible. |
 | 20 | Completed | Hutool Gap Capability Closure | Completed national crypto, lunar calendar, credit code, coordinate conversion, codec expansion, weighted random, file type detection, BOM/charset, image operations, and consistent hash coverage across facades, docs, examples, and tests. |
 | 21 | Completed | Roadmap Governance Drift Control | Kept roadmap state synchronized with generated API catalog evidence and enforced baseline plus star-domain metric drift through governance gates. |
-| 22 | Active | Large Facade Example Depth Governance | Track `vhttp`, `vnet`, `vnum`, `vresty`, and `vzip` example baselines as non-regression metadata; implementation passes raised `vnum` to 53, `vzip` to 68, `vnet` to 97, `vhttp` to 146, and `vresty` to 120 covered APIs. |
+| 22 | Completed | Large Facade Example Depth Governance | Enforced non-regression baselines for `vhttp`, `vnet`, `vnum`, `vresty`, and `vzip`; implementation passes raised `vnum` to 53, `vzip` to 68, `vnet` to 97, `vhttp` to 146, and `vresty` to 120 covered APIs. |
+| 23 | Active | Safe HTTP Cookbook Governance | Add cookbook-grade scenario guidance for `vhttp`, `vresty`, and `vurl`, then guard the lane with generated catalog and governance evidence. |
 
 ## Active workflow
 
-Sprint 21 completed roadmap catalog drift control by validating the Baseline and Star Domain scorecard against the generated API catalog. Sprint 22 is now the active governance synchronization lane for large-facade example depth: `example_depth_governance` records non-regression baselines for `vhttp`, `vnet`, `vnum`, `vresty`, and `vzip`, keeps the roadmap Examples lane aligned with those targets, and has ratcheted `vnum` examples from 23 to 53, `vzip` examples from 22 to 68, `vnet` examples from 47 to 97, `vhttp` examples from 52 to 146, and `vresty` examples from 74 to 120 in the generated catalog.
+Sprint 22 completed large-facade example-depth governance: `example_depth_governance` records non-regression baselines for `vhttp`, `vnet`, `vnum`, `vresty`, and `vzip`, keeps the roadmap Examples lane aligned with those targets, and ratcheted `vnum` examples from 23 to 53, `vzip` examples from 22 to 68, `vnet` examples from 47 to 97, `vhttp` examples from 52 to 146, and `vresty` examples from 74 to 120 in the generated catalog.
+
+Sprint 23 is now the active governance lane for Safe HTTP cookbook depth. It should turn the Safe HTTP scorecard's missing cookbook status into machine-checked scenario guidance for `vhttp`, `vresty`, and `vurl`.
 
 Recommended roadmap loop:
 

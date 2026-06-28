@@ -837,6 +837,8 @@
   },
   "example_depth_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "sprint": 22,
+    "status": "completed",
     "roadmap_lane": "Examples",
     "target_facades": ["vhttp", "vnet", "vnum", "vresty", "vzip"],
     "non_regression": true,
