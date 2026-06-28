@@ -8,7 +8,10 @@ import (
 	"strconv"
 )
 
-const defaultVirtualNodes = 100
+const (
+	defaultVirtualNodes       = 100
+	maxCollisionProbeAttempts = 1024
+)
 
 type consistentHashConfig struct {
 	virtualNodes int
@@ -80,18 +83,29 @@ func (h *ConsistentHash) Add(node string) {
 		return
 	}
 	h.nodes[node] = struct{}{}
+	added := 0
 	for i := 0; i < h.cfg.virtualNodes; i++ {
-		sum := h.cfg.hashFunc([]byte(node + "#" + strconv.Itoa(i)))
-		for {
+		key := node + "#" + strconv.Itoa(i)
+		sum := h.cfg.hashFunc([]byte(key))
+		for attempt := 0; attempt < maxCollisionProbeAttempts; attempt++ {
 			if _, exists := h.ring[sum]; !exists {
 				break
 			}
-			buf := make([]byte, 8)
-			binary.BigEndian.PutUint64(buf, sum)
-			sum = h.cfg.hashFunc(buf)
+			buf := make([]byte, 16)
+			binary.BigEndian.PutUint64(buf[:8], sum)
+			binary.BigEndian.PutUint64(buf[8:], uint64(attempt+1))
+			sum = h.cfg.hashFunc(append([]byte(key+"#"), buf...))
+		}
+		if _, exists := h.ring[sum]; exists {
+			continue
 		}
 		h.ring[sum] = node
 		h.hashes = append(h.hashes, sum)
+		added++
+	}
+	if added == 0 {
+		delete(h.nodes, node)
+		return
 	}
 	sort.Slice(h.hashes, func(i, j int) bool { return h.hashes[i] < h.hashes[j] })
 }
@@ -161,5 +175,14 @@ func (h *ConsistentHash) GetN(key string, n int) ([]string, error) {
 func fnv64a(data []byte) uint64 {
 	h := fnv.New64a()
 	_, _ = h.Write(data)
-	return h.Sum64()
+	return avalanche64(h.Sum64())
+}
+
+func avalanche64(x uint64) uint64 {
+	x ^= x >> 33
+	x *= 0xff51afd7ed558ccd
+	x ^= x >> 33
+	x *= 0xc4ceb9fe1a85ec53
+	x ^= x >> 33
+	return x
 }
