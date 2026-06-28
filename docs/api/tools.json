@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 55,
     "function_count": 2724,
-    "functions_with_examples": 1645,
+    "functions_with_examples": 1691,
     "context_aware_functions": 36,
     "returns_error_functions": 666,
     "variadic_functions": 794,
@@ -49881,8 +49881,8 @@
       "synopsis": "Package vresty provides convenient HTTP client wrappers backed by resty.",
       "summary": {
         "function_count": 120,
-        "functions_with_examples": 74,
-        "example_coverage_percent": 61.7,
+        "functions_with_examples": 120,
+        "example_coverage_percent": 100,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
@@ -50031,7 +50031,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCloneGlobalHeaders"
+          ]
         },
         {
           "name": "CloseCookie",
@@ -50060,7 +50063,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleConfigureDefaultRestyClientProvider"
+          ]
         },
         {
           "name": "ConfigureGlobalConfig",
@@ -50076,7 +50082,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleConfigureGlobalConfig"
+          ]
         },
         {
           "name": "Delete",
@@ -50125,7 +50134,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleDeleteSafe"
+          ]
         },
         {
           "name": "Download",
@@ -50323,7 +50335,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleDownloadFileSafeWithOptions"
+          ]
         },
         {
           "name": "DownloadFileWithOptions",
@@ -50644,7 +50659,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetGlobalFollowRedirects"
+          ]
         },
         {
           "name": "GetGlobalMaxRedirects",
@@ -50657,7 +50675,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetGlobalMaxRedirects"
+          ]
         },
         {
           "name": "GetGlobalMaxResponseBytes",
@@ -50670,7 +50691,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetGlobalMaxResponseBytes"
+          ]
         },
         {
           "name": "GetGlobalTimeout",
@@ -50683,7 +50707,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetGlobalTimeout"
+          ]
         },
         {
           "name": "GetGlobalUserAgent",
@@ -50696,7 +50723,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetGlobalUserAgent"
+          ]
         },
         {
           "name": "GetMimeType",
@@ -51034,7 +51064,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleHeadSafe"
+          ]
         },
         {
           "name": "IsDefaultContentType",
@@ -51392,7 +51425,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleOptionsSafe"
+          ]
         },
         {
           "name": "Patch",
@@ -51441,7 +51477,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExamplePatchSafe"
+          ]
         },
         {
           "name": "Post",
@@ -51553,7 +51592,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExamplePostFormSafeE"
+          ]
         },
         {
           "name": "PostJSONE",
@@ -51639,7 +51681,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExamplePostJSONSafeE"
+          ]
         },
         {
           "name": "PostSafe",
@@ -51751,7 +51796,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExamplePostStringSafeE"
+          ]
         },
         {
           "name": "Put",
@@ -51800,7 +51848,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExamplePutSafe"
+          ]
         },
         {
           "name": "RemoveGlobalHeader",
@@ -51829,7 +51880,10 @@
           "status": "recommended",
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleResetDefaultRestyClientProvider"
+          ]
         },
         {
           "name": "ResetGlobalConfig",
@@ -51839,7 +51893,10 @@
           "status": "recommended",
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleResetGlobalConfig"
+          ]
         },
         {
           "name": "SetGlobalFollowRedirects",
@@ -51855,7 +51912,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSetGlobalFollowRedirects"
+          ]
         },
         {
           "name": "SetGlobalHeader",
@@ -51894,7 +51954,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSetGlobalMaxRedirects"
+          ]
         },
         {
           "name": "SetGlobalMaxResponseBytes",
@@ -51910,7 +51973,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSetGlobalMaxResponseBytes"
+          ]
         },
         {
           "name": "SetGlobalTimeout",
@@ -51926,7 +51992,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSetGlobalTimeout"
+          ]
         },
         {
           "name": "SetGlobalUserAgent",
@@ -51942,7 +52011,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSetGlobalUserAgent"
+          ]
         },
         {
           "name": "SnapshotGlobalConfig",
@@ -51955,7 +52027,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSnapshotGlobalConfig"
+          ]
         },
         {
           "name": "ToParams",
@@ -52066,7 +52141,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithCharsetRegexp"
+          ]
         },
         {
           "name": "WithClientGlobalConfig",
@@ -52085,7 +52163,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithClientGlobalConfig"
+          ]
         },
         {
           "name": "WithClientRequestOptions",
@@ -52104,7 +52185,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWithClientRequestOptions"
+          ]
         },
         {
           "name": "WithContentType",
@@ -52145,7 +52229,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithCookieDisabled"
+          ]
         },
         {
           "name": "WithFollowRedirects",
@@ -52164,7 +52251,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithFollowRedirects"
+          ]
         },
         {
           "name": "WithGlobalConfig",
@@ -52183,7 +52273,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithGlobalConfig"
+          ]
         },
         {
           "name": "WithHeader",
@@ -52250,7 +52343,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithJSONDecodeReadAllFunc"
+          ]
         },
         {
           "name": "WithJSONMarshalFunc",
@@ -52269,7 +52365,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithJSONMarshalFunc"
+          ]
         },
         {
           "name": "WithJSONUnmarshalFunc",
@@ -52288,7 +52387,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithJSONUnmarshalFunc"
+          ]
         },
         {
           "name": "WithLookupIP",
@@ -52329,7 +52431,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithMaxDecodeBytes"
+          ]
         },
         {
           "name": "WithMaxRedirects",
@@ -52348,7 +52453,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithMaxRedirects"
+          ]
         },
         {
           "name": "WithMaxResponseBytes",
@@ -52389,7 +52497,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithMetaCharsetRegexp"
+          ]
         },
         {
           "name": "WithRestyClient",
@@ -52452,7 +52563,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithSaveCreateParents"
+          ]
         },
         {
           "name": "WithSaveDefaultFilename",
@@ -52471,7 +52585,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithSaveDefaultFilename"
+          ]
         },
         {
           "name": "WithSaveDirPerm",
@@ -52490,7 +52607,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithSaveDirPerm"
+          ]
         },
         {
           "name": "WithSaveFilePerm",
@@ -52509,7 +52629,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithSaveFilePerm"
+          ]
         },
         {
           "name": "WithSaveMkdirAll",
@@ -52528,7 +52651,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithSaveMkdirAll"
+          ]
         },
         {
           "name": "WithSaveOpenFile",
@@ -52547,7 +52673,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithSaveOpenFile"
+          ]
         },
         {
           "name": "WithSaveOverwrite",
@@ -52566,7 +52695,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithSaveOverwrite"
+          ]
         },
         {
           "name": "WithSaveStat",
@@ -52585,7 +52717,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithSaveStat"
+          ]
         },
         {
           "name": "WithScopedGlobalConfig",
@@ -52627,7 +52762,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithTLSConfig"
+          ]
         },
         {
           "name": "WithTimeout",
