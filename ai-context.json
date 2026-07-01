@@ -531,19 +531,19 @@
       "schema": "1.7",
       "recommended_profile_schema": "recommended_entrypoints profiles: day-one, safe, error, options, compatibility; golden_path lists 1-7 APIs with use_when and avoid_when guidance",
       "package_count": 55,
-      "function_count": 2724,
-      "functions_with_examples": 1702,
+      "function_count": 2739,
+      "functions_with_examples": 1706,
       "context_aware_functions": 36,
-      "returns_error_functions": 666,
+      "returns_error_functions": 675,
       "status_counts": {
         "compatibility": 22,
         "deprecated": 0,
         "experimental": 0,
-        "recommended": 2702
+        "recommended": 2717
       },
       "synopsis_sources": {
         "empty": 0,
-        "facade": 2071,
+        "facade": 2086,
         "internal": 653
       },
       "regenerate_command": "tools_update",
@@ -1010,7 +1010,7 @@
     "quickstart_path": "docs/doc/11-vcrypto.md",
     "cookbook_path": "docs/doc/safe-crypto-cookbook.md",
     "sprint": 30,
-    "status": "active",
+    "status": "completed",
     "packages": ["vcrypto", "vjwt", "vrand", "vpass"],
     "required_lanes": [
       "TOTP and HOTP",
@@ -1027,6 +1027,37 @@
       "No custom cryptographic primitive"
     ],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check", "agent-security-check"]
+  },
+  "safe_crypto_otp_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "quickstart_path": "docs/doc/11-vcrypto.md",
+    "backlog_path": "docs/doc/safe-crypto-advanced-backlog.md",
+    "sprint": 31,
+    "status": "completed",
+    "packages": ["vcrypto"],
+    "internal_packages": ["internal/crypto"],
+    "required_functions": [
+      "HOTP",
+      "HOTPVerify",
+      "TOTP",
+      "TOTPNow",
+      "TOTPVerify",
+      "TOTPVerifyNow",
+      "OTPAuthURL",
+      "GenerateOTPSecret",
+      "OTPSecretBase32",
+      "ParseOTPSecretBase32"
+    ],
+    "required_test_functions": [
+      "internal/crypto/otp_test.go:TestHOTPRFC4226Vectors",
+      "internal/crypto/otp_test.go:TestTOTPRFC6238Vectors",
+      "internal/crypto/otp_test.go:TestTOTPVerifyWindowAndClock",
+      "internal/crypto/otp_test.go:TestOTPSecretBase32AndAuthURL",
+      "internal/crypto/otp_test.go:TestOTPErrors",
+      "vcrypto/otp_test.go:TestFacadeHOTPTOTP"
+    ],
+    "required_examples": ["ExampleHOTP", "ExampleTOTP", "ExampleTOTPVerifyNow", "ExampleOTPAuthURL"],
+    "required_checks": ["go test ./internal/crypto ./vcrypto", "tools-gen", "docs-check", "ai-context-check", "governance-maturity-check", "agent-security-check"]
   },
   "error_model": {
     "taxonomy": [

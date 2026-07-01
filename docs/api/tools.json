@@ -3,20 +3,20 @@
   "module": "github.com/imajinyun/knifer-go",
   "summary": {
     "package_count": 55,
-    "function_count": 2724,
-    "functions_with_examples": 1702,
+    "function_count": 2739,
+    "functions_with_examples": 1706,
     "context_aware_functions": 36,
-    "returns_error_functions": 666,
-    "variadic_functions": 794,
+    "returns_error_functions": 675,
+    "variadic_functions": 802,
     "status_counts": {
       "compatibility": 22,
       "deprecated": 0,
       "experimental": 0,
-      "recommended": 2702
+      "recommended": 2717
     },
     "synopsis_sources": {
       "empty": 0,
-      "facade": 2071,
+      "facade": 2086,
       "internal": 653
     }
   },
@@ -7043,18 +7043,18 @@
       "name": "vcrypto",
       "synopsis": "Package vcrypto provides public APIs for cryptographic utilities.",
       "summary": {
-        "function_count": 105,
-        "functions_with_examples": 81,
-        "example_coverage_percent": 77.1,
+        "function_count": 120,
+        "functions_with_examples": 85,
+        "example_coverage_percent": 70.8,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
           "experimental": 0,
-          "recommended": 105
+          "recommended": 120
         },
         "synopsis_sources": {
           "empty": 0,
-          "facade": 105,
+          "facade": 120,
           "internal": 0
         }
       },
@@ -7640,6 +7640,30 @@
           "variadic": true
         },
         {
+          "name": "GenerateOTPSecret",
+          "signature": "func GenerateOTPSecret(size int, opts ...RandomOption) ([]byte, error)",
+          "synopsis": "GenerateOTPSecret returns random bytes suitable for HOTP/TOTP secrets.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "size",
+              "type": "int"
+            },
+            {
+              "name": "opts",
+              "type": "...RandomOption"
+            }
+          ],
+          "results": [
+            "[]byte",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": true
+        },
+        {
           "name": "HMACBytes",
           "signature": "func HMACBytes(fn func() hash.Hash, key []byte, data []byte) []byte",
           "synopsis": "HMACBytes returns HMAC digest bytes using the given hash function.",
@@ -7853,6 +7877,123 @@
           ]
         },
         {
+          "name": "HOTP",
+          "signature": "func HOTP(secret []byte, counter uint64, opts ...OTPOption) (string, error)",
+          "synopsis": "HOTP generates an HMAC-based one-time password for counter.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "secret",
+              "type": "[]byte"
+            },
+            {
+              "name": "counter",
+              "type": "uint64"
+            },
+            {
+              "name": "opts",
+              "type": "...OTPOption"
+            }
+          ],
+          "results": [
+            "string",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": true,
+          "examples": [
+            "ExampleHOTP"
+          ]
+        },
+        {
+          "name": "HOTPVerify",
+          "signature": "func HOTPVerify(code string, secret []byte, counter uint64, opts ...OTPOption) (bool, error)",
+          "synopsis": "HOTPVerify verifies an HOTP code for counter using constant-time comparison.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "code",
+              "type": "string"
+            },
+            {
+              "name": "secret",
+              "type": "[]byte"
+            },
+            {
+              "name": "counter",
+              "type": "uint64"
+            },
+            {
+              "name": "opts",
+              "type": "...OTPOption"
+            }
+          ],
+          "results": [
+            "bool",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": true
+        },
+        {
+          "name": "OTPAuthURL",
+          "signature": "func OTPAuthURL(issuer string, account string, secret []byte, opts ...OTPOption) (string, error)",
+          "synopsis": "OTPAuthURL returns an otpauth:// URL for provisioning TOTP authenticators.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "issuer",
+              "type": "string"
+            },
+            {
+              "name": "account",
+              "type": "string"
+            },
+            {
+              "name": "secret",
+              "type": "[]byte"
+            },
+            {
+              "name": "opts",
+              "type": "...OTPOption"
+            }
+          ],
+          "results": [
+            "string",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": true,
+          "examples": [
+            "ExampleOTPAuthURL"
+          ]
+        },
+        {
+          "name": "OTPSecretBase32",
+          "signature": "func OTPSecretBase32(secret []byte) string",
+          "synopsis": "OTPSecretBase32 encodes a binary OTP secret using unpadded Base32.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "secret",
+              "type": "[]byte"
+            }
+          ],
+          "results": [
+            "string"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
           "name": "PBKDF2",
           "signature": "func PBKDF2(password []byte, salt []byte, iterations int, keyLen int, fn func() hash.Hash) ([]byte, error)",
           "synopsis": "PBKDF2 derives a key from password and salt using PBKDF2.",
@@ -7925,6 +8066,26 @@
           "examples": [
             "ExamplePBKDF2SHA256"
           ]
+        },
+        {
+          "name": "ParseOTPSecretBase32",
+          "signature": "func ParseOTPSecretBase32(secret string) ([]byte, error)",
+          "synopsis": "ParseOTPSecretBase32 decodes an unpadded or padded Base32 OTP secret.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "secret",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "[]byte",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false
         },
         {
           "name": "ParseRSAPrivateKeyPEM",
@@ -9372,6 +9533,124 @@
           ]
         },
         {
+          "name": "TOTP",
+          "signature": "func TOTP(secret []byte, t time.Time, opts ...OTPOption) (string, error)",
+          "synopsis": "TOTP generates a time-based one-time password for t.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "secret",
+              "type": "[]byte"
+            },
+            {
+              "name": "t",
+              "type": "time.Time"
+            },
+            {
+              "name": "opts",
+              "type": "...OTPOption"
+            }
+          ],
+          "results": [
+            "string",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": true,
+          "examples": [
+            "ExampleTOTP"
+          ]
+        },
+        {
+          "name": "TOTPNow",
+          "signature": "func TOTPNow(secret []byte, opts ...OTPOption) (string, error)",
+          "synopsis": "TOTPNow generates a time-based one-time password using the configured clock.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "secret",
+              "type": "[]byte"
+            },
+            {
+              "name": "opts",
+              "type": "...OTPOption"
+            }
+          ],
+          "results": [
+            "string",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": true
+        },
+        {
+          "name": "TOTPVerify",
+          "signature": "func TOTPVerify(code string, secret []byte, t time.Time, opts ...OTPOption) (bool, error)",
+          "synopsis": "TOTPVerify verifies a TOTP code for t and the configured time-step window.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "code",
+              "type": "string"
+            },
+            {
+              "name": "secret",
+              "type": "[]byte"
+            },
+            {
+              "name": "t",
+              "type": "time.Time"
+            },
+            {
+              "name": "opts",
+              "type": "...OTPOption"
+            }
+          ],
+          "results": [
+            "bool",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": true
+        },
+        {
+          "name": "TOTPVerifyNow",
+          "signature": "func TOTPVerifyNow(code string, secret []byte, opts ...OTPOption) (bool, error)",
+          "synopsis": "TOTPVerifyNow verifies a TOTP code using the configured clock.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "code",
+              "type": "string"
+            },
+            {
+              "name": "secret",
+              "type": "[]byte"
+            },
+            {
+              "name": "opts",
+              "type": "...OTPOption"
+            }
+          ],
+          "results": [
+            "bool",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": true,
+          "examples": [
+            "ExampleTOTPVerifyNow"
+          ]
+        },
+        {
           "name": "ValidateAESGCMNonce",
           "signature": "func ValidateAESGCMNonce(nonce []byte) error",
           "synopsis": "ValidateAESGCMNonce reports whether nonce has the default nonce size used by AES-GCM helpers.",
@@ -9628,6 +9907,63 @@
           ]
         },
         {
+          "name": "WithOTPClock",
+          "signature": "func WithOTPClock(clock func() time.Time) OTPOption",
+          "synopsis": "WithOTPClock sets the clock used by TOTPNow and TOTPVerifyNow.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "clock",
+              "type": "func() time.Time"
+            }
+          ],
+          "results": [
+            "OTPOption"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "WithOTPDigits",
+          "signature": "func WithOTPDigits(digits int) OTPOption",
+          "synopsis": "WithOTPDigits sets the number of decimal digits in generated OTP codes.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "digits",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "OTPOption"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "WithOTPHash",
+          "signature": "func WithOTPHash(fn func() hash.Hash) OTPOption",
+          "synopsis": "WithOTPHash sets the HMAC hash used by HOTP/TOTP helpers.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "fn",
+              "type": "func() hash.Hash"
+            }
+          ],
+          "results": [
+            "OTPOption"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
           "name": "WithRSADigestHash",
           "signature": "func WithRSADigestHash(hashID crypto.Hash, newHash func() hash.Hash) RSADigestOption",
           "synopsis": "WithRSADigestHash sets the hash used by RSA data-signing helpers.",
@@ -9841,6 +10177,44 @@
           "returns_error": false,
           "context_aware": false,
           "variadic": true
+        },
+        {
+          "name": "WithTOTPStep",
+          "signature": "func WithTOTPStep(step time.Duration) OTPOption",
+          "synopsis": "WithTOTPStep sets the TOTP time step.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "step",
+              "type": "time.Duration"
+            }
+          ],
+          "results": [
+            "OTPOption"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "WithTOTPWindow",
+          "signature": "func WithTOTPWindow(window int) OTPOption",
+          "synopsis": "WithTOTPWindow sets the number of adjacent time steps accepted by TOTPVerify.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "window",
+              "type": "int"
+            }
+          ],
+          "results": [
+            "OTPOption"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
         }
       ]
     },

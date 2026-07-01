@@ -14,6 +14,9 @@ var ErrInvalidCipherText = cryptoimpl.ErrInvalidCipherText
 // ErrInvalidSM2Signature indicates an invalid SM2 signature.
 var ErrInvalidSM2Signature = cryptoimpl.ErrInvalidSM2Signature
 
+// ErrInvalidOTP indicates an invalid HOTP/TOTP input.
+var ErrInvalidOTP = cryptoimpl.ErrInvalidOTP
+
 // ValidateAESKey reports whether key is a valid AES key length (16, 24, or 32
 // bytes). On failure it returns a *knifer.Error classified as
 // knifer.ErrCodeInvalidInput while preserving ErrInvalidKey on the chain, so

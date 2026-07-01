@@ -992,6 +992,102 @@ def validate_safe_crypto_advanced_backlog_governance() -> None:
 				add_error(f"{roadmap_path} Sprint 30 row must mention {required_phrase!r}")
 
 
+def validate_safe_crypto_otp_governance() -> None:
+	governance = require_mapping(ai_context.get("safe_crypto_otp_governance"), "safe_crypto_otp_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("safe_crypto_otp_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	quickstart_path = governance.get("quickstart_path")
+	if not isinstance(quickstart_path, str) or not quickstart_path.strip():
+		add_error("safe_crypto_otp_governance.quickstart_path must be non-empty")
+		quickstart_path = "docs/doc/11-vcrypto.md"
+	backlog_path = governance.get("backlog_path")
+	if not isinstance(backlog_path, str) or not backlog_path.strip():
+		add_error("safe_crypto_otp_governance.backlog_path must be non-empty")
+		backlog_path = "docs/doc/safe-crypto-advanced-backlog.md"
+	sprint = governance.get("sprint")
+	if sprint != 31:
+		add_error("safe_crypto_otp_governance.sprint must be 31")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("safe_crypto_otp_governance.status must be active or completed")
+	packages = require_string_list(governance.get("packages"), "safe_crypto_otp_governance.packages")
+	if packages != ["vcrypto"]:
+		add_error("safe_crypto_otp_governance.packages must be ordered as: vcrypto")
+	internal_packages = require_string_list(governance.get("internal_packages"), "safe_crypto_otp_governance.internal_packages")
+	if internal_packages != ["internal/crypto"]:
+		add_error("safe_crypto_otp_governance.internal_packages must be ordered as: internal/crypto")
+	required_functions = require_string_list(governance.get("required_functions"), "safe_crypto_otp_governance.required_functions")
+	expected_functions = [
+		"HOTP",
+		"HOTPVerify",
+		"TOTP",
+		"TOTPNow",
+		"TOTPVerify",
+		"TOTPVerifyNow",
+		"OTPAuthURL",
+		"GenerateOTPSecret",
+		"OTPSecretBase32",
+		"ParseOTPSecretBase32",
+	]
+	if required_functions != expected_functions:
+		add_error("safe_crypto_otp_governance.required_functions must be ordered as: " + ", ".join(expected_functions))
+	for function_name in required_functions:
+		if not reference_exists(f"vcrypto/otp.go:{function_name}"):
+			add_error(f"safe_crypto_otp_governance.required_functions references missing facade function {function_name}")
+	required_test_functions = require_string_list(governance.get("required_test_functions"), "safe_crypto_otp_governance.required_test_functions")
+	expected_test_functions = [
+		"internal/crypto/otp_test.go:TestHOTPRFC4226Vectors",
+		"internal/crypto/otp_test.go:TestTOTPRFC6238Vectors",
+		"internal/crypto/otp_test.go:TestTOTPVerifyWindowAndClock",
+		"internal/crypto/otp_test.go:TestOTPSecretBase32AndAuthURL",
+		"internal/crypto/otp_test.go:TestOTPErrors",
+		"vcrypto/otp_test.go:TestFacadeHOTPTOTP",
+	]
+	if required_test_functions != expected_test_functions:
+		add_error("safe_crypto_otp_governance.required_test_functions must be ordered as: " + ", ".join(expected_test_functions))
+	for reference in required_test_functions:
+		if not test_function_exists(reference):
+			add_error(f"safe_crypto_otp_governance.required_test_functions references missing test {reference}")
+	required_examples = require_string_list(governance.get("required_examples"), "safe_crypto_otp_governance.required_examples")
+	expected_examples = ["ExampleHOTP", "ExampleTOTP", "ExampleTOTPVerifyNow", "ExampleOTPAuthURL"]
+	if required_examples != expected_examples:
+		add_error("safe_crypto_otp_governance.required_examples must be ordered as: " + ", ".join(expected_examples))
+	for example_name in required_examples:
+		if not example_function_exists("vcrypto", example_name):
+			add_error(f"safe_crypto_otp_governance.required_examples references missing example {example_name}")
+	required_checks = require_string_list(governance.get("required_checks"), "safe_crypto_otp_governance.required_checks")
+	for check in ("go test ./internal/crypto ./vcrypto", "tools-gen", "docs-check", "ai-context-check", "governance-maturity-check", "agent-security-check"):
+		if check not in required_checks:
+			add_error(f"safe_crypto_otp_governance.required_checks must include {check}")
+	for path in (quickstart_path, backlog_path):
+		if not (root / path).exists():
+			add_error(f"{path} must exist")
+	quickstart_text = (root / quickstart_path).read_text(encoding="utf-8") if (root / quickstart_path).exists() else ""
+	for phrase in ("one-time passwords", "HOTP", "TOTP", "OTPAuthURL", "WithOTPClock", "WithTOTPWindow"):
+		if quickstart_text and phrase not in quickstart_text:
+			add_error(f"{quickstart_path} must include {phrase!r}")
+	backlog_text = (root / backlog_path).read_text(encoding="utf-8") if (root / backlog_path).exists() else ""
+	for phrase in ("TOTP and HOTP | Completed", "safe_crypto_otp_governance", "RFC vectors", "clock/window tests"):
+		if backlog_text and phrase not in backlog_text:
+			add_error(f"{backlog_path} must include {phrase!r}")
+
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_31_rows = [row for row in sprint_rows if row.get("Sprint") == "31"]
+	if len(sprint_31_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 31 row")
+	else:
+		sprint_31 = sprint_31_rows[0]
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_31.get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 31 status must be {expected_status}")
+		sprint_text = " ".join(sprint_31.values())
+		for required_phrase in ("HOTP/TOTP", "Base32", "otpauth", "RFC vectors"):
+			if required_phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 31 row must mention {required_phrase!r}")
+
+
 def validate_example_depth_governance() -> None:
 	governance = require_mapping(ai_context.get("example_depth_governance"), "example_depth_governance")
 	sprint = governance.get("sprint")
@@ -1396,6 +1492,7 @@ if not bench_only:
 	validate_vdb_execution_evidence_governance()
 	validate_vdb_example_depth_governance()
 	validate_safe_crypto_advanced_backlog_governance()
+	validate_safe_crypto_otp_governance()
 	validate_example_depth_governance()
 	validate_api_convergence()
 	validate_lifecycle()

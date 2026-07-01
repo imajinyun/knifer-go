@@ -14,6 +14,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"strings"
 	"time"
 
 	knifer "github.com/imajinyun/knifer-go"
@@ -778,6 +779,43 @@ func ExampleSM2PublicKeyToPEM() {
 	parsed, parseErr := vcrypto.ParseSM2PublicKeyPEM(pemBytes)
 	fmt.Println(err == nil, parseErr == nil, parsed != nil)
 	// Output: true true true
+}
+
+func ExampleHOTP() {
+	secret := []byte("12345678901234567890")
+	code, err := vcrypto.HOTP(secret, 0)
+	ok, verifyErr := vcrypto.HOTPVerify(code, secret, 0)
+	fmt.Println(err == nil, verifyErr == nil, ok, code)
+	// Output: true true true 755224
+}
+
+func ExampleTOTP() {
+	secret := []byte("12345678901234567890")
+	code, err := vcrypto.TOTP(secret, time.Unix(59, 0).UTC(), vcrypto.WithOTPDigits(8))
+	ok, verifyErr := vcrypto.TOTPVerify(code, secret, time.Unix(59, 0).UTC(), vcrypto.WithOTPDigits(8))
+	fmt.Println(err == nil, verifyErr == nil, ok, code)
+	// Output: true true true 94287082
+}
+
+func ExampleTOTPVerifyNow() {
+	secret := []byte("12345678901234567890")
+	clock := func() time.Time { return time.Unix(59, 0).UTC() }
+	code, _ := vcrypto.TOTPNow(secret, vcrypto.WithOTPClock(clock), vcrypto.WithOTPDigits(8))
+	ok, err := vcrypto.TOTPVerifyNow(code, secret, vcrypto.WithOTPClock(clock), vcrypto.WithOTPDigits(8))
+	fmt.Println(err == nil, ok)
+	// Output: true true
+}
+
+func ExampleOTPAuthURL() {
+	secret := []byte("12345678901234567890")
+	u, err := vcrypto.OTPAuthURL("Example", "alice@example.com", secret, vcrypto.WithOTPDigits(8))
+	fmt.Println(err == nil)
+	fmt.Println(vcrypto.OTPSecretBase32(secret))
+	fmt.Println(strings.HasPrefix(u, "otpauth://totp/Example:alice"))
+	// Output:
+	// true
+	// GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ
+	// true
 }
 
 var exampleRSAPrivateKey = mustExampleRSAKey()

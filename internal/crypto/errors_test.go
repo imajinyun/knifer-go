@@ -24,6 +24,7 @@ func TestSentinelErrors(t *testing.T) {
 		{"ErrInvalidIV", ErrInvalidIV, knifer.ErrCodeInvalidInput, "invalid iv"},
 		{"ErrInvalidCipherText", ErrInvalidCipherText, knifer.ErrCodeInvalidInput, "invalid cipher text"},
 		{"ErrInvalidSM2Signature", ErrInvalidSM2Signature, knifer.ErrCodeInvalidInput, "invalid sm2 signature"},
+		{"ErrInvalidOTP", ErrInvalidOTP, knifer.ErrCodeInvalidInput, "invalid otp"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

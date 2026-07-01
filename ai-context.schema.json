@@ -27,6 +27,7 @@
     "vdb_execution_evidence_governance",
     "vdb_example_depth_governance",
     "safe_crypto_advanced_backlog_governance",
+    "safe_crypto_otp_governance",
     "error_model",
     "dynamic_semantic_contracts",
     "v1_readiness",
@@ -337,6 +338,24 @@
         "packages": { "$ref": "#/$defs/string_array" },
         "required_lanes": { "$ref": "#/$defs/string_array" },
         "non_goals": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "safe_crypto_otp_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "quickstart_path", "backlog_path", "sprint", "status", "packages", "internal_packages", "required_functions", "required_test_functions", "required_examples", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "quickstart_path": { "type": "string", "minLength": 1 },
+        "backlog_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "packages": { "$ref": "#/$defs/string_array" },
+        "internal_packages": { "$ref": "#/$defs/string_array" },
+        "required_functions": { "$ref": "#/$defs/string_array" },
+        "required_test_functions": { "$ref": "#/$defs/string_array" },
+        "required_examples": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
       },
       "additionalProperties": false

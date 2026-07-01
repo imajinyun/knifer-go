@@ -14,6 +14,7 @@
 | Generate random keys, salts, nonces, or tokens | `GenAESKey`, random byte helpers, or `vrand.SecureBytes` | Do not use pseudo-random helpers for secrets. |
 | Sign or verify with RSA | RSA signing/verification helpers | Use when interoperability requires RSA keys and signatures. |
 | Marshal keys | PEM conversion helpers | Treat private-key bytes as secrets and avoid logging them. |
+| Generate or verify one-time passwords | `HOTP`, `TOTP`, `TOTPVerify`, `OTPAuthURL` | Use for RFC-compatible authenticator workflows with explicit clock, step, digits, and window policy. |
 
 ## Crypto safety checklist
 
@@ -191,6 +192,37 @@ func main() {
 	fmt.Println(len(key))
 }
 ```
+
+## Generate and verify one-time passwords
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+
+	"github.com/imajinyun/knifer-go/vcrypto"
+)
+
+func main() {
+	secret := []byte("12345678901234567890")
+	now := time.Unix(59, 0).UTC()
+
+	code, err := vcrypto.TOTP(secret, now, vcrypto.WithOTPDigits(8))
+	if err != nil {
+		panic(err)
+	}
+
+	ok, err := vcrypto.TOTPVerify(code, secret, now, vcrypto.WithOTPDigits(8))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(ok, code)
+}
+```
+
+Use `WithOTPClock` in tests and `WithTOTPWindow` only when the login policy intentionally accepts adjacent time steps. `OTPAuthURL` formats an `otpauth://` URL for provisioning authenticators; it does not implement account enrollment, MFA recovery, or identity-provider policy.
 
 ## RSA signing and verification
 

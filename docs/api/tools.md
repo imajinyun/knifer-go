@@ -11,16 +11,16 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Schema | 1.7 |
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
-| Functions | 2724 |
-| Functions with examples | 1702 |
+| Functions | 2739 |
+| Functions with examples | 1706 |
 | Context-aware functions | 36 |
-| Functions returning error | 666 |
-| Variadic functions | 794 |
-| API status: recommended | 2702 |
+| Functions returning error | 675 |
+| Variadic functions | 802 |
+| API status: recommended | 2717 |
 | API status: compatibility | 22 |
 | API status: experimental | 0 |
 | API status: deprecated | 0 |
-| Synopsis source: facade | 2071 |
+| Synopsis source: facade | 2086 |
 | Synopsis source: internal | 653 |
 | Synopsis source: empty | 0 |
 
@@ -607,7 +607,7 @@ Import path: `github.com/imajinyun/knifer-go/vcrypto`
 
 Package vcrypto provides public APIs for cryptographic utilities.
 
-Quality: 105 functions · 81 with examples · 77.1% example coverage · statuses: recommended=105, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=105, internal=0, empty=0
+Quality: 120 functions · 85 with examples · 70.8% example coverage · statuses: recommended=120, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=120, internal=0, empty=0
 
 Recommended entrypoints:
 
@@ -648,6 +648,7 @@ Golden path API set:
 | `GenSM2KeyWithOptions` | `func GenSM2KeyWithOptions(opts ...SM2Option) (*SM2PrivateKey, error)` | recommended | GenSM2KeyWithOptions generates an SM2 private key with options. | facade | — |
 | `GenSM4Key` | `func GenSM4Key() ([]byte, error)` | recommended | GenSM4Key returns a random 16-byte SM4 key. | facade | — |
 | `GenSM4KeyWithOptions` | `func GenSM4KeyWithOptions(opts ...RandomOption) ([]byte, error)` | recommended | GenSM4KeyWithOptions returns a random SM4 key using custom random options. | facade | — |
+| `GenerateOTPSecret` | `func GenerateOTPSecret(size int, opts ...RandomOption) ([]byte, error)` | recommended | GenerateOTPSecret returns random bytes suitable for HOTP/TOTP secrets. | facade | — |
 | `HMACBytes` | `func HMACBytes(fn func() hash.Hash, key []byte, data []byte) []byte` | recommended | HMACBytes returns HMAC digest bytes using the given hash function. | facade | `ExampleHMACBytes` |
 | `HMACEqual` | `func HMACEqual(a []byte, b []byte) bool` | recommended | HMACEqual compares two MAC values in constant time. | facade | `ExampleHMACEqual` |
 | `HMACHex` | `func HMACHex(fn func() hash.Hash, key []byte, data []byte) string` | recommended | HMACHex returns HMAC digest in lower-case hex form using the given hash function. | facade | `ExampleHMACHex` |
@@ -656,8 +657,13 @@ Golden path API set:
 | `HMACSHA512Hex` | `func HMACSHA512Hex(key []byte, data []byte) string` | recommended | HMACSHA512Hex returns HMAC-SHA512 in lower-case hex form. | facade | `ExampleHMACSHA512Hex` |
 | `HMACSM3Bytes` | `func HMACSM3Bytes(key []byte, data []byte) []byte` | recommended | HMACSM3Bytes returns HMAC-SM3 digest bytes. | facade | — |
 | `HMACSM3Hex` | `func HMACSM3Hex(key []byte, data []byte) string` | recommended | HMACSM3Hex returns HMAC-SM3 in lower-case hex form. | facade | `ExampleHMACSM3Hex` |
+| `HOTP` | `func HOTP(secret []byte, counter uint64, opts ...OTPOption) (string, error)` | recommended | HOTP generates an HMAC-based one-time password for counter. | facade | `ExampleHOTP` |
+| `HOTPVerify` | `func HOTPVerify(code string, secret []byte, counter uint64, opts ...OTPOption) (bool, error)` | recommended | HOTPVerify verifies an HOTP code for counter using constant-time comparison. | facade | — |
+| `OTPAuthURL` | `func OTPAuthURL(issuer string, account string, secret []byte, opts ...OTPOption) (string, error)` | recommended | OTPAuthURL returns an otpauth:// URL for provisioning TOTP authenticators. | facade | `ExampleOTPAuthURL` |
+| `OTPSecretBase32` | `func OTPSecretBase32(secret []byte) string` | recommended | OTPSecretBase32 encodes a binary OTP secret using unpadded Base32. | facade | — |
 | `PBKDF2` | `func PBKDF2(password []byte, salt []byte, iterations int, keyLen int, fn func() hash.Hash) ([]byte, error)` | recommended | PBKDF2 derives a key from password and salt using PBKDF2. | facade | `ExamplePBKDF2` |
 | `PBKDF2SHA256` | `func PBKDF2SHA256(password []byte, salt []byte, iterations int, keyLen int) ([]byte, error)` | recommended | PBKDF2SHA256 derives a key using PBKDF2-HMAC-SHA256. | facade | `ExamplePBKDF2SHA256` |
+| `ParseOTPSecretBase32` | `func ParseOTPSecretBase32(secret string) ([]byte, error)` | recommended | ParseOTPSecretBase32 decodes an unpadded or padded Base32 OTP secret. | facade | — |
 | `ParseRSAPrivateKeyPEM` | `func ParseRSAPrivateKeyPEM(data []byte) (*rsa.PrivateKey, error)` | recommended | ParseRSAPrivateKeyPEM parses a PKCS#1 or PKCS#8 RSA private key PEM. | facade | `ExampleParseRSAPrivateKeyPEM` |
 | `ParseRSAPublicKeyPEM` | `func ParseRSAPublicKeyPEM(data []byte) (*rsa.PublicKey, error)` | recommended | ParseRSAPublicKeyPEM parses a PKIX or PKCS#1 RSA public key PEM. | facade | `ExampleParseRSAPublicKeyPEM` |
 | `ParseSM2PrivateKeyPEM` | `func ParseSM2PrivateKeyPEM(data []byte) (*SM2PrivateKey, error)` | recommended | ParseSM2PrivateKeyPEM parses a PKCS#8 or SEC1 SM2 private key PEM. | facade | — |
@@ -713,6 +719,10 @@ Golden path API set:
 | `SignParamsSHA256` | `func SignParamsSHA256(params map[string]any, otherParams ...string) string` | recommended | SignParamsSHA256 signs sorted params with SHA256. | facade | `ExampleSignParamsSHA256` |
 | `SignSHA256WithRSA` | `func SignSHA256WithRSA(data []byte, priv *rsa.PrivateKey) ([]byte, error)` | recommended | SignSHA256WithRSA signs data using SHA256withRSA. | facade | `ExampleSignSHA256WithRSA` |
 | `SignWithRSAOptions` | `func SignWithRSAOptions(data []byte, priv *rsa.PrivateKey, opts ...RSADigestOption) ([]byte, error)` | recommended | SignWithRSAOptions hashes data and signs it with configurable RSA options. | facade | `ExampleSignWithRSAOptions` |
+| `TOTP` | `func TOTP(secret []byte, t time.Time, opts ...OTPOption) (string, error)` | recommended | TOTP generates a time-based one-time password for t. | facade | `ExampleTOTP` |
+| `TOTPNow` | `func TOTPNow(secret []byte, opts ...OTPOption) (string, error)` | recommended | TOTPNow generates a time-based one-time password using the configured clock. | facade | — |
+| `TOTPVerify` | `func TOTPVerify(code string, secret []byte, t time.Time, opts ...OTPOption) (bool, error)` | recommended | TOTPVerify verifies a TOTP code for t and the configured time-step window. | facade | — |
+| `TOTPVerifyNow` | `func TOTPVerifyNow(code string, secret []byte, opts ...OTPOption) (bool, error)` | recommended | TOTPVerifyNow verifies a TOTP code using the configured clock. | facade | `ExampleTOTPVerifyNow` |
 | `ValidateAESGCMNonce` | `func ValidateAESGCMNonce(nonce []byte) error` | recommended | ValidateAESGCMNonce reports whether nonce has the default nonce size used by AES-GCM helpers. | facade | `ExampleValidateAESGCMNonce` |
 | `ValidateAESIV` | `func ValidateAESIV(iv []byte) error` | recommended | ValidateAESIV reports whether iv has the required block size for AES CBC/CFB/OFB/CTR helpers. | facade | `ExampleValidateAESIV` |
 | `ValidateAESKey` | `func ValidateAESKey(key []byte) error` | recommended | ValidateAESKey reports whether key is a valid AES key length (16, 24, or 32 bytes). | facade | `ExampleValidateAESKey` |
@@ -724,6 +734,9 @@ Golden path API set:
 | `WithGCMNonceSize` | `func WithGCMNonceSize(size int) AESGCMOption` | recommended | WithGCMNonceSize sets a custom nonce size for AES-GCM helpers. | facade | `ExampleWithGCMNonceSize` |
 | `WithGCMRandomOptions` | `func WithGCMRandomOptions(opts ...RandomOption) AESGCMOption` | recommended | WithGCMRandomOptions sets the entropy source options used when AESSealGCM generates a nonce. | facade | `ExampleWithGCMRandomOptions` |
 | `WithGCMTagSize` | `func WithGCMTagSize(size int) AESGCMOption` | recommended | WithGCMTagSize sets a custom tag size for AES-GCM helpers. | facade | `ExampleWithGCMTagSize` |
+| `WithOTPClock` | `func WithOTPClock(clock func() time.Time) OTPOption` | recommended | WithOTPClock sets the clock used by TOTPNow and TOTPVerifyNow. | facade | — |
+| `WithOTPDigits` | `func WithOTPDigits(digits int) OTPOption` | recommended | WithOTPDigits sets the number of decimal digits in generated OTP codes. | facade | — |
+| `WithOTPHash` | `func WithOTPHash(fn func() hash.Hash) OTPOption` | recommended | WithOTPHash sets the HMAC hash used by HOTP/TOTP helpers. | facade | — |
 | `WithRSADigestHash` | `func WithRSADigestHash(hashID crypto.Hash, newHash func() hash.Hash) RSADigestOption` | recommended | WithRSADigestHash sets the hash used by RSA data-signing helpers. | facade | `ExampleWithRSADigestHash` |
 | `WithRSADigestPSS` | `func WithRSADigestPSS(opts *rsa.PSSOptions) RSADigestOption` | recommended | WithRSADigestPSS signs and verifies using RSA-PSS instead of PKCS#1 v1.5. | facade | `ExampleWithRSADigestPSS` |
 | `WithRSADigestRandomReader` | `func WithRSADigestRandomReader(reader io.Reader) RSADigestOption` | recommended | WithRSADigestRandomReader sets the entropy source used by RSA data-signing helpers. | facade | `ExampleWithRSADigestRandomReader` |
@@ -734,6 +747,8 @@ Golden path API set:
 | `WithSM2RandomReader` | `func WithSM2RandomReader(reader io.Reader) SM2Option` | recommended | WithSM2RandomReader sets the entropy source used by SM2 encryption, signing, and key generation. | facade | — |
 | `WithSM2UID` | `func WithSM2UID(uid []byte) SM2Option` | recommended | WithSM2UID sets the SM2 user ID used by SM2Sign and SM2Verify. | facade | — |
 | `WithSM4RandomOptions` | `func WithSM4RandomOptions(opts ...RandomOption) SM4Option` | recommended | WithSM4RandomOptions sets the entropy source options used when SM4SealGCM generates a nonce. | facade | — |
+| `WithTOTPStep` | `func WithTOTPStep(step time.Duration) OTPOption` | recommended | WithTOTPStep sets the TOTP time step. | facade | — |
+| `WithTOTPWindow` | `func WithTOTPWindow(window int) OTPOption` | recommended | WithTOTPWindow sets the number of adjacent time steps accepted by TOTPVerify. | facade | — |
 
 ### vcsv
 
