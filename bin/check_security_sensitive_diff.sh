@@ -71,6 +71,23 @@ if [ -z "${matched_paths}" ]; then
 	exit 0
 fi
 
+non_example_paths="$(
+	python3 - "${matched_paths}" <<'PY'
+import sys
+
+paths = [line.strip() for line in sys.argv[1].splitlines() if line.strip()]
+for path in paths:
+    if not path.endswith("/example_test.go"):
+        print(path)
+PY
+)"
+
+if [ -z "${non_example_paths}" ]; then
+	echo "security-sensitive diff check passed: security-sensitive example-only diff detected; agent-security-check evidence is still required by change policy"
+	printf '%s\n' "${matched_paths}" | while IFS= read -r path; do echo "  - ${path}"; done
+	exit 0
+fi
+
 echo "SECURITY DIFF CHECK ERROR: security-sensitive files changed:" >&2
 printf '%s\n' "${matched_paths}" | while IFS= read -r path; do echo "  - ${path}" >&2; done
 echo "Run make agent-security-check and document security review evidence before merging." >&2

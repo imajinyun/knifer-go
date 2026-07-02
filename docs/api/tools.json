@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 55,
     "function_count": 2757,
-    "functions_with_examples": 1732,
+    "functions_with_examples": 1748,
     "context_aware_functions": 36,
     "returns_error_functions": 687,
     "variadic_functions": 804,
@@ -4102,8 +4102,8 @@
       "synopsis": "Package vconf provides configuration file reading and grouped configuration utilities.",
       "summary": {
         "function_count": 39,
-        "functions_with_examples": 8,
-        "example_coverage_percent": 20.5,
+        "functions_with_examples": 16,
+        "example_coverage_percent": 41,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
@@ -4179,7 +4179,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleBase64Decrypt"
+          ]
         },
         {
           "name": "Load",
@@ -4219,7 +4222,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleLoadFiles"
+          ]
         },
         {
           "name": "LoadFilesWithOptions",
@@ -4267,7 +4273,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleLoadProfile"
+          ]
         },
         {
           "name": "LoadProfileWithOptions",
@@ -4410,7 +4419,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleLoadWithOptions"
+          ]
         },
         {
           "name": "Merge",
@@ -4495,7 +4507,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleParseByExt"
+          ]
         },
         {
           "name": "ParseByExtWithOptions",
@@ -4596,7 +4611,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleParseTOMLWithOptions"
+          ]
         },
         {
           "name": "ParseYAML",
@@ -4663,7 +4681,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleParseYAMLFullWithOptions"
+          ]
         },
         {
           "name": "SchemaFromStruct",
@@ -4683,7 +4704,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleSchemaFromStruct"
+          ]
         },
         {
           "name": "Watch",
@@ -43624,8 +43648,8 @@
       "synopsis": "Package vobj provides object utilities.",
       "summary": {
         "function_count": 49,
-        "functions_with_examples": 11,
-        "example_coverage_percent": 22.4,
+        "functions_with_examples": 19,
+        "example_coverage_percent": 38.8,
         "status_counts": {
           "compatibility": 5,
           "deprecated": 0,
@@ -43650,7 +43674,7 @@
           "avoid_when": "Avoid for trivial in-memory code where the standard library is clearer."
         },
         {
-          "name": "Apply",
+          "name": "Accept",
           "use_when": "Use first for concise trusted-input workflows in vobj.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vobj."
         },
@@ -43660,7 +43684,7 @@
           "avoid_when": "Avoid for new code when a Recommended, Safe, E, or WithOptions variant exists."
         },
         {
-          "name": "Accept",
+          "name": "Apply",
           "use_when": "Use first for concise trusted-input workflows in vobj.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vobj."
         }
@@ -43677,7 +43701,7 @@
           "rationale": "Prefer when providers, limits, parsers, or policies must be reviewable at the call site."
         },
         {
-          "name": "Apply",
+          "name": "Accept",
           "profile": "day-one",
           "rationale": "Start here for concise, trusted-input use cases in this package."
         },
@@ -43706,7 +43730,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleAccept"
+          ]
         },
         {
           "name": "Apply",
@@ -43775,7 +43802,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCloneByStream"
+          ]
         },
         {
           "name": "CloneByStreamWithOptions",
@@ -43818,7 +43848,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCloneIfPossible"
+          ]
         },
         {
           "name": "CloneIfPossibleWithOptions",
@@ -43997,7 +44030,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleDefaultIfNilApply"
+          ]
         },
         {
           "name": "DefaultIfNilFunc",
@@ -44020,7 +44056,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleDefaultIfNilFunc"
+          ]
         },
         {
           "name": "Deserialize",
@@ -44337,7 +44376,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsEmpty"
+          ]
         },
         {
           "name": "IsNil",
@@ -44666,7 +44708,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleToString"
+          ]
         },
         {
           "name": "TypeName",
@@ -44685,7 +44730,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleTypeName"
+          ]
         },
         {
           "name": "TypeOf",

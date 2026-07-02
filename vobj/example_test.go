@@ -27,6 +27,14 @@ func ExampleIsNil() {
 	// false
 }
 
+func ExampleIsEmpty() {
+	fmt.Println(vobj.IsEmpty(""))
+	fmt.Println(vobj.IsEmpty([]int{1}))
+	// Output:
+	// true
+	// false
+}
+
 func ExampleContains() {
 	fmt.Println(vobj.Contains([]string{"go", "knifer"}, "go"))
 	fmt.Println(vobj.Contains([]string{"go", "knifer"}, "java"))
@@ -50,6 +58,20 @@ func ExampleDefaultIfNil() {
 	// Output:
 	// 7
 	// 42
+}
+
+func ExampleDefaultIfNilFunc() {
+	fmt.Println(vobj.DefaultIfNilFunc[int](nil, func() int { return 99 }))
+	// Output: 99
+}
+
+func ExampleDefaultIfNilApply() {
+	name := "go"
+	fmt.Println(vobj.DefaultIfNilApply(&name, func(s string) int { return len(s) }, -1))
+	fmt.Println(vobj.DefaultIfNilApply[string, int](nil, func(s string) int { return len(s) }, -1))
+	// Output:
+	// 2
+	// -1
 }
 
 func ExampleSerialize() {
@@ -105,6 +127,28 @@ func ExampleClone() {
 	// [99 2]
 }
 
+func ExampleCloneIfPossible() {
+	type notSerializable struct {
+		Fn func()
+	}
+	src := notSerializable{Fn: func() {}}
+	cloned := vobj.CloneIfPossible(src)
+
+	fmt.Println(cloned.Fn != nil)
+	// Output: true
+}
+
+func ExampleCloneByStream() {
+	cloned, err := vobj.CloneByStream(exampleObject{Name: "Ada", Scores: []int{1}})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(cloned.Name, cloned.Scores)
+	// Output: Ada [1]
+}
+
 func ExampleApply() {
 	name := "knifer-go"
 	length := vobj.Apply(&name, func(s string) int { return len(s) })
@@ -115,6 +159,15 @@ func ExampleApply() {
 	// Output:
 	// 9
 	// 0
+}
+
+func ExampleAccept() {
+	name := "go"
+	out := ""
+	vobj.Accept(&name, func(s string) { out = "hello " + s })
+
+	fmt.Println(out)
+	// Output: hello go
 }
 
 func ExampleCompare() {
@@ -136,4 +189,17 @@ func ExampleEmptyCount() {
 	// Output:
 	// 3
 	// false
+}
+
+func ExampleTypeName() {
+	fmt.Println(vobj.TypeName(exampleObject{}))
+	// Output: vobj_test.exampleObject
+}
+
+func ExampleToString() {
+	fmt.Println(vobj.ToString(nil))
+	fmt.Println(vobj.ToString(42))
+	// Output:
+	// null
+	// 42
 }

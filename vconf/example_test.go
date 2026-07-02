@@ -6,6 +6,8 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/imajinyun/knifer-go/vconf"
@@ -15,6 +17,11 @@ type exampleServerConfig struct {
 	Host    string `conf:"host"`
 	Port    int    `conf:"port"`
 	Enabled bool   `conf:"enabled"`
+}
+
+type exampleSchemaConfig struct {
+	Port int    `conf:"port,required,int"`
+	Mode string `conf:"mode,choices=dev|prod,default=dev"`
 }
 
 func ExampleParse() {
@@ -122,6 +129,66 @@ func ExampleParseByExtWithOptions() {
 	// Output: custom
 }
 
+func ExampleParseByExt() {
+	cfg, err := vconf.ParseByExt("app.yaml", []byte("server:\n  port: 8080\n"))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(cfg.GetByGroup("server", "port"))
+	// Output: 8080
+}
+
+func ExampleLoadWithOptions() {
+	dir, err := os.MkdirTemp("", "vconf-example-*")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer func() { _ = os.RemoveAll(dir) }()
+
+	path := filepath.Join(dir, "app.conf")
+	if err := os.WriteFile(path, []byte("name=knifer-go\n"), 0o600); err != nil {
+		fmt.Println(err)
+		return
+	}
+	cfg, err := vconf.LoadWithOptions(path, vconf.LoadOptions{MaxBytes: 64})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(cfg.Get("name"))
+	// Output: knifer-go
+}
+
+func ExampleLoadFiles() {
+	dir, err := os.MkdirTemp("", "vconf-files-*")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer func() { _ = os.RemoveAll(dir) }()
+
+	base := filepath.Join(dir, "base.conf")
+	override := filepath.Join(dir, "override.conf")
+	_ = os.WriteFile(base, []byte("name=base\nport=8080\n"), 0o600)
+	_ = os.WriteFile(override, []byte("name=override\n"), 0o600)
+
+	cfg, err := vconf.LoadFiles(base, override)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(cfg.Get("name"))
+	fmt.Println(cfg.Get("port"))
+	// Output:
+	// override
+	// 8080
+}
+
 func ExampleParseTOML() {
 	cfg, err := vconf.ParseTOML("title = 'demo'\n[server]\nport = 8080\nenabled = true\n")
 	if err != nil {
@@ -136,6 +203,61 @@ func ExampleParseTOML() {
 	// demo
 	// 8080
 	// true
+}
+
+func ExampleParseTOMLWithOptions() {
+	cfg, err := vconf.ParseTOMLWithOptions("ignored", vconf.WithTOMLUnmarshalFunc(func(_ []byte, out any) error {
+		root := out.(*map[string]any)
+		*root = map[string]any{"app": map[string]any{"name": "provider"}}
+		return nil
+	}))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(cfg.GetByGroup("app", "name"))
+	// Output: provider
+}
+
+func ExampleParseYAMLFullWithOptions() {
+	cfg, err := vconf.ParseYAMLFullWithOptions("ignored", vconf.WithYAMLUnmarshalFunc(func(_ []byte, out any) error {
+		root := out.(*any)
+		*root = map[string]any{"server": map[string]any{"port": 9090}}
+		return nil
+	}))
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(cfg.GetByGroup("server", "port"))
+	// Output: 9090
+}
+
+func ExampleLoadProfile() {
+	dir, err := os.MkdirTemp("", "vconf-profile-*")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer func() { _ = os.RemoveAll(dir) }()
+
+	path := filepath.Join(dir, "app.toml")
+	content := "name = \"base\"\n[profile.dev]\nname = \"dev\"\n"
+	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	cfg, err := vconf.LoadProfile(path, "dev")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(cfg.Get("name"))
+	// Output: dev
 }
 
 func ExampleConf_Bind() {
@@ -158,6 +280,47 @@ func ExampleConf_Bind() {
 	// localhost
 	// 8080
 	// true
+}
+
+func ExampleSchemaFromStruct() {
+	schema, err := vconf.SchemaFromStruct(exampleSchemaConfig{})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Println(len(schema.Fields))
+	fmt.Println(schema.Fields[0].Key, schema.Fields[0].Required, schema.Fields[0].Type)
+	// Output:
+	// 2
+	// port true int
+}
+
+func ExampleConf_ApplyDefaults() {
+	cfg, _ := vconf.Parse("port=8080\n")
+	schema, _ := vconf.SchemaFromStruct(exampleSchemaConfig{})
+	withDefaults := cfg.ApplyDefaults(schema)
+
+	fmt.Println(withDefaults.Get("mode"))
+	// Output: dev
+}
+
+func ExampleConf_ValidateSchema() {
+	cfg, _ := vconf.Parse("port=8080\nmode=prod\n")
+	schema, _ := vconf.SchemaFromStruct(exampleSchemaConfig{})
+
+	fmt.Println(cfg.ValidateSchema(schema))
+	// Output: <nil>
+}
+
+func ExampleBase64Decrypt() {
+	value, err := vconf.Base64Decrypt("a25pZmVyLWdv")
+
+	fmt.Println(value)
+	fmt.Println(err)
+	// Output:
+	// knifer-go
+	// <nil>
 }
 
 func ExampleConf_Clone() {

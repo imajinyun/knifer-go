@@ -10,7 +10,7 @@ This baseline is derived from `docs/api/tools.json.summary`. `make governance-ma
 | --- | ---: |
 | Public facade packages | 55 |
 | Public functions | 2757 |
-| Functions with executable examples | 1732 |
+| Functions with executable examples | 1748 |
 | Context-aware functions | 36 |
 | Functions returning errors | 687 |
 | Recommended public functions | 2735 |
@@ -123,6 +123,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 56 | Completed | Developer Debug/Test Utilities Backlog | Added `developer-debug-test-backlog.md` for planned `vtest` and `vdump` lanes while keeping current debug and test utility entry points on `vcli`, `vsys`, `vfile`, and `vlog`. |
 | 57 | Completed | Facade Tiering and Import Guide | Added `facade-tiering.md` for day-one defaults, core facades, heavy extension facades, provider contract facades, and security-sensitive import boundaries. |
 | 58 | Completed | Public Comparison Governance v2 | Updated `utility-library-comparison.md` with top5 stars, scope, last-checked metadata, sources, gap summary, and TODO lanes. |
+| 59 | Completed | vconf/vobj Example Ratchet | ratchet for `vconf` and `vobj` from below-25-percent example coverage to at least 15 examples and 18 examples respectively, then guarded the new baseline with machine-checked example density governance. |
 
 ## Active workflow
 
@@ -199,6 +200,8 @@ Sprint 56 completed developer debug/test backlog governance: `developer_debug_te
 Sprint 57 completed facade tiering and import governance: `facade_tiering_import_governance` records the public tiering guide and keeps `dependency_tiers` plus `security_sensitive_packages` aligned with docs.
 
 Sprint 58 completed public comparison governance v2: `utility_top5_comparison_governance_v2` records the refreshed `utility-library-comparison.md` top5 table, sources, gap summary, and TODO lanes.
+
+Sprint 59 completed vconf/vobj example-density governance: `weak_facade_example_density_governance_3` records the dynamic-data example ratchet for `vconf` and `vobj`, with security-sensitive validation for `vconf`.
 
 Recommended roadmap loop:
 

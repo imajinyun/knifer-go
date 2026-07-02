@@ -532,7 +532,7 @@
       "recommended_profile_schema": "recommended_entrypoints profiles: day-one, safe, error, options, compatibility; golden_path lists 1-7 APIs with use_when and avoid_when guidance",
       "package_count": 55,
       "function_count": 2757,
-      "functions_with_examples": 1732,
+      "functions_with_examples": 1748,
       "context_aware_functions": 36,
       "returns_error_functions": 687,
       "status_counts": {
@@ -696,7 +696,7 @@
       "vmask": { "primary": ["BankCard", "Address", "CarLicense", "ChineseName", "Clear"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vnet": { "primary": ["AddRootCABytes", "GetHardwareAddressWithOptions", "CreateAddress", "AddRootCAFileWithOptions", "AddRootCAReader"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vnum": { "primary": ["AbsIntegerE", "DecimalFormatMoneyWithOptions", "AbsFloat64", "AbsFloat32", "AbsInteger"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
-      "vobj": { "primary": ["Clone", "CloneIfPossibleWithOptions", "Apply", "Equals", "Accept"], "advanced": [], "compatibility": ["Equals", "HasNull", "IsNotNull", "IsNull", "MustDeserialize"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
+      "vobj": { "primary": ["Clone", "CloneIfPossibleWithOptions", "Accept", "Equals", "Apply"], "advanced": [], "compatibility": ["Equals", "HasNull", "IsNotNull", "IsNull", "MustDeserialize"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
       "vpass": { "primary": ["Analyze", "IsStrong", "IsWeak", "Score", "StrengthOf"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vhan": { "primary": ["Convert", "New", "WithProvider", "Initials"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vpoi": { "primary": ["ReadCells", "WithOpenOptions", "WithReadSheet", "IsValidSheetName", "ReadCellsFromReader"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
@@ -1511,6 +1511,23 @@
     },
     "ratchet_policy": "raise selected weak facades in small increments instead of completing every API at once",
     "required_checks": ["go test ./vcron ./vcache", "tools-gen", "docs-check", "ai-context-check", "governance-maturity-check"]
+  },
+  "weak_facade_example_density_governance_3": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "sprint": 59,
+    "status": "completed",
+    "selection_rule": "common facades with example coverage below 25 percent",
+    "target_facades": ["vconf", "vobj"],
+    "baseline": {
+      "vconf": { "function_count": 39, "functions_with_examples": 8, "example_coverage_percent": 20.5 },
+      "vobj": { "function_count": 49, "functions_with_examples": 11, "example_coverage_percent": 22.4 }
+    },
+    "target_examples": {
+      "vconf": 15,
+      "vobj": 18
+    },
+    "ratchet_policy": "raise selected weak facades in small increments instead of completing every API at once",
+    "required_checks": ["go test ./vconf ./vobj", "tools-gen", "docs-check", "ai-context-check", "governance-maturity-check", "agent-security-check"]
   },
   "collection_mindshare_pack_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",

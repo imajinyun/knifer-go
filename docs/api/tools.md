@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
 | Functions | 2757 |
-| Functions with examples | 1732 |
+| Functions with examples | 1748 |
 | Context-aware functions | 36 |
 | Functions returning error | 687 |
 | Variadic functions | 804 |
@@ -394,7 +394,7 @@ Import path: `github.com/imajinyun/knifer-go/vconf`
 
 Package vconf provides configuration file reading and grouped configuration utilities.
 
-Quality: 39 functions · 8 with examples · 20.5% example coverage · statuses: recommended=39, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=39, internal=0, empty=0
+Quality: 39 functions · 16 with examples · 41.0% example coverage · statuses: recommended=39, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=39, internal=0, empty=0
 
 Recommended entrypoints:
 
@@ -416,29 +416,29 @@ Golden path API set:
 
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
-| `Base64Decrypt` | `func Base64Decrypt(cipherText string) (string, error)` | recommended | Base64Decrypt decodes base64 encrypted configuration values. | facade | — |
+| `Base64Decrypt` | `func Base64Decrypt(cipherText string) (string, error)` | recommended | Base64Decrypt decodes base64 encrypted configuration values. | facade | `ExampleBase64Decrypt` |
 | `Load` | `func Load(path string) (*Conf, error)` | recommended | Load 读取并解析 setting/properties 配置文件。Load reads and parses a setting/properties file. | facade | — |
-| `LoadFiles` | `func LoadFiles(paths ...string) (*Conf, error)` | recommended | LoadFiles loads multiple configuration files and merges them in order. | facade | — |
+| `LoadFiles` | `func LoadFiles(paths ...string) (*Conf, error)` | recommended | LoadFiles loads multiple configuration files and merges them in order. | facade | `ExampleLoadFiles` |
 | `LoadFilesWithOptions` | `func LoadFilesWithOptions(opts LoadOptions, paths ...string) (*Conf, error)` | recommended | LoadFilesWithOptions loads multiple configuration files using opts and merges them in order. | facade | — |
-| `LoadProfile` | `func LoadProfile(path string, profile string) (*Conf, error)` | recommended | LoadProfile loads a configuration file and applies profile-specific overrides. | facade | — |
+| `LoadProfile` | `func LoadProfile(path string, profile string) (*Conf, error)` | recommended | LoadProfile loads a configuration file and applies profile-specific overrides. | facade | `ExampleLoadProfile` |
 | `LoadProfileWithOptions` | `func LoadProfileWithOptions(path string, profile string, opts LoadOptions) (*Conf, error)` | recommended | LoadProfileWithOptions loads a configuration file with options and applies profile-specific overrides. | facade | — |
 | `LoadRemote` | `func LoadRemote(rawURL string) (*Conf, error)` | recommended | LoadRemote loads configuration from an HTTP(S) URL. | facade | — |
 | `LoadRemoteSafe` | `func LoadRemoteSafe(rawURL string) (*Conf, error)` | recommended | LoadRemoteSafe loads configuration from an HTTP(S) URL with SSRF-oriented safety checks enabled. | facade | — |
 | `LoadRemoteSafeWithOptions` | `func LoadRemoteSafeWithOptions(rawURL string, opts LoadOptions) (*Conf, error)` | recommended | LoadRemoteSafeWithOptions loads configuration from an HTTP(S) URL with SSRF-oriented safety checks enabled. | facade | `ExampleLoadRemoteSafeWithOptions` |
 | `LoadRemoteWithOptions` | `func LoadRemoteWithOptions(rawURL string, opts LoadOptions) (*Conf, error)` | recommended | LoadRemoteWithOptions loads configuration from an HTTP(S) URL with options. | facade | — |
-| `LoadWithOptions` | `func LoadWithOptions(path string, opts LoadOptions) (*Conf, error)` | recommended | LoadWithOptions reads and parses a configuration file with advanced options. | facade | — |
+| `LoadWithOptions` | `func LoadWithOptions(path string, opts LoadOptions) (*Conf, error)` | recommended | LoadWithOptions reads and parses a configuration file with advanced options. | facade | `ExampleLoadWithOptions` |
 | `Merge` | `func Merge(configs ...*Conf) *Conf` | recommended | Merge merges configurations in order. | facade | `ExampleMerge` |
 | `New` | `func New() *Conf` | recommended | New creates an empty Conf. | facade | `ExampleNew` |
 | `Parse` | `func Parse(content string) (*Conf, error)` | recommended | Parse 解析 setting/properties 文本内容。Parse parses setting/properties content. | facade | `ExampleParse` |
-| `ParseByExt` | `func ParseByExt(path string, content []byte) (*Conf, error)` | recommended | ParseByExt parses content according to path extension. | facade | — |
+| `ParseByExt` | `func ParseByExt(path string, content []byte) (*Conf, error)` | recommended | ParseByExt parses content according to path extension. | facade | `ExampleParseByExt` |
 | `ParseByExtWithOptions` | `func ParseByExtWithOptions(path string, content []byte, opts ...ParseOption) (*Conf, error)` | recommended | ParseByExtWithOptions parses content according to path extension with custom providers. | facade | `ExampleParseByExtWithOptions` |
 | `ParseBytes` | `func ParseBytes(content []byte) (*Conf, error)` | recommended | ParseBytes 解析 setting/properties 字节内容。ParseBytes parses setting/properties content. | facade | `ExampleParseBytes` |
 | `ParseTOML` | `func ParseTOML(content string) (*Conf, error)` | recommended | ParseTOML parses common TOML key-value and section syntax into grouped configuration. | facade | `ExampleParseTOML` |
-| `ParseTOMLWithOptions` | `func ParseTOMLWithOptions(content string, opts ...ParseOption) (*Conf, error)` | recommended | ParseTOMLWithOptions parses common TOML syntax into grouped configuration with custom providers. | facade | — |
+| `ParseTOMLWithOptions` | `func ParseTOMLWithOptions(content string, opts ...ParseOption) (*Conf, error)` | recommended | ParseTOMLWithOptions parses common TOML syntax into grouped configuration with custom providers. | facade | `ExampleParseTOMLWithOptions` |
 | `ParseYAML` | `func ParseYAML(content string) (*Conf, error)` | recommended | ParseYAML 将简单 YAML 子集解析为分组配置。ParseYAML parses a small YAML subset into grouped configuration. | facade | `ExampleParseYAML` |
 | `ParseYAMLFull` | `func ParseYAMLFull(content string) (*Conf, error)` | recommended | ParseYAMLFull parses YAML using yaml.v3 and flattens nested objects into grouped keys. | facade | — |
-| `ParseYAMLFullWithOptions` | `func ParseYAMLFullWithOptions(content string, opts ...ParseOption) (*Conf, error)` | recommended | ParseYAMLFullWithOptions parses YAML using a configurable unmarshal provider and flattens nested objects into grouped keys. | facade | — |
-| `SchemaFromStruct` | `func SchemaFromStruct(dst any) (Schema, error)` | recommended | SchemaFromStruct builds validation schema rules from conf tags on dst. | facade | — |
+| `ParseYAMLFullWithOptions` | `func ParseYAMLFullWithOptions(content string, opts ...ParseOption) (*Conf, error)` | recommended | ParseYAMLFullWithOptions parses YAML using a configurable unmarshal provider and flattens nested objects into grouped keys. | facade | `ExampleParseYAMLFullWithOptions` |
+| `SchemaFromStruct` | `func SchemaFromStruct(dst any) (Schema, error)` | recommended | SchemaFromStruct builds validation schema rules from conf tags on dst. | facade | `ExampleSchemaFromStruct` |
 | `Watch` | `func Watch(path string, interval time.Duration, onChange func(*Conf, error)) (func(), error)` | recommended | Watch polls path and calls onChange after successful reloads. | facade | — |
 | `WatchWithOptions` | `func WatchWithOptions(path string, opts WatchOptions, onChange func(*Conf, error)) (func(), error)` | recommended | WatchWithOptions polls path with options and calls onChange after successful reloads. | facade | — |
 | `WithBindBoolParser` | `func WithBindBoolParser(parser func(string) (bool, error)) BindOption` | recommended | WithBindBoolParser sets the bool parser used by Conf.BindWithOptions and Conf.BindGroupWithOptions. | facade | — |
@@ -2813,7 +2813,7 @@ Import path: `github.com/imajinyun/knifer-go/vobj`
 
 Package vobj provides object utilities.
 
-Quality: 49 functions · 11 with examples · 22.4% example coverage · statuses: recommended=44, compatibility=5, experimental=0, deprecated=0 · synopsis sources: facade=49, internal=0, empty=0
+Quality: 49 functions · 19 with examples · 38.8% example coverage · statuses: recommended=44, compatibility=5, experimental=0, deprecated=0 · synopsis sources: facade=49, internal=0, empty=0
 
 Recommended entrypoints:
 
@@ -2821,7 +2821,7 @@ Recommended entrypoints:
 | --- | --- | --- |
 | `Clone` | error | Prefer when callers must distinguish invalid input or provider failure from default values. |
 | `CloneIfPossibleWithOptions` | options | Prefer when providers, limits, parsers, or policies must be reviewable at the call site. |
-| `Apply` | day-one | Start here for concise, trusted-input use cases in this package. |
+| `Accept` | day-one | Start here for concise, trusted-input use cases in this package. |
 | `Equals` | compatibility | Compatibility API; use only when preserving existing call-site semantics. |
 
 Golden path API set:
@@ -2830,26 +2830,26 @@ Golden path API set:
 | --- | --- | --- |
 | `Clone` | Use first when callers must observe invalid input or provider failure. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `CloneIfPossibleWithOptions` | Use first when policies, providers, parsers, limits, or clocks must be explicit. | Avoid for trivial in-memory code where the standard library is clearer. |
-| `Apply` | Use first for concise trusted-input workflows in vobj. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vobj. |
-| `Equals` | Use only to preserve existing call-site behavior during migration. | Avoid for new code when a Recommended, Safe, E, or WithOptions variant exists. |
 | `Accept` | Use first for concise trusted-input workflows in vobj. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vobj. |
+| `Equals` | Use only to preserve existing call-site behavior during migration. | Avoid for new code when a Recommended, Safe, E, or WithOptions variant exists. |
+| `Apply` | Use first for concise trusted-input workflows in vobj. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vobj. |
 
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
-| `Accept` | `func Accept[T any](source *T, consumer func(T))` | recommended | Accept calls consumer when source is not nil. | facade | — |
+| `Accept` | `func Accept[T any](source *T, consumer func(T))` | recommended | Accept calls consumer when source is not nil. | facade | `ExampleAccept` |
 | `Apply` | `func Apply[T any, R any](source *T, handle func(T) R) R` | recommended | Apply maps source when it is not nil; otherwise it returns the zero value. | facade | `ExampleApply` |
 | `Clone` | `func Clone[T any](src T) (T, error)` | recommended | Clone creates a deep copy through gob serialization. | facade | `ExampleClone` |
-| `CloneByStream` | `func CloneByStream[T any](src T) (T, error)` | recommended | CloneByStream creates a deep copy through gob serialization. | facade | — |
+| `CloneByStream` | `func CloneByStream[T any](src T) (T, error)` | recommended | CloneByStream creates a deep copy through gob serialization. | facade | `ExampleCloneByStream` |
 | `CloneByStreamWithOptions` | `func CloneByStreamWithOptions[T any](src T, opts ...CodecOption) (T, error)` | recommended | CloneByStreamWithOptions creates a deep copy using per-call codec options. | facade | — |
-| `CloneIfPossible` | `func CloneIfPossible[T any](src T) T` | recommended | CloneIfPossible returns a cloned value when cloning succeeds, otherwise src. | facade | — |
+| `CloneIfPossible` | `func CloneIfPossible[T any](src T) T` | recommended | CloneIfPossible returns a cloned value when cloning succeeds, otherwise src. | facade | `ExampleCloneIfPossible` |
 | `CloneIfPossibleWithOptions` | `func CloneIfPossibleWithOptions[T any](src T, opts ...CodecOption) T` | recommended | CloneIfPossibleWithOptions returns a cloned value using per-call codec options when cloning succeeds, otherwise src. | facade | — |
 | `CloneWithOptions` | `func CloneWithOptions[T any](src T, opts ...CodecOption) (T, error)` | recommended | CloneWithOptions creates a deep copy using per-call codec options. | facade | — |
 | `Compare` | `func Compare[T Ordered](a *T, b *T) int` | recommended | Compare compares two ordered values. | facade | `ExampleCompare` |
 | `CompareNull` | `func CompareNull[T Ordered](a *T, b *T, nilGreater bool) int` | recommended | CompareNull compares two ordered values and controls nil ordering. | facade | — |
 | `Contains` | `func Contains(obj any, element any) bool` | recommended | Contains reports whether obj contains element. | facade | `ExampleContains` |
 | `DefaultIfNil` | `func DefaultIfNil[T any](object *T, defaultValue T) T` | recommended | DefaultIfNil returns defaultValue when object is nil. | facade | `ExampleDefaultIfNil` |
-| `DefaultIfNilApply` | `func DefaultIfNilApply[T any, R any](source *T, handle func(T) R, defaultValue R) R` | recommended | DefaultIfNilApply returns defaultValue when source is nil; otherwise it maps source. | facade | — |
-| `DefaultIfNilFunc` | `func DefaultIfNilFunc[T any](object *T, supplier func() T) T` | recommended | DefaultIfNilFunc returns a supplier value when object is nil. | facade | — |
+| `DefaultIfNilApply` | `func DefaultIfNilApply[T any, R any](source *T, handle func(T) R, defaultValue R) R` | recommended | DefaultIfNilApply returns defaultValue when source is nil; otherwise it maps source. | facade | `ExampleDefaultIfNilApply` |
+| `DefaultIfNilFunc` | `func DefaultIfNilFunc[T any](object *T, supplier func() T) T` | recommended | DefaultIfNilFunc returns a supplier value when object is nil. | facade | `ExampleDefaultIfNilFunc` |
 | `Deserialize` | `func Deserialize(data []byte, out any, acceptedTypes ...any) error` | recommended | Deserialize decodes gob data into out, which must be a pointer. | facade | `ExampleDeserialize` |
 | `DeserializeTo` | `func DeserializeTo[T any](data []byte, acceptedTypes ...any) (T, error)` | recommended | DeserializeTo decodes gob data into a new value. | facade | — |
 | `DeserializeToWithOptions` | `func DeserializeToWithOptions[T any](data []byte, acceptedTypes []any, opts ...CodecOption) (T, error)` | recommended | DeserializeToWithOptions decodes data into a new value using per-call codec options. | facade | — |
@@ -2863,7 +2863,7 @@ Golden path API set:
 | `IsAllEmpty` | `func IsAllEmpty(values ...any) bool` | recommended | IsAllEmpty reports whether all values are nil or empty. | facade | — |
 | `IsAllNotEmpty` | `func IsAllNotEmpty(values ...any) bool` | recommended | IsAllNotEmpty reports whether all values are not empty. | facade | — |
 | `IsBasicType` | `func IsBasicType(object any) bool` | recommended | IsBasicType reports whether object is a built-in scalar type or string. | facade | — |
-| `IsEmpty` | `func IsEmpty(v any) bool` | recommended | IsEmpty reports whether v is nil or an empty string, array, slice, map, or channel. | facade | — |
+| `IsEmpty` | `func IsEmpty(v any) bool` | recommended | IsEmpty reports whether v is nil or an empty string, array, slice, map, or channel. | facade | `ExampleIsEmpty` |
 | `IsNil` | `func IsNil(v any) bool` | recommended | IsNil reports whether v is nil, including typed nil values. | facade | `ExampleIsNil` |
 | `IsNotEmpty` | `func IsNotEmpty(v any) bool` | recommended | IsNotEmpty reports whether v is not empty. | facade | — |
 | `IsNotNil` | `func IsNotNil(v any) bool` | recommended | IsNotNil reports whether v is not nil. | facade | — |
@@ -2879,8 +2879,8 @@ Golden path API set:
 | `SerializeOrNil` | `func SerializeOrNil[T any](obj T) []byte` | recommended | SerializeOrNil encodes obj with gob and returns nil when encoding fails. | facade | — |
 | `SerializeOrNilWithOptions` | `func SerializeOrNilWithOptions[T any](obj T, opts ...CodecOption) []byte` | recommended | SerializeOrNilWithOptions encodes obj using per-call codec options and returns nil when encoding fails. | facade | — |
 | `SerializeWithOptions` | `func SerializeWithOptions[T any](obj T, opts ...CodecOption) ([]byte, error)` | recommended | SerializeWithOptions encodes obj using per-call codec options. | facade | — |
-| `ToString` | `func ToString(object any) string` | recommended | ToString converts object to a string. | facade | — |
-| `TypeName` | `func TypeName(object any) string` | recommended | TypeName returns the full type name of object. | facade | — |
+| `ToString` | `func ToString(object any) string` | recommended | ToString converts object to a string. | facade | `ExampleToString` |
+| `TypeName` | `func TypeName(object any) string` | recommended | TypeName returns the full type name of object. | facade | `ExampleTypeName` |
 | `TypeOf` | `func TypeOf(object any) reflect.Type` | recommended | TypeOf returns the reflection type of object, or nil for nil values. | facade | — |
 | `ValidateAcceptedTypes` | `func ValidateAcceptedTypes(value any, acceptedTypes ...any) error` | recommended | ValidateAcceptedTypes checks whether value only contains built-in safe types plus values assignable to one of acceptedTypes. | facade | — |
 | `WithDecoderFactory` | `func WithDecoderFactory(factory func(io.Reader) Decoder) CodecOption` | recommended | WithDecoderFactory sets the decoder factory used by DeserializeWithOptions and CloneWithOptions. | facade | — |

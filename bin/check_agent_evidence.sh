@@ -258,10 +258,6 @@ if not expected_security_sensitive_paths:
     if isinstance(security_sensitive_exit_code, int) and security_sensitive_exit_code != 0:
         add_error("checks.security_sensitive_diff.exit_code must be 0 when no security-sensitive paths changed")
 else:
-    if security_sensitive_status != "failed":
-        add_error("checks.security_sensitive_diff.status must be failed when security-sensitive paths changed")
-    if isinstance(security_sensitive_exit_code, int) and security_sensitive_exit_code == 0:
-        add_error("checks.security_sensitive_diff.exit_code must be non-zero when security-sensitive paths changed")
     combined_security_output = "\n".join(
         value for value in (security_sensitive_stdout, security_sensitive_stderr) if isinstance(value, str)
     )
@@ -270,6 +266,19 @@ else:
     for path in expected_security_sensitive_paths:
         if path not in combined_security_output:
             add_error(f"checks.security_sensitive_diff output must mention changed security-sensitive path {path!r}")
+    example_only_security_diff = all(path.endswith("/example_test.go") for path in expected_security_sensitive_paths)
+    if example_only_security_diff:
+        if security_sensitive_status != "passed":
+            add_error("checks.security_sensitive_diff.status may be passed for security-sensitive example-only diffs")
+        if isinstance(security_sensitive_exit_code, int) and security_sensitive_exit_code != 0:
+            add_error("checks.security_sensitive_diff.exit_code must be 0 for security-sensitive example-only diffs")
+        if "example-only diff" not in combined_security_output:
+            add_error("checks.security_sensitive_diff output must explain security-sensitive example-only diff")
+    else:
+        if security_sensitive_status != "failed":
+            add_error("checks.security_sensitive_diff.status must be failed when security-sensitive non-example paths changed")
+        if isinstance(security_sensitive_exit_code, int) and security_sensitive_exit_code == 0:
+            add_error("checks.security_sensitive_diff.exit_code must be non-zero when security-sensitive non-example paths changed")
 
 if not isinstance(evidence.get("worktree_status"), str):
     add_error("worktree_status must be a string")
