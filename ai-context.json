@@ -1336,6 +1336,18 @@
     "required_workflows": ["strict conversion", "weak conversion", "copy", "decode", "merge", "unused metadata"],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
   },
+  "vconv_cast_migration_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/vconv-cast-migration.md",
+    "readme_path": "README.md",
+    "sprint": 52,
+    "status": "completed",
+    "package": "vconv",
+    "competitor": "spf13/cast",
+    "required_workflows": ["strict conversion", "weak conversion", "default fallback", "custom parser policy", "slice/map conversion", "duration/time conversion", "overflow handling"],
+    "required_boundaries": ["vconv is scalar-first", "E helpers at trust boundaries", "do not move collection conversion into vconv"],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
   "daily_developer_toolkit_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
     "doc_path": "docs/doc/daily-developer-utilities.md",

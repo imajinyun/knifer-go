@@ -2181,6 +2181,70 @@ def validate_vconv_vbean_migration_governance() -> None:
 		add_error(f"{roadmap_path} must mention vconv_vbean_migration_governance")
 
 
+def validate_vconv_cast_migration_governance() -> None:
+	governance = require_mapping(ai_context.get("vconv_cast_migration_governance"), "vconv_cast_migration_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("vconv_cast_migration_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("vconv_cast_migration_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/vconv-cast-migration.md"
+	readme_path = governance.get("readme_path")
+	if readme_path != "README.md":
+		add_error("vconv_cast_migration_governance.readme_path must be README.md")
+		readme_path = "README.md"
+	if governance.get("sprint") != 52:
+		add_error("vconv_cast_migration_governance.sprint must be 52")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("vconv_cast_migration_governance.status must be active or completed")
+	if governance.get("package") != "vconv":
+		add_error("vconv_cast_migration_governance.package must be vconv")
+	if governance.get("competitor") != "spf13/cast":
+		add_error("vconv_cast_migration_governance.competitor must be spf13/cast")
+	workflows = require_string_list(governance.get("required_workflows"), "vconv_cast_migration_governance.required_workflows")
+	expected_workflows = ["strict conversion", "weak conversion", "default fallback", "custom parser policy", "slice/map conversion", "duration/time conversion", "overflow handling"]
+	if workflows != expected_workflows:
+		add_error("vconv_cast_migration_governance.required_workflows must be ordered as: " + ", ".join(expected_workflows))
+	boundaries = require_string_list(governance.get("required_boundaries"), "vconv_cast_migration_governance.required_boundaries")
+	expected_boundaries = ["vconv is scalar-first", "E helpers at trust boundaries", "do not move collection conversion into vconv"]
+	if boundaries != expected_boundaries:
+		add_error("vconv_cast_migration_governance.required_boundaries must be ordered as: " + ", ".join(expected_boundaries))
+	required_checks = require_string_list(governance.get("required_checks"), "vconv_cast_migration_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"vconv_cast_migration_governance.required_checks must include {check}")
+	if not (root / doc_path).exists():
+		add_error(f"{doc_path} must exist")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for phrase in workflows + boundaries + ["spf13/cast", "vconv", "Migration Rules", "Machine-Readable Boundaries"]:
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	readme_text = (root / readme_path).read_text(encoding="utf-8") if (root / readme_path).exists() else ""
+	if "vconv-cast-migration.md" not in readme_text:
+		add_error("README.md must link docs/doc/vconv-cast-migration.md")
+	doc_index_text = (root / "docs/doc/README.md").read_text(encoding="utf-8")
+	if "vconv-cast-migration.md" not in doc_index_text:
+		add_error("docs/doc/README.md must link docs/doc/vconv-cast-migration.md")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_52_rows = [row for row in sprint_rows if row.get("Sprint") == "52"]
+	if len(sprint_52_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 52 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_52_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 52 status must be {expected_status}")
+		sprint_text = " ".join(sprint_52_rows[0].values())
+		for phrase in ("vconv-cast-migration", "spf13/cast", "strict conversion", "weak conversion", "overflow"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 52 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "vconv_cast_migration_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention vconv_cast_migration_governance")
+
+
 def validate_daily_developer_toolkit_governance() -> None:
 	governance = require_mapping(ai_context.get("daily_developer_toolkit_governance"), "daily_developer_toolkit_governance")
 	roadmap_path = governance.get("roadmap_path")
@@ -3085,6 +3149,7 @@ if not bench_only:
 	validate_collections_comparison_governance()
 	validate_collection_mindshare_pack_governance()
 	validate_vconv_vbean_migration_governance()
+	validate_vconv_cast_migration_governance()
 	validate_daily_developer_toolkit_governance()
 	validate_daily_utility_cookbook_v2_governance()
 	validate_benchmark_trust_governance()
