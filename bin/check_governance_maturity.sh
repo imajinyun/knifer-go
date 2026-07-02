@@ -2348,6 +2348,77 @@ def validate_weak_facade_example_density_governance() -> None:
 		add_error(f"{roadmap_path} must mention weak_facade_example_density_governance")
 
 
+def validate_weak_facade_example_density_governance_2() -> None:
+	governance = require_mapping(ai_context.get("weak_facade_example_density_governance_2"), "weak_facade_example_density_governance_2")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("weak_facade_example_density_governance_2.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	if governance.get("sprint") != 49:
+		add_error("weak_facade_example_density_governance_2.sprint must be 49")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("weak_facade_example_density_governance_2.status must be active or completed")
+	if governance.get("selection_rule") != "common facades with example coverage below 25 percent":
+		add_error("weak_facade_example_density_governance_2.selection_rule must describe below-25-percent common facades")
+	target_facades = require_string_list(governance.get("target_facades"), "weak_facade_example_density_governance_2.target_facades")
+	expected_targets = ["vcron", "vcache"]
+	if target_facades != expected_targets:
+		add_error("weak_facade_example_density_governance_2.target_facades must be ordered as: " + ", ".join(expected_targets))
+	baseline = require_mapping(governance.get("baseline"), "weak_facade_example_density_governance_2.baseline")
+	target_examples = require_mapping(governance.get("target_examples"), "weak_facade_example_density_governance_2.target_examples")
+	expected_baseline = {
+		"vcron": (51, 8, 15.7),
+		"vcache": (24, 5, 20.8),
+	}
+	for facade in target_facades:
+		entry = require_mapping(baseline.get(facade), f"weak_facade_example_density_governance_2.baseline.{facade}")
+		expected_function_count, expected_examples, expected_ratio = expected_baseline[facade]
+		if entry.get("function_count") != expected_function_count:
+			add_error(f"weak_facade_example_density_governance_2.baseline.{facade}.function_count must be {expected_function_count}")
+		if entry.get("functions_with_examples") != expected_examples:
+			add_error(f"weak_facade_example_density_governance_2.baseline.{facade}.functions_with_examples must be {expected_examples}")
+		if entry.get("example_coverage_percent") != expected_ratio:
+			add_error(f"weak_facade_example_density_governance_2.baseline.{facade}.example_coverage_percent must be {expected_ratio}")
+		target = target_examples.get(facade)
+		if target != 12:
+			add_error(f"weak_facade_example_density_governance_2.target_examples.{facade} must be 12")
+		pkg = tool_packages.get(facade)
+		if not pkg:
+			add_error(f"docs/api/tools.json missing package {facade}")
+			continue
+		summary = require_mapping(pkg.get("summary"), f"docs/api/tools.json.packages.{facade}.summary")
+		function_count = summary.get("function_count")
+		example_count = summary.get("functions_with_examples")
+		if function_count != expected_function_count:
+			add_error(f"{facade} function count changed from governed baseline {expected_function_count} to {function_count}; update Sprint 49 governance deliberately")
+		if not isinstance(example_count, int) or isinstance(example_count, bool):
+			add_error(f"docs/api/tools.json.packages.{facade}.summary.functions_with_examples must be an integer")
+		elif example_count < target:
+			add_error(f"{facade} examples must be at least Sprint 49 target {target}; got {example_count}")
+	if governance.get("ratchet_policy") != "raise selected weak facades in small increments instead of completing every API at once":
+		add_error("weak_facade_example_density_governance_2.ratchet_policy must preserve small-increment ratchet wording")
+	required_checks = require_string_list(governance.get("required_checks"), "weak_facade_example_density_governance_2.required_checks")
+	for check in ("go test ./vcron ./vcache", "tools-gen", "docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"weak_facade_example_density_governance_2.required_checks must include {check}")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_49_rows = [row for row in sprint_rows if row.get("Sprint") == "49"]
+	if len(sprint_49_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 49 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_49_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 49 status must be {expected_status}")
+		sprint_text = " ".join(sprint_49_rows[0].values())
+		for phrase in ("vcron", "vcache", "12 examples", "ratchet"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 49 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "weak_facade_example_density_governance_2" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention weak_facade_example_density_governance_2")
+
+
 def validate_adoption_trust_governance() -> None:
 	governance = require_mapping(ai_context.get("adoption_trust_governance"), "adoption_trust_governance")
 	roadmap_path = governance.get("roadmap_path")
@@ -2838,6 +2909,7 @@ if not bench_only:
 	validate_benchmark_trust_governance()
 	validate_first_use_golden_paths_governance()
 	validate_weak_facade_example_density_governance()
+	validate_weak_facade_example_density_governance_2()
 	validate_adoption_trust_governance()
 	validate_example_depth_governance()
 	validate_api_convergence()

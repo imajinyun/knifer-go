@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
 | Functions | 2757 |
-| Functions with examples | 1721 |
+| Functions with examples | 1732 |
 | Context-aware functions | 36 |
 | Functions returning error | 687 |
 | Variadic functions | 804 |
@@ -241,7 +241,7 @@ Import path: `github.com/imajinyun/knifer-go/vcache`
 
 Package vcache provides public APIs for cache utilities.
 
-Quality: 24 functions · 5 with examples · 20.8% example coverage · statuses: recommended=24, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=24, internal=0, empty=0
+Quality: 24 functions · 12 with examples · 50.0% example coverage · statuses: recommended=24, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=24, internal=0, empty=0
 
 Recommended entrypoints:
 
@@ -263,21 +263,21 @@ Golden path API set:
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
 | `NewFIFO` | `func NewFIFO[K comparable, V any](capacity int) *FIFOCache[K, V]` | recommended | NewFIFO creates a FIFO cache. | facade | `ExampleNewFIFO` |
-| `NewFIFOWithOptions` | `func NewFIFOWithOptions[K comparable, V any](opts ...Option[K, V]) *FIFOCache[K, V]` | recommended | NewFIFOWithOptions creates a FIFO cache customized by options. | facade | — |
-| `NewFIFOWithTimeout` | `func NewFIFOWithTimeout[K comparable, V any](capacity int, timeout time.Duration) *FIFOCache[K, V]` | recommended | NewFIFOWithTimeout creates a FIFO cache with timeout. | facade | — |
+| `NewFIFOWithOptions` | `func NewFIFOWithOptions[K comparable, V any](opts ...Option[K, V]) *FIFOCache[K, V]` | recommended | NewFIFOWithOptions creates a FIFO cache customized by options. | facade | `ExampleNewFIFOWithOptions` |
+| `NewFIFOWithTimeout` | `func NewFIFOWithTimeout[K comparable, V any](capacity int, timeout time.Duration) *FIFOCache[K, V]` | recommended | NewFIFOWithTimeout creates a FIFO cache with timeout. | facade | `ExampleNewFIFOWithTimeout` |
 | `NewLFU` | `func NewLFU[K comparable, V any](capacity int) *LFUCache[K, V]` | recommended | NewLFU creates an LFU cache. | facade | `ExampleNewLFU` |
 | `NewLFUWithOptions` | `func NewLFUWithOptions[K comparable, V any](opts ...Option[K, V]) *LFUCache[K, V]` | recommended | NewLFUWithOptions creates an LFU cache customized by options. | facade | — |
-| `NewLFUWithTimeout` | `func NewLFUWithTimeout[K comparable, V any](capacity int, timeout time.Duration) *LFUCache[K, V]` | recommended | NewLFUWithTimeout creates an LFU cache with timeout. | facade | — |
+| `NewLFUWithTimeout` | `func NewLFUWithTimeout[K comparable, V any](capacity int, timeout time.Duration) *LFUCache[K, V]` | recommended | NewLFUWithTimeout creates an LFU cache with timeout. | facade | `ExampleNewLFUWithTimeout` |
 | `NewLRU` | `func NewLRU[K comparable, V any](capacity int) *LRUCache[K, V]` | recommended | NewLRU creates an LRU cache. | facade | `ExampleNewLRU` |
 | `NewLRUWithOptions` | `func NewLRUWithOptions[K comparable, V any](opts ...Option[K, V]) *LRUCache[K, V]` | recommended | NewLRUWithOptions creates an LRU cache customized by options. | facade | — |
-| `NewLRUWithTimeout` | `func NewLRUWithTimeout[K comparable, V any](capacity int, timeout time.Duration) *LRUCache[K, V]` | recommended | NewLRUWithTimeout creates an LRU cache with timeout. | facade | — |
-| `NewNo` | `func NewNo[K comparable, V any]() *NoCache[K, V]` | recommended | NewNo delegates to the internal cache implementation. | facade | — |
+| `NewLRUWithTimeout` | `func NewLRUWithTimeout[K comparable, V any](capacity int, timeout time.Duration) *LRUCache[K, V]` | recommended | NewLRUWithTimeout creates an LRU cache with timeout. | facade | `ExampleNewLRUWithTimeout` |
+| `NewNo` | `func NewNo[K comparable, V any]() *NoCache[K, V]` | recommended | NewNo delegates to the internal cache implementation. | facade | `ExampleNewNo` |
 | `NewNoCache` | `func NewNoCache[K comparable, V any]() *NoCache[K, V]` | recommended | NewNoCache creates a no-op cache. | facade | `ExampleNewNoCache` |
-| `NewTimed` | `func NewTimed[K comparable, V any](timeout time.Duration) *TimedCache[K, V]` | recommended | NewTimed creates a timed cache. | facade | — |
+| `NewTimed` | `func NewTimed[K comparable, V any](timeout time.Duration) *TimedCache[K, V]` | recommended | NewTimed creates a timed cache. | facade | `ExampleNewTimed` |
 | `NewTimedScheduled` | `func NewTimedScheduled[K comparable, V any](timeout time.Duration, schedulePruneDelay time.Duration) *TimedCache[K, V]` | recommended | NewTimedScheduled creates a timed cache with scheduled pruning. | facade | — |
 | `NewTimedWithOptions` | `func NewTimedWithOptions[K comparable, V any](opts ...Option[K, V]) *TimedCache[K, V]` | recommended | NewTimedWithOptions creates a timed cache customized by options. | facade | `ExampleNewTimedWithOptions` |
 | `NewWeak` | `func NewWeak[K comparable, V any](timeout time.Duration) *WeakCache[K, V]` | recommended | NewWeak creates a weak-style timed cache. | facade | — |
-| `NewWeakWithOptions` | `func NewWeakWithOptions[K comparable, V any](opts ...Option[K, *V]) *WeakCache[K, V]` | recommended | NewWeakWithOptions creates a weak-style timed cache customized by options. | facade | — |
+| `NewWeakWithOptions` | `func NewWeakWithOptions[K comparable, V any](opts ...Option[K, *V]) *WeakCache[K, V]` | recommended | NewWeakWithOptions creates a weak-style timed cache customized by options. | facade | `ExampleNewWeakWithOptions` |
 | `WithCapacity` | `func WithCapacity[K comparable, V any](capacity int) Option[K, V]` | recommended | WithCapacity sets the maximum number of entries; 0 means unlimited. | facade | — |
 | `WithClock` | `func WithClock[K comparable, V any](clock func() time.Time) Option[K, V]` | recommended | WithClock sets the time source used for cache expiration checks. | facade | — |
 | `WithListener` | `func WithListener[K comparable, V any](listener CacheListener[K, V]) Option[K, V]` | recommended | WithListener sets the removal listener during cache construction. | facade | — |
@@ -526,7 +526,7 @@ Import path: `github.com/imajinyun/knifer-go/vcron`
 
 Package vcron provides public APIs for cron scheduling utilities.
 
-Quality: 51 functions · 8 with examples · 15.7% example coverage · statuses: recommended=50, compatibility=1, experimental=0, deprecated=0 · synopsis sources: facade=51, internal=0, empty=0
+Quality: 51 functions · 12 with examples · 23.5% example coverage · statuses: recommended=50, compatibility=1, experimental=0, deprecated=0 · synopsis sources: facade=51, internal=0, empty=0
 
 Recommended entrypoints:
 
@@ -534,7 +534,7 @@ Recommended entrypoints:
 | --- | --- | --- |
 | `CronRestart` | error | Prefer when callers must distinguish invalid input or provider failure from default values. |
 | `ConfigureDefaultScheduler` | options | Prefer when providers, limits, parsers, or policies must be reviewable at the call site. |
-| `NewCronError` | day-one | Start here for concise, trusted-input use cases in this package. |
+| `NewConfig` | day-one | Start here for concise, trusted-input use cases in this package. |
 | `MustNewPattern` | compatibility | Compatibility API; use only when preserving existing call-site semantics. |
 
 Golden path API set:
@@ -543,7 +543,7 @@ Golden path API set:
 | --- | --- | --- |
 | `CronRestart` | Use first when callers must observe invalid input or provider failure. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `ConfigureDefaultScheduler` | Use first when policies, providers, parsers, limits, or clocks must be explicit. | Avoid for trivial in-memory code where the standard library is clearer. |
-| `NewCronError` | Use first for concise trusted-input workflows in vcron. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcron. |
+| `NewConfig` | Use first for concise trusted-input workflows in vcron. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcron. |
 | `MustNewPattern` | Use only to preserve existing call-site behavior during migration. | Avoid for new code when a Recommended, Safe, E, or WithOptions variant exists. |
 | `CronLaunchingCount` | Use first for concise trusted-input workflows in vcron. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcron. |
 
@@ -577,14 +577,14 @@ Golden path API set:
 | `DefaultScheduler` | `func DefaultScheduler() *Scheduler` | recommended | DefaultScheduler returns the package-level scheduler. | facade | — |
 | `DefaultSchedulerWithOptions` | `func DefaultSchedulerWithOptions(opts ...DefaultSchedulerOption) *Scheduler` | recommended | DefaultSchedulerWithOptions returns the package-level scheduler or a per-call override. | facade | — |
 | `MustNewPattern` | `func MustNewPattern(expr string) *Pattern` | compatibility | MustNewPattern delegates to the internal cron implementation. | facade | `ExampleMustNewPattern` |
-| `NewConfig` | `func NewConfig() *Config` | recommended | NewConfig delegates to the internal cron implementation. | facade | — |
+| `NewConfig` | `func NewConfig() *Config` | recommended | NewConfig delegates to the internal cron implementation. | facade | `ExampleNewConfig` |
 | `NewConfigWithOptions` | `func NewConfigWithOptions(opts ...ConfigOption) *Config` | recommended | NewConfigWithOptions creates cron config customized by options. | facade | `ExampleNewConfigWithOptions` |
 | `NewCronError` | `func NewCronError(format string, args ...any) *CronError` | recommended | NewCronError delegates to the internal cron implementation. | facade | `ExampleNewCronError` |
-| `NewCronTask` | `func NewCronTask(id string, pattern *Pattern, task Task) *CronTask` | recommended | NewCronTask delegates to the internal cron implementation. | facade | — |
+| `NewCronTask` | `func NewCronTask(id string, pattern *Pattern, task Task) *CronTask` | recommended | NewCronTask delegates to the internal cron implementation. | facade | `ExampleNewCronTask` |
 | `NewPattern` | `func NewPattern(expr string) (*Pattern, error)` | recommended | NewPattern delegates to the internal cron implementation. | facade | `ExampleNewPattern` |
 | `NewScheduler` | `func NewScheduler() *Scheduler` | recommended | NewScheduler creates a cron scheduler. | facade | — |
 | `NewSchedulerWithOptions` | `func NewSchedulerWithOptions(opts ...SchedulerOption) *Scheduler` | recommended | NewSchedulerWithOptions creates a cron scheduler customized by options. | facade | `ExampleNewSchedulerWithOptions` |
-| `NewTaskTable` | `func NewTaskTable() *TaskTable` | recommended | NewTaskTable delegates to the internal cron implementation. | facade | — |
+| `NewTaskTable` | `func NewTaskTable() *TaskTable` | recommended | NewTaskTable delegates to the internal cron implementation. | facade | `ExampleNewTaskTable` |
 | `WithClock` | `func WithClock(clock func() time.Time) SchedulerOption` | recommended | WithClock sets the time source used by the scheduler timer. | facade | — |
 | `WithConfigLocation` | `func WithConfigLocation(loc *time.Location) ConfigOption` | recommended | WithConfigLocation sets the scheduler time zone on CronConfig. | facade | — |
 | `WithConfigMatchSecond` | `func WithConfigMatchSecond(matchSecond bool) ConfigOption` | recommended | WithConfigMatchSecond sets whether cron expressions match seconds on CronConfig. | facade | — |
@@ -599,7 +599,7 @@ Golden path API set:
 | `WithRunner` | `func WithRunner(runner func(func())) SchedulerOption` | recommended | WithRunner sets the function used to launch the scheduler timer loop. | facade | — |
 | `WithSchedulerPatternOptions` | `func WithSchedulerPatternOptions(opts ...PatternOption) SchedulerOption` | recommended | WithSchedulerPatternOptions sets cron pattern parser providers used by scheduler string-pattern APIs. | facade | — |
 | `WithSleeper` | `func WithSleeper(sleeper func(time.Duration, <-chan struct{}) bool) SchedulerOption` | recommended | WithSleeper sets the sleep function used by the scheduler timer. | facade | — |
-| `WrapCronError` | `func WrapCronError(cause error, format string, args ...any) *CronError` | recommended | WrapCronError delegates to the internal cron implementation. | facade | — |
+| `WrapCronError` | `func WrapCronError(cause error, format string, args ...any) *CronError` | recommended | WrapCronError delegates to the internal cron implementation. | facade | `ExampleWrapCronError` |
 
 ### vcrypto
 

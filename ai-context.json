@@ -532,7 +532,7 @@
       "recommended_profile_schema": "recommended_entrypoints profiles: day-one, safe, error, options, compatibility; golden_path lists 1-7 APIs with use_when and avoid_when guidance",
       "package_count": 55,
       "function_count": 2757,
-      "functions_with_examples": 1721,
+      "functions_with_examples": 1732,
       "context_aware_functions": 36,
       "returns_error_functions": 687,
       "status_counts": {
@@ -671,7 +671,7 @@
       "vcodec": { "primary": ["Base32Decode", "Base32Encode", "Base32DecodeWithEncoding", "Base32EncodeWithEncoding", "Base58Decode"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vconf": { "primary": ["LoadRemoteSafe", "Base64Decrypt", "Merge", "Load", "LoadFiles"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vconv": { "primary": ["ToBoolE", "ToBoolDefaultWithOptions", "ToBool", "ToBoolDefault", "ToBoolEWithOptions"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
-      "vcron": { "primary": ["CronRestart", "ConfigureDefaultScheduler", "NewCronError", "MustNewPattern", "CronLaunchingCount"], "advanced": [], "compatibility": ["MustNewPattern"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
+      "vcron": { "primary": ["CronRestart", "ConfigureDefaultScheduler", "NewConfig", "MustNewPattern", "CronLaunchingCount"], "advanced": [], "compatibility": ["MustNewPattern"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
       "vcrypto": { "primary": ["AESDecryptGCM", "WithGCMRandomOptions", "ConstantTimeEqual", "AESDecryptGCMWithOptions", "AESEncryptGCM"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vcsv": { "primary": ["ForEach", "MapsToRecords", "Read", "ReadMaps", "ReadString"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vdate": { "primary": ["LunarToSolar", "NowWithOptions", "BeginOfDay", "BeginOfMonth", "BeginOfYear"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
@@ -1398,6 +1398,23 @@
     },
     "ratchet_policy": "raise selected weak facades in small increments instead of completing every API at once",
     "required_checks": ["go test ./vlog ./vmail", "tools-gen", "docs-check", "ai-context-check", "governance-maturity-check"]
+  },
+  "weak_facade_example_density_governance_2": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "sprint": 49,
+    "status": "completed",
+    "selection_rule": "common facades with example coverage below 25 percent",
+    "target_facades": ["vcron", "vcache"],
+    "baseline": {
+      "vcron": { "function_count": 51, "functions_with_examples": 8, "example_coverage_percent": 15.7 },
+      "vcache": { "function_count": 24, "functions_with_examples": 5, "example_coverage_percent": 20.8 }
+    },
+    "target_examples": {
+      "vcron": 12,
+      "vcache": 12
+    },
+    "ratchet_policy": "raise selected weak facades in small increments instead of completing every API at once",
+    "required_checks": ["go test ./vcron ./vcache", "tools-gen", "docs-check", "ai-context-check", "governance-maturity-check"]
   },
   "adoption_trust_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",

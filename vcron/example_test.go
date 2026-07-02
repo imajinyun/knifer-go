@@ -1,6 +1,7 @@
 package vcron_test
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -39,6 +40,48 @@ func ExampleNewConfigWithOptions() {
 	// Output:
 	// docs
 	// true
+}
+
+func ExampleNewConfig() {
+	cfg := vcron.NewConfig()
+
+	fmt.Println(cfg.Location != nil)
+	fmt.Println(cfg.MatchSecond)
+	// Output:
+	// true
+	// false
+}
+
+func ExampleWrapCronError() {
+	err := vcron.WrapCronError(errors.New("bad field"), "parse failed")
+
+	fmt.Println(err.Error())
+	fmt.Println(errors.Unwrap(err))
+	// Output:
+	// parse failed: bad field
+	// bad field
+}
+
+func ExampleNewCronTask() {
+	pattern := vcron.MustNewPattern("* * * * *")
+	ran := false
+	task := vcron.NewCronTask("job-1", pattern, vcron.TaskFunc(func() { ran = true }))
+	task.Execute()
+
+	fmt.Println(task.ID(), task.Pattern().Raw(), ran)
+	// Output: job-1 * * * * * true
+}
+
+func ExampleNewTaskTable() {
+	table := vcron.NewTaskTable()
+	pattern := vcron.MustNewPattern("* * * * *")
+	err := table.Add("job-1", pattern, vcron.TaskFunc(func() {}))
+
+	fmt.Println(table.Size(), table.IDs())
+	fmt.Println(err)
+	// Output:
+	// 1 [job-1]
+	// <nil>
 }
 
 func ExampleNewSchedulerWithOptions() {

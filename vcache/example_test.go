@@ -27,6 +27,32 @@ func ExampleNewFIFO() {
 	// Output: 20 true
 }
 
+func ExampleNewFIFOWithTimeout() {
+	cache := vcache.NewFIFOWithTimeout[string, int](2, time.Minute)
+	cache.Put("a", 1)
+
+	fmt.Println(cache.Timeout())
+	// Output: 1m0s
+}
+
+func ExampleNewFIFOWithOptions() {
+	removed := []string{}
+	cache := vcache.NewFIFOWithOptions[string, int](
+		vcache.WithCapacity[string, int](1),
+		vcache.WithListener[string, int](vcache.CacheListenerFunc[string, int](func(key string, value int) {
+			removed = append(removed, fmt.Sprintf("%s=%d", key, value))
+		})),
+	)
+	cache.Put("a", 1)
+	cache.Put("b", 2)
+
+	fmt.Println(cache.Keys())
+	fmt.Println(removed)
+	// Output:
+	// [b]
+	// [a=1]
+}
+
 func ExampleNewLFU() {
 	cache := vcache.NewLFU[string, int](2)
 	cache.Put("a", 1)
@@ -35,6 +61,43 @@ func ExampleNewLFU() {
 	v, ok := cache.Get("a")
 	fmt.Println(v, ok)
 	// Output: 1 true
+}
+
+func ExampleNewLFUWithTimeout() {
+	cache := vcache.NewLFUWithTimeout[string, int](2, time.Minute)
+	cache.Put("a", 1)
+
+	fmt.Println(cache.Capacity())
+	fmt.Println(cache.Timeout())
+	// Output:
+	// 2
+	// 1m0s
+}
+
+func ExampleNewLRUWithTimeout() {
+	cache := vcache.NewLRUWithTimeout[string, int](2, time.Minute)
+
+	fmt.Println(cache.Capacity())
+	fmt.Println(cache.Timeout())
+	// Output:
+	// 2
+	// 1m0s
+}
+
+func ExampleNewTimed() {
+	cache := vcache.NewTimed[string, int](time.Minute)
+	cache.Put("a", 1)
+
+	fmt.Println(cache.ContainsKey("a"))
+	// Output: true
+}
+
+func ExampleNewNo() {
+	cache := vcache.NewNo[string, int]()
+	cache.Put("a", 1)
+
+	fmt.Println(cache.Size(), cache.IsEmpty())
+	// Output: 0 true
 }
 
 func ExampleNewNoCache() {
@@ -62,4 +125,27 @@ func ExampleNewTimedWithOptions() {
 
 	fmt.Println(before, after)
 	// Output: true false
+}
+
+func ExampleNewWeakWithOptions() {
+	value := 7
+	cache := vcache.NewWeakWithOptions[string, int](
+		vcache.WithWeakFinalizerEnabled[string, int](false),
+	)
+	cache.Put("answer", &value)
+
+	got, ok := cache.Get("answer")
+	fmt.Println(*got, ok)
+	// Output: 7 true
+}
+
+func ExampleCacheListenerFunc() {
+	var removed string
+	listener := vcache.CacheListenerFunc[string, int](func(key string, value int) {
+		removed = fmt.Sprintf("%s=%d", key, value)
+	})
+	listener.OnRemove("a", 1)
+
+	fmt.Println(removed)
+	// Output: a=1
 }

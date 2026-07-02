@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 55,
     "function_count": 2757,
-    "functions_with_examples": 1721,
+    "functions_with_examples": 1732,
     "context_aware_functions": 36,
     "returns_error_functions": 687,
     "variadic_functions": 804,
@@ -2361,8 +2361,8 @@
       "synopsis": "Package vcache provides public APIs for cache utilities.",
       "summary": {
         "function_count": 24,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 20.8,
+        "functions_with_examples": 12,
+        "example_coverage_percent": 50,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
@@ -2454,7 +2454,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewFIFOWithOptions"
+          ]
         },
         {
           "name": "NewFIFOWithTimeout",
@@ -2477,7 +2480,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewFIFOWithTimeout"
+          ]
         },
         {
           "name": "NewLFU",
@@ -2541,7 +2547,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewLFUWithTimeout"
+          ]
         },
         {
           "name": "NewLRU",
@@ -2605,7 +2614,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewLRUWithTimeout"
+          ]
         },
         {
           "name": "NewNo",
@@ -2618,7 +2630,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewNo"
+          ]
         },
         {
           "name": "NewNoCache",
@@ -2653,7 +2668,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewTimed"
+          ]
         },
         {
           "name": "NewTimedScheduled",
@@ -2736,7 +2754,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewWeakWithOptions"
+          ]
         },
         {
           "name": "WithCapacity",
@@ -5944,8 +5965,8 @@
       "synopsis": "Package vcron provides public APIs for cron scheduling utilities.",
       "summary": {
         "function_count": 51,
-        "functions_with_examples": 8,
-        "example_coverage_percent": 15.7,
+        "functions_with_examples": 12,
+        "example_coverage_percent": 23.5,
         "status_counts": {
           "compatibility": 1,
           "deprecated": 0,
@@ -5970,7 +5991,7 @@
           "avoid_when": "Avoid for trivial in-memory code where the standard library is clearer."
         },
         {
-          "name": "NewCronError",
+          "name": "NewConfig",
           "use_when": "Use first for concise trusted-input workflows in vcron.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vcron."
         },
@@ -5997,7 +6018,7 @@
           "rationale": "Prefer when providers, limits, parsers, or policies must be reviewable at the call site."
         },
         {
-          "name": "NewCronError",
+          "name": "NewConfig",
           "profile": "day-one",
           "rationale": "Start here for concise, trusted-input use cases in this package."
         },
@@ -6595,7 +6616,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewConfig"
+          ]
         },
         {
           "name": "NewConfigWithOptions",
@@ -6670,7 +6694,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewCronTask"
+          ]
         },
         {
           "name": "NewPattern",
@@ -6741,7 +6768,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewTaskTable"
+          ]
         },
         {
           "name": "WithClock",
@@ -7034,7 +7064,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWrapCronError"
+          ]
         }
       ]
     },
