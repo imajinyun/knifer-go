@@ -38,6 +38,7 @@
     "utility_library_comparison_governance",
     "safe_crypto_advanced_closeout_governance",
     "go_version_adoption_governance",
+    "collections_comparison_governance",
     "error_model",
     "dynamic_semantic_contracts",
     "v1_readiness",
@@ -535,6 +536,22 @@
         "release_go_version": { "type": "string", "minLength": 1 },
         "downgrade_status": { "type": "string", "minLength": 1 },
         "required_rationale": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "collections_comparison_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "doc_path", "sprint", "status", "packages", "competitors", "required_workflows", "required_boundaries", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "doc_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "packages": { "$ref": "#/$defs/string_array" },
+        "competitors": { "$ref": "#/$defs/string_array" },
+        "required_workflows": { "$ref": "#/$defs/string_array" },
+        "required_boundaries": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
       },
       "additionalProperties": false

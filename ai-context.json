@@ -1309,6 +1309,23 @@
     ],
     "required_checks": ["docs-check", "ai-context-check", "ci-workflow-check", "governance-maturity-check"]
   },
+  "collections_comparison_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/collections-comparison.md",
+    "sprint": 42,
+    "status": "completed",
+    "packages": ["vslice", "vmap", "vset"],
+    "competitors": ["samber/lo", "duke-git/lancet", "stdlib slices/maps"],
+    "required_workflows": ["map", "filter", "reduce", "group", "partition", "window", "chunk", "set-like helpers"],
+    "required_boundaries": [
+      "standard library first for local loops",
+      "samber/lo for collection-only lodash-style helpers",
+      "lancet for broad helper coverage",
+      "knifer-go for cross-domain facade workflows",
+      "error-returning helpers for fallible callbacks"
+    ],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
   "error_model": {
     "taxonomy": [
       { "category": "invalid input", "code": "GK_INVALID_INPUT", "use_when": "Caller-provided arguments, payloads, or configuration values are malformed." },

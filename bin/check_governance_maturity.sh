@@ -1954,6 +1954,69 @@ def validate_go_version_adoption_governance() -> None:
 			add_error(f"{roadmap_path} Sprint 41 status must be {expected_status}")
 
 
+def validate_collections_comparison_governance() -> None:
+	governance = require_mapping(ai_context.get("collections_comparison_governance"), "collections_comparison_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("collections_comparison_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("collections_comparison_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/collections-comparison.md"
+	if governance.get("sprint") != 42:
+		add_error("collections_comparison_governance.sprint must be 42")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("collections_comparison_governance.status must be active or completed")
+	packages = require_string_list(governance.get("packages"), "collections_comparison_governance.packages")
+	expected_packages = ["vslice", "vmap", "vset"]
+	if packages != expected_packages:
+		add_error("collections_comparison_governance.packages must be ordered as: " + ", ".join(expected_packages))
+	competitors = require_string_list(governance.get("competitors"), "collections_comparison_governance.competitors")
+	expected_competitors = ["samber/lo", "duke-git/lancet", "stdlib slices/maps"]
+	if competitors != expected_competitors:
+		add_error("collections_comparison_governance.competitors must be ordered as: " + ", ".join(expected_competitors))
+	workflows = require_string_list(governance.get("required_workflows"), "collections_comparison_governance.required_workflows")
+	expected_workflows = ["map", "filter", "reduce", "group", "partition", "window", "chunk", "set-like helpers"]
+	if workflows != expected_workflows:
+		add_error("collections_comparison_governance.required_workflows must be ordered as: " + ", ".join(expected_workflows))
+	boundaries = require_string_list(governance.get("required_boundaries"), "collections_comparison_governance.required_boundaries")
+	expected_boundaries = [
+		"standard library first for local loops",
+		"samber/lo for collection-only lodash-style helpers",
+		"lancet for broad helper coverage",
+		"knifer-go for cross-domain facade workflows",
+		"error-returning helpers for fallible callbacks",
+	]
+	if boundaries != expected_boundaries:
+		add_error("collections_comparison_governance.required_boundaries must be ordered as: " + ", ".join(expected_boundaries))
+	required_checks = require_string_list(governance.get("required_checks"), "collections_comparison_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"collections_comparison_governance.required_checks must include {check}")
+	if not (root / doc_path).exists():
+		add_error(f"{doc_path} must exist")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for phrase in packages + competitors + workflows:
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	for phrase in ("standard library", "fallible callbacks", "cross-domain", "Do not copy every helper"):
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	readme_text = (root / "docs/doc/README.md").read_text(encoding="utf-8")
+	if "collections-comparison.md" not in readme_text:
+		add_error("docs/doc/README.md must link docs/doc/collections-comparison.md")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_42_rows = [row for row in sprint_rows if row.get("Sprint") == "42"]
+	if len(sprint_42_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 42 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_42_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 42 status must be {expected_status}")
+
+
 def validate_example_depth_governance() -> None:
 	governance = require_mapping(ai_context.get("example_depth_governance"), "example_depth_governance")
 	sprint = governance.get("sprint")
@@ -2369,6 +2432,7 @@ if not bench_only:
 	validate_utility_library_comparison_governance()
 	validate_safe_crypto_advanced_closeout_governance()
 	validate_go_version_adoption_governance()
+	validate_collections_comparison_governance()
 	validate_example_depth_governance()
 	validate_api_convergence()
 	validate_lifecycle()
