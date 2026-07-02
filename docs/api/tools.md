@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
 | Functions | 2757 |
-| Functions with examples | 1712 |
+| Functions with examples | 1721 |
 | Context-aware functions | 36 |
 | Functions returning error | 687 |
 | Variadic functions | 804 |
@@ -2140,7 +2140,7 @@ Import path: `github.com/imajinyun/knifer-go/vlog`
 
 Package vlog provides public APIs for logging utilities.
 
-Quality: 54 functions · 8 with examples · 14.8% example coverage · statuses: recommended=54, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=54, internal=0, empty=0
+Quality: 54 functions · 12 with examples · 22.2% example coverage · statuses: recommended=54, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=54, internal=0, empty=0
 
 Recommended entrypoints:
 
@@ -2167,7 +2167,7 @@ Golden path API set:
 | `Debugf` | `func Debugf(format string, args ...any)` | recommended | Debugf logs formatted debug-level output through the static logger. | facade | — |
 | `DebugfWithOptions` | `func DebugfWithOptions(opts []LoggerOption, format string, args ...any)` | recommended | DebugfWithOptions logs formatted debug-level output through a per-call logger configuration. | facade | — |
 | `DefaultLogger` | `func DefaultLogger() Log` | recommended | DefaultLogger returns the default logger. | facade | — |
-| `DefaultLoggerWithOptions` | `func DefaultLoggerWithOptions(opts ...LoggerOption) Log` | recommended | DefaultLoggerWithOptions returns the default logger with per-call factory/cache options. | facade | — |
+| `DefaultLoggerWithOptions` | `func DefaultLoggerWithOptions(opts ...LoggerOption) Log` | recommended | DefaultLoggerWithOptions returns the default logger with per-call factory/cache options. | facade | `ExampleDefaultLoggerWithOptions` |
 | `ErrorLog` | `func ErrorLog(args ...any)` | recommended | ErrorLog logs error-level output through the static logger. | facade | — |
 | `ErrorLogWithOptions` | `func ErrorLogWithOptions(opts []LoggerOption, args ...any)` | recommended | ErrorLogWithOptions logs error-level output through a per-call logger configuration. | facade | — |
 | `Errorf` | `func Errorf(format string, args ...any)` | recommended | Errorf logs formatted error-level output through the static logger. | facade | — |
@@ -2185,13 +2185,13 @@ Golden path API set:
 | `InfofWithOptions` | `func InfofWithOptions(opts []LoggerOption, format string, args ...any)` | recommended | InfofWithOptions logs formatted info-level output through a per-call logger configuration. | facade | — |
 | `LogAt` | `func LogAt(level LogLevel, format string, args ...any)` | recommended | LogAt logs output at the provided level through the static logger. | facade | — |
 | `LogAtE` | `func LogAtE(level LogLevel, err error, format string, args ...any)` | recommended | LogAtE logs output at the provided level with an error through the static logger. | facade | — |
-| `LogAtEWithOptions` | `func LogAtEWithOptions(opts []LoggerOption, level LogLevel, err error, format string, args ...any)` | recommended | LogAtEWithOptions logs output at the provided level with an error through a per-call logger configuration. | facade | — |
+| `LogAtEWithOptions` | `func LogAtEWithOptions(opts []LoggerOption, level LogLevel, err error, format string, args ...any)` | recommended | LogAtEWithOptions logs output at the provided level with an error through a per-call logger configuration. | facade | `ExampleLogAtEWithOptions` |
 | `LogAtWithOptions` | `func LogAtWithOptions(opts []LoggerOption, level LogLevel, format string, args ...any)` | recommended | LogAtWithOptions logs output at the provided level through a per-call logger configuration. | facade | `ExampleLogAtWithOptions` |
 | `Logger` | `func Logger(name string) Log` | recommended | Logger returns a cached logger by name. | facade | — |
 | `LoggerWithOptions` | `func LoggerWithOptions(name string, opts ...LoggerOption) Log` | recommended | LoggerWithOptions returns a logger by name with per-call factory/cache options. | facade | `ExampleLoggerWithOptions` |
 | `NewConsoleColorLog` | `func NewConsoleColorLog(name string) *ConsoleColorLog` | recommended | NewConsoleColorLog creates a colored console logger by name. | facade | — |
 | `NewConsoleColorLogWithOptions` | `func NewConsoleColorLogWithOptions(name string, opts ...ConsoleLogOption) *ConsoleColorLog` | recommended | NewConsoleColorLogWithOptions creates a colored console logger customized by options. | facade | — |
-| `NewConsoleLog` | `func NewConsoleLog(name string) *ConsoleLog` | recommended | NewConsoleLog creates a console logger by name. | facade | — |
+| `NewConsoleLog` | `func NewConsoleLog(name string) *ConsoleLog` | recommended | NewConsoleLog creates a console logger by name. | facade | `ExampleNewConsoleLog` |
 | `NewConsoleLogWithOptions` | `func NewConsoleLogWithOptions(name string, opts ...ConsoleLogOption) *ConsoleLog` | recommended | NewConsoleLogWithOptions creates a console logger customized by options. | facade | `ExampleNewConsoleLogWithOptions` |
 | `NewIsolatedLogger` | `func NewIsolatedLogger(name string, opts ...LoggerOption) Log` | recommended | NewIsolatedLogger creates a logger without reading package-level factory/cache state. | facade | `ExampleNewIsolatedLogger` |
 | `SetColorFactory` | `func SetColorFactory(f ColorFactory)` | recommended | SetColorFactory delegates to the internal logx implementation. | facade | — |
@@ -2207,7 +2207,7 @@ Golden path API set:
 | `Warn` | `func Warn(args ...any)` | recommended | Warn logs warn-level output through the static logger. | facade | — |
 | `WarnWithOptions` | `func WarnWithOptions(opts []LoggerOption, args ...any)` | recommended | WarnWithOptions logs warn-level output through a per-call logger configuration. | facade | — |
 | `Warnf` | `func Warnf(format string, args ...any)` | recommended | Warnf logs formatted warn-level output through the static logger. | facade | — |
-| `WarnfWithOptions` | `func WarnfWithOptions(opts []LoggerOption, format string, args ...any)` | recommended | WarnfWithOptions logs formatted warn-level output through a per-call logger configuration. | facade | — |
+| `WarnfWithOptions` | `func WarnfWithOptions(opts []LoggerOption, format string, args ...any)` | recommended | WarnfWithOptions logs formatted warn-level output through a per-call logger configuration. | facade | `ExampleWarnfWithOptions` |
 | `WithLogClock` | `func WithLogClock(clock func() time.Time) ConsoleLogOption` | recommended | WithLogClock sets the clock used to render console log timestamps. | facade | — |
 | `WithLogColorFactory` | `func WithLogColorFactory(f ColorFactory) ConsoleLogOption` | recommended | WithLogColorFactory sets an instance-specific color factory for ConsoleColorLog output. | facade | — |
 | `WithLogLevel` | `func WithLogLevel(level Level) ConsoleLogOption` | recommended | WithLogLevel sets an instance-specific console log threshold. | facade | — |
@@ -2223,7 +2223,7 @@ Import path: `github.com/imajinyun/knifer-go/vmail`
 
 Package vmail exposes email message construction, MIME attachment, and SMTP sending helpers.
 
-Quality: 51 functions · 7 with examples · 13.7% example coverage · statuses: recommended=51, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=51, internal=0, empty=0
+Quality: 51 functions · 12 with examples · 23.5% example coverage · statuses: recommended=51, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=51, internal=0, empty=0
 
 Recommended entrypoints:
 
@@ -2231,7 +2231,7 @@ Recommended entrypoints:
 | --- | --- | --- |
 | `NewAddress` | error | Prefer when callers must distinguish invalid input or provider failure from default values. |
 | `WithQuickClientOptions` | options | Prefer when providers, limits, parsers, or policies must be reviewable at the call site. |
-| `WithHeader` | day-one | Start here for concise, trusted-input use cases in this package. |
+| `WithAttachment` | day-one | Start here for concise, trusted-input use cases in this package. |
 
 Golden path API set:
 
@@ -2239,7 +2239,7 @@ Golden path API set:
 | --- | --- | --- |
 | `NewAddress` | Use first when callers must observe invalid input or provider failure. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `WithQuickClientOptions` | Use first when policies, providers, parsers, limits, or clocks must be explicit. | Avoid for trivial in-memory code where the standard library is clearer. |
-| `WithHeader` | Use first for concise trusted-input workflows in vmail. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vmail. |
+| `WithAttachment` | Use first for concise trusted-input workflows in vmail. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vmail. |
 | `NewAttachment` | Use first for concise trusted-input workflows in vmail. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vmail. |
 | `NewAttachmentFile` | Use first for concise trusted-input workflows in vmail. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vmail. |
 
@@ -2263,15 +2263,15 @@ Golden path API set:
 | `SendHTML` | `func SendHTML(ctx context.Context, host string, port int, from string, to []string, subject string, html string, opts ...ClientOption) error` | recommended | SendHTML creates and sends an HTML message. | facade | — |
 | `SendText` | `func SendText(ctx context.Context, host string, port int, from string, to []string, subject string, text string, opts ...ClientOption) error` | recommended | SendText creates and sends a plain text message. | facade | — |
 | `WithAllowPlainAuth` | `func WithAllowPlainAuth(allow bool) ClientOption` | recommended | WithAllowPlainAuth permits SMTP AUTH without TLS. | facade | — |
-| `WithAttachment` | `func WithAttachment(name string, content []byte, contentType ContentType) MessageOption` | recommended | WithAttachment appends an attachment from bytes. | facade | — |
+| `WithAttachment` | `func WithAttachment(name string, content []byte, contentType ContentType) MessageOption` | recommended | WithAttachment appends an attachment from bytes. | facade | `ExampleWithAttachment` |
 | `WithAttachmentFile` | `func WithAttachmentFile(path string) MessageOption` | recommended | WithAttachmentFile appends an attachment loaded lazily from path. | facade | — |
 | `WithAttachmentReader` | `func WithAttachmentReader(name string, size int64, contentType ContentType, open func() (io.ReadCloser, error)) MessageOption` | recommended | WithAttachmentReader appends an attachment from a reader opener. | facade | — |
 | `WithAuth` | `func WithAuth(username string, password string) ClientOption` | recommended | WithAuth sets SMTP username and password. | facade | — |
 | `WithBcc` | `func WithBcc(addresses ...string) MessageOption` | recommended | WithBcc appends Bcc recipients. | facade | — |
-| `WithBoundaryGenerator` | `func WithBoundaryGenerator(generator BoundaryGenerator) MessageOption` | recommended | WithBoundaryGenerator injects the MIME boundary generator. | facade | — |
+| `WithBoundaryGenerator` | `func WithBoundaryGenerator(generator BoundaryGenerator) MessageOption` | recommended | WithBoundaryGenerator injects the MIME boundary generator. | facade | `ExampleWithBoundaryGenerator` |
 | `WithCc` | `func WithCc(addresses ...string) MessageOption` | recommended | WithCc appends Cc recipients. | facade | — |
 | `WithCharset` | `func WithCharset(charset Charset) MessageOption` | recommended | WithCharset sets the charset used for message text parts and encoded headers. | facade | — |
-| `WithDate` | `func WithDate(t time.Time) MessageOption` | recommended | WithDate sets the Date header value. | facade | — |
+| `WithDate` | `func WithDate(t time.Time) MessageOption` | recommended | WithDate sets the Date header value. | facade | `ExampleWithDate` |
 | `WithDialContext` | `func WithDialContext(dial func(context.Context, string, string) (net.Conn, error)) ClientOption` | recommended | WithDialContext sets the network dialer. | facade | — |
 | `WithEncoding` | `func WithEncoding(encoding Encoding) MessageOption` | recommended | WithEncoding sets the transfer encoding used for text parts. | facade | — |
 | `WithEnvelopeFrom` | `func WithEnvelopeFrom(address string) MessageOption` | recommended | WithEnvelopeFrom sets the SMTP envelope sender for MAIL FROM. | facade | — |
@@ -2283,8 +2283,8 @@ Golden path API set:
 | `WithInlineFile` | `func WithInlineFile(path string, contentID string) MessageOption` | recommended | WithInlineFile appends an inline attachment loaded lazily from path with a Content-ID. | facade | — |
 | `WithInlineReader` | `func WithInlineReader(name string, contentID string, size int64, contentType ContentType, open func() (io.ReadCloser, error)) MessageOption` | recommended | WithInlineReader appends an inline file from a reader opener with a Content-ID. | facade | — |
 | `WithLocalName` | `func WithLocalName(name string) ClientOption` | recommended | WithLocalName sets the HELO/EHLO local name. | facade | — |
-| `WithMaxAttachmentBytes` | `func WithMaxAttachmentBytes(maxBytes int64) MessageOption` | recommended | WithMaxAttachmentBytes sets the per-attachment size limit. | facade | — |
-| `WithMessageID` | `func WithMessageID(id string) MessageOption` | recommended | WithMessageID sets the Message-ID header without angle brackets. | facade | — |
+| `WithMaxAttachmentBytes` | `func WithMaxAttachmentBytes(maxBytes int64) MessageOption` | recommended | WithMaxAttachmentBytes sets the per-attachment size limit. | facade | `ExampleWithMaxAttachmentBytes` |
+| `WithMessageID` | `func WithMessageID(id string) MessageOption` | recommended | WithMessageID sets the Message-ID header without angle brackets. | facade | `ExampleWithMessageID` |
 | `WithQuickClientOptions` | `func WithQuickClientOptions(opts ...ClientOption) QuickOption` | recommended | WithQuickClientOptions appends client options used by QuickSend and account helpers. | facade | — |
 | `WithQuickMessageOptions` | `func WithQuickMessageOptions(opts ...MessageOption) QuickOption` | recommended | WithQuickMessageOptions appends message options used by QuickSend and account helpers. | facade | — |
 | `WithReplyTo` | `func WithReplyTo(addresses ...string) MessageOption` | recommended | WithReplyTo appends Reply-To addresses. | facade | — |

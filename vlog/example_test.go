@@ -2,6 +2,7 @@ package vlog_test
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"time"
 
@@ -28,6 +29,48 @@ func ExampleNewConsoleLogWithOptions() {
 	log.Infof("hello {}", "world")
 	fmt.Print(out.String())
 	// Output: [2024-04-05T06:07:08Z] [INFO ] example: hello world
+}
+
+func ExampleNewConsoleLog() {
+	log := vlog.NewConsoleLog("plain")
+
+	fmt.Println(log.GetName())
+	// Output: plain
+}
+
+func ExampleDefaultLoggerWithOptions() {
+	log := vlog.DefaultLoggerWithOptions(vlog.WithLoggerCache(false))
+
+	fmt.Println(log.GetName())
+	// Output: default
+}
+
+func ExampleLogAtEWithOptions() {
+	var out bytes.Buffer
+	fixed := time.Date(2024, 4, 5, 6, 7, 8, 0, time.UTC)
+	opts := []vlog.LoggerOption{vlog.WithLoggerConsoleOptions(
+		vlog.WithLogClock(func() time.Time { return fixed }),
+		vlog.WithLogTimeLayout(time.RFC3339),
+		vlog.WithLogOutput(&out, &bytes.Buffer{}),
+	)}
+
+	vlog.LogAtEWithOptions(opts, vlog.LogLevelInfo, errors.New("closed"), "queue {}", "jobs")
+	fmt.Print(out.String())
+	// Output: [2024-04-05T06:07:08Z] [INFO ] static: queue jobs | error: closed
+}
+
+func ExampleWarnfWithOptions() {
+	var errOut bytes.Buffer
+	fixed := time.Date(2024, 4, 5, 6, 7, 8, 0, time.UTC)
+	opts := []vlog.LoggerOption{vlog.WithLoggerConsoleOptions(
+		vlog.WithLogClock(func() time.Time { return fixed }),
+		vlog.WithLogTimeLayout(time.RFC3339),
+		vlog.WithLogOutput(&bytes.Buffer{}, &errOut),
+	)}
+
+	vlog.WarnfWithOptions(opts, "slow request %d", 3)
+	fmt.Print(errOut.String())
+	// Output: [2024-04-05T06:07:08Z] [WARN ] static: slow request 3
 }
 
 func ExampleInfoWithOptions() {

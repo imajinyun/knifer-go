@@ -10,7 +10,7 @@ This baseline is derived from `docs/api/tools.json.summary`. `make governance-ma
 | --- | ---: |
 | Public facade packages | 55 |
 | Public functions | 2757 |
-| Functions with executable examples | 1712 |
+| Functions with executable examples | 1721 |
 | Context-aware functions | 36 |
 | Functions returning errors | 687 |
 | Recommended public functions | 2735 |
@@ -111,6 +111,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 44 | Completed | Developer Daily Toolkit Entry | Added a daily developer utilities guide that groups `vcli`, `vsys`, `vfile`, `vnet`, `vjob`, and `vlog` against the `gookit/goutil` mental model while keeping `vtest` as a planned lane. |
 | 45 | Completed | Public Benchmark Trust Page | Published benchmark trust guidance that separates quick gates from manual opt-in evidence and blocks universal performance claims without repeated runs and benchstat. |
 | 46 | Completed | First-Use Golden Path | Added 10 tasks in 10 minutes guidance with one recommended facade and one shortest example for string, slice, map, JSON, file, HTTP, crypto, config, DB, and CLI workflows. |
+| 47 | Completed | Example Density for Weak Facades | ratchet for `vlog` and `vmail` from below-25-percent example coverage to 12 examples each, then guarded the new baseline with machine-checked example density governance. |
 
 ## Active workflow
 
@@ -163,6 +164,8 @@ Sprint 44 completed daily developer toolkit governance: `daily_developer_toolkit
 Sprint 45 completed public benchmark trust governance: `benchmark_trust_governance` records quick benchmark gates, manual opt-in benchmark evidence, repeated-run and benchstat requirements, and the rule that benchmark output is evidence rather than a universal performance claim.
 
 Sprint 46 completed first-use golden path governance: `first_use_golden_paths_governance` records the 10 tasks in 10 minutes entry point and keeps each task mapped to exactly one recommended facade and one shortest example.
+
+Sprint 47 completed weak facade example-density governance: `weak_facade_example_density_governance` records the selection rule for common facades below 25 percent example coverage and locks the `vlog` / `vmail` ratchet at 12 examples each.
 
 Recommended roadmap loop:
 

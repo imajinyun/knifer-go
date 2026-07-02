@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 55,
     "function_count": 2757,
-    "functions_with_examples": 1712,
+    "functions_with_examples": 1721,
     "context_aware_functions": 36,
     "returns_error_functions": 687,
     "variadic_functions": 804,
@@ -31610,8 +31610,8 @@
       "synopsis": "Package vlog provides public APIs for logging utilities.",
       "summary": {
         "function_count": 54,
-        "functions_with_examples": 8,
-        "example_coverage_percent": 14.8,
+        "functions_with_examples": 12,
+        "example_coverage_percent": 22.2,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
@@ -31779,7 +31779,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleDefaultLoggerWithOptions"
+          ]
         },
         {
           "name": "ErrorLog",
@@ -32148,7 +32151,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleLogAtEWithOptions"
+          ]
         },
         {
           "name": "LogAtWithOptions",
@@ -32285,7 +32291,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNewConsoleLog"
+          ]
         },
         {
           "name": "NewConsoleLogWithOptions",
@@ -32593,7 +32602,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWarnfWithOptions"
+          ]
         },
         {
           "name": "WithLogClock",
@@ -32759,8 +32771,8 @@
       "synopsis": "Package vmail exposes email message construction, MIME attachment, and SMTP sending helpers.",
       "summary": {
         "function_count": 51,
-        "functions_with_examples": 7,
-        "example_coverage_percent": 13.7,
+        "functions_with_examples": 12,
+        "example_coverage_percent": 23.5,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
@@ -32785,7 +32797,7 @@
           "avoid_when": "Avoid for trivial in-memory code where the standard library is clearer."
         },
         {
-          "name": "WithHeader",
+          "name": "WithAttachment",
           "use_when": "Use first for concise trusted-input workflows in vmail.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vmail."
         },
@@ -32812,7 +32824,7 @@
           "rationale": "Prefer when providers, limits, parsers, or policies must be reviewable at the call site."
         },
         {
-          "name": "WithHeader",
+          "name": "WithAttachment",
           "profile": "day-one",
           "rationale": "Start here for concise, trusted-input use cases in this package."
         }
@@ -33398,7 +33410,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithAttachment"
+          ]
         },
         {
           "name": "WithAttachmentFile",
@@ -33509,7 +33524,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithBoundaryGenerator"
+          ]
         },
         {
           "name": "WithCc",
@@ -33566,7 +33584,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithDate"
+          ]
         },
         {
           "name": "WithDialContext",
@@ -33833,7 +33854,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithMaxAttachmentBytes"
+          ]
         },
         {
           "name": "WithMessageID",
@@ -33852,7 +33876,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithMessageID"
+          ]
         },
         {
           "name": "WithQuickClientOptions",

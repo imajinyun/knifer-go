@@ -532,7 +532,7 @@
       "recommended_profile_schema": "recommended_entrypoints profiles: day-one, safe, error, options, compatibility; golden_path lists 1-7 APIs with use_when and avoid_when guidance",
       "package_count": 55,
       "function_count": 2757,
-      "functions_with_examples": 1712,
+      "functions_with_examples": 1721,
       "context_aware_functions": 36,
       "returns_error_functions": 687,
       "status_counts": {
@@ -691,7 +691,7 @@
       "vjson": { "primary": ["Parse", "FormatWithOptions", "CreateConfig", "Format", "GetByPath"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vjwt": { "primary": ["CreateJWTToken", "ES256WithOptions", "AlgorithmName", "MustHMACSigner", "CreateJWTTokenWithSigner"], "advanced": [], "compatibility": ["MustHMACSigner"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
       "vlog": { "primary": ["LogAtE", "DebugWithOptions", "GetDefault", "Debug", "Debugf"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
-      "vmail": { "primary": ["NewAddress", "WithQuickClientOptions", "WithHeader", "NewAttachment", "NewAttachmentFile"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
+      "vmail": { "primary": ["NewAddress", "WithQuickClientOptions", "WithAttachment", "NewAttachment", "NewAttachmentFile"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vmap": { "primary": ["FilterErr", "Assign", "Clear", "Clone", "ContainsKey"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vmask": { "primary": ["BankCard", "Address", "CarLicense", "ChineseName", "Clear"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vnet": { "primary": ["AddRootCABytes", "GetHardwareAddressWithOptions", "CreateAddress", "AddRootCAFileWithOptions", "AddRootCAReader"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
@@ -1381,6 +1381,23 @@
       "Safe context-aware or WithOptions flows for trust boundaries"
     ],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
+  "weak_facade_example_density_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "sprint": 47,
+    "status": "completed",
+    "selection_rule": "common facades with example coverage below 25 percent",
+    "target_facades": ["vlog", "vmail"],
+    "baseline": {
+      "vlog": { "function_count": 54, "functions_with_examples": 8, "example_coverage_percent": 14.8 },
+      "vmail": { "function_count": 51, "functions_with_examples": 7, "example_coverage_percent": 13.7 }
+    },
+    "target_examples": {
+      "vlog": 12,
+      "vmail": 12
+    },
+    "ratchet_policy": "raise selected weak facades in small increments instead of completing every API at once",
+    "required_checks": ["go test ./vlog ./vmail", "tools-gen", "docs-check", "ai-context-check", "governance-maturity-check"]
   },
   "error_model": {
     "taxonomy": [

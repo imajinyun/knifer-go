@@ -1,8 +1,10 @@
 package vmail_test
 
 import (
+	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/imajinyun/knifer-go/vmail"
 )
@@ -48,6 +50,84 @@ func ExampleNewAttachment() {
 	fmt.Println(err)
 	// Output:
 	// report.txt 6 text/plain
+	// <nil>
+}
+
+func ExampleWithDate() {
+	when := time.Date(2024, 4, 5, 6, 7, 8, 0, time.UTC)
+	message, err := vmail.NewMessage(
+		vmail.WithFrom("sender@example.com"),
+		vmail.WithTo("recipient@example.com"),
+		vmail.WithText("World"),
+		vmail.WithDate(when),
+	)
+
+	fmt.Println(message.Date.Format(time.RFC3339))
+	fmt.Println(err)
+	// Output:
+	// 2024-04-05T06:07:08Z
+	// <nil>
+}
+
+func ExampleWithMessageID() {
+	message, err := vmail.NewMessage(
+		vmail.WithFrom("sender@example.com"),
+		vmail.WithTo("recipient@example.com"),
+		vmail.WithText("World"),
+		vmail.WithMessageID("msg-1@example.com"),
+	)
+
+	fmt.Println(message.MessageID)
+	fmt.Println(err)
+	// Output:
+	// msg-1@example.com
+	// <nil>
+}
+
+func ExampleWithAttachment() {
+	message, err := vmail.NewMessage(
+		vmail.WithFrom("sender@example.com"),
+		vmail.WithTo("recipient@example.com"),
+		vmail.WithText("World"),
+		vmail.WithAttachment("report.txt", []byte("report"), vmail.TypeTextPlain),
+	)
+
+	fmt.Println(message.Attachments[0].Name, message.Attachments[0].Size)
+	fmt.Println(err)
+	// Output:
+	// report.txt 6
+	// <nil>
+}
+
+func ExampleWithMaxAttachmentBytes() {
+	_, err := vmail.NewMessage(
+		vmail.WithFrom("sender@example.com"),
+		vmail.WithTo("recipient@example.com"),
+		vmail.WithText("World"),
+		vmail.WithMaxAttachmentBytes(3),
+		vmail.WithAttachment("report.txt", []byte("report"), vmail.TypeTextPlain),
+	)
+
+	fmt.Println(errors.Is(err, vmail.ErrAttachmentTooLarge))
+	// Output: true
+}
+
+func ExampleWithBoundaryGenerator() {
+	message, err := vmail.NewMessage(
+		vmail.WithFrom("sender@example.com"),
+		vmail.WithTo("recipient@example.com"),
+		vmail.WithText("World"),
+		vmail.WithAttachment("report.txt", []byte("report"), vmail.TypeTextPlain),
+		vmail.WithBoundaryGenerator(func() (string, error) { return "fixed-boundary", nil }),
+	)
+	data, bytesErr := message.Bytes()
+
+	fmt.Println(strings.Contains(string(data), "fixed-boundary"))
+	fmt.Println(err)
+	fmt.Println(bytesErr)
+	// Output:
+	// true
+	// <nil>
 	// <nil>
 }
 
