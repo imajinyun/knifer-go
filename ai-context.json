@@ -1373,6 +1373,19 @@
     "required_boundaries": ["choose one default facade first", "related facades only when workflow crosses package boundaries", "Safe/E/WithOptions flows at trust boundaries", "do not import internal packages"],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
   },
+  "facade_tiering_import_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/facade-tiering.md",
+    "readme_path": "README.md",
+    "sprint": 57,
+    "status": "completed",
+    "day_one_defaults": ["vstr", "vslice", "vmap", "vjson", "vfile", "vhttp", "vcrypto", "vconf", "vdb", "vcli"],
+    "dependency_tiers_source": "dependency_tiers",
+    "security_sensitive_source": "security_sensitive_packages",
+    "required_tiers": ["core facades", "heavy extension facades", "provider contract facades", "security-sensitive overlay"],
+    "required_boundaries": ["import public v* facade packages", "do not import internal packages", "heavy dependencies require allowlist review", "provider contracts stay provider-neutral", "Safe/E/WithOptions flows in security-sensitive facades"],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
   "daily_developer_toolkit_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
     "doc_path": "docs/doc/daily-developer-utilities.md",

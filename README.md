@@ -207,6 +207,7 @@ High-intent prompts and recommended imports:
 Not sure which package to import? Start from what you want to do:
 
 Use [`docs/doc/task-index.md`](docs/doc/task-index.md) when you know the task but do not know the facade. It gives one default facade and related facades for day-one, star-domain, and daily workflows.
+Use [`docs/doc/facade-tiering.md`](docs/doc/facade-tiering.md) when choosing between day-one defaults, core facades, heavy extensions, provider contracts, and security-sensitive imports.
 
 | I want to… | Use |
 | --- | --- |

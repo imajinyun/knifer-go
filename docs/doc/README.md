@@ -34,6 +34,7 @@
 - 🧯 Security policy: [`../../SECURITY.md`](../../SECURITY.md)
 - 📝 Changelog: [`../../CHANGELOG.md`](../../CHANGELOG.md)
 - 🧭 Task index: [`task-index.md`](task-index.md)
+- 🧱 Facade tiering and import guide: [`facade-tiering.md`](facade-tiering.md)
 - ⚖️ Utility library comparison: [`utility-library-comparison.md`](utility-library-comparison.md)
 - 🧭 Go version adoption policy: [`go-version-adoption-policy.md`](go-version-adoption-policy.md)
 - 🧩 Collections comparison: [`collections-comparison.md`](collections-comparison.md)

@@ -121,6 +121,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 54 | Completed | Task Index / API Discoverability Simplification | Added `task-index.md` as a day-one, star-domain, and daily task index that maps each task to one default facade and a small related-facade set. |
 | 55 | Completed | Collection Benchmark Trust | Added collection benchmark trust guidance for `vslice`, `vmap`, and `vset`, keeping benchmark output local-baseline evidence that requires repeated runs and `benchstat` before claims. |
 | 56 | Completed | Developer Debug/Test Utilities Backlog | Added `developer-debug-test-backlog.md` for planned `vtest` and `vdump` lanes while keeping current debug and test utility entry points on `vcli`, `vsys`, `vfile`, and `vlog`. |
+| 57 | Completed | Facade Tiering and Import Guide | Added `facade-tiering.md` for day-one defaults, core facades, heavy extension facades, provider contract facades, and security-sensitive import boundaries. |
 
 ## Active workflow
 
@@ -193,6 +194,8 @@ Sprint 54 completed task-index governance: `task_index_governance` records `task
 Sprint 55 completed collection benchmark trust governance: `collections_benchmark_trust_governance` records collection benchmark scope for `vslice`, `vmap`, and `vset`, including benchstat requirements and non-marketing evidence boundaries.
 
 Sprint 56 completed developer debug/test backlog governance: `developer_debug_test_backlog_governance` records the planned-only `vtest` and `vdump` lanes and prevents them from being documented as current public facades before implementation.
+
+Sprint 57 completed facade tiering and import governance: `facade_tiering_import_governance` records the public tiering guide and keeps `dependency_tiers` plus `security_sensitive_packages` aligned with docs.
 
 Recommended roadmap loop:
 

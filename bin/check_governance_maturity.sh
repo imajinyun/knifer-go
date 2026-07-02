@@ -2385,6 +2385,94 @@ def validate_task_index_governance() -> None:
 		add_error(f"{roadmap_path} must mention task_index_governance")
 
 
+def validate_facade_tiering_import_governance() -> None:
+	governance = require_mapping(ai_context.get("facade_tiering_import_governance"), "facade_tiering_import_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("facade_tiering_import_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("facade_tiering_import_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/facade-tiering.md"
+	readme_path = governance.get("readme_path")
+	if readme_path != "README.md":
+		add_error("facade_tiering_import_governance.readme_path must be README.md")
+		readme_path = "README.md"
+	if governance.get("sprint") != 57:
+		add_error("facade_tiering_import_governance.sprint must be 57")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("facade_tiering_import_governance.status must be active or completed")
+	day_one_defaults = require_string_list(governance.get("day_one_defaults"), "facade_tiering_import_governance.day_one_defaults")
+	expected_day_one_defaults = ["vstr", "vslice", "vmap", "vjson", "vfile", "vhttp", "vcrypto", "vconf", "vdb", "vcli"]
+	if day_one_defaults != expected_day_one_defaults:
+		add_error("facade_tiering_import_governance.day_one_defaults must be ordered as: " + ", ".join(expected_day_one_defaults))
+	if governance.get("dependency_tiers_source") != "dependency_tiers":
+		add_error("facade_tiering_import_governance.dependency_tiers_source must be dependency_tiers")
+	if governance.get("security_sensitive_source") != "security_sensitive_packages":
+		add_error("facade_tiering_import_governance.security_sensitive_source must be security_sensitive_packages")
+	required_tiers = require_string_list(governance.get("required_tiers"), "facade_tiering_import_governance.required_tiers")
+	expected_tiers = ["core facades", "heavy extension facades", "provider contract facades", "security-sensitive overlay"]
+	if required_tiers != expected_tiers:
+		add_error("facade_tiering_import_governance.required_tiers must be ordered as: " + ", ".join(expected_tiers))
+	boundaries = require_string_list(governance.get("required_boundaries"), "facade_tiering_import_governance.required_boundaries")
+	expected_boundaries = [
+		"import public v* facade packages",
+		"do not import internal packages",
+		"heavy dependencies require allowlist review",
+		"provider contracts stay provider-neutral",
+		"Safe/E/WithOptions flows in security-sensitive facades",
+	]
+	if boundaries != expected_boundaries:
+		add_error("facade_tiering_import_governance.required_boundaries must be ordered as: " + ", ".join(expected_boundaries))
+	required_checks = require_string_list(governance.get("required_checks"), "facade_tiering_import_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"facade_tiering_import_governance.required_checks must include {check}")
+	dependency_tiers = require_mapping(ai_context.get("dependency_tiers"), "dependency_tiers")
+	for tier_key in ("core_facades", "heavy_extension_facades", "provider_contract_facades"):
+		tier_values = require_string_list(dependency_tiers.get(tier_key), f"dependency_tiers.{tier_key}")
+		if not tier_values:
+			add_error(f"dependency_tiers.{tier_key} must not be empty")
+	security_sensitive = require_string_list(ai_context.get("security_sensitive_packages"), "security_sensitive_packages")
+	if not security_sensitive:
+		add_error("security_sensitive_packages must not be empty")
+	if not (root / doc_path).exists():
+		add_error(f"{doc_path} must exist")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for phrase in day_one_defaults + required_tiers + boundaries + ["dependency_tiers", "security_sensitive_packages", "Facade Tiering and Import Guide"]:
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	for facade in dependency_tiers.get("heavy_extension_facades", []):
+		if isinstance(facade, str) and doc_text and f"`{facade}`" not in doc_text:
+			add_error(f"{doc_path} must include heavy extension facade {facade!r}")
+	for facade in dependency_tiers.get("provider_contract_facades", []):
+		if isinstance(facade, str) and doc_text and f"`{facade}`" not in doc_text:
+			add_error(f"{doc_path} must include provider contract facade {facade!r}")
+	readme_text = (root / readme_path).read_text(encoding="utf-8") if (root / readme_path).exists() else ""
+	if "facade-tiering.md" not in readme_text:
+		add_error("README.md must link docs/doc/facade-tiering.md")
+	doc_index_text = (root / "docs/doc/README.md").read_text(encoding="utf-8")
+	if "facade-tiering.md" not in doc_index_text:
+		add_error("docs/doc/README.md must link docs/doc/facade-tiering.md")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_57_rows = [row for row in sprint_rows if row.get("Sprint") == "57"]
+	if len(sprint_57_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 57 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_57_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 57 status must be {expected_status}")
+		sprint_text = " ".join(sprint_57_rows[0].values())
+		for phrase in ("facade-tiering", "core", "heavy extension", "provider contract", "security-sensitive"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 57 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "facade_tiering_import_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention facade_tiering_import_governance")
+
+
 def validate_daily_developer_toolkit_governance() -> None:
 	governance = require_mapping(ai_context.get("daily_developer_toolkit_governance"), "daily_developer_toolkit_governance")
 	roadmap_path = governance.get("roadmap_path")
@@ -3437,6 +3525,7 @@ if not bench_only:
 	validate_vconv_cast_migration_governance()
 	validate_dynamic_data_toolkit_matrix_governance()
 	validate_task_index_governance()
+	validate_facade_tiering_import_governance()
 	validate_daily_developer_toolkit_governance()
 	validate_daily_utility_cookbook_v2_governance()
 	validate_developer_debug_test_backlog_governance()
