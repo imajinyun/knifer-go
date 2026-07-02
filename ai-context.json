@@ -1202,6 +1202,31 @@
     ],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check", "agent-security-check"]
   },
+  "safe_crypto_interoperability_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "quickstart_path": "docs/doc/11-vcrypto.md",
+    "backlog_path": "docs/doc/safe-crypto-advanced-backlog.md",
+    "sprint": 37,
+    "status": "completed",
+    "packages": ["vcrypto", "vjwt"],
+    "required_boundaries": [
+      "interoperability-only helpers are explicitly documented",
+      "SM4-ECB is legacy and non-default",
+      "SM2 UID policy is explicit at call sites",
+      "RSA OAEP and PSS options are interoperability choices",
+      "PEM and JWK exchange are key material helpers",
+      "new designs prefer authenticated encryption"
+    ],
+    "required_doc_phrases": [
+      "interoperability-only",
+      "SM4-ECB",
+      "SM2 UID policy",
+      "RSA-OAEP/PSS",
+      "PEM/JWK",
+      "not the default recommendation"
+    ],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check", "agent-security-check"]
+  },
   "error_model": {
     "taxonomy": [
       { "category": "invalid input", "code": "GK_INVALID_INPUT", "use_when": "Caller-provided arguments, payloads, or configuration values are malformed." },

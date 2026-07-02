@@ -83,6 +83,14 @@ No. Hashes are one-way fingerprints, HMAC authenticates messages with a shared s
 
 Use AES-GCM for general Go-to-Go or cross-platform encryption unless national-crypto interoperability is required. Use SM4 helpers when counterparties, compliance profiles, or existing payload formats require SM algorithms.
 
+### Which helpers are interoperability-only?
+
+Helpers for SM4-ECB, externally mandated SM2 UID policy, RSA-OAEP/PSS option
+choices, and PEM/JWK key-material exchange exist for explicit interoperability
+contracts. They are not the default recommendation for new designs. Prefer
+authenticated encryption such as AES-GCM or SM4-GCM, keep algorithm policy at
+the call site, and add tests that document the external format being matched.
+
 ### Are secrets ever logged?
 
 Security-sensitive helpers must not log raw secrets, tokens, keys, nonces, or salts. Treat any such behavior as a security bug.

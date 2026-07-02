@@ -1573,6 +1573,86 @@ def validate_safe_crypto_secret_handling_governance() -> None:
 				add_error(f"{roadmap_path} Sprint 36 row must mention {required_phrase!r}")
 
 
+def validate_safe_crypto_interoperability_governance() -> None:
+	governance = require_mapping(ai_context.get("safe_crypto_interoperability_governance"), "safe_crypto_interoperability_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("safe_crypto_interoperability_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	quickstart_path = governance.get("quickstart_path")
+	if not isinstance(quickstart_path, str) or not quickstart_path.strip():
+		add_error("safe_crypto_interoperability_governance.quickstart_path must be non-empty")
+		quickstart_path = "docs/doc/11-vcrypto.md"
+	backlog_path = governance.get("backlog_path")
+	if not isinstance(backlog_path, str) or not backlog_path.strip():
+		add_error("safe_crypto_interoperability_governance.backlog_path must be non-empty")
+		backlog_path = "docs/doc/safe-crypto-advanced-backlog.md"
+	sprint = governance.get("sprint")
+	if sprint != 37:
+		add_error("safe_crypto_interoperability_governance.sprint must be 37")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("safe_crypto_interoperability_governance.status must be active or completed")
+	packages = require_string_list(governance.get("packages"), "safe_crypto_interoperability_governance.packages")
+	expected_packages = ["vcrypto", "vjwt"]
+	if packages != expected_packages:
+		add_error("safe_crypto_interoperability_governance.packages must be ordered as: " + ", ".join(expected_packages))
+	for package_name in packages:
+		if package_name not in public_facades:
+			add_error(f"safe_crypto_interoperability_governance.packages references non-public facade {package_name}")
+	required_boundaries = require_string_list(governance.get("required_boundaries"), "safe_crypto_interoperability_governance.required_boundaries")
+	expected_boundaries = [
+		"interoperability-only helpers are explicitly documented",
+		"SM4-ECB is legacy and non-default",
+		"SM2 UID policy is explicit at call sites",
+		"RSA OAEP and PSS options are interoperability choices",
+		"PEM and JWK exchange are key material helpers",
+		"new designs prefer authenticated encryption",
+	]
+	if required_boundaries != expected_boundaries:
+		add_error("safe_crypto_interoperability_governance.required_boundaries must be ordered as: " + ", ".join(expected_boundaries))
+	required_doc_phrases = require_string_list(governance.get("required_doc_phrases"), "safe_crypto_interoperability_governance.required_doc_phrases")
+	expected_doc_phrases = [
+		"interoperability-only",
+		"SM4-ECB",
+		"SM2 UID policy",
+		"RSA-OAEP/PSS",
+		"PEM/JWK",
+		"not the default recommendation",
+	]
+	if required_doc_phrases != expected_doc_phrases:
+		add_error("safe_crypto_interoperability_governance.required_doc_phrases must be ordered as: " + ", ".join(expected_doc_phrases))
+	required_checks = require_string_list(governance.get("required_checks"), "safe_crypto_interoperability_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check", "agent-security-check"):
+		if check not in required_checks:
+			add_error(f"safe_crypto_interoperability_governance.required_checks must include {check}")
+	for path in (quickstart_path, backlog_path):
+		if not (root / path).exists():
+			add_error(f"{path} must exist")
+	quickstart_text = (root / quickstart_path).read_text(encoding="utf-8") if (root / quickstart_path).exists() else ""
+	backlog_text = (root / backlog_path).read_text(encoding="utf-8") if (root / backlog_path).exists() else ""
+	for phrase in required_doc_phrases:
+		if quickstart_text and phrase not in quickstart_text:
+			add_error(f"{quickstart_path} must include {phrase!r}")
+	for phrase in ("Interoperability boundaries | Governance completed", "safe_crypto_interoperability_governance", "legacy-mode warnings", "SM4-ECB non-default"):
+		if backlog_text and phrase not in backlog_text:
+			add_error(f"{backlog_path} must include {phrase!r}")
+
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_37_rows = [row for row in sprint_rows if row.get("Sprint") == "37"]
+	if len(sprint_37_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 37 row")
+	else:
+		sprint_37 = sprint_37_rows[0]
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_37.get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 37 status must be {expected_status}")
+		sprint_text = " ".join(sprint_37.values())
+		for required_phrase in ("interoperability-only", "SM4-ECB", "SM2 UID", "non-default"):
+			if required_phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 37 row must mention {required_phrase!r}")
+
+
 def validate_example_depth_governance() -> None:
 	governance = require_mapping(ai_context.get("example_depth_governance"), "example_depth_governance")
 	sprint = governance.get("sprint")
@@ -1983,6 +2063,7 @@ if not bench_only:
 	validate_safe_crypto_jwk_jwks_governance()
 	validate_safe_crypto_jwk_jwks_implementation_governance()
 	validate_safe_crypto_secret_handling_governance()
+	validate_safe_crypto_interoperability_governance()
 	validate_example_depth_governance()
 	validate_api_convergence()
 	validate_lifecycle()

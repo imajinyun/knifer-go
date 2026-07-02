@@ -33,6 +33,7 @@
     "safe_crypto_jwk_jwks_governance",
     "safe_crypto_jwk_jwks_implementation_governance",
     "safe_crypto_secret_handling_governance",
+    "safe_crypto_interoperability_governance",
     "error_model",
     "dynamic_semantic_contracts",
     "v1_readiness",
@@ -438,6 +439,22 @@
       "additionalProperties": false
     },
     "safe_crypto_secret_handling_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "quickstart_path", "backlog_path", "sprint", "status", "packages", "required_boundaries", "required_doc_phrases", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "quickstart_path": { "type": "string", "minLength": 1 },
+        "backlog_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "packages": { "$ref": "#/$defs/string_array" },
+        "required_boundaries": { "$ref": "#/$defs/string_array" },
+        "required_doc_phrases": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "safe_crypto_interoperability_governance": {
       "type": "object",
       "required": ["roadmap_path", "quickstart_path", "backlog_path", "sprint", "status", "packages", "required_boundaries", "required_doc_phrases", "required_checks"],
       "properties": {
