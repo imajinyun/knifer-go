@@ -105,6 +105,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 38 | Completed | Safe Crypto Benchmark Scope Governance | Fixed deterministic crypto benchmark scope for digest, HMAC, AES-GCM, AES seal/open, and secure-random smoke paths while excluding production-strength password hashing from quick gates. |
 | 39 | Completed | Competitive Positioning Governance | Added utility-library comparison governance covering `samber/lo`, `duke-git/lancet`, `thoas/go-funk`, `gookit/goutil`, and `spf13/cast` with README and documentation entry points. |
 | 40 | Completed | Safe Crypto Advanced Closeout | Closed the Crypto capability row around completed advanced crypto governance and enforced that all advanced backlog lanes have landed evidence. |
+| 41 | Completed | Go Version Adoption Policy | Documented the Go 1.25 minimum-version rationale, CI matrix, release toolchain pin, and downgrade requirements in a machine-checked policy. |
 
 ## Active workflow
 
@@ -145,6 +146,8 @@ Sprint 38 completed safe crypto benchmark scope governance: `safe_crypto_benchma
 Sprint 39 completed competitive positioning governance: `utility_library_comparison_governance` records the comparison page, README entry, competitor coverage, and boundary rules for common Go utility library choices.
 
 Sprint 40 completed safe crypto advanced closeout: `safe_crypto_advanced_closeout_governance` keeps the Crypto capability row aligned with the landed advanced backlog lanes and prevents stale "remaining depth" wording from returning.
+
+Sprint 41 completed Go version adoption policy: `go_version_adoption_governance` records the Go 1.25 minimum, Go 1.25.11/1.26 CI coverage, Go 1.25.11 release toolchain, and the requirements for any future downgrade proposal.
 
 Recommended roadmap loop:
 

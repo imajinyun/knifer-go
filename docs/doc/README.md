@@ -34,6 +34,7 @@
 - 🧯 Security policy: [`../../SECURITY.md`](../../SECURITY.md)
 - 📝 Changelog: [`../../CHANGELOG.md`](../../CHANGELOG.md)
 - ⚖️ Utility library comparison: [`utility-library-comparison.md`](utility-library-comparison.md)
+- 🧭 Go version adoption policy: [`go-version-adoption-policy.md`](go-version-adoption-policy.md)
 
 <a id="start-with-star-domains"></a>
 

@@ -60,6 +60,9 @@ The root package `github.com/imajinyun/knifer-go` is only the module entry point
 
 Go 1.25 or later is required.
 
+See the [Go version adoption policy](docs/doc/go-version-adoption-policy.md) for
+the current minimum-version rationale and downgrade requirements.
+
 ```bash
 go get github.com/imajinyun/knifer-go
 ```

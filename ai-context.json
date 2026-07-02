@@ -1291,6 +1291,24 @@
     "forbidden_roadmap_phrases": ["remaining depth is TOTP/HOTP", "remaining depth is", "before adding more crypto APIs"],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
   },
+  "go_version_adoption_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/go-version-adoption-policy.md",
+    "readme_path": "README.md",
+    "sprint": 41,
+    "status": "completed",
+    "minimum_go_version": "1.25",
+    "ci_versions": ["1.25.11", "1.26"],
+    "release_go_version": "1.25.11",
+    "downgrade_status": "not supported today",
+    "required_rationale": [
+      "go.mod declares go 1.25.0",
+      "benchmarks use testing.B.Loop",
+      "ci verifies go 1.25.11 and 1.26",
+      "release workflow pins go 1.25.11"
+    ],
+    "required_checks": ["docs-check", "ai-context-check", "ci-workflow-check", "governance-maturity-check"]
+  },
   "error_model": {
     "taxonomy": [
       { "category": "invalid input", "code": "GK_INVALID_INPUT", "use_when": "Caller-provided arguments, payloads, or configuration values are malformed." },

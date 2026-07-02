@@ -1883,6 +1883,77 @@ def validate_safe_crypto_advanced_closeout_governance() -> None:
 				add_error(f"{roadmap_path} Sprint 40 row must not contain stale phrase {phrase!r}")
 
 
+def validate_go_version_adoption_governance() -> None:
+	governance = require_mapping(ai_context.get("go_version_adoption_governance"), "go_version_adoption_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("go_version_adoption_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("go_version_adoption_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/go-version-adoption-policy.md"
+	readme_path = governance.get("readme_path")
+	if readme_path != "README.md":
+		add_error("go_version_adoption_governance.readme_path must be README.md")
+		readme_path = "README.md"
+	if governance.get("sprint") != 41:
+		add_error("go_version_adoption_governance.sprint must be 41")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("go_version_adoption_governance.status must be active or completed")
+	if governance.get("minimum_go_version") != "1.25":
+		add_error("go_version_adoption_governance.minimum_go_version must be 1.25")
+	ci_versions = require_string_list(governance.get("ci_versions"), "go_version_adoption_governance.ci_versions")
+	if ci_versions != ["1.25.11", "1.26"]:
+		add_error("go_version_adoption_governance.ci_versions must be ordered as: 1.25.11, 1.26")
+	if governance.get("release_go_version") != "1.25.11":
+		add_error("go_version_adoption_governance.release_go_version must be 1.25.11")
+	if governance.get("downgrade_status") != "not supported today":
+		add_error("go_version_adoption_governance.downgrade_status must be not supported today")
+	required_rationale = require_string_list(governance.get("required_rationale"), "go_version_adoption_governance.required_rationale")
+	expected_rationale = [
+		"go.mod declares go 1.25.0",
+		"benchmarks use testing.B.Loop",
+		"ci verifies go 1.25.11 and 1.26",
+		"release workflow pins go 1.25.11",
+	]
+	if required_rationale != expected_rationale:
+		add_error("go_version_adoption_governance.required_rationale must be ordered as: " + ", ".join(expected_rationale))
+	required_checks = require_string_list(governance.get("required_checks"), "go_version_adoption_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "ci-workflow-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"go_version_adoption_governance.required_checks must include {check}")
+	for path in (roadmap_path, doc_path, readme_path):
+		if not (root / path).exists():
+			add_error(f"{path} must exist")
+	go_mod_text = (root / "go.mod").read_text(encoding="utf-8")
+	if "go 1.25.0" not in go_mod_text:
+		add_error("go.mod must declare go 1.25.0")
+	readme_text = (root / readme_path).read_text(encoding="utf-8") if (root / readme_path).exists() else ""
+	if "go-version-adoption-policy.md" not in readme_text:
+		add_error("README.md must link docs/doc/go-version-adoption-policy.md")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for phrase in ("Go 1.25", "Go 1.25.11", "Go 1.26", "Go 1.23/1.24 downgrade", "testing.B.Loop"):
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	workflow_text = (root / ".github/workflows/go.yml").read_text(encoding="utf-8")
+	for version in ("1.25.11", "1.26"):
+		if version not in workflow_text:
+			add_error(f".github/workflows/go.yml must include Go {version}")
+	release_text = (root / ".github/workflows/release.yml").read_text(encoding="utf-8")
+	if "1.25.11" not in release_text:
+		add_error(".github/workflows/release.yml must pin Go 1.25.11")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_41_rows = [row for row in sprint_rows if row.get("Sprint") == "41"]
+	if len(sprint_41_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 41 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_41_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 41 status must be {expected_status}")
+
+
 def validate_example_depth_governance() -> None:
 	governance = require_mapping(ai_context.get("example_depth_governance"), "example_depth_governance")
 	sprint = governance.get("sprint")
@@ -2297,6 +2368,7 @@ if not bench_only:
 	validate_safe_crypto_benchmark_scope_governance()
 	validate_utility_library_comparison_governance()
 	validate_safe_crypto_advanced_closeout_governance()
+	validate_go_version_adoption_governance()
 	validate_example_depth_governance()
 	validate_api_convergence()
 	validate_lifecycle()
