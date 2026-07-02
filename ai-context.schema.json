@@ -40,6 +40,7 @@
     "go_version_adoption_governance",
     "collections_comparison_governance",
     "vconv_vbean_migration_governance",
+    "daily_developer_toolkit_governance",
     "error_model",
     "dynamic_semantic_contracts",
     "v1_readiness",
@@ -567,6 +568,23 @@
         "status": { "type": "string", "enum": ["active", "completed"] },
         "packages": { "$ref": "#/$defs/string_array" },
         "competitors": { "$ref": "#/$defs/string_array" },
+        "required_workflows": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "daily_developer_toolkit_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "doc_path", "readme_path", "sprint", "status", "packages", "competitor", "planned_lanes", "required_workflows", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "doc_path": { "type": "string", "minLength": 1 },
+        "readme_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "packages": { "$ref": "#/$defs/string_array" },
+        "competitor": { "type": "string", "minLength": 1 },
+        "planned_lanes": { "$ref": "#/$defs/string_array" },
         "required_workflows": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
       },

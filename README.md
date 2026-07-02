@@ -161,6 +161,7 @@ Comparison entry points:
 - HTTP: [`vhttp`](docs/doc/22-vhttp.md) for standard-library-style helpers, [`vresty`](docs/doc/41-vresty.md) for Resty-style request chains, and [`vurl`](docs/doc/51-vurl.md) for URL-only work.
 - Crypto: [`vcrypto`](docs/doc/11-vcrypto.md) documents the boundary between recommended helpers and direct standard-library control.
 - JSON/file: [`vjson`](docs/doc/27-vjson.md) documents when to use `encoding/json` directly; [`vfile`](docs/doc/17-vfile.md) documents filesystem safety guidance.
+- Daily developer utilities: [`daily-developer-utilities.md`](docs/doc/daily-developer-utilities.md) groups `vcli`, `vsys`, `vfile`, `vnet`, `vjob`, and `vlog` as the `gookit/goutil`-style entry point.
 
 API selection rules:
 
@@ -251,7 +252,7 @@ Not sure which package to import? Start from what you want to do:
 | Map-to-struct decoding only | `mitchellh/mapstructure` | Use `knifer-go/vconf` or `vbean` when config loading or bean mapping is the surrounding workflow. |
 | Reflection-heavy functional helpers | `thoas/go-funk` | Use `knifer-go/vslice`, `vmap`, or `vstr` for focused helpers with clearer package boundaries. |
 
-For a broader comparison, see [`docs/doc/utility-library-comparison.md`](docs/doc/utility-library-comparison.md).
+For a broader comparison, see [`docs/doc/utility-library-comparison.md`](docs/doc/utility-library-comparison.md). For daily CLI, system, file, network, job, and logging tasks, see [`docs/doc/daily-developer-utilities.md`](docs/doc/daily-developer-utilities.md).
 
 <a id="package-catalog"></a>
 

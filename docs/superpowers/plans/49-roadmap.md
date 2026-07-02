@@ -108,6 +108,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 41 | Completed | Go Version Adoption Policy | Documented the Go 1.25 minimum-version rationale, CI matrix, release toolchain pin, and downgrade requirements in a machine-checked policy. |
 | 42 | Completed | Collection Parity Matrix | Added collection comparison governance for `vslice`, `vmap`, `vset`, `samber/lo`, `duke-git/lancet`, and standard library `slices` / `maps` workflows. |
 | 43 | Completed | vconv/vbean Migration Matrix | Added migration governance for strict conversion, weak conversion, copy, decode, merge, and unused metadata across `vconv`, `vbean`, `vconf`, and common specialist libraries. |
+| 44 | Completed | Developer Daily Toolkit Entry | Added a daily developer utilities guide that groups `vcli`, `vsys`, `vfile`, `vnet`, `vjob`, and `vlog` against the `gookit/goutil` mental model while keeping `vtest` as a planned lane. |
 
 ## Active workflow
 
@@ -154,6 +155,8 @@ Sprint 41 completed Go version adoption policy: `go_version_adoption_governance`
 Sprint 42 completed collection parity matrix: `collections_comparison_governance` records map/filter/reduce/group/partition/window/chunk/set-like workflow boundaries across `vslice`, `vmap`, `vset`, `samber/lo`, `duke-git/lancet`, and standard library `slices` / `maps`.
 
 Sprint 43 completed conversion and bean migration governance: `vconv_vbean_migration_governance` records strict conversion, weak conversion, copy, decode, merge, and unused metadata boundaries across `vconv`, `vbean`, `vconf`, `spf13/cast`, `jinzhu/copier`, `mitchellh/mapstructure`, and `mergo`.
+
+Sprint 44 completed daily developer toolkit governance: `daily_developer_toolkit_governance` records the `gookit/goutil`-style entry point for `vcli`, `vsys`, `vfile`, `vnet`, `vjob`, and `vlog`, plus the explicit `vtest` planned-lane boundary.
 
 Recommended roadmap loop:
 
