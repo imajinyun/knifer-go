@@ -42,6 +42,7 @@
 - 🔄 vconv cast migration cookbook: [`vconv-cast-migration.md`](vconv-cast-migration.md)
 - 🧬 Dynamic data toolkit matrix: [`dynamic-data-toolkit-matrix.md`](dynamic-data-toolkit-matrix.md)
 - 🧰 Daily developer utilities: [`daily-developer-utilities.md`](daily-developer-utilities.md)
+- 🧪 Developer debug/test backlog: [`developer-debug-test-backlog.md`](developer-debug-test-backlog.md)
 - 📊 Benchmark trust guide: [`benchmark-trust.md`](benchmark-trust.md)
 - 🏁 First-use golden paths: [`first-use-golden-paths.md`](first-use-golden-paths.md)
 - ✅ Adoption trust guide: [`adoption-trust.md`](adoption-trust.md)

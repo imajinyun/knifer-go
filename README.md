@@ -260,6 +260,7 @@ For a broader comparison, see [`docs/doc/utility-library-comparison.md`](docs/do
 For collection workflows by task, see [`docs/doc/collection-golden-paths.md`](docs/doc/collection-golden-paths.md).
 For type-conversion migration from `spf13/cast`, see [`docs/doc/vconv-cast-migration.md`](docs/doc/vconv-cast-migration.md).
 For dynamic config, map/struct, JSON, object, reflection, and scalar-conversion boundaries, see [`docs/doc/dynamic-data-toolkit-matrix.md`](docs/doc/dynamic-data-toolkit-matrix.md).
+For planned debug and test utility lanes, see [`docs/doc/developer-debug-test-backlog.md`](docs/doc/developer-debug-test-backlog.md).
 Benchmark evidence rules are public in [`docs/doc/benchmark-trust.md`](docs/doc/benchmark-trust.md).
 
 <a id="package-catalog"></a>

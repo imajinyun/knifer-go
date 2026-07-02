@@ -120,6 +120,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 53 | Completed | Dynamic Data Toolkit Matrix | Added `dynamic-data-toolkit-matrix.md` for `vconf`, `vbean`, `vjson`, `vobj`, `vref`, and `vconv` boundaries across config, map/struct, JSON path, object checks, reflection, and scalar conversion workflows. |
 | 54 | Completed | Task Index / API Discoverability Simplification | Added `task-index.md` as a day-one, star-domain, and daily task index that maps each task to one default facade and a small related-facade set. |
 | 55 | Completed | Collection Benchmark Trust | Added collection benchmark trust guidance for `vslice`, `vmap`, and `vset`, keeping benchmark output local-baseline evidence that requires repeated runs and `benchstat` before claims. |
+| 56 | Completed | Developer Debug/Test Utilities Backlog | Added `developer-debug-test-backlog.md` for planned `vtest` and `vdump` lanes while keeping current debug and test utility entry points on `vcli`, `vsys`, `vfile`, and `vlog`. |
 
 ## Active workflow
 
@@ -190,6 +191,8 @@ Sprint 53 completed dynamic data toolkit governance: `dynamic_data_toolkit_matri
 Sprint 54 completed task-index governance: `task_index_governance` records `task-index.md` as the default API discoverability surface for day-one, star-domain, and daily workflows.
 
 Sprint 55 completed collection benchmark trust governance: `collections_benchmark_trust_governance` records collection benchmark scope for `vslice`, `vmap`, and `vset`, including benchstat requirements and non-marketing evidence boundaries.
+
+Sprint 56 completed developer debug/test backlog governance: `developer_debug_test_backlog_governance` records the planned-only `vtest` and `vdump` lanes and prevents them from being documented as current public facades before implementation.
 
 Recommended roadmap loop:
 

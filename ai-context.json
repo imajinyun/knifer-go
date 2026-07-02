@@ -1397,6 +1397,18 @@
     "required_boundaries": ["daily utilities should stay beside safety-focused facades", "no resident background utility process", "Safe/E/WithOptions flows for trust boundaries"],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
   },
+  "developer_debug_test_backlog_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/developer-debug-test-backlog.md",
+    "readme_path": "README.md",
+    "sprint": 56,
+    "status": "completed",
+    "current_facades": ["vcli", "vsys", "vfile", "vlog"],
+    "planned_lanes": ["vtest", "vdump"],
+    "candidate_scopes": ["test helpers", "object dumps", "system dumps", "redaction hooks", "size limits", "golden file policy"],
+    "non_goals": ["replacing testing", "replacing testify", "resident background process", "secret-leaking dumps", "broad assertion framework replacement"],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
   "benchmark_trust_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
     "doc_path": "docs/doc/benchmark-trust.md",

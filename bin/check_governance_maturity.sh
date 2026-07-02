@@ -2524,6 +2524,83 @@ def validate_daily_utility_cookbook_v2_governance() -> None:
 		add_error(f"{roadmap_path} must mention daily_utility_cookbook_v2_governance")
 
 
+def validate_developer_debug_test_backlog_governance() -> None:
+	governance = require_mapping(ai_context.get("developer_debug_test_backlog_governance"), "developer_debug_test_backlog_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("developer_debug_test_backlog_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("developer_debug_test_backlog_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/developer-debug-test-backlog.md"
+	readme_path = governance.get("readme_path")
+	if readme_path != "README.md":
+		add_error("developer_debug_test_backlog_governance.readme_path must be README.md")
+		readme_path = "README.md"
+	if governance.get("sprint") != 56:
+		add_error("developer_debug_test_backlog_governance.sprint must be 56")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("developer_debug_test_backlog_governance.status must be active or completed")
+	current_facades = require_string_list(governance.get("current_facades"), "developer_debug_test_backlog_governance.current_facades")
+	expected_current_facades = ["vcli", "vsys", "vfile", "vlog"]
+	if current_facades != expected_current_facades:
+		add_error("developer_debug_test_backlog_governance.current_facades must be ordered as: " + ", ".join(expected_current_facades))
+	planned_lanes = require_string_list(governance.get("planned_lanes"), "developer_debug_test_backlog_governance.planned_lanes")
+	if planned_lanes != ["vtest", "vdump"]:
+		add_error("developer_debug_test_backlog_governance.planned_lanes must be vtest, vdump")
+	candidate_scopes = require_string_list(governance.get("candidate_scopes"), "developer_debug_test_backlog_governance.candidate_scopes")
+	expected_candidate_scopes = ["test helpers", "object dumps", "system dumps", "redaction hooks", "size limits", "golden file policy"]
+	if candidate_scopes != expected_candidate_scopes:
+		add_error("developer_debug_test_backlog_governance.candidate_scopes must be ordered as: " + ", ".join(expected_candidate_scopes))
+	non_goals = require_string_list(governance.get("non_goals"), "developer_debug_test_backlog_governance.non_goals")
+	expected_non_goals = ["replacing testing", "replacing testify", "resident background process", "secret-leaking dumps", "broad assertion framework replacement"]
+	if non_goals != expected_non_goals:
+		add_error("developer_debug_test_backlog_governance.non_goals must be ordered as: " + ", ".join(expected_non_goals))
+	required_checks = require_string_list(governance.get("required_checks"), "developer_debug_test_backlog_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"developer_debug_test_backlog_governance.required_checks must include {check}")
+	public_facades_value = ai_context.get("public_facades")
+	if not isinstance(public_facades_value, list):
+		add_error("public_facades must be a list")
+		public_facades_value = []
+	public_facade_names = {entry.get("package") for entry in public_facades_value if isinstance(entry, dict)}
+	for planned in planned_lanes:
+		if planned in public_facade_names:
+			add_error(f"{planned} must not be listed as a current public facade while marked planned")
+		if planned in tool_packages:
+			add_error(f"docs/api/tools.json must not include planned facade {planned}")
+	if not (root / doc_path).exists():
+		add_error(f"{doc_path} must exist")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for phrase in current_facades + planned_lanes + candidate_scopes + non_goals + ["planned only", "not a current public facade", "Do not document `vtest` or `vdump` as available API"]:
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	readme_text = (root / readme_path).read_text(encoding="utf-8") if (root / readme_path).exists() else ""
+	if "developer-debug-test-backlog.md" not in readme_text:
+		add_error("README.md must link docs/doc/developer-debug-test-backlog.md")
+	doc_index_text = (root / "docs/doc/README.md").read_text(encoding="utf-8")
+	if "developer-debug-test-backlog.md" not in doc_index_text:
+		add_error("docs/doc/README.md must link docs/doc/developer-debug-test-backlog.md")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_56_rows = [row for row in sprint_rows if row.get("Sprint") == "56"]
+	if len(sprint_56_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 56 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_56_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 56 status must be {expected_status}")
+		sprint_text = " ".join(sprint_56_rows[0].values())
+		for phrase in ("developer-debug-test-backlog", "vtest", "vdump", "planned"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 56 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "developer_debug_test_backlog_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention developer_debug_test_backlog_governance")
+
+
 def validate_benchmark_trust_governance() -> None:
 	governance = require_mapping(ai_context.get("benchmark_trust_governance"), "benchmark_trust_governance")
 	roadmap_path = governance.get("roadmap_path")
@@ -3362,6 +3439,7 @@ if not bench_only:
 	validate_task_index_governance()
 	validate_daily_developer_toolkit_governance()
 	validate_daily_utility_cookbook_v2_governance()
+	validate_developer_debug_test_backlog_governance()
 	validate_benchmark_trust_governance()
 	validate_collections_benchmark_trust_governance()
 	validate_first_use_golden_paths_governance()
