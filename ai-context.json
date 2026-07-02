@@ -1348,6 +1348,18 @@
     "required_boundaries": ["vconv is scalar-first", "E helpers at trust boundaries", "do not move collection conversion into vconv"],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
   },
+  "dynamic_data_toolkit_matrix_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/dynamic-data-toolkit-matrix.md",
+    "readme_path": "README.md",
+    "sprint": 53,
+    "status": "completed",
+    "packages": ["vconf", "vbean", "vjson", "vobj", "vref", "vconv"],
+    "competitors": ["thoas/go-funk", "mitchellh/mapstructure", "jinzhu/copier", "spf13/cast"],
+    "required_workflows": ["configuration loading", "map/struct decode", "struct copy", "JSON object path", "dynamic object checks", "reflection field access", "scalar conversion after lookup"],
+    "required_boundaries": ["typed Go code first", "vconf before vbean for configuration input", "vbean before vobj for mapping metadata", "vref only at dynamic adapter boundaries", "vconv after dynamic lookup", "avoid reflection-heavy hot paths"],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
   "daily_developer_toolkit_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
     "doc_path": "docs/doc/daily-developer-utilities.md",

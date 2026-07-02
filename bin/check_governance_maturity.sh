@@ -2245,6 +2245,74 @@ def validate_vconv_cast_migration_governance() -> None:
 		add_error(f"{roadmap_path} must mention vconv_cast_migration_governance")
 
 
+def validate_dynamic_data_toolkit_matrix_governance() -> None:
+	governance = require_mapping(ai_context.get("dynamic_data_toolkit_matrix_governance"), "dynamic_data_toolkit_matrix_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("dynamic_data_toolkit_matrix_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("dynamic_data_toolkit_matrix_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/dynamic-data-toolkit-matrix.md"
+	readme_path = governance.get("readme_path")
+	if readme_path != "README.md":
+		add_error("dynamic_data_toolkit_matrix_governance.readme_path must be README.md")
+		readme_path = "README.md"
+	if governance.get("sprint") != 53:
+		add_error("dynamic_data_toolkit_matrix_governance.sprint must be 53")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("dynamic_data_toolkit_matrix_governance.status must be active or completed")
+	packages = require_string_list(governance.get("packages"), "dynamic_data_toolkit_matrix_governance.packages")
+	expected_packages = ["vconf", "vbean", "vjson", "vobj", "vref", "vconv"]
+	if packages != expected_packages:
+		add_error("dynamic_data_toolkit_matrix_governance.packages must be ordered as: " + ", ".join(expected_packages))
+	competitors = require_string_list(governance.get("competitors"), "dynamic_data_toolkit_matrix_governance.competitors")
+	expected_competitors = ["thoas/go-funk", "mitchellh/mapstructure", "jinzhu/copier", "spf13/cast"]
+	if competitors != expected_competitors:
+		add_error("dynamic_data_toolkit_matrix_governance.competitors must be ordered as: " + ", ".join(expected_competitors))
+	workflows = require_string_list(governance.get("required_workflows"), "dynamic_data_toolkit_matrix_governance.required_workflows")
+	expected_workflows = ["configuration loading", "map/struct decode", "struct copy", "JSON object path", "dynamic object checks", "reflection field access", "scalar conversion after lookup"]
+	if workflows != expected_workflows:
+		add_error("dynamic_data_toolkit_matrix_governance.required_workflows must be ordered as: " + ", ".join(expected_workflows))
+	boundaries = require_string_list(governance.get("required_boundaries"), "dynamic_data_toolkit_matrix_governance.required_boundaries")
+	expected_boundaries = ["typed Go code first", "vconf before vbean for configuration input", "vbean before vobj for mapping metadata", "vref only at dynamic adapter boundaries", "vconv after dynamic lookup", "avoid reflection-heavy hot paths"]
+	if boundaries != expected_boundaries:
+		add_error("dynamic_data_toolkit_matrix_governance.required_boundaries must be ordered as: " + ", ".join(expected_boundaries))
+	required_checks = require_string_list(governance.get("required_checks"), "dynamic_data_toolkit_matrix_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"dynamic_data_toolkit_matrix_governance.required_checks must include {check}")
+	if not (root / doc_path).exists():
+		add_error(f"{doc_path} must exist")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for phrase in packages + competitors + workflows + boundaries + ["Dynamic Data Toolkit Matrix", "Machine-Readable Boundaries"]:
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	readme_text = (root / readme_path).read_text(encoding="utf-8") if (root / readme_path).exists() else ""
+	if "dynamic-data-toolkit-matrix.md" not in readme_text:
+		add_error("README.md must link docs/doc/dynamic-data-toolkit-matrix.md")
+	doc_index_text = (root / "docs/doc/README.md").read_text(encoding="utf-8")
+	if "dynamic-data-toolkit-matrix.md" not in doc_index_text:
+		add_error("docs/doc/README.md must link docs/doc/dynamic-data-toolkit-matrix.md")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_53_rows = [row for row in sprint_rows if row.get("Sprint") == "53"]
+	if len(sprint_53_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 53 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_53_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 53 status must be {expected_status}")
+		sprint_text = " ".join(sprint_53_rows[0].values())
+		for phrase in ("dynamic-data-toolkit", "vconf", "vbean", "vjson", "vobj", "vref", "vconv"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 53 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "dynamic_data_toolkit_matrix_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention dynamic_data_toolkit_matrix_governance")
+
+
 def validate_daily_developer_toolkit_governance() -> None:
 	governance = require_mapping(ai_context.get("daily_developer_toolkit_governance"), "daily_developer_toolkit_governance")
 	roadmap_path = governance.get("roadmap_path")
@@ -3150,6 +3218,7 @@ if not bench_only:
 	validate_collection_mindshare_pack_governance()
 	validate_vconv_vbean_migration_governance()
 	validate_vconv_cast_migration_governance()
+	validate_dynamic_data_toolkit_matrix_governance()
 	validate_daily_developer_toolkit_governance()
 	validate_daily_utility_cookbook_v2_governance()
 	validate_benchmark_trust_governance()

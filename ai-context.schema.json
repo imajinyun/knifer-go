@@ -41,6 +41,7 @@
     "collections_comparison_governance",
     "vconv_vbean_migration_governance",
     "vconv_cast_migration_governance",
+    "dynamic_data_toolkit_matrix_governance",
     "daily_developer_toolkit_governance",
     "daily_utility_cookbook_v2_governance",
     "benchmark_trust_governance",
@@ -592,6 +593,23 @@
         "status": { "type": "string", "enum": ["active", "completed"] },
         "package": { "type": "string", "minLength": 1 },
         "competitor": { "type": "string", "minLength": 1 },
+        "required_workflows": { "$ref": "#/$defs/string_array" },
+        "required_boundaries": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "dynamic_data_toolkit_matrix_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "doc_path", "readme_path", "sprint", "status", "packages", "competitors", "required_workflows", "required_boundaries", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "doc_path": { "type": "string", "minLength": 1 },
+        "readme_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "packages": { "$ref": "#/$defs/string_array" },
+        "competitors": { "$ref": "#/$defs/string_array" },
         "required_workflows": { "$ref": "#/$defs/string_array" },
         "required_boundaries": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
