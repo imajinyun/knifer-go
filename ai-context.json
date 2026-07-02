@@ -1326,6 +1326,16 @@
     ],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
   },
+  "vconv_vbean_migration_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/vconv-vbean-migration.md",
+    "sprint": 43,
+    "status": "completed",
+    "packages": ["vconv", "vbean", "vconf"],
+    "competitors": ["spf13/cast", "jinzhu/copier", "mitchellh/mapstructure", "mergo"],
+    "required_workflows": ["strict conversion", "weak conversion", "copy", "decode", "merge", "unused metadata"],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
   "error_model": {
     "taxonomy": [
       { "category": "invalid input", "code": "GK_INVALID_INPUT", "use_when": "Caller-provided arguments, payloads, or configuration values are malformed." },

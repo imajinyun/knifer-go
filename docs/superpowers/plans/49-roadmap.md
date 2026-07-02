@@ -107,6 +107,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 40 | Completed | Safe Crypto Advanced Closeout | Closed the Crypto capability row around completed advanced crypto governance and enforced that all advanced backlog lanes have landed evidence. |
 | 41 | Completed | Go Version Adoption Policy | Documented the Go 1.25 minimum-version rationale, CI matrix, release toolchain pin, and downgrade requirements in a machine-checked policy. |
 | 42 | Completed | Collection Parity Matrix | Added collection comparison governance for `vslice`, `vmap`, `vset`, `samber/lo`, `duke-git/lancet`, and standard library `slices` / `maps` workflows. |
+| 43 | Completed | vconv/vbean Migration Matrix | Added migration governance for strict conversion, weak conversion, copy, decode, merge, and unused metadata across `vconv`, `vbean`, `vconf`, and common specialist libraries. |
 
 ## Active workflow
 
@@ -151,6 +152,8 @@ Sprint 40 completed safe crypto advanced closeout: `safe_crypto_advanced_closeou
 Sprint 41 completed Go version adoption policy: `go_version_adoption_governance` records the Go 1.25 minimum, Go 1.25.11/1.26 CI coverage, Go 1.25.11 release toolchain, and the requirements for any future downgrade proposal.
 
 Sprint 42 completed collection parity matrix: `collections_comparison_governance` records map/filter/reduce/group/partition/window/chunk/set-like workflow boundaries across `vslice`, `vmap`, `vset`, `samber/lo`, `duke-git/lancet`, and standard library `slices` / `maps`.
+
+Sprint 43 completed conversion and bean migration governance: `vconv_vbean_migration_governance` records strict conversion, weak conversion, copy, decode, merge, and unused metadata boundaries across `vconv`, `vbean`, `vconf`, `spf13/cast`, `jinzhu/copier`, `mitchellh/mapstructure`, and `mergo`.
 
 Recommended roadmap loop:
 

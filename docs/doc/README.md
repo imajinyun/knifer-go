@@ -36,6 +36,7 @@
 - ⚖️ Utility library comparison: [`utility-library-comparison.md`](utility-library-comparison.md)
 - 🧭 Go version adoption policy: [`go-version-adoption-policy.md`](go-version-adoption-policy.md)
 - 🧩 Collections comparison: [`collections-comparison.md`](collections-comparison.md)
+- 🔁 Conversion and bean migration matrix: [`vconv-vbean-migration.md`](vconv-vbean-migration.md)
 
 <a id="start-with-star-domains"></a>
 
