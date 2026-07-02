@@ -1272,6 +1272,25 @@
     ],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
   },
+  "safe_crypto_advanced_closeout_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "backlog_path": "docs/doc/safe-crypto-advanced-backlog.md",
+    "sprint": 40,
+    "status": "completed",
+    "capability_row": "Crypto",
+    "required_landed_governance": [
+      "safe_crypto_otp_governance",
+      "safe_crypto_password_hashing_governance",
+      "safe_crypto_argon2id_governance",
+      "safe_crypto_jwk_jwks_governance",
+      "safe_crypto_jwk_jwks_implementation_governance",
+      "safe_crypto_secret_handling_governance",
+      "safe_crypto_interoperability_governance",
+      "safe_crypto_benchmark_scope_governance"
+    ],
+    "forbidden_roadmap_phrases": ["remaining depth is TOTP/HOTP", "remaining depth is", "before adding more crypto APIs"],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
   "error_model": {
     "taxonomy": [
       { "category": "invalid input", "code": "GK_INVALID_INPUT", "use_when": "Caller-provided arguments, payloads, or configuration values are malformed." },

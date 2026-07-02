@@ -36,6 +36,7 @@
     "safe_crypto_interoperability_governance",
     "safe_crypto_benchmark_scope_governance",
     "utility_library_comparison_governance",
+    "safe_crypto_advanced_closeout_governance",
     "error_model",
     "dynamic_semantic_contracts",
     "v1_readiness",
@@ -500,6 +501,21 @@
         "status": { "type": "string", "enum": ["active", "completed"] },
         "competitors": { "$ref": "#/$defs/string_array" },
         "required_boundaries": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "safe_crypto_advanced_closeout_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "backlog_path", "sprint", "status", "capability_row", "required_landed_governance", "forbidden_roadmap_phrases", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "backlog_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "capability_row": { "type": "string", "minLength": 1 },
+        "required_landed_governance": { "$ref": "#/$defs/string_array" },
+        "forbidden_roadmap_phrases": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
       },
       "additionalProperties": false

@@ -65,7 +65,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | Pinyin | `vhan` | Chinese transliteration helpers | P2 | Completed deterministic provider contract |
 | Tokenization | `vtok` | Chinese text segmentation adapters | P2 | Completed deterministic provider contract |
 | Database | `vdb` | context-first APIs, dialect depth, batch/upsert/scan helpers | P2 | Create a `vdb` deepening backlog and focused tests |
-| Crypto | `vcrypto`, `vjwt`, `vrand` | SM2/SM3/SM4 and weighted random are implemented; remaining depth is TOTP/HOTP, password hashing, and JWK/JWKS | P2 | Keep insecure or legacy algorithms behind explicit interoperability APIs |
+| Crypto | `vcrypto`, `vjwt`, `vrand` | Advanced safe-crypto depth is completed across SM2/SM3/SM4, weighted random, TOTP/HOTP, Argon2id password hashing, RSA JWK/JWKS, secret handling, interoperability, and benchmark scope | P2 | Closed by `safe_crypto_advanced_closeout_governance`; future work should be specific implementation lanes, not broad crypto gap closure |
 | Office | `vpoi` | streaming Excel, styles, formulas, images, Word/OFD scope decision | P2 | Decide the `vpoi` scope before adding broad Office dependencies |
 | Image | `vimg` | crop, resize, rotate, flip, grayscale, JPEG compression, and watermarks are implemented; remaining depth is EXIF/color profile/streaming scope | P3 | Add deterministic fixtures and benchmark notes for advanced image lanes |
 
@@ -104,6 +104,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 37 | Completed | Safe Crypto Interoperability Governance | Fixed machine-checked boundaries for interoperability-only helpers, SM4-ECB legacy warnings, SM2 UID policy, RSA option choices, PEM/JWK exchange, and non-default algorithm guidance. |
 | 38 | Completed | Safe Crypto Benchmark Scope Governance | Fixed deterministic crypto benchmark scope for digest, HMAC, AES-GCM, AES seal/open, and secure-random smoke paths while excluding production-strength password hashing from quick gates. |
 | 39 | Completed | Competitive Positioning Governance | Added utility-library comparison governance covering `samber/lo`, `duke-git/lancet`, `thoas/go-funk`, `gookit/goutil`, and `spf13/cast` with README and documentation entry points. |
+| 40 | Completed | Safe Crypto Advanced Closeout | Closed the Crypto capability row around completed advanced crypto governance and enforced that all advanced backlog lanes have landed evidence. |
 
 ## Active workflow
 
@@ -142,6 +143,8 @@ Sprint 37 completed safe crypto interoperability governance: `safe_crypto_intero
 Sprint 38 completed safe crypto benchmark scope governance: `safe_crypto_benchmark_scope_governance` records deterministic quick benchmark allowlists, password-hashing exclusions, and bounded runtime-evidence rules for future crypto benchmark additions.
 
 Sprint 39 completed competitive positioning governance: `utility_library_comparison_governance` records the comparison page, README entry, competitor coverage, and boundary rules for common Go utility library choices.
+
+Sprint 40 completed safe crypto advanced closeout: `safe_crypto_advanced_closeout_governance` keeps the Crypto capability row aligned with the landed advanced backlog lanes and prevents stale "remaining depth" wording from returning.
 
 Recommended roadmap loop:
 

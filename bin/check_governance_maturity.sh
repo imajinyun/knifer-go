@@ -1812,6 +1812,77 @@ def validate_utility_library_comparison_governance() -> None:
 				add_error(f"{roadmap_path} Sprint 39 row must mention {required_phrase!r}")
 
 
+def validate_safe_crypto_advanced_closeout_governance() -> None:
+	governance = require_mapping(ai_context.get("safe_crypto_advanced_closeout_governance"), "safe_crypto_advanced_closeout_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("safe_crypto_advanced_closeout_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	backlog_path = governance.get("backlog_path")
+	if not isinstance(backlog_path, str) or not backlog_path.strip():
+		add_error("safe_crypto_advanced_closeout_governance.backlog_path must be non-empty")
+		backlog_path = "docs/doc/safe-crypto-advanced-backlog.md"
+	if governance.get("sprint") != 40:
+		add_error("safe_crypto_advanced_closeout_governance.sprint must be 40")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("safe_crypto_advanced_closeout_governance.status must be active or completed")
+	if governance.get("capability_row") != "Crypto":
+		add_error("safe_crypto_advanced_closeout_governance.capability_row must be Crypto")
+	required_landed = require_string_list(governance.get("required_landed_governance"), "safe_crypto_advanced_closeout_governance.required_landed_governance")
+	expected_landed = [
+		"safe_crypto_otp_governance",
+		"safe_crypto_password_hashing_governance",
+		"safe_crypto_argon2id_governance",
+		"safe_crypto_jwk_jwks_governance",
+		"safe_crypto_jwk_jwks_implementation_governance",
+		"safe_crypto_secret_handling_governance",
+		"safe_crypto_interoperability_governance",
+		"safe_crypto_benchmark_scope_governance",
+	]
+	if required_landed != expected_landed:
+		add_error("safe_crypto_advanced_closeout_governance.required_landed_governance must be ordered as: " + ", ".join(expected_landed))
+	for name in required_landed:
+		entry = require_mapping(ai_context.get(name), name)
+		if entry.get("status") != "completed":
+			add_error(f"{name}.status must be completed for safe crypto closeout")
+	forbidden = require_string_list(governance.get("forbidden_roadmap_phrases"), "safe_crypto_advanced_closeout_governance.forbidden_roadmap_phrases")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in require_string_list(governance.get("required_checks"), "safe_crypto_advanced_closeout_governance.required_checks"):
+			add_error(f"safe_crypto_advanced_closeout_governance.required_checks must include {check}")
+	for path in (roadmap_path, backlog_path):
+		if not (root / path).exists():
+			add_error(f"{path} must exist")
+	backlog_text = (root / backlog_path).read_text(encoding="utf-8") if (root / backlog_path).exists() else ""
+	capability_rows = extract_markdown_rows(root / roadmap_path, "Capability matrix")
+	crypto_rows = [row for row in capability_rows if row.get("Area") == "Crypto"]
+	if len(crypto_rows) != 1:
+		add_error(f"{roadmap_path} Capability matrix must contain exactly one Crypto row")
+	else:
+		row_text = " ".join(crypto_rows[0].values())
+		for phrase in forbidden:
+			if phrase in row_text:
+				add_error(f"{roadmap_path} Crypto row must not contain stale phrase {phrase!r}")
+		for phrase in ("Advanced safe-crypto depth is completed", "safe_crypto_advanced_closeout_governance", "not broad crypto gap closure"):
+			if phrase not in row_text:
+				add_error(f"{roadmap_path} Crypto row must mention {phrase!r}")
+	for phrase in ("TOTP and HOTP | Completed", "Password hashing | Completed", "JWK and JWKS | Completed", "Secret handling | Governance completed", "Interoperability boundaries | Governance completed", "Benchmark scope | Governance completed"):
+		if backlog_text and phrase not in backlog_text:
+			add_error(f"{backlog_path} must include landed lane {phrase!r}")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_40_rows = [row for row in sprint_rows if row.get("Sprint") == "40"]
+	if len(sprint_40_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 40 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_40_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 40 status must be {expected_status}")
+		sprint_40_text = " ".join(sprint_40_rows[0].values())
+		for phrase in forbidden:
+			if phrase in sprint_40_text:
+				add_error(f"{roadmap_path} Sprint 40 row must not contain stale phrase {phrase!r}")
+
+
 def validate_example_depth_governance() -> None:
 	governance = require_mapping(ai_context.get("example_depth_governance"), "example_depth_governance")
 	sprint = governance.get("sprint")
@@ -2225,6 +2296,7 @@ if not bench_only:
 	validate_safe_crypto_interoperability_governance()
 	validate_safe_crypto_benchmark_scope_governance()
 	validate_utility_library_comparison_governance()
+	validate_safe_crypto_advanced_closeout_governance()
 	validate_example_depth_governance()
 	validate_api_convergence()
 	validate_lifecycle()
