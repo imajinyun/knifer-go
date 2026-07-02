@@ -45,6 +45,7 @@
     "first_use_golden_paths_governance",
     "weak_facade_example_density_governance",
     "weak_facade_example_density_governance_2",
+    "collection_mindshare_pack_governance",
     "adoption_trust_governance",
     "error_model",
     "dynamic_semantic_contracts",
@@ -689,6 +690,38 @@
           "additionalProperties": { "type": "number" }
         },
         "ratchet_policy": { "type": "string", "minLength": 1 },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "collection_mindshare_pack_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "doc_path", "comparison_path", "readme_path", "sprint", "status", "packages", "competitors", "required_tasks", "baseline_examples", "required_boundaries", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "doc_path": { "type": "string", "minLength": 1 },
+        "comparison_path": { "type": "string", "minLength": 1 },
+        "readme_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "packages": { "$ref": "#/$defs/string_array" },
+        "competitors": { "$ref": "#/$defs/string_array" },
+        "required_tasks": { "$ref": "#/$defs/string_array" },
+        "baseline_examples": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "object",
+            "required": ["function_count", "functions_with_examples", "example_coverage_percent"],
+            "properties": {
+              "function_count": { "type": "number" },
+              "functions_with_examples": { "type": "number" },
+              "example_coverage_percent": { "type": "number" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required_boundaries": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
       },
       "additionalProperties": false

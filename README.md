@@ -255,6 +255,7 @@ First time here? Start with [`docs/doc/first-use-golden-paths.md`](docs/doc/firs
 | Reflection-heavy functional helpers | `thoas/go-funk` | Use `knifer-go/vslice`, `vmap`, or `vstr` for focused helpers with clearer package boundaries. |
 
 For a broader comparison, see [`docs/doc/utility-library-comparison.md`](docs/doc/utility-library-comparison.md). For daily CLI, system, file, network, job, and logging tasks, see [`docs/doc/daily-developer-utilities.md`](docs/doc/daily-developer-utilities.md).
+For collection workflows by task, see [`docs/doc/collection-golden-paths.md`](docs/doc/collection-golden-paths.md).
 Benchmark evidence rules are public in [`docs/doc/benchmark-trust.md`](docs/doc/benchmark-trust.md).
 
 <a id="package-catalog"></a>

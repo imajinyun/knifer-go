@@ -36,6 +36,7 @@
 - ⚖️ Utility library comparison: [`utility-library-comparison.md`](utility-library-comparison.md)
 - 🧭 Go version adoption policy: [`go-version-adoption-policy.md`](go-version-adoption-policy.md)
 - 🧩 Collections comparison: [`collections-comparison.md`](collections-comparison.md)
+- 🧱 Collection golden paths: [`collection-golden-paths.md`](collection-golden-paths.md)
 - 🔁 Conversion and bean migration matrix: [`vconv-vbean-migration.md`](vconv-vbean-migration.md)
 - 🧰 Daily developer utilities: [`daily-developer-utilities.md`](daily-developer-utilities.md)
 - 📊 Benchmark trust guide: [`benchmark-trust.md`](benchmark-trust.md)

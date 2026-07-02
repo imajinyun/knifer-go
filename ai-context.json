@@ -1416,6 +1416,31 @@
     "ratchet_policy": "raise selected weak facades in small increments instead of completing every API at once",
     "required_checks": ["go test ./vcron ./vcache", "tools-gen", "docs-check", "ai-context-check", "governance-maturity-check"]
   },
+  "collection_mindshare_pack_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/collection-golden-paths.md",
+    "comparison_path": "docs/doc/collections-comparison.md",
+    "readme_path": "README.md",
+    "sprint": 50,
+    "status": "completed",
+    "packages": ["vslice", "vmap", "vset"],
+    "competitors": ["stdlib slices/maps", "samber/lo", "duke-git/lancet"],
+    "required_tasks": ["map", "filter", "reduce", "group", "chunk", "window", "set", "zip", "partition", "find", "contains"],
+    "baseline_examples": {
+      "vslice": { "function_count": 43, "functions_with_examples": 43, "example_coverage_percent": 100.0 },
+      "vmap": { "function_count": 65, "functions_with_examples": 65, "example_coverage_percent": 100.0 },
+      "vset": { "function_count": 10, "functions_with_examples": 10, "example_coverage_percent": 100.0 }
+    },
+    "required_boundaries": [
+      "workflow-first collection entry point",
+      "standard library first for local loops",
+      "samber/lo for collection-only lodash-style helpers",
+      "lancet for broad helper coverage",
+      "knifer-go for cross-domain facade workflows",
+      "do not copy every helper from lo or lancet"
+    ],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
   "adoption_trust_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
     "doc_path": "docs/doc/adoption-trust.md",

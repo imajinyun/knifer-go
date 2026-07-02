@@ -2017,6 +2017,114 @@ def validate_collections_comparison_governance() -> None:
 			add_error(f"{roadmap_path} Sprint 42 status must be {expected_status}")
 
 
+def validate_collection_mindshare_pack_governance() -> None:
+	governance = require_mapping(ai_context.get("collection_mindshare_pack_governance"), "collection_mindshare_pack_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("collection_mindshare_pack_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("collection_mindshare_pack_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/collection-golden-paths.md"
+	comparison_path = governance.get("comparison_path")
+	if comparison_path != "docs/doc/collections-comparison.md":
+		add_error("collection_mindshare_pack_governance.comparison_path must be docs/doc/collections-comparison.md")
+		comparison_path = "docs/doc/collections-comparison.md"
+	readme_path = governance.get("readme_path")
+	if readme_path != "README.md":
+		add_error("collection_mindshare_pack_governance.readme_path must be README.md")
+		readme_path = "README.md"
+	if governance.get("sprint") != 50:
+		add_error("collection_mindshare_pack_governance.sprint must be 50")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("collection_mindshare_pack_governance.status must be active or completed")
+	packages = require_string_list(governance.get("packages"), "collection_mindshare_pack_governance.packages")
+	expected_packages = ["vslice", "vmap", "vset"]
+	if packages != expected_packages:
+		add_error("collection_mindshare_pack_governance.packages must be ordered as: " + ", ".join(expected_packages))
+	competitors = require_string_list(governance.get("competitors"), "collection_mindshare_pack_governance.competitors")
+	expected_competitors = ["stdlib slices/maps", "samber/lo", "duke-git/lancet"]
+	if competitors != expected_competitors:
+		add_error("collection_mindshare_pack_governance.competitors must be ordered as: " + ", ".join(expected_competitors))
+	tasks = require_string_list(governance.get("required_tasks"), "collection_mindshare_pack_governance.required_tasks")
+	expected_tasks = ["map", "filter", "reduce", "group", "chunk", "window", "set", "zip", "partition", "find", "contains"]
+	if tasks != expected_tasks:
+		add_error("collection_mindshare_pack_governance.required_tasks must be ordered as: " + ", ".join(expected_tasks))
+	baseline = require_mapping(governance.get("baseline_examples"), "collection_mindshare_pack_governance.baseline_examples")
+	expected_baseline = {
+		"vslice": (43, 43, 100.0),
+		"vmap": (65, 65, 100.0),
+		"vset": (10, 10, 100.0),
+	}
+	for facade in expected_packages:
+		entry = require_mapping(baseline.get(facade), f"collection_mindshare_pack_governance.baseline_examples.{facade}")
+		expected_function_count, expected_examples, expected_ratio = expected_baseline[facade]
+		if entry.get("function_count") != expected_function_count:
+			add_error(f"collection_mindshare_pack_governance.baseline_examples.{facade}.function_count must be {expected_function_count}")
+		if entry.get("functions_with_examples") != expected_examples:
+			add_error(f"collection_mindshare_pack_governance.baseline_examples.{facade}.functions_with_examples must be {expected_examples}")
+		if entry.get("example_coverage_percent") != expected_ratio:
+			add_error(f"collection_mindshare_pack_governance.baseline_examples.{facade}.example_coverage_percent must be {expected_ratio}")
+		pkg = tool_packages.get(facade)
+		if not pkg:
+			add_error(f"docs/api/tools.json missing package {facade}")
+			continue
+		summary = require_mapping(pkg.get("summary"), f"docs/api/tools.json.packages.{facade}.summary")
+		if summary.get("function_count") != expected_function_count:
+			add_error(f"{facade} function count changed from governed baseline {expected_function_count} to {summary.get('function_count')}; update Sprint 50 governance deliberately")
+		example_count = summary.get("functions_with_examples")
+		if not isinstance(example_count, int) or isinstance(example_count, bool):
+			add_error(f"docs/api/tools.json.packages.{facade}.summary.functions_with_examples must be an integer")
+		elif example_count < expected_examples:
+			add_error(f"{facade} examples regressed from Sprint 50 baseline {expected_examples} to {example_count}")
+	boundaries = require_string_list(governance.get("required_boundaries"), "collection_mindshare_pack_governance.required_boundaries")
+	expected_boundaries = [
+		"workflow-first collection entry point",
+		"standard library first for local loops",
+		"samber/lo for collection-only lodash-style helpers",
+		"lancet for broad helper coverage",
+		"knifer-go for cross-domain facade workflows",
+		"do not copy every helper from lo or lancet",
+	]
+	if boundaries != expected_boundaries:
+		add_error("collection_mindshare_pack_governance.required_boundaries must be ordered as: " + ", ".join(expected_boundaries))
+	required_checks = require_string_list(governance.get("required_checks"), "collection_mindshare_pack_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"collection_mindshare_pack_governance.required_checks must include {check}")
+	if not (root / doc_path).exists():
+		add_error(f"{doc_path} must exist")
+	if not (root / comparison_path).exists():
+		add_error(f"{comparison_path} must exist")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for phrase in packages + competitors + tasks + boundaries + ["Task Index", "Shortest `knifer-go` path", "collections-comparison.md"]:
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	readme_text = (root / readme_path).read_text(encoding="utf-8") if (root / readme_path).exists() else ""
+	if "collection-golden-paths.md" not in readme_text:
+		add_error("README.md must link docs/doc/collection-golden-paths.md")
+	doc_index_text = (root / "docs/doc/README.md").read_text(encoding="utf-8")
+	if "collection-golden-paths.md" not in doc_index_text:
+		add_error("docs/doc/README.md must link docs/doc/collection-golden-paths.md")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_50_rows = [row for row in sprint_rows if row.get("Sprint") == "50"]
+	if len(sprint_50_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 50 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_50_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 50 status must be {expected_status}")
+		sprint_text = " ".join(sprint_50_rows[0].values())
+		for phrase in ("collection-golden-paths", "vslice", "vmap", "vset", "samber/lo", "lancet"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 50 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "collection_mindshare_pack_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention collection_mindshare_pack_governance")
+
+
 def validate_vconv_vbean_migration_governance() -> None:
 	governance = require_mapping(ai_context.get("vconv_vbean_migration_governance"), "vconv_vbean_migration_governance")
 	roadmap_path = governance.get("roadmap_path")
@@ -2904,6 +3012,7 @@ if not bench_only:
 	validate_safe_crypto_advanced_closeout_governance()
 	validate_go_version_adoption_governance()
 	validate_collections_comparison_governance()
+	validate_collection_mindshare_pack_governance()
 	validate_vconv_vbean_migration_governance()
 	validate_daily_developer_toolkit_governance()
 	validate_benchmark_trust_governance()
