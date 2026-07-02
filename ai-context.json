@@ -1399,6 +1399,17 @@
     "ratchet_policy": "raise selected weak facades in small increments instead of completing every API at once",
     "required_checks": ["go test ./vlog ./vmail", "tools-gen", "docs-check", "ai-context-check", "governance-maturity-check"]
   },
+  "adoption_trust_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/adoption-trust.md",
+    "readme_path": "README.md",
+    "sprint": 48,
+    "status": "completed",
+    "required_entrypoints": ["release notes", "compatibility policy", "deprecation policy", "security policy", "generated API catalog", "validation gates", "why trust this library"],
+    "required_paths": ["CHANGELOG.md", "SECURITY.md", "docs/api/exports.txt", "docs/api/tools.json", "docs/api/tools.md", "docs/doc/benchmark-trust.md"],
+    "required_commands": ["make agent-check", "make agent-full-check", "make release-check", "make api-freeze-check", "make release-notes-check"],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check", "release-notes-check", "api-freeze-check"]
+  },
   "error_model": {
     "taxonomy": [
       { "category": "invalid input", "code": "GK_INVALID_INPUT", "use_when": "Caller-provided arguments, payloads, or configuration values are malformed." },

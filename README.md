@@ -370,7 +370,9 @@ See [Build, test, and release workflow](./docs/doc/README.md#build-test-and-rele
 
 - Security reports: see [`SECURITY.md`](./SECURITY.md). Please do not disclose suspected vulnerabilities in public issues.
 - Release notes: see [`CHANGELOG.md`](./CHANGELOG.md). User-visible changes should be recorded before tagging a release.
+- Adoption trust: see [`docs/doc/adoption-trust.md`](docs/doc/adoption-trust.md) for release notes, compatibility policy, deprecation policy, security policy, generated API catalog, and validation-gate entry points.
 - Coverage/API/workflow gate details: see [Governance](./docs/doc/README.md#governance).
+- Compatibility and deprecation: see [API compatibility policy](#api-compatibility-policy) and run `make api-freeze-check` before release branches.
 - CI trust signals include race/shuffle tests, coverage gates, generated API and tool-catalog checks, `golangci-lint`, `govulncheck`, CodeQL, benchmark smoke tests, and OpenSSF Scorecard.
 - Benchmark output is treated as evidence, not a universal performance claim; see the [benchmark trust guide](docs/doc/benchmark-trust.md).
 

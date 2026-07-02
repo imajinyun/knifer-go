@@ -112,6 +112,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 45 | Completed | Public Benchmark Trust Page | Published benchmark trust guidance that separates quick gates from manual opt-in evidence and blocks universal performance claims without repeated runs and benchstat. |
 | 46 | Completed | First-Use Golden Path | Added 10 tasks in 10 minutes guidance with one recommended facade and one shortest example for string, slice, map, JSON, file, HTTP, crypto, config, DB, and CLI workflows. |
 | 47 | Completed | Example Density for Weak Facades | ratchet for `vlog` and `vmail` from below-25-percent example coverage to 12 examples each, then guarded the new baseline with machine-checked example density governance. |
+| 48 | Completed | Release/Adoption Trust Pack | Added adoption trust guidance with release notes, compatibility policy, deprecation policy, security policy, generated API catalog, validation gates, and why-trust-this-library entry points. |
 
 ## Active workflow
 
@@ -166,6 +167,8 @@ Sprint 45 completed public benchmark trust governance: `benchmark_trust_governan
 Sprint 46 completed first-use golden path governance: `first_use_golden_paths_governance` records the 10 tasks in 10 minutes entry point and keeps each task mapped to exactly one recommended facade and one shortest example.
 
 Sprint 47 completed weak facade example-density governance: `weak_facade_example_density_governance` records the selection rule for common facades below 25 percent example coverage and locks the `vlog` / `vmail` ratchet at 12 examples each.
+
+Sprint 48 completed adoption trust governance: `adoption_trust_governance` records the adoption trust page and keeps README entry points for release notes, compatibility, deprecation, security policy, generated API catalog, validation gates, and why-trust-this-library guidance.
 
 Recommended roadmap loop:
 

@@ -40,6 +40,7 @@
 - 🧰 Daily developer utilities: [`daily-developer-utilities.md`](daily-developer-utilities.md)
 - 📊 Benchmark trust guide: [`benchmark-trust.md`](benchmark-trust.md)
 - 🏁 First-use golden paths: [`first-use-golden-paths.md`](first-use-golden-paths.md)
+- ✅ Adoption trust guide: [`adoption-trust.md`](adoption-trust.md)
 
 <a id="start-with-star-domains"></a>
 

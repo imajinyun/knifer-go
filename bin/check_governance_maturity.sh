@@ -2348,6 +2348,75 @@ def validate_weak_facade_example_density_governance() -> None:
 		add_error(f"{roadmap_path} must mention weak_facade_example_density_governance")
 
 
+def validate_adoption_trust_governance() -> None:
+	governance = require_mapping(ai_context.get("adoption_trust_governance"), "adoption_trust_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("adoption_trust_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("adoption_trust_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/adoption-trust.md"
+	readme_path = governance.get("readme_path")
+	if readme_path != "README.md":
+		add_error("adoption_trust_governance.readme_path must be README.md")
+		readme_path = "README.md"
+	if governance.get("sprint") != 48:
+		add_error("adoption_trust_governance.sprint must be 48")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("adoption_trust_governance.status must be active or completed")
+	entrypoints = require_string_list(governance.get("required_entrypoints"), "adoption_trust_governance.required_entrypoints")
+	expected_entrypoints = ["release notes", "compatibility policy", "deprecation policy", "security policy", "generated API catalog", "validation gates", "why trust this library"]
+	if entrypoints != expected_entrypoints:
+		add_error("adoption_trust_governance.required_entrypoints must be ordered as: " + ", ".join(expected_entrypoints))
+	paths = require_string_list(governance.get("required_paths"), "adoption_trust_governance.required_paths")
+	expected_paths = ["CHANGELOG.md", "SECURITY.md", "docs/api/exports.txt", "docs/api/tools.json", "docs/api/tools.md", "docs/doc/benchmark-trust.md"]
+	if paths != expected_paths:
+		add_error("adoption_trust_governance.required_paths must be ordered as: " + ", ".join(expected_paths))
+	commands = require_string_list(governance.get("required_commands"), "adoption_trust_governance.required_commands")
+	expected_commands = ["make agent-check", "make agent-full-check", "make release-check", "make api-freeze-check", "make release-notes-check"]
+	if commands != expected_commands:
+		add_error("adoption_trust_governance.required_commands must be ordered as: " + ", ".join(expected_commands))
+	required_checks = require_string_list(governance.get("required_checks"), "adoption_trust_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check", "release-notes-check", "api-freeze-check"):
+		if check not in required_checks:
+			add_error(f"adoption_trust_governance.required_checks must include {check}")
+	if not (root / doc_path).exists():
+		add_error(f"{doc_path} must exist")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for phrase in entrypoints + paths + commands + ["Why Trust This Library", "Adoption Checklist"]:
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	readme_text = (root / readme_path).read_text(encoding="utf-8") if (root / readme_path).exists() else ""
+	for phrase in ("adoption-trust.md", "CHANGELOG.md", "SECURITY.md", "API compatibility policy", "deprecation", "api-freeze-check"):
+		if readme_text and phrase not in readme_text:
+			add_error(f"README.md must include {phrase!r}")
+	doc_index_text = (root / "docs/doc/README.md").read_text(encoding="utf-8")
+	if "adoption-trust.md" not in doc_index_text:
+		add_error("docs/doc/README.md must link docs/doc/adoption-trust.md")
+	makefile_text = (root / "Makefile").read_text(encoding="utf-8")
+	for target in ("release-notes-check", "api-freeze-check", "release-check", "agent-check", "agent-full-check"):
+		if target not in makefile_text:
+			add_error(f"Makefile must define {target}")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_48_rows = [row for row in sprint_rows if row.get("Sprint") == "48"]
+	if len(sprint_48_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 48 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_48_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 48 status must be {expected_status}")
+		sprint_text = " ".join(sprint_48_rows[0].values())
+		for phrase in ("adoption trust", "release notes", "compatibility", "deprecation", "security policy"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 48 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "adoption_trust_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention adoption_trust_governance")
+
+
 def validate_example_depth_governance() -> None:
 	governance = require_mapping(ai_context.get("example_depth_governance"), "example_depth_governance")
 	sprint = governance.get("sprint")
@@ -2769,6 +2838,7 @@ if not bench_only:
 	validate_benchmark_trust_governance()
 	validate_first_use_golden_paths_governance()
 	validate_weak_facade_example_density_governance()
+	validate_adoption_trust_governance()
 	validate_example_depth_governance()
 	validate_api_convergence()
 	validate_lifecycle()
