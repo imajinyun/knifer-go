@@ -1360,6 +1360,19 @@
     "required_boundaries": ["typed Go code first", "vconf before vbean for configuration input", "vbean before vobj for mapping metadata", "vref only at dynamic adapter boundaries", "vconv after dynamic lookup", "avoid reflection-heavy hot paths"],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
   },
+  "task_index_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/task-index.md",
+    "readme_path": "README.md",
+    "sprint": 54,
+    "status": "completed",
+    "day_one_tasks": ["string cleanup", "slice transformation", "map transformation", "JSON path and formatting", "file IO", "safe HTTP", "crypto", "configuration", "database", "CLI command execution"],
+    "star_domains": ["Safe HTTP", "Safe Crypto", "Daily JSON/File"],
+    "daily_domains": ["Daily developer utilities", "Collection workflows", "Dynamic data workflows"],
+    "default_facades": ["vstr", "vslice", "vmap", "vjson", "vfile", "vhttp", "vcrypto", "vconf", "vdb", "vcli"],
+    "required_boundaries": ["choose one default facade first", "related facades only when workflow crosses package boundaries", "Safe/E/WithOptions flows at trust boundaries", "do not import internal packages"],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
   "daily_developer_toolkit_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
     "doc_path": "docs/doc/daily-developer-utilities.md",

@@ -42,6 +42,7 @@
     "vconv_vbean_migration_governance",
     "vconv_cast_migration_governance",
     "dynamic_data_toolkit_matrix_governance",
+    "task_index_governance",
     "daily_developer_toolkit_governance",
     "daily_utility_cookbook_v2_governance",
     "benchmark_trust_governance",
@@ -611,6 +612,24 @@
         "packages": { "$ref": "#/$defs/string_array" },
         "competitors": { "$ref": "#/$defs/string_array" },
         "required_workflows": { "$ref": "#/$defs/string_array" },
+        "required_boundaries": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "task_index_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "doc_path", "readme_path", "sprint", "status", "day_one_tasks", "star_domains", "daily_domains", "default_facades", "required_boundaries", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "doc_path": { "type": "string", "minLength": 1 },
+        "readme_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "day_one_tasks": { "$ref": "#/$defs/string_array" },
+        "star_domains": { "$ref": "#/$defs/string_array" },
+        "daily_domains": { "$ref": "#/$defs/string_array" },
+        "default_facades": { "$ref": "#/$defs/string_array" },
         "required_boundaries": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
       },

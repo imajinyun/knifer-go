@@ -118,6 +118,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 51 | Completed | Daily Utility Cookbook v2 | Expanded `daily-developer-utilities.md` with cookbook workflows across `vcli`, `vsys`, `vfile`, `vnet`, `vjob`, `vlog`, and `vconf`, while keeping `vtest` and `vdump` planned lanes. |
 | 52 | Completed | vconv Cast Migration Cookbook | Added `vconv-cast-migration.md` for `spf13/cast` migration across strict conversion, weak conversion, default fallback, custom parser policy, slice/map conversion, duration/time conversion, and overflow handling. |
 | 53 | Completed | Dynamic Data Toolkit Matrix | Added `dynamic-data-toolkit-matrix.md` for `vconf`, `vbean`, `vjson`, `vobj`, `vref`, and `vconv` boundaries across config, map/struct, JSON path, object checks, reflection, and scalar conversion workflows. |
+| 54 | Completed | Task Index / API Discoverability Simplification | Added `task-index.md` as a day-one, star-domain, and daily task index that maps each task to one default facade and a small related-facade set. |
 
 ## Active workflow
 
@@ -184,6 +185,8 @@ Sprint 51 completed daily utility cookbook governance v2: `daily_utility_cookboo
 Sprint 52 completed vconv cast migration governance: `vconv_cast_migration_governance` records the `vconv-cast-migration.md` cookbook for `spf13/cast` migration and keeps scalar-first conversion, E-helper trust-boundary, slice/map, duration/time, and overflow boundaries explicit.
 
 Sprint 53 completed dynamic data toolkit governance: `dynamic_data_toolkit_matrix_governance` records the `dynamic-data-toolkit-matrix.md` matrix for `vconf`, `vbean`, `vjson`, `vobj`, `vref`, and `vconv`, keeping typed-code-first and dynamic-boundary rules explicit.
+
+Sprint 54 completed task-index governance: `task_index_governance` records `task-index.md` as the default API discoverability surface for day-one, star-domain, and daily workflows.
 
 Recommended roadmap loop:
 

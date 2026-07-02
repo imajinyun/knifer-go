@@ -2313,6 +2313,78 @@ def validate_dynamic_data_toolkit_matrix_governance() -> None:
 		add_error(f"{roadmap_path} must mention dynamic_data_toolkit_matrix_governance")
 
 
+def validate_task_index_governance() -> None:
+	governance = require_mapping(ai_context.get("task_index_governance"), "task_index_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("task_index_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("task_index_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/task-index.md"
+	readme_path = governance.get("readme_path")
+	if readme_path != "README.md":
+		add_error("task_index_governance.readme_path must be README.md")
+		readme_path = "README.md"
+	if governance.get("sprint") != 54:
+		add_error("task_index_governance.sprint must be 54")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("task_index_governance.status must be active or completed")
+	day_one_tasks = require_string_list(governance.get("day_one_tasks"), "task_index_governance.day_one_tasks")
+	expected_day_one_tasks = ["string cleanup", "slice transformation", "map transformation", "JSON path and formatting", "file IO", "safe HTTP", "crypto", "configuration", "database", "CLI command execution"]
+	if day_one_tasks != expected_day_one_tasks:
+		add_error("task_index_governance.day_one_tasks must be ordered as: " + ", ".join(expected_day_one_tasks))
+	star_domains = require_string_list(governance.get("star_domains"), "task_index_governance.star_domains")
+	expected_star_domains = ["Safe HTTP", "Safe Crypto", "Daily JSON/File"]
+	if star_domains != expected_star_domains:
+		add_error("task_index_governance.star_domains must be ordered as: " + ", ".join(expected_star_domains))
+	daily_domains = require_string_list(governance.get("daily_domains"), "task_index_governance.daily_domains")
+	expected_daily_domains = ["Daily developer utilities", "Collection workflows", "Dynamic data workflows"]
+	if daily_domains != expected_daily_domains:
+		add_error("task_index_governance.daily_domains must be ordered as: " + ", ".join(expected_daily_domains))
+	default_facades = require_string_list(governance.get("default_facades"), "task_index_governance.default_facades")
+	expected_default_facades = ["vstr", "vslice", "vmap", "vjson", "vfile", "vhttp", "vcrypto", "vconf", "vdb", "vcli"]
+	if default_facades != expected_default_facades:
+		add_error("task_index_governance.default_facades must be ordered as: " + ", ".join(expected_default_facades))
+	boundaries = require_string_list(governance.get("required_boundaries"), "task_index_governance.required_boundaries")
+	expected_boundaries = ["choose one default facade first", "related facades only when workflow crosses package boundaries", "Safe/E/WithOptions flows at trust boundaries", "do not import internal packages"]
+	if boundaries != expected_boundaries:
+		add_error("task_index_governance.required_boundaries must be ordered as: " + ", ".join(expected_boundaries))
+	required_checks = require_string_list(governance.get("required_checks"), "task_index_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"task_index_governance.required_checks must include {check}")
+	if not (root / doc_path).exists():
+		add_error(f"{doc_path} must exist")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for phrase in day_one_tasks + star_domains + daily_domains + default_facades + boundaries + ["Task Index", "Day-One Tasks"]:
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	readme_text = (root / readme_path).read_text(encoding="utf-8") if (root / readme_path).exists() else ""
+	if "task-index.md" not in readme_text:
+		add_error("README.md must link docs/doc/task-index.md")
+	doc_index_text = (root / "docs/doc/README.md").read_text(encoding="utf-8")
+	if "task-index.md" not in doc_index_text:
+		add_error("docs/doc/README.md must link docs/doc/task-index.md")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_54_rows = [row for row in sprint_rows if row.get("Sprint") == "54"]
+	if len(sprint_54_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 54 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_54_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 54 status must be {expected_status}")
+		sprint_text = " ".join(sprint_54_rows[0].values())
+		for phrase in ("task-index", "day-one", "star-domain", "daily"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 54 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "task_index_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention task_index_governance")
+
+
 def validate_daily_developer_toolkit_governance() -> None:
 	governance = require_mapping(ai_context.get("daily_developer_toolkit_governance"), "daily_developer_toolkit_governance")
 	roadmap_path = governance.get("roadmap_path")
@@ -3219,6 +3291,7 @@ if not bench_only:
 	validate_vconv_vbean_migration_governance()
 	validate_vconv_cast_migration_governance()
 	validate_dynamic_data_toolkit_matrix_governance()
+	validate_task_index_governance()
 	validate_daily_developer_toolkit_governance()
 	validate_daily_utility_cookbook_v2_governance()
 	validate_benchmark_trust_governance()

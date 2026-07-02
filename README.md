@@ -206,6 +206,8 @@ High-intent prompts and recommended imports:
 
 Not sure which package to import? Start from what you want to do:
 
+Use [`docs/doc/task-index.md`](docs/doc/task-index.md) when you know the task but do not know the facade. It gives one default facade and related facades for day-one, star-domain, and daily workflows.
+
 | I want to… | Use |
 | --- | --- |
 | Cache with FIFO/LRU/LFU/TTL | [`vcache`](docs/doc/05-vcache.md) |
