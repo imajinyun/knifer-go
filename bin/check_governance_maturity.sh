@@ -2590,6 +2590,74 @@ def validate_benchmark_trust_governance() -> None:
 		add_error(f"{roadmap_path} must mention benchmark_trust_governance")
 
 
+def validate_collections_benchmark_trust_governance() -> None:
+	governance = require_mapping(ai_context.get("collections_benchmark_trust_governance"), "collections_benchmark_trust_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("collections_benchmark_trust_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("collections_benchmark_trust_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/benchmark-trust.md"
+	if governance.get("sprint") != 55:
+		add_error("collections_benchmark_trust_governance.sprint must be 55")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("collections_benchmark_trust_governance.status must be active or completed")
+	packages = require_string_list(governance.get("packages"), "collections_benchmark_trust_governance.packages")
+	expected_packages = ["vslice", "vmap", "vset"]
+	if packages != expected_packages:
+		add_error("collections_benchmark_trust_governance.packages must be ordered as: " + ", ".join(expected_packages))
+	scopes = require_string_list(governance.get("benchmark_scopes"), "collections_benchmark_trust_governance.benchmark_scopes")
+	expected_scopes = ["slice facade helpers", "map facade helpers", "internal slice/map helpers", "set helpers"]
+	if scopes != expected_scopes:
+		add_error("collections_benchmark_trust_governance.benchmark_scopes must be ordered as: " + ", ".join(expected_scopes))
+	commands = require_string_list(governance.get("commands"), "collections_benchmark_trust_governance.commands")
+	expected_commands = [
+		"make bench-facade BENCH=Benchmark BENCHCOUNT=10 BENCHTIME=3s",
+		"make bench-core BENCH=Benchmark BENCHCOUNT=10 BENCHTIME=3s",
+		"go test ./vset",
+	]
+	if commands != expected_commands:
+		add_error("collections_benchmark_trust_governance.commands must be ordered as: " + ", ".join(expected_commands))
+	boundaries = require_string_list(governance.get("required_boundaries"), "collections_benchmark_trust_governance.required_boundaries")
+	expected_boundaries = [
+		"collection benchmark output is local baseline evidence",
+		"compare against direct stdlib loops",
+		"run repeated benchmarks before and after a change",
+		"use benchstat before documenting improvement or regression",
+		"publish collection benchmark output as evidence not marketing",
+	]
+	if boundaries != expected_boundaries:
+		add_error("collections_benchmark_trust_governance.required_boundaries must be ordered as: " + ", ".join(expected_boundaries))
+	required_checks = require_string_list(governance.get("required_checks"), "collections_benchmark_trust_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check", "bench-regression-check"):
+		if check not in required_checks:
+			add_error(f"collections_benchmark_trust_governance.required_checks must include {check}")
+	if not (root / doc_path).exists():
+		add_error(f"{doc_path} must exist")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for phrase in packages + scopes + commands + boundaries + ["Collection Benchmarks", "samber/lo", "duke-git/lancet", "vset currently has deterministic behavior tests"]:
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_55_rows = [row for row in sprint_rows if row.get("Sprint") == "55"]
+	if len(sprint_55_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 55 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_55_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 55 status must be {expected_status}")
+		sprint_text = " ".join(sprint_55_rows[0].values())
+		for phrase in ("collection", "benchmark", "vslice", "vmap", "vset", "benchstat"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 55 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "collections_benchmark_trust_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention collections_benchmark_trust_governance")
+
+
 def validate_first_use_golden_paths_governance() -> None:
 	governance = require_mapping(ai_context.get("first_use_golden_paths_governance"), "first_use_golden_paths_governance")
 	roadmap_path = governance.get("roadmap_path")
@@ -3295,6 +3363,7 @@ if not bench_only:
 	validate_daily_developer_toolkit_governance()
 	validate_daily_utility_cookbook_v2_governance()
 	validate_benchmark_trust_governance()
+	validate_collections_benchmark_trust_governance()
 	validate_first_use_golden_paths_governance()
 	validate_weak_facade_example_density_governance()
 	validate_weak_facade_example_density_governance_2()

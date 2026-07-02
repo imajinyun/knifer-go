@@ -119,6 +119,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 52 | Completed | vconv Cast Migration Cookbook | Added `vconv-cast-migration.md` for `spf13/cast` migration across strict conversion, weak conversion, default fallback, custom parser policy, slice/map conversion, duration/time conversion, and overflow handling. |
 | 53 | Completed | Dynamic Data Toolkit Matrix | Added `dynamic-data-toolkit-matrix.md` for `vconf`, `vbean`, `vjson`, `vobj`, `vref`, and `vconv` boundaries across config, map/struct, JSON path, object checks, reflection, and scalar conversion workflows. |
 | 54 | Completed | Task Index / API Discoverability Simplification | Added `task-index.md` as a day-one, star-domain, and daily task index that maps each task to one default facade and a small related-facade set. |
+| 55 | Completed | Collection Benchmark Trust | Added collection benchmark trust guidance for `vslice`, `vmap`, and `vset`, keeping benchmark output local-baseline evidence that requires repeated runs and `benchstat` before claims. |
 
 ## Active workflow
 
@@ -187,6 +188,8 @@ Sprint 52 completed vconv cast migration governance: `vconv_cast_migration_gover
 Sprint 53 completed dynamic data toolkit governance: `dynamic_data_toolkit_matrix_governance` records the `dynamic-data-toolkit-matrix.md` matrix for `vconf`, `vbean`, `vjson`, `vobj`, `vref`, and `vconv`, keeping typed-code-first and dynamic-boundary rules explicit.
 
 Sprint 54 completed task-index governance: `task_index_governance` records `task-index.md` as the default API discoverability surface for day-one, star-domain, and daily workflows.
+
+Sprint 55 completed collection benchmark trust governance: `collections_benchmark_trust_governance` records collection benchmark scope for `vslice`, `vmap`, and `vset`, including benchstat requirements and non-marketing evidence boundaries.
 
 Recommended roadmap loop:
 

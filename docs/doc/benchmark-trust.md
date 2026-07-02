@@ -39,3 +39,34 @@ deterministic, bounded, and cheap enough for repeated developer use.
 - do not publish universal performance claims.
 - Document workload shape, Go version, OS/architecture, command, run count, and
   relevant environment assumptions beside any published benchmark result.
+
+## Collection Benchmarks
+
+Collection helpers are easy to misuse in performance discussions because local
+loops, `slices` / `maps`, `samber/lo`, `duke-git/lancet`, and `knifer-go` often
+perform different amounts of work. Treat collection benchmark output as a local
+baseline unless repeated runs and benchstat prove a change.
+
+| Scope | Command | Use when |
+| --- | --- | --- |
+| Slice facade helpers | `make bench-facade BENCH=Benchmark BENCHCOUNT=10 BENCHTIME=3s` | Measuring `vslice` helper overhead for map, filter, windows, zip, and deduplication. |
+| Map facade helpers | `make bench-facade BENCH=Benchmark BENCHCOUNT=10 BENCHTIME=3s` | Measuring `vmap` helper overhead for filter, sorted keys, merge, and error-aware transforms. |
+| Internal slice/map helpers | `make bench-core BENCH=Benchmark BENCHCOUNT=10 BENCHTIME=3s` | Measuring implementation hot paths before changing shared collection behavior. |
+| Set helpers | `go test ./vset` today; add focused benchmarks before publishing set performance claims. | `vset` currently has deterministic behavior tests; do not publish set throughput claims without a benchmark suite. |
+
+Collection benchmark rules:
+
+- slice facade helpers
+- map facade helpers
+- internal slice/map helpers
+- set helpers
+- collection benchmark output is local baseline evidence
+- compare against direct stdlib loops when claiming helper overhead.
+- include input shape, item count, key distribution, and value type.
+- run repeated benchmarks before and after a change.
+- use benchstat before documenting improvement or regression.
+- do not compare `knifer-go` against `lo` or `lancet` unless both sides perform
+  the same work and the command is reproducible.
+- publish collection benchmark output as evidence not marketing.
+- keep collection benchmark quick gates deterministic and bounded.
+- vset currently has deterministic behavior tests.

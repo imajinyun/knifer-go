@@ -1414,6 +1414,17 @@
     ],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check", "bench-regression-check"]
   },
+  "collections_benchmark_trust_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/benchmark-trust.md",
+    "sprint": 55,
+    "status": "completed",
+    "packages": ["vslice", "vmap", "vset"],
+    "benchmark_scopes": ["slice facade helpers", "map facade helpers", "internal slice/map helpers", "set helpers"],
+    "commands": ["make bench-facade BENCH=Benchmark BENCHCOUNT=10 BENCHTIME=3s", "make bench-core BENCH=Benchmark BENCHCOUNT=10 BENCHTIME=3s", "go test ./vset"],
+    "required_boundaries": ["collection benchmark output is local baseline evidence", "compare against direct stdlib loops", "run repeated benchmarks before and after a change", "use benchstat before documenting improvement or regression", "publish collection benchmark output as evidence not marketing"],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check", "bench-regression-check"]
+  },
   "first_use_golden_paths_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
     "doc_path": "docs/doc/first-use-golden-paths.md",
