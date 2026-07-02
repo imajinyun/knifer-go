@@ -253,6 +253,7 @@ Not sure which package to import? Start from what you want to do:
 | Reflection-heavy functional helpers | `thoas/go-funk` | Use `knifer-go/vslice`, `vmap`, or `vstr` for focused helpers with clearer package boundaries. |
 
 For a broader comparison, see [`docs/doc/utility-library-comparison.md`](docs/doc/utility-library-comparison.md). For daily CLI, system, file, network, job, and logging tasks, see [`docs/doc/daily-developer-utilities.md`](docs/doc/daily-developer-utilities.md).
+Benchmark evidence rules are public in [`docs/doc/benchmark-trust.md`](docs/doc/benchmark-trust.md).
 
 <a id="package-catalog"></a>
 
@@ -369,6 +370,7 @@ See [Build, test, and release workflow](./docs/doc/README.md#build-test-and-rele
 - Release notes: see [`CHANGELOG.md`](./CHANGELOG.md). User-visible changes should be recorded before tagging a release.
 - Coverage/API/workflow gate details: see [Governance](./docs/doc/README.md#governance).
 - CI trust signals include race/shuffle tests, coverage gates, generated API and tool-catalog checks, `golangci-lint`, `govulncheck`, CodeQL, benchmark smoke tests, and OpenSSF Scorecard.
+- Benchmark output is treated as evidence, not a universal performance claim; see the [benchmark trust guide](docs/doc/benchmark-trust.md).
 
 <a id="contributing"></a>
 

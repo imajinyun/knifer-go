@@ -2141,6 +2141,72 @@ def validate_daily_developer_toolkit_governance() -> None:
 		add_error(f"{roadmap_path} must mention daily_developer_toolkit_governance")
 
 
+def validate_benchmark_trust_governance() -> None:
+	governance = require_mapping(ai_context.get("benchmark_trust_governance"), "benchmark_trust_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("benchmark_trust_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("benchmark_trust_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/benchmark-trust.md"
+	readme_path = governance.get("readme_path")
+	if readme_path != "README.md":
+		add_error("benchmark_trust_governance.readme_path must be README.md")
+		readme_path = "README.md"
+	if governance.get("sprint") != 45:
+		add_error("benchmark_trust_governance.sprint must be 45")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("benchmark_trust_governance.status must be active or completed")
+	quick_gates = require_string_list(governance.get("quick_gates"), "benchmark_trust_governance.quick_gates")
+	expected_quick_gates = ["make bench-smoke", "make bench-regression-check"]
+	if quick_gates != expected_quick_gates:
+		add_error("benchmark_trust_governance.quick_gates must be ordered as: " + ", ".join(expected_quick_gates))
+	manual_opt_in = require_string_list(governance.get("manual_opt_in"), "benchmark_trust_governance.manual_opt_in")
+	expected_manual_opt_in = ["make bench-core", "make bench-facade", "make bench-codec", "make bench-baseline", "make bench-compare"]
+	if manual_opt_in != expected_manual_opt_in:
+		add_error("benchmark_trust_governance.manual_opt_in must be ordered as: " + ", ".join(expected_manual_opt_in))
+	boundaries = require_string_list(governance.get("required_boundaries"), "benchmark_trust_governance.required_boundaries")
+	expected_boundaries = [
+		"benchmark output is local baseline evidence",
+		"performance claims require repeated runs and benchstat",
+		"quick gates are deterministic and bounded",
+		"long or workload-specific benchmarks are manual opt-in",
+		"do not publish universal performance claims",
+	]
+	if boundaries != expected_boundaries:
+		add_error("benchmark_trust_governance.required_boundaries must be ordered as: " + ", ".join(expected_boundaries))
+	required_checks = require_string_list(governance.get("required_checks"), "benchmark_trust_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check", "bench-regression-check"):
+		if check not in required_checks:
+			add_error(f"benchmark_trust_governance.required_checks must include {check}")
+	if not (root / doc_path).exists():
+		add_error(f"{doc_path} must exist")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for phrase in quick_gates + manual_opt_in + boundaries + ["Quick Gates", "Manual Opt-In Evidence"]:
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	readme_text = (root / readme_path).read_text(encoding="utf-8") if (root / readme_path).exists() else ""
+	if "benchmark-trust.md" not in readme_text:
+		add_error("README.md must link docs/doc/benchmark-trust.md")
+	doc_index_text = (root / "docs/doc/README.md").read_text(encoding="utf-8")
+	if "benchmark-trust.md" not in doc_index_text:
+		add_error("docs/doc/README.md must link docs/doc/benchmark-trust.md")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_45_rows = [row for row in sprint_rows if row.get("Sprint") == "45"]
+	if len(sprint_45_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 45 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_45_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 45 status must be {expected_status}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "benchmark_trust_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention benchmark_trust_governance")
+
+
 def validate_example_depth_governance() -> None:
 	governance = require_mapping(ai_context.get("example_depth_governance"), "example_depth_governance")
 	sprint = governance.get("sprint")
@@ -2559,6 +2625,7 @@ if not bench_only:
 	validate_collections_comparison_governance()
 	validate_vconv_vbean_migration_governance()
 	validate_daily_developer_toolkit_governance()
+	validate_benchmark_trust_governance()
 	validate_example_depth_governance()
 	validate_api_convergence()
 	validate_lifecycle()

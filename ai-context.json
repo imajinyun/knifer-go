@@ -1348,6 +1348,23 @@
     "required_workflows": ["CLI commands and terminal output", "System and runtime inspection", "File and IO tasks", "Network diagnostics", "Local job orchestration", "Logging while scripting"],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
   },
+  "benchmark_trust_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/benchmark-trust.md",
+    "readme_path": "README.md",
+    "sprint": 45,
+    "status": "completed",
+    "quick_gates": ["make bench-smoke", "make bench-regression-check"],
+    "manual_opt_in": ["make bench-core", "make bench-facade", "make bench-codec", "make bench-baseline", "make bench-compare"],
+    "required_boundaries": [
+      "benchmark output is local baseline evidence",
+      "performance claims require repeated runs and benchstat",
+      "quick gates are deterministic and bounded",
+      "long or workload-specific benchmarks are manual opt-in",
+      "do not publish universal performance claims"
+    ],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check", "bench-regression-check"]
+  },
   "error_model": {
     "taxonomy": [
       { "category": "invalid input", "code": "GK_INVALID_INPUT", "use_when": "Caller-provided arguments, payloads, or configuration values are malformed." },

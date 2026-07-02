@@ -55,7 +55,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | Bean mapping | `vbean`, `vmap` | copy/decode/merge semantics, deep copy, decode hooks, unused-key metadata, default merge | P1 | Define copy/decode/merge contract docs and focused tests |
 | Conversion | `vconv` | explicit error-returning scalar conversions, weak-input docs, overflow-safe integer narrowing, and named-type examples are implemented | P1 | Completed Sprint 19 with contract docs, examples, tests, and generated catalogs |
 | Validation | `vform`, `vident` | struct tag validation remains delegated; identity validation now includes unified social credit code parsing | P1 | Completed validation direction and credit-code helper coverage |
-| Benchmarks | existing benchmark files | public benchmark narrative and competitor-neutral baselines | P1 | Add benchmark trust section and stable benchmark commands |
+| Benchmarks | existing benchmark files | public benchmark narrative, quick-gate scope, manual opt-in scope, and competitor-neutral baselines | P1 | Completed Sprint 45 with public benchmark trust guidance |
 | Examples | all large facades | low function-level example ratio in large packages | P1 | Raise reader-facing examples in `vhttp`, `vnet`, `vnum`, `vresty`, and `vzip` |
 | CLI utilities | `vcli` | command args, environment helpers, process execution, terminal IO helpers | P1 | Completed `vcli` MVP with context-aware execution |
 | AI adapters | `vai` | provider abstraction for chat, embeddings, streaming, and tool calls | P1 | Completed provider-injected adapter foundation with fake-provider tests |
@@ -109,6 +109,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 42 | Completed | Collection Parity Matrix | Added collection comparison governance for `vslice`, `vmap`, `vset`, `samber/lo`, `duke-git/lancet`, and standard library `slices` / `maps` workflows. |
 | 43 | Completed | vconv/vbean Migration Matrix | Added migration governance for strict conversion, weak conversion, copy, decode, merge, and unused metadata across `vconv`, `vbean`, `vconf`, and common specialist libraries. |
 | 44 | Completed | Developer Daily Toolkit Entry | Added a daily developer utilities guide that groups `vcli`, `vsys`, `vfile`, `vnet`, `vjob`, and `vlog` against the `gookit/goutil` mental model while keeping `vtest` as a planned lane. |
+| 45 | Completed | Public Benchmark Trust Page | Published benchmark trust guidance that separates quick gates from manual opt-in evidence and blocks universal performance claims without repeated runs and benchstat. |
 
 ## Active workflow
 
@@ -157,6 +158,8 @@ Sprint 42 completed collection parity matrix: `collections_comparison_governance
 Sprint 43 completed conversion and bean migration governance: `vconv_vbean_migration_governance` records strict conversion, weak conversion, copy, decode, merge, and unused metadata boundaries across `vconv`, `vbean`, `vconf`, `spf13/cast`, `jinzhu/copier`, `mitchellh/mapstructure`, and `mergo`.
 
 Sprint 44 completed daily developer toolkit governance: `daily_developer_toolkit_governance` records the `gookit/goutil`-style entry point for `vcli`, `vsys`, `vfile`, `vnet`, `vjob`, and `vlog`, plus the explicit `vtest` planned-lane boundary.
+
+Sprint 45 completed public benchmark trust governance: `benchmark_trust_governance` records quick benchmark gates, manual opt-in benchmark evidence, repeated-run and benchstat requirements, and the rule that benchmark output is evidence rather than a universal performance claim.
 
 Recommended roadmap loop:
 

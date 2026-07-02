@@ -41,6 +41,7 @@
     "collections_comparison_governance",
     "vconv_vbean_migration_governance",
     "daily_developer_toolkit_governance",
+    "benchmark_trust_governance",
     "error_model",
     "dynamic_semantic_contracts",
     "v1_readiness",
@@ -586,6 +587,22 @@
         "competitor": { "type": "string", "minLength": 1 },
         "planned_lanes": { "$ref": "#/$defs/string_array" },
         "required_workflows": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "benchmark_trust_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "doc_path", "readme_path", "sprint", "status", "quick_gates", "manual_opt_in", "required_boundaries", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "doc_path": { "type": "string", "minLength": 1 },
+        "readme_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "quick_gates": { "$ref": "#/$defs/string_array" },
+        "manual_opt_in": { "$ref": "#/$defs/string_array" },
+        "required_boundaries": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
       },
       "additionalProperties": false
