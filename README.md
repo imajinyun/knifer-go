@@ -223,6 +223,8 @@ Not sure which package to import? Start from what you want to do:
 
 ### Agent decision guide
 
+First time here? Start with [`docs/doc/first-use-golden-paths.md`](docs/doc/first-use-golden-paths.md) for 10 tasks in 10 minutes.
+
 1. String manipulation → use `vstr`.
 2. Slice transformation → use `vslice`.
 3. Map transformation → use `vmap`.

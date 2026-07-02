@@ -2207,6 +2207,76 @@ def validate_benchmark_trust_governance() -> None:
 		add_error(f"{roadmap_path} must mention benchmark_trust_governance")
 
 
+def validate_first_use_golden_paths_governance() -> None:
+	governance = require_mapping(ai_context.get("first_use_golden_paths_governance"), "first_use_golden_paths_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("first_use_golden_paths_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("first_use_golden_paths_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/first-use-golden-paths.md"
+	readme_path = governance.get("readme_path")
+	if readme_path != "README.md":
+		add_error("first_use_golden_paths_governance.readme_path must be README.md")
+		readme_path = "README.md"
+	if governance.get("sprint") != 46:
+		add_error("first_use_golden_paths_governance.sprint must be 46")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("first_use_golden_paths_governance.status must be active or completed")
+	tasks = require_string_list(governance.get("tasks"), "first_use_golden_paths_governance.tasks")
+	expected_tasks = ["string", "slice", "map", "json", "file", "http", "crypto", "config", "db", "cli"]
+	if tasks != expected_tasks:
+		add_error("first_use_golden_paths_governance.tasks must be ordered as: " + ", ".join(expected_tasks))
+	facades = require_string_list(governance.get("facades"), "first_use_golden_paths_governance.facades")
+	expected_facades = ["vstr", "vslice", "vmap", "vjson", "vfile", "vhttp", "vcrypto", "vconf", "vdb", "vcli"]
+	if facades != expected_facades:
+		add_error("first_use_golden_paths_governance.facades must be ordered as: " + ", ".join(expected_facades))
+	boundaries = require_string_list(governance.get("required_boundaries"), "first_use_golden_paths_governance.required_boundaries")
+	expected_boundaries = [
+		"one recommended facade per task",
+		"shortest example",
+		"10 tasks in 10 minutes",
+		"explicit error-returning flows before defaults",
+		"Safe context-aware or WithOptions flows for trust boundaries",
+	]
+	if boundaries != expected_boundaries:
+		add_error("first_use_golden_paths_governance.required_boundaries must be ordered as: " + ", ".join(expected_boundaries))
+	required_checks = require_string_list(governance.get("required_checks"), "first_use_golden_paths_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"first_use_golden_paths_governance.required_checks must include {check}")
+	if not (root / doc_path).exists():
+		add_error(f"{doc_path} must exist")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for phrase in tasks + facades + boundaries + ["10 Tasks In 10 Minutes", "Recommended facade", "Shortest example"]:
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	for task, facade in zip(tasks, facades):
+		row = f"| {task} | `{facade}` |"
+		if doc_text and row not in doc_text:
+			add_error(f"{doc_path} must include one golden path row {row!r}")
+	readme_text = (root / readme_path).read_text(encoding="utf-8") if (root / readme_path).exists() else ""
+	if "first-use-golden-paths.md" not in readme_text:
+		add_error("README.md must link docs/doc/first-use-golden-paths.md")
+	doc_index_text = (root / "docs/doc/README.md").read_text(encoding="utf-8")
+	if "first-use-golden-paths.md" not in doc_index_text:
+		add_error("docs/doc/README.md must link docs/doc/first-use-golden-paths.md")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_46_rows = [row for row in sprint_rows if row.get("Sprint") == "46"]
+	if len(sprint_46_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 46 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_46_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 46 status must be {expected_status}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "first_use_golden_paths_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention first_use_golden_paths_governance")
+
+
 def validate_example_depth_governance() -> None:
 	governance = require_mapping(ai_context.get("example_depth_governance"), "example_depth_governance")
 	sprint = governance.get("sprint")
@@ -2626,6 +2696,7 @@ if not bench_only:
 	validate_vconv_vbean_migration_governance()
 	validate_daily_developer_toolkit_governance()
 	validate_benchmark_trust_governance()
+	validate_first_use_golden_paths_governance()
 	validate_example_depth_governance()
 	validate_api_convergence()
 	validate_lifecycle()

@@ -110,6 +110,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 43 | Completed | vconv/vbean Migration Matrix | Added migration governance for strict conversion, weak conversion, copy, decode, merge, and unused metadata across `vconv`, `vbean`, `vconf`, and common specialist libraries. |
 | 44 | Completed | Developer Daily Toolkit Entry | Added a daily developer utilities guide that groups `vcli`, `vsys`, `vfile`, `vnet`, `vjob`, and `vlog` against the `gookit/goutil` mental model while keeping `vtest` as a planned lane. |
 | 45 | Completed | Public Benchmark Trust Page | Published benchmark trust guidance that separates quick gates from manual opt-in evidence and blocks universal performance claims without repeated runs and benchstat. |
+| 46 | Completed | First-Use Golden Path | Added 10 tasks in 10 minutes guidance with one recommended facade and one shortest example for string, slice, map, JSON, file, HTTP, crypto, config, DB, and CLI workflows. |
 
 ## Active workflow
 
@@ -160,6 +161,8 @@ Sprint 43 completed conversion and bean migration governance: `vconv_vbean_migra
 Sprint 44 completed daily developer toolkit governance: `daily_developer_toolkit_governance` records the `gookit/goutil`-style entry point for `vcli`, `vsys`, `vfile`, `vnet`, `vjob`, and `vlog`, plus the explicit `vtest` planned-lane boundary.
 
 Sprint 45 completed public benchmark trust governance: `benchmark_trust_governance` records quick benchmark gates, manual opt-in benchmark evidence, repeated-run and benchstat requirements, and the rule that benchmark output is evidence rather than a universal performance claim.
+
+Sprint 46 completed first-use golden path governance: `first_use_golden_paths_governance` records the 10 tasks in 10 minutes entry point and keeps each task mapped to exactly one recommended facade and one shortest example.
 
 Recommended roadmap loop:
 

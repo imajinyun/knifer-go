@@ -39,6 +39,7 @@
 - 🔁 Conversion and bean migration matrix: [`vconv-vbean-migration.md`](vconv-vbean-migration.md)
 - 🧰 Daily developer utilities: [`daily-developer-utilities.md`](daily-developer-utilities.md)
 - 📊 Benchmark trust guide: [`benchmark-trust.md`](benchmark-trust.md)
+- 🏁 First-use golden paths: [`first-use-golden-paths.md`](first-use-golden-paths.md)
 
 <a id="start-with-star-domains"></a>
 

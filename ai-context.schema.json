@@ -42,6 +42,7 @@
     "vconv_vbean_migration_governance",
     "daily_developer_toolkit_governance",
     "benchmark_trust_governance",
+    "first_use_golden_paths_governance",
     "error_model",
     "dynamic_semantic_contracts",
     "v1_readiness",
@@ -602,6 +603,22 @@
         "status": { "type": "string", "enum": ["active", "completed"] },
         "quick_gates": { "$ref": "#/$defs/string_array" },
         "manual_opt_in": { "$ref": "#/$defs/string_array" },
+        "required_boundaries": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "first_use_golden_paths_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "doc_path", "readme_path", "sprint", "status", "tasks", "facades", "required_boundaries", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "doc_path": { "type": "string", "minLength": 1 },
+        "readme_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "tasks": { "$ref": "#/$defs/string_array" },
+        "facades": { "$ref": "#/$defs/string_array" },
         "required_boundaries": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
       },
