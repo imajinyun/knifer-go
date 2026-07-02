@@ -1272,6 +1272,17 @@
     ],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
   },
+  "utility_top5_comparison_governance_v2": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/utility-library-comparison.md",
+    "sprint": 58,
+    "status": "completed",
+    "last_checked": "2026-07-02",
+    "top5": ["samber/lo", "duke-git/lancet", "thoas/go-funk", "spf13/cast", "gookit/goutil"],
+    "required_sections": ["GitHub Top 5 Utility Libraries", "Comparison Matrix", "Decision Rules", "Gap Summary", "TODO Lanes", "Sources"],
+    "required_paths": ["collection-golden-paths.md", "collections-comparison.md", "vconv-cast-migration.md", "dynamic-data-toolkit-matrix.md", "daily-developer-utilities.md", "developer-debug-test-backlog.md", "facade-tiering.md", "benchmark-trust.md"],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
   "safe_crypto_advanced_closeout_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
     "backlog_path": "docs/doc/safe-crypto-advanced-backlog.md",

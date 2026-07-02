@@ -36,6 +36,7 @@
     "safe_crypto_interoperability_governance",
     "safe_crypto_benchmark_scope_governance",
     "utility_library_comparison_governance",
+    "utility_top5_comparison_governance_v2",
     "safe_crypto_advanced_closeout_governance",
     "go_version_adoption_governance",
     "collections_comparison_governance",
@@ -518,6 +519,22 @@
         "status": { "type": "string", "enum": ["active", "completed"] },
         "competitors": { "$ref": "#/$defs/string_array" },
         "required_boundaries": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "utility_top5_comparison_governance_v2": {
+      "type": "object",
+      "required": ["roadmap_path", "doc_path", "sprint", "status", "last_checked", "top5", "required_sections", "required_paths", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "doc_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "last_checked": { "type": "string", "minLength": 1 },
+        "top5": { "$ref": "#/$defs/string_array" },
+        "required_sections": { "$ref": "#/$defs/string_array" },
+        "required_paths": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
       },
       "additionalProperties": false

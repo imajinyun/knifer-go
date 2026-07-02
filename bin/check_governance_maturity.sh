@@ -1812,6 +1812,71 @@ def validate_utility_library_comparison_governance() -> None:
 				add_error(f"{roadmap_path} Sprint 39 row must mention {required_phrase!r}")
 
 
+def validate_utility_top5_comparison_governance_v2() -> None:
+	governance = require_mapping(ai_context.get("utility_top5_comparison_governance_v2"), "utility_top5_comparison_governance_v2")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("utility_top5_comparison_governance_v2.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("utility_top5_comparison_governance_v2.doc_path must be non-empty")
+		doc_path = "docs/doc/utility-library-comparison.md"
+	if governance.get("sprint") != 58:
+		add_error("utility_top5_comparison_governance_v2.sprint must be 58")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("utility_top5_comparison_governance_v2.status must be active or completed")
+	if governance.get("last_checked") != "2026-07-02":
+		add_error("utility_top5_comparison_governance_v2.last_checked must be 2026-07-02")
+	top5 = require_string_list(governance.get("top5"), "utility_top5_comparison_governance_v2.top5")
+	expected_top5 = ["samber/lo", "duke-git/lancet", "thoas/go-funk", "spf13/cast", "gookit/goutil"]
+	if top5 != expected_top5:
+		add_error("utility_top5_comparison_governance_v2.top5 must be ordered as: " + ", ".join(expected_top5))
+	sections = require_string_list(governance.get("required_sections"), "utility_top5_comparison_governance_v2.required_sections")
+	expected_sections = ["GitHub Top 5 Utility Libraries", "Comparison Matrix", "Decision Rules", "Gap Summary", "TODO Lanes", "Sources"]
+	if sections != expected_sections:
+		add_error("utility_top5_comparison_governance_v2.required_sections must be ordered as: " + ", ".join(expected_sections))
+	paths = require_string_list(governance.get("required_paths"), "utility_top5_comparison_governance_v2.required_paths")
+	expected_paths = [
+		"collection-golden-paths.md",
+		"collections-comparison.md",
+		"vconv-cast-migration.md",
+		"dynamic-data-toolkit-matrix.md",
+		"daily-developer-utilities.md",
+		"developer-debug-test-backlog.md",
+		"facade-tiering.md",
+		"benchmark-trust.md",
+	]
+	if paths != expected_paths:
+		add_error("utility_top5_comparison_governance_v2.required_paths must be ordered as: " + ", ".join(expected_paths))
+	required_checks = require_string_list(governance.get("required_checks"), "utility_top5_comparison_governance_v2.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"utility_top5_comparison_governance_v2.required_checks must include {check}")
+	if not (root / doc_path).exists():
+		add_error(f"{doc_path} must exist")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for phrase in top5 + sections + paths + ["Last checked: 2026-07-02", "GitHub API", "Stars", "Last pushed"]:
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_58_rows = [row for row in sprint_rows if row.get("Sprint") == "58"]
+	if len(sprint_58_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 58 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_58_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 58 status must be {expected_status}")
+		sprint_text = " ".join(sprint_58_rows[0].values())
+		for phrase in ("utility-library-comparison", "top5", "sources", "TODO"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 58 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "utility_top5_comparison_governance_v2" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention utility_top5_comparison_governance_v2")
+
+
 def validate_safe_crypto_advanced_closeout_governance() -> None:
 	governance = require_mapping(ai_context.get("safe_crypto_advanced_closeout_governance"), "safe_crypto_advanced_closeout_governance")
 	roadmap_path = governance.get("roadmap_path")
@@ -3517,6 +3582,7 @@ if not bench_only:
 	validate_safe_crypto_interoperability_governance()
 	validate_safe_crypto_benchmark_scope_governance()
 	validate_utility_library_comparison_governance()
+	validate_utility_top5_comparison_governance_v2()
 	validate_safe_crypto_advanced_closeout_governance()
 	validate_go_version_adoption_governance()
 	validate_collections_comparison_governance()
