@@ -241,10 +241,14 @@ Not sure which package to import? Start from what you want to do:
 | Need | Prefer | Boundary |
 | --- | --- | --- |
 | Lodash-style generic collection helpers only | `samber/lo` | Use `knifer-go` when the same project also needs safe HTTP, URL, crypto, JWT, JSON, file, config, cache, ID, or logging helpers. |
+| Broad utility coverage with a simple adoption story | `duke-git/lancet` | Use `knifer-go` when the toolkit choice depends on explicit safety boundaries, generated API metadata, facade packages, and machine-checked governance. |
+| Daily development utilities across env, filesystem, structs, system, and CLI helpers | `gookit/goutil` | Use `knifer-go` when daily utilities should sit beside security-focused HTTP/URL/crypto/JWT/database boundaries in one facade model. |
 | Type conversion only | `spf13/cast` | Use `knifer-go/vconv` when conversion is part of a broader `knifer-go` toolkit adoption. |
 | Struct-to-struct or map copying only | `jinzhu/copier` | Use `knifer-go/vbean` when struct/map mapping should stay inside the same public facade model. |
 | Map-to-struct decoding only | `mitchellh/mapstructure` | Use `knifer-go/vconf` or `vbean` when config loading or bean mapping is the surrounding workflow. |
 | Reflection-heavy functional helpers | `thoas/go-funk` | Use `knifer-go/vslice`, `vmap`, or `vstr` for focused helpers with clearer package boundaries. |
+
+For a broader comparison, see [`docs/doc/utility-library-comparison.md`](docs/doc/utility-library-comparison.md).
 
 <a id="package-catalog"></a>
 

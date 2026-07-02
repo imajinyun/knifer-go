@@ -33,6 +33,7 @@
 - 🤖 Machine-readable AI/CLI metadata: [`../../ai-context.json`](../../ai-context.json)
 - 🧯 Security policy: [`../../SECURITY.md`](../../SECURITY.md)
 - 📝 Changelog: [`../../CHANGELOG.md`](../../CHANGELOG.md)
+- ⚖️ Utility library comparison: [`utility-library-comparison.md`](utility-library-comparison.md)
 
 <a id="start-with-star-domains"></a>
 

@@ -1744,6 +1744,74 @@ def validate_safe_crypto_benchmark_scope_governance() -> None:
 				add_error(f"{roadmap_path} Sprint 38 row must mention {required_phrase!r}")
 
 
+def validate_utility_library_comparison_governance() -> None:
+	governance = require_mapping(ai_context.get("utility_library_comparison_governance"), "utility_library_comparison_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("utility_library_comparison_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("utility_library_comparison_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/utility-library-comparison.md"
+	readme_path = governance.get("readme_path")
+	if readme_path != "README.md":
+		add_error("utility_library_comparison_governance.readme_path must be README.md")
+		readme_path = "README.md"
+	sprint = governance.get("sprint")
+	if sprint != 39:
+		add_error("utility_library_comparison_governance.sprint must be 39")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("utility_library_comparison_governance.status must be active or completed")
+	competitors = require_string_list(governance.get("competitors"), "utility_library_comparison_governance.competitors")
+	expected_competitors = ["samber/lo", "duke-git/lancet", "thoas/go-funk", "gookit/goutil", "spf13/cast"]
+	if competitors != expected_competitors:
+		add_error("utility_library_comparison_governance.competitors must be ordered as: " + ", ".join(expected_competitors))
+	required_boundaries = require_string_list(governance.get("required_boundaries"), "utility_library_comparison_governance.required_boundaries")
+	expected_boundaries = [
+		"stdlib first for short local code",
+		"specialist libraries for narrow domains",
+		"knifer-go for cross-domain workflows",
+		"knifer-go for safety defaults and governance gates",
+	]
+	if required_boundaries != expected_boundaries:
+		add_error("utility_library_comparison_governance.required_boundaries must be ordered as: " + ", ".join(expected_boundaries))
+	required_checks = require_string_list(governance.get("required_checks"), "utility_library_comparison_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"utility_library_comparison_governance.required_checks must include {check}")
+	for path in (doc_path, readme_path):
+		if not (root / path).exists():
+			add_error(f"{path} must exist")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	readme_text = (root / readme_path).read_text(encoding="utf-8") if (root / readme_path).exists() else ""
+	for competitor in competitors:
+		if doc_text and competitor not in doc_text:
+			add_error(f"{doc_path} must mention {competitor}")
+		if readme_text and competitor not in readme_text:
+			add_error(f"{readme_path} comparison table must mention {competitor}")
+	for phrase in ("standard library", "specialist library", "cross-domain", "governance gates"):
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	if readme_text and "utility-library-comparison.md" not in readme_text:
+		add_error("README.md must link docs/doc/utility-library-comparison.md")
+
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_39_rows = [row for row in sprint_rows if row.get("Sprint") == "39"]
+	if len(sprint_39_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 39 row")
+	else:
+		sprint_39 = sprint_39_rows[0]
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_39.get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 39 status must be {expected_status}")
+		sprint_text = " ".join(sprint_39.values())
+		for required_phrase in ("samber/lo", "duke-git/lancet", "gookit/goutil", "spf13/cast"):
+			if required_phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 39 row must mention {required_phrase!r}")
+
+
 def validate_example_depth_governance() -> None:
 	governance = require_mapping(ai_context.get("example_depth_governance"), "example_depth_governance")
 	sprint = governance.get("sprint")
@@ -2156,6 +2224,7 @@ if not bench_only:
 	validate_safe_crypto_secret_handling_governance()
 	validate_safe_crypto_interoperability_governance()
 	validate_safe_crypto_benchmark_scope_governance()
+	validate_utility_library_comparison_governance()
 	validate_example_depth_governance()
 	validate_api_convergence()
 	validate_lifecycle()

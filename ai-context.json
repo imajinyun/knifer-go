@@ -1257,6 +1257,21 @@
     ],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check", "bench-regression-check"]
   },
+  "utility_library_comparison_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/utility-library-comparison.md",
+    "readme_path": "README.md",
+    "sprint": 39,
+    "status": "completed",
+    "competitors": ["samber/lo", "duke-git/lancet", "thoas/go-funk", "gookit/goutil", "spf13/cast"],
+    "required_boundaries": [
+      "stdlib first for short local code",
+      "specialist libraries for narrow domains",
+      "knifer-go for cross-domain workflows",
+      "knifer-go for safety defaults and governance gates"
+    ],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
   "error_model": {
     "taxonomy": [
       { "category": "invalid input", "code": "GK_INVALID_INPUT", "use_when": "Caller-provided arguments, payloads, or configuration values are malformed." },

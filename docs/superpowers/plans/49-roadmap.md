@@ -103,6 +103,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 36 | Completed | Safe Crypto Secret Handling Governance | Fixed machine-checked boundaries for demo secrets, deterministic fixtures, random-source injection, no production-looking fixed secrets, and secret-handling documentation. |
 | 37 | Completed | Safe Crypto Interoperability Governance | Fixed machine-checked boundaries for interoperability-only helpers, SM4-ECB legacy warnings, SM2 UID policy, RSA option choices, PEM/JWK exchange, and non-default algorithm guidance. |
 | 38 | Completed | Safe Crypto Benchmark Scope Governance | Fixed deterministic crypto benchmark scope for digest, HMAC, AES-GCM, AES seal/open, and secure-random smoke paths while excluding production-strength password hashing from quick gates. |
+| 39 | Completed | Competitive Positioning Governance | Added utility-library comparison governance covering `samber/lo`, `duke-git/lancet`, `thoas/go-funk`, `gookit/goutil`, and `spf13/cast` with README and documentation entry points. |
 
 ## Active workflow
 
@@ -139,6 +140,8 @@ Sprint 36 completed safe crypto secret handling governance: `safe_crypto_secret_
 Sprint 37 completed safe crypto interoperability governance: `safe_crypto_interoperability_governance` records interoperability-only helper boundaries, SM4-ECB legacy warnings, SM2 UID policy, RSA option choices, PEM/JWK key-material exchange, and non-default algorithm guidance.
 
 Sprint 38 completed safe crypto benchmark scope governance: `safe_crypto_benchmark_scope_governance` records deterministic quick benchmark allowlists, password-hashing exclusions, and bounded runtime-evidence rules for future crypto benchmark additions.
+
+Sprint 39 completed competitive positioning governance: `utility_library_comparison_governance` records the comparison page, README entry, competitor coverage, and boundary rules for common Go utility library choices.
 
 Recommended roadmap loop:
 
