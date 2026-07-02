@@ -1348,6 +1348,18 @@
     "required_workflows": ["CLI commands and terminal output", "System and runtime inspection", "File and IO tasks", "Network diagnostics", "Local job orchestration", "Logging while scripting"],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
   },
+  "daily_utility_cookbook_v2_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/daily-developer-utilities.md",
+    "sprint": 51,
+    "status": "completed",
+    "packages": ["vcli", "vsys", "vfile", "vnet", "vjob", "vlog", "vconf", "vhttp"],
+    "competitor": "gookit/goutil",
+    "required_workflows": ["env-driven command execution", "config-backed file workflow", "network diagnostics report", "CLI support bundle", "local batch job runner", "filesystem cleanup preview", "lightweight service smoke script"],
+    "planned_lanes": ["vtest", "vdump"],
+    "required_boundaries": ["daily utilities should stay beside safety-focused facades", "no resident background utility process", "Safe/E/WithOptions flows for trust boundaries"],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
   "benchmark_trust_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
     "doc_path": "docs/doc/benchmark-trust.md",

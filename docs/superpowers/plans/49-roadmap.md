@@ -115,6 +115,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 48 | Completed | Release/Adoption Trust Pack | Added adoption trust guidance with release notes, compatibility policy, deprecation policy, security policy, generated API catalog, validation gates, and why-trust-this-library entry points. |
 | 49 | Completed | Weak Facade Example Ratchet 2 | ratchet for `vcron` and `vcache` from below-25-percent example coverage to at least 12 examples each, then guarded the new baseline with machine-checked example density governance. |
 | 50 | Completed | Collection Mindshare Pack | Added `collection-golden-paths.md` as a workflow-first collection entry point for `vslice`, `vmap`, `vset`, `samber/lo`, `duke-git/lancet`, and standard-library local loops. |
+| 51 | Completed | Daily Utility Cookbook v2 | Expanded `daily-developer-utilities.md` with cookbook workflows across `vcli`, `vsys`, `vfile`, `vnet`, `vjob`, `vlog`, and `vconf`, while keeping `vtest` and `vdump` planned lanes. |
 
 ## Active workflow
 
@@ -175,6 +176,8 @@ Sprint 48 completed adoption trust governance: `adoption_trust_governance` recor
 Sprint 49 completed weak facade example-density governance pass 2: `weak_facade_example_density_governance_2` records the selection rule for common facades below 25 percent example coverage and locks the `vcron` / `vcache` ratchet at 12 examples or more.
 
 Sprint 50 completed collection mindshare governance: `collection_mindshare_pack_governance` records the workflow-first `collection-golden-paths.md` entry point, keeps `vslice`, `vmap`, and `vset` example baselines from regressing, and preserves the `samber/lo`, `duke-git/lancet`, and standard-library boundaries.
+
+Sprint 51 completed daily utility cookbook governance v2: `daily_utility_cookbook_v2_governance` records the expanded `daily-developer-utilities.md` cookbook across env, file, system, network, CLI, log, config, and smoke-script workflows while keeping `vtest` and `vdump` planned lanes.
 
 Recommended roadmap loop:
 

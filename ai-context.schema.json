@@ -41,6 +41,7 @@
     "collections_comparison_governance",
     "vconv_vbean_migration_governance",
     "daily_developer_toolkit_governance",
+    "daily_utility_cookbook_v2_governance",
     "benchmark_trust_governance",
     "first_use_golden_paths_governance",
     "weak_facade_example_density_governance",
@@ -592,6 +593,23 @@
         "competitor": { "type": "string", "minLength": 1 },
         "planned_lanes": { "$ref": "#/$defs/string_array" },
         "required_workflows": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "daily_utility_cookbook_v2_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "doc_path", "sprint", "status", "packages", "competitor", "required_workflows", "planned_lanes", "required_boundaries", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "doc_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "packages": { "$ref": "#/$defs/string_array" },
+        "competitor": { "type": "string", "minLength": 1 },
+        "required_workflows": { "$ref": "#/$defs/string_array" },
+        "planned_lanes": { "$ref": "#/$defs/string_array" },
+        "required_boundaries": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
       },
       "additionalProperties": false

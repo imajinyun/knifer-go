@@ -2249,6 +2249,77 @@ def validate_daily_developer_toolkit_governance() -> None:
 		add_error(f"{roadmap_path} must mention daily_developer_toolkit_governance")
 
 
+def validate_daily_utility_cookbook_v2_governance() -> None:
+	governance = require_mapping(ai_context.get("daily_utility_cookbook_v2_governance"), "daily_utility_cookbook_v2_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("daily_utility_cookbook_v2_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("daily_utility_cookbook_v2_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/daily-developer-utilities.md"
+	if governance.get("sprint") != 51:
+		add_error("daily_utility_cookbook_v2_governance.sprint must be 51")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("daily_utility_cookbook_v2_governance.status must be active or completed")
+	packages = require_string_list(governance.get("packages"), "daily_utility_cookbook_v2_governance.packages")
+	expected_packages = ["vcli", "vsys", "vfile", "vnet", "vjob", "vlog", "vconf", "vhttp"]
+	if packages != expected_packages:
+		add_error("daily_utility_cookbook_v2_governance.packages must be ordered as: " + ", ".join(expected_packages))
+	if governance.get("competitor") != "gookit/goutil":
+		add_error("daily_utility_cookbook_v2_governance.competitor must be gookit/goutil")
+	workflows = require_string_list(governance.get("required_workflows"), "daily_utility_cookbook_v2_governance.required_workflows")
+	expected_workflows = [
+		"env-driven command execution",
+		"config-backed file workflow",
+		"network diagnostics report",
+		"CLI support bundle",
+		"local batch job runner",
+		"filesystem cleanup preview",
+		"lightweight service smoke script",
+	]
+	if workflows != expected_workflows:
+		add_error("daily_utility_cookbook_v2_governance.required_workflows must be ordered as: " + ", ".join(expected_workflows))
+	planned_lanes = require_string_list(governance.get("planned_lanes"), "daily_utility_cookbook_v2_governance.planned_lanes")
+	if planned_lanes != ["vtest", "vdump"]:
+		add_error("daily_utility_cookbook_v2_governance.planned_lanes must be vtest, vdump")
+	boundaries = require_string_list(governance.get("required_boundaries"), "daily_utility_cookbook_v2_governance.required_boundaries")
+	expected_boundaries = [
+		"daily utilities should stay beside safety-focused facades",
+		"no resident background utility process",
+		"Safe/E/WithOptions flows for trust boundaries",
+	]
+	if boundaries != expected_boundaries:
+		add_error("daily_utility_cookbook_v2_governance.required_boundaries must be ordered as: " + ", ".join(expected_boundaries))
+	required_checks = require_string_list(governance.get("required_checks"), "daily_utility_cookbook_v2_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"daily_utility_cookbook_v2_governance.required_checks must include {check}")
+	if not (root / doc_path).exists():
+		add_error(f"{doc_path} must exist")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for phrase in packages + workflows + planned_lanes + boundaries + ["Cookbook", "gookit/goutil"]:
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_51_rows = [row for row in sprint_rows if row.get("Sprint") == "51"]
+	if len(sprint_51_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 51 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_51_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 51 status must be {expected_status}")
+		sprint_text = " ".join(sprint_51_rows[0].values())
+		for phrase in ("daily-developer-utilities", "vcli", "vsys", "vfile", "vnet", "vjob", "vlog", "vconf"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 51 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "daily_utility_cookbook_v2_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention daily_utility_cookbook_v2_governance")
+
+
 def validate_benchmark_trust_governance() -> None:
 	governance = require_mapping(ai_context.get("benchmark_trust_governance"), "benchmark_trust_governance")
 	roadmap_path = governance.get("roadmap_path")
@@ -3015,6 +3086,7 @@ if not bench_only:
 	validate_collection_mindshare_pack_governance()
 	validate_vconv_vbean_migration_governance()
 	validate_daily_developer_toolkit_governance()
+	validate_daily_utility_cookbook_v2_governance()
 	validate_benchmark_trust_governance()
 	validate_first_use_golden_paths_governance()
 	validate_weak_facade_example_density_governance()
