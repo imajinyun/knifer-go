@@ -184,3 +184,54 @@ func TestAssignEntityInvalidTargetsAndTypeMismatch(t *testing.T) {
 	err := AssignEntity(entity, &dst)
 	assertDBCode(t, err, knifer.ErrCodeInternal)
 }
+
+func TestAssignEntityRejectsNumericOverflow(t *testing.T) {
+	t.Run("signed integer overflow", func(t *testing.T) {
+		entity := EntityFromMap("users", map[string]any{"age": int64(128)})
+		var dst struct{ Age int8 }
+		err := AssignEntity(entity, &dst)
+		assertDBCode(t, err, knifer.ErrCodeInternal)
+		if dst.Age != 0 {
+			t.Fatalf("Age = %d, want unchanged zero value", dst.Age)
+		}
+	})
+
+	t.Run("negative to unsigned", func(t *testing.T) {
+		entity := EntityFromMap("users", map[string]any{"age": int64(-1)})
+		var dst struct{ Age uint8 }
+		err := AssignEntity(entity, &dst)
+		assertDBCode(t, err, knifer.ErrCodeInternal)
+		if dst.Age != 0 {
+			t.Fatalf("Age = %d, want unchanged zero value", dst.Age)
+		}
+	})
+
+	t.Run("fractional float to integer", func(t *testing.T) {
+		entity := EntityFromMap("users", map[string]any{"age": 1.5})
+		var dst struct{ Age int }
+		err := AssignEntity(entity, &dst)
+		assertDBCode(t, err, knifer.ErrCodeInternal)
+		if dst.Age != 0 {
+			t.Fatalf("Age = %d, want unchanged zero value", dst.Age)
+		}
+	})
+}
+
+func TestAssignEntityAllowsSafeNumericConversion(t *testing.T) {
+	entity := EntityFromMap("users", map[string]any{
+		"small_int":  int64(127),
+		"small_uint": uint16(255),
+		"whole":      42.0,
+	})
+	var dst struct {
+		SmallInt  int8
+		SmallUint uint8
+		Whole     int
+	}
+	if err := AssignEntity(entity, &dst); err != nil {
+		t.Fatalf("AssignEntity safe numeric conversion: %v", err)
+	}
+	if dst.SmallInt != 127 || dst.SmallUint != 255 || dst.Whole != 42 {
+		t.Fatalf("assigned numeric dst = %#v", dst)
+	}
+}

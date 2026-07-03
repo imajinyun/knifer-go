@@ -2,8 +2,11 @@ package vdb
 
 import (
 	"database/sql"
+	"errors"
 	"reflect"
 	"testing"
+
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 func TestFacadeTopLevelBuildersAndConditions(t *testing.T) {
@@ -93,6 +96,18 @@ func TestFacadeEntityScanners(t *testing.T) {
 	}
 	if m["id"] != 1 || m["name"] != "alice" {
 		t.Fatalf("AssignEntity map = %#v", m)
+	}
+}
+
+func TestFacadeAssignEntityRejectsNumericOverflow(t *testing.T) {
+	entity := EntityFromMap("users", map[string]any{"age": int64(128)})
+	var dst struct{ Age int8 }
+	err := AssignEntity(entity, &dst)
+	if !errors.Is(err, knifer.ErrCodeInternal) {
+		t.Fatalf("AssignEntity overflow error = %v, want ErrCodeInternal", err)
+	}
+	if dst.Age != 0 {
+		t.Fatalf("Age = %d, want unchanged zero value", dst.Age)
 	}
 }
 
