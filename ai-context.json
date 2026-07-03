@@ -289,8 +289,19 @@
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "high",
-      "writes_files": ["docs/api/tools.json", "docs/api/tools.md"],
+      "writes_files": ["docs/api/tools.json", "docs/api/tools.md", "docs/doc/facade-tiering.md"],
       "notes": "Regenerates documentation artifacts that are derived from source code. Only run after confirming generated output is expected."
+    },
+    "facade_tiering_gen": {
+      "cmd": "make facade-tiering-gen",
+      "safe_for_agent_auto_run": false,
+      "requires_user_consent": true,
+      "writes_workspace": true,
+      "writes_git_config": false,
+      "network_required": false,
+      "risk_level": "medium",
+      "writes_files": ["docs/doc/facade-tiering.md"],
+      "notes": "Regenerates the facade tiering generated view from ai-context.json dependency_tiers and security_sensitive_packages."
     },
     "utility_comparison_refresh": {
       "cmd": "make utility-comparison-refresh",
@@ -534,6 +545,11 @@
       "path": "docs/api/tools.md",
       "generator_command": "docs_update",
       "check_command": "docs_check"
+    },
+    "facade_tiering_view": {
+      "path": "docs/doc/facade-tiering.md",
+      "generator_command": "facade_tiering_gen",
+      "check_command": "governance_maturity_check"
     }
   },
   "ai_tooling": {
@@ -1448,6 +1464,21 @@
     "required_tiers": ["core facades", "heavy extension facades", "provider contract facades", "security-sensitive overlay"],
     "required_boundaries": ["import public v* facade packages", "do not import internal packages", "heavy dependencies require allowlist review", "provider contracts stay provider-neutral", "Safe/E/WithOptions flows in security-sensitive facades"],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
+  "facade_tiering_generated_view_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/facade-tiering.md",
+    "script_path": "bin/generate_facade_tiering.py",
+    "make_target": "facade-tiering-gen",
+    "command": "facade_tiering_gen",
+    "sprint": 65,
+    "status": "completed",
+    "dependency_tiers_source": "dependency_tiers",
+    "security_sensitive_source": "security_sensitive_packages",
+    "generated_markers": ["BEGIN GENERATED DEPENDENCY TIERS", "END GENERATED DEPENDENCY TIERS", "BEGIN GENERATED SECURITY OVERLAY", "END GENERATED SECURITY OVERLAY"],
+    "required_tiers": ["core facades", "heavy extension facades", "provider contract facades", "security-sensitive overlay"],
+    "required_boundaries": ["dependency_tiers is the single source of truth", "security_sensitive_packages is the overlay source", "generated view must not be hand-edited between markers", "docs-check must stay network-free"],
+    "required_checks": ["facade-tiering-gen", "docs-check", "ai-context-check", "governance-maturity-check"]
   },
   "daily_developer_toolkit_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",

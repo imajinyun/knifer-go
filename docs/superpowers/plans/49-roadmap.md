@@ -129,6 +129,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 62 | Completed | Debug/Test API Decision Backlog v2 | Expanded `developer-debug-test-backlog.md` with API decision answers for `vtest` and `vdump`, including repeated workflows, redaction policy, golden-file scope, and non-goals. |
 | 63 | Completed | Docs Task Index Auto-Check v2 | Added `task-index` auto-check governance that validates default facades against `tools.json`, public facades, related public facades, and star domains from AI metadata. |
 | 64 | Completed | Top5 Comparison Refresh Workflow | Added explicit `utility-comparison-refresh` workflow governance for GitHub API refreshes while keeping ordinary docs, quick, agent, and CI gates network-free. |
+| 65 | Completed | Facade Tiering Generated View | Added generated `facade-tiering.md` dependency tier and security overlay views from `dependency_tiers` and `security_sensitive_packages` so AI metadata remains the single source of truth. |
 
 ## Active workflow
 
@@ -217,6 +218,8 @@ Sprint 62 completed developer debug/test API decision governance: `developer_deb
 Sprint 63 completed task-index auto-check governance: `task_index_auto_check_governance` parses `task-index.md` tables and validates default facades against `docs/api/tools.json`, public facades, related public facades, and star domains from `task_index_governance`.
 
 Sprint 64 completed top5 comparison refresh workflow governance: `utility_top5_refresh_workflow_governance` records the explicit `make utility-comparison-refresh` entry point, the `bin/update_utility_comparison.py` GitHub API script, the files it updates, and the rule that ordinary docs, quick, agent, and CI gates must not depend on network refreshes.
+
+Sprint 65 completed facade tiering generated-view governance: `facade_tiering_generated_view_governance` records the `make facade-tiering-gen` entry point and validates that `facade-tiering.md` generated blocks match `dependency_tiers` and `security_sensitive_packages`.
 
 Recommended roadmap loop:
 

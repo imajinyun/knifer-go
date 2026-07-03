@@ -25,11 +25,13 @@ Start here when a task maps directly to one of these common workflows.
 
 ## Dependency Tiers
 
+<!-- BEGIN GENERATED DEPENDENCY TIERS -->
 | Tier | Facades | Import rule |
 | --- | --- | --- |
 | core facades | `vbean`, `vblf`, `vbool`, `vcache`, `vcli`, `vcodec`, `vconf`, `vconv`, `vcron`, `vcrypto`, `vcsv`, `vdate`, `vdb`, `vdfa`, `vfile`, `vform`, `vgeo`, `vhash`, `vhttp`, `vid`, `vident`, `vjob`, `vjson`, `vjwt`, `vlog`, `vmail`, `vmap`, `vmask`, `vnet`, `vnum`, `vobj`, `vpass`, `vrand`, `vref`, `vregex`, `vsem`, `vset`, `vskt`, `vslice`, `vstr`, `vsys`, `vtpl`, `vurl`, `vver`, `vxml`, `vzip` | Standard-library-first; third-party imports require explicit allowlist review. |
 | heavy extension facades | `verr`, `vimg`, `vpoi`, `vresty` | Optional integrations stay inside their owning facade and matching `internal/*` package family. |
 | provider contract facades | `vai`, `vftp`, `vhan`, `vssh`, `vtok` | Public APIs expose provider interfaces and call contracts; concrete clients, credentials, dictionaries, and NLP engines stay outside core. |
+<!-- END GENERATED DEPENDENCY TIERS -->
 
 ## Security-Sensitive Overlay
 
@@ -38,13 +40,15 @@ where untrusted input, secrets, network boundaries, filesystem boundaries, SQL,
 or command execution can affect safety. Prefer Safe, E, context-aware, or
 WithOptions flows in these packages.
 
+<!-- BEGIN GENERATED SECURITY OVERLAY -->
 | Category | Facades |
 | --- | --- |
-| Network and URL boundaries | `vhttp`, `vresty`, `vurl`, `vnet` |
+| Network and URL boundaries | `vhttp`, `vresty`, `vurl` |
 | File, archive, and config boundaries | `vfile`, `vzip`, `vconf` |
 | Crypto, token, random, and identity boundaries | `vcrypto`, `vjwt`, `vrand`, `vid` |
 | SQL and command boundaries | `vdb`, `vcli` |
 | Provider contract boundaries | `vai`, `vftp`, `vssh` |
+<!-- END GENERATED SECURITY OVERLAY -->
 
 ## Import Rules
 

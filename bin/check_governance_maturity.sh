@@ -100,6 +100,65 @@ def extract_backticked_facades(value: str) -> list[str]:
 	return re.findall(r"`(v[A-Za-z0-9_]*)`", value)
 
 
+def markdown_code_list(values: list[str]) -> str:
+	return ", ".join(f"`{value}`" for value in values)
+
+
+def generated_block(text: str, begin: str, end: str) -> str:
+	pattern = re.compile(rf"<!-- {re.escape(begin)} -->\n(?P<body>.*?)\n<!-- {re.escape(end)} -->", flags=re.DOTALL)
+	match = pattern.search(text)
+	if not match:
+		add_error(f"generated block {begin} / {end} must exist")
+		return ""
+	return match.group("body").strip()
+
+
+def expected_facade_tiering_dependency_table(dependency_tiers: dict) -> str:
+	core = require_string_list(dependency_tiers.get("core_facades"), "dependency_tiers.core_facades")
+	heavy = require_string_list(dependency_tiers.get("heavy_extension_facades"), "dependency_tiers.heavy_extension_facades")
+	providers = require_string_list(dependency_tiers.get("provider_contract_facades"), "dependency_tiers.provider_contract_facades")
+	return "\n".join(
+		[
+			"| Tier | Facades | Import rule |",
+			"| --- | --- | --- |",
+			"| core facades | {facades} | Standard-library-first; third-party imports require explicit allowlist review. |".format(
+				facades=markdown_code_list(core),
+			),
+			"| heavy extension facades | {facades} | Optional integrations stay inside their owning facade and matching `internal/*` package family. |".format(
+				facades=markdown_code_list(heavy),
+			),
+			"| provider contract facades | {facades} | Public APIs expose provider interfaces and call contracts; concrete clients, credentials, dictionaries, and NLP engines stay outside core. |".format(
+				facades=markdown_code_list(providers),
+			),
+		]
+	)
+
+
+def expected_facade_tiering_security_table(security_sensitive: list[str]) -> str:
+	security_sensitive_set = set(security_sensitive)
+	categories = [
+		("Network and URL boundaries", ["vhttp", "vresty", "vurl", "vnet"]),
+		("File, archive, and config boundaries", ["vfile", "vzip", "vconf"]),
+		("Crypto, token, random, and identity boundaries", ["vcrypto", "vjwt", "vrand", "vid"]),
+		("SQL and command boundaries", ["vdb", "vcli"]),
+		("Provider contract boundaries", ["vai", "vftp", "vssh"]),
+	]
+	rows = [
+		"| Category | Facades |",
+		"| --- | --- |",
+	]
+	covered: set[str] = set()
+	for category, facades in categories:
+		covered.update(facades)
+		filtered = [facade for facade in facades if facade in security_sensitive_set]
+		if filtered:
+			rows.append(f"| {category} | {markdown_code_list(filtered)} |")
+	uncovered = sorted(security_sensitive_set - covered)
+	if uncovered:
+		add_error("facade tiering security overlay does not cover security-sensitive facade(s): " + ", ".join(uncovered))
+	return "\n".join(rows)
+
+
 def file_exists(reference: str) -> bool:
 	path = reference.split(":", 1)[0]
 	return (root / path).exists()
@@ -2897,6 +2956,109 @@ def validate_facade_tiering_import_governance() -> None:
 		add_error(f"{roadmap_path} must mention facade_tiering_import_governance")
 
 
+def validate_facade_tiering_generated_view_governance() -> None:
+	governance = require_mapping(ai_context.get("facade_tiering_generated_view_governance"), "facade_tiering_generated_view_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("facade_tiering_generated_view_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("facade_tiering_generated_view_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/facade-tiering.md"
+	script_path = governance.get("script_path")
+	if not isinstance(script_path, str) or not script_path.strip():
+		add_error("facade_tiering_generated_view_governance.script_path must be non-empty")
+		script_path = "bin/generate_facade_tiering.py"
+	if governance.get("make_target") != "facade-tiering-gen":
+		add_error("facade_tiering_generated_view_governance.make_target must be facade-tiering-gen")
+	if governance.get("command") != "facade_tiering_gen":
+		add_error("facade_tiering_generated_view_governance.command must be facade_tiering_gen")
+	if governance.get("sprint") != 65:
+		add_error("facade_tiering_generated_view_governance.sprint must be 65")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("facade_tiering_generated_view_governance.status must be active or completed")
+	if governance.get("dependency_tiers_source") != "dependency_tiers":
+		add_error("facade_tiering_generated_view_governance.dependency_tiers_source must be dependency_tiers")
+	if governance.get("security_sensitive_source") != "security_sensitive_packages":
+		add_error("facade_tiering_generated_view_governance.security_sensitive_source must be security_sensitive_packages")
+	generated_markers = require_string_list(governance.get("generated_markers"), "facade_tiering_generated_view_governance.generated_markers")
+	expected_markers = ["BEGIN GENERATED DEPENDENCY TIERS", "END GENERATED DEPENDENCY TIERS", "BEGIN GENERATED SECURITY OVERLAY", "END GENERATED SECURITY OVERLAY"]
+	if generated_markers != expected_markers:
+		add_error("facade_tiering_generated_view_governance.generated_markers must be ordered as: " + ", ".join(expected_markers))
+	required_tiers = require_string_list(governance.get("required_tiers"), "facade_tiering_generated_view_governance.required_tiers")
+	expected_tiers = ["core facades", "heavy extension facades", "provider contract facades", "security-sensitive overlay"]
+	if required_tiers != expected_tiers:
+		add_error("facade_tiering_generated_view_governance.required_tiers must be ordered as: " + ", ".join(expected_tiers))
+	required_boundaries = require_string_list(governance.get("required_boundaries"), "facade_tiering_generated_view_governance.required_boundaries")
+	expected_boundaries = [
+		"dependency_tiers is the single source of truth",
+		"security_sensitive_packages is the overlay source",
+		"generated view must not be hand-edited between markers",
+		"docs-check must stay network-free",
+	]
+	if required_boundaries != expected_boundaries:
+		add_error("facade_tiering_generated_view_governance.required_boundaries must be ordered as: " + ", ".join(expected_boundaries))
+	required_checks = require_string_list(governance.get("required_checks"), "facade_tiering_generated_view_governance.required_checks")
+	for check in ("facade-tiering-gen", "docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"facade_tiering_generated_view_governance.required_checks must include {check}")
+	for path in (doc_path, script_path):
+		if not (root / path).exists():
+			add_error(f"{path} must exist")
+	command = require_mapping(commands.get("facade_tiering_gen"), "commands.facade_tiering_gen")
+	if command.get("cmd") != "make facade-tiering-gen":
+		add_error("commands.facade_tiering_gen.cmd must be make facade-tiering-gen")
+	if command.get("safe_for_agent_auto_run") is not False:
+		add_error("commands.facade_tiering_gen.safe_for_agent_auto_run must be false")
+	if command.get("requires_user_consent") is not True:
+		add_error("commands.facade_tiering_gen.requires_user_consent must be true")
+	if command.get("writes_workspace") is not True:
+		add_error("commands.facade_tiering_gen.writes_workspace must be true")
+	if command.get("network_required") is not False:
+		add_error("commands.facade_tiering_gen.network_required must be false")
+	if doc_path not in command.get("writes_files", []):
+		add_error(f"commands.facade_tiering_gen.writes_files must include {doc_path}")
+	if not make_target_depends_on("docs-gen", "facade-tiering-gen"):
+		add_error("Makefile target docs-gen must depend on facade-tiering-gen")
+	if make_target_depends_on("docs-check", "facade-tiering-gen"):
+		add_error("Makefile target docs-check must not write facade-tiering generated view")
+	script_text = (root / script_path).read_text(encoding="utf-8") if (root / script_path).exists() else ""
+	for phrase in ("dependency_tiers", "security_sensitive_packages", "BEGIN GENERATED DEPENDENCY TIERS", "BEGIN GENERATED SECURITY OVERLAY"):
+		if script_text and phrase not in script_text:
+			add_error(f"{script_path} must include {phrase!r}")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for marker in generated_markers:
+		if doc_text and f"<!-- {marker} -->" not in doc_text:
+			add_error(f"{doc_path} must include generated marker {marker!r}")
+	dependency_tiers = require_mapping(ai_context.get("dependency_tiers"), "dependency_tiers")
+	security_sensitive = require_string_list(ai_context.get("security_sensitive_packages"), "security_sensitive_packages")
+	expected_dependency = expected_facade_tiering_dependency_table(dependency_tiers)
+	actual_dependency = generated_block(doc_text, "BEGIN GENERATED DEPENDENCY TIERS", "END GENERATED DEPENDENCY TIERS") if doc_text else ""
+	if actual_dependency and actual_dependency != expected_dependency:
+		add_error(f"{doc_path} generated dependency tiers must match ai-context.json dependency_tiers")
+	expected_security = expected_facade_tiering_security_table(security_sensitive)
+	actual_security = generated_block(doc_text, "BEGIN GENERATED SECURITY OVERLAY", "END GENERATED SECURITY OVERLAY") if doc_text else ""
+	if actual_security and actual_security != expected_security:
+		add_error(f"{doc_path} generated security overlay must match ai-context.json security_sensitive_packages")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_65_rows = [row for row in sprint_rows if row.get("Sprint") == "65"]
+	if len(sprint_65_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 65 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_65_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 65 status must be {expected_status}")
+		sprint_text = " ".join(sprint_65_rows[0].values())
+		for phrase in ("facade-tiering", "generated", "dependency_tiers", "security_sensitive_packages"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 65 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "facade_tiering_generated_view_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention facade_tiering_generated_view_governance")
+
+
 def validate_daily_developer_toolkit_governance() -> None:
 	governance = require_mapping(ai_context.get("daily_developer_toolkit_governance"), "daily_developer_toolkit_governance")
 	roadmap_path = governance.get("roadmap_path")
@@ -4102,6 +4264,7 @@ if not bench_only:
 	validate_task_index_governance()
 	validate_task_index_auto_check_governance()
 	validate_facade_tiering_import_governance()
+	validate_facade_tiering_generated_view_governance()
 	validate_daily_developer_toolkit_governance()
 	validate_daily_utility_cookbook_v2_governance()
 	validate_developer_debug_test_backlog_governance()
