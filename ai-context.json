@@ -1445,6 +1445,16 @@
     "non_goals": ["replacing testing", "replacing testify", "resident background process", "secret-leaking dumps", "broad assertion framework replacement"],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
   },
+  "developer_debug_test_api_decision_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/developer-debug-test-backlog.md",
+    "sprint": 62,
+    "status": "completed",
+    "planned_lanes": ["vtest", "vdump"],
+    "required_decisions": ["repeated workflows across three or more facades", "safe issue report dumps require redaction hooks and size limits", "use explicit callbacks first for redaction", "keep golden-file helpers package-local until three facades need them", "reject broad assertion framework replacement", "reject broad logging replacement"],
+    "candidate_cards": ["vtest fixture helpers", "vtest assertion helpers", "vdump object dump helpers", "vdump system dump helpers"],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
   "benchmark_trust_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
     "doc_path": "docs/doc/benchmark-trust.md",

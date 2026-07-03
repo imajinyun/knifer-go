@@ -2896,6 +2896,76 @@ def validate_developer_debug_test_backlog_governance() -> None:
 		add_error(f"{roadmap_path} must mention developer_debug_test_backlog_governance")
 
 
+def validate_developer_debug_test_api_decision_governance() -> None:
+	governance = require_mapping(ai_context.get("developer_debug_test_api_decision_governance"), "developer_debug_test_api_decision_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("developer_debug_test_api_decision_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("developer_debug_test_api_decision_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/developer-debug-test-backlog.md"
+	if governance.get("sprint") != 62:
+		add_error("developer_debug_test_api_decision_governance.sprint must be 62")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("developer_debug_test_api_decision_governance.status must be active or completed")
+	planned_lanes = require_string_list(governance.get("planned_lanes"), "developer_debug_test_api_decision_governance.planned_lanes")
+	if planned_lanes != ["vtest", "vdump"]:
+		add_error("developer_debug_test_api_decision_governance.planned_lanes must be vtest, vdump")
+	decisions = require_string_list(governance.get("required_decisions"), "developer_debug_test_api_decision_governance.required_decisions")
+	expected_decisions = [
+		"repeated workflows across three or more facades",
+		"safe issue report dumps require redaction hooks and size limits",
+		"use explicit callbacks first for redaction",
+		"keep golden-file helpers package-local until three facades need them",
+		"reject broad assertion framework replacement",
+		"reject broad logging replacement",
+	]
+	if decisions != expected_decisions:
+		add_error("developer_debug_test_api_decision_governance.required_decisions must be ordered as: " + ", ".join(expected_decisions))
+	candidate_cards = require_string_list(governance.get("candidate_cards"), "developer_debug_test_api_decision_governance.candidate_cards")
+	expected_cards = ["vtest fixture helpers", "vtest assertion helpers", "vdump object dump helpers", "vdump system dump helpers"]
+	if candidate_cards != expected_cards:
+		add_error("developer_debug_test_api_decision_governance.candidate_cards must be ordered as: " + ", ".join(expected_cards))
+	required_checks = require_string_list(governance.get("required_checks"), "developer_debug_test_api_decision_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"developer_debug_test_api_decision_governance.required_checks must include {check}")
+	if not (root / doc_path).exists():
+		add_error(f"{doc_path} must exist")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for phrase in planned_lanes + decisions + candidate_cards + ["API Decision Backlog v2", "Candidate API Cards"]:
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	public_facades_value = ai_context.get("public_facades")
+	if not isinstance(public_facades_value, list):
+		add_error("public_facades must be a list")
+		public_facades_value = []
+	public_facade_names = {entry.get("package") for entry in public_facades_value if isinstance(entry, dict)}
+	for planned in planned_lanes:
+		if planned in public_facade_names:
+			add_error(f"{planned} must not be listed as a current public facade while marked planned")
+		if planned in tool_packages:
+			add_error(f"docs/api/tools.json must not include planned facade {planned}")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_62_rows = [row for row in sprint_rows if row.get("Sprint") == "62"]
+	if len(sprint_62_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 62 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_62_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 62 status must be {expected_status}")
+		sprint_text = " ".join(sprint_62_rows[0].values())
+		for phrase in ("developer-debug-test", "vtest", "vdump", "API decision"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 62 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "developer_debug_test_api_decision_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention developer_debug_test_api_decision_governance")
+
+
 def validate_benchmark_trust_governance() -> None:
 	governance = require_mapping(ai_context.get("benchmark_trust_governance"), "benchmark_trust_governance")
 	roadmap_path = governance.get("roadmap_path")
@@ -3816,6 +3886,7 @@ if not bench_only:
 	validate_daily_developer_toolkit_governance()
 	validate_daily_utility_cookbook_v2_governance()
 	validate_developer_debug_test_backlog_governance()
+	validate_developer_debug_test_api_decision_governance()
 	validate_benchmark_trust_governance()
 	validate_collections_benchmark_trust_governance()
 	validate_first_use_golden_paths_governance()

@@ -49,6 +49,7 @@
     "daily_developer_toolkit_governance",
     "daily_utility_cookbook_v2_governance",
     "developer_debug_test_backlog_governance",
+    "developer_debug_test_api_decision_governance",
     "benchmark_trust_governance",
     "collections_benchmark_trust_governance",
     "first_use_golden_paths_governance",
@@ -740,6 +741,21 @@
         "planned_lanes": { "$ref": "#/$defs/string_array" },
         "candidate_scopes": { "$ref": "#/$defs/string_array" },
         "non_goals": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "developer_debug_test_api_decision_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "doc_path", "sprint", "status", "planned_lanes", "required_decisions", "candidate_cards", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "doc_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "planned_lanes": { "$ref": "#/$defs/string_array" },
+        "required_decisions": { "$ref": "#/$defs/string_array" },
+        "candidate_cards": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
       },
       "additionalProperties": false
