@@ -28,10 +28,81 @@ func TestCoordinateConversion(t *testing.T) {
 	}
 }
 
-func TestConvertUnsupported(t *testing.T) {
-	_, err := Convert(Coord{}, BD09MC, WGS84)
+func TestConvertBD09MCRoundTrip(t *testing.T) {
+	bd := Coord{Lng: 116.410005, Lat: 39.916465}
+	mc, err := Convert(bd, BD09, BD09MC)
+	if err != nil {
+		t.Fatalf("Convert BD09 to BD09MC error = %v", err)
+	}
+	if mc.Lng < 12958000 || mc.Lng > 12961000 || mc.Lat < 4825000 || mc.Lat > 4827000 {
+		t.Fatalf("Convert BD09 to BD09MC = %#v, want Baidu Mercator range near Beijing", mc)
+	}
+
+	roundTrip, err := Convert(mc, BD09MC, BD09)
+	if err != nil {
+		t.Fatalf("Convert BD09MC to BD09 error = %v", err)
+	}
+	if Distance(bd, roundTrip) > 1 {
+		t.Fatalf("BD09MC round trip distance = %.2fm, coord = %#v", Distance(bd, roundTrip), roundTrip)
+	}
+}
+
+func TestConvertBD09MCNegativeAndClamped(t *testing.T) {
+	bd := Coord{Lng: -200, Lat: -90}
+	mc, err := Convert(bd, BD09, BD09MC)
+	if err != nil {
+		t.Fatalf("Convert clamped BD09 to BD09MC error = %v", err)
+	}
+	roundTrip, err := Convert(mc, BD09MC, BD09)
+	if err != nil {
+		t.Fatalf("Convert clamped BD09MC to BD09 error = %v", err)
+	}
+	if roundTrip.Lng < 159.9 || roundTrip.Lng > 160.1 {
+		t.Fatalf("roundTrip longitude = %.6f, want looped longitude near 160", roundTrip.Lng)
+	}
+	if roundTrip.Lat < -74.1 || roundTrip.Lat > -73.9 {
+		t.Fatalf("roundTrip latitude = %.6f, want clamped latitude near -74", roundTrip.Lat)
+	}
+}
+
+func TestConvertBD09MCChainedSystems(t *testing.T) {
+	wgs := Coord{Lng: 116.397389, Lat: 39.908722}
+	mc, err := Convert(wgs, WGS84, BD09MC)
+	if err != nil {
+		t.Fatalf("Convert WGS84 to BD09MC error = %v", err)
+	}
+	back, err := Convert(mc, BD09MC, WGS84)
+	if err != nil {
+		t.Fatalf("Convert BD09MC to WGS84 error = %v", err)
+	}
+	if Distance(wgs, back) > 2 {
+		t.Fatalf("WGS84 <-> BD09MC round trip distance = %.2fm, coord = %#v", Distance(wgs, back), back)
+	}
+}
+
+func TestConvertSameSupportedType(t *testing.T) {
+	coord := Coord{Lng: 116.397389, Lat: 39.908722}
+	got, err := Convert(coord, BD09MC, BD09MC)
+	if err != nil {
+		t.Fatalf("Convert same supported type error = %v", err)
+	}
+	if got != coord {
+		t.Fatalf("Convert same supported type = %#v, want %#v", got, coord)
+	}
+}
+
+func TestConvertRejectsUnsupportedTypeEvenWhenEqual(t *testing.T) {
+	coord := Coord{Lng: 1, Lat: 2}
+	_, err := Convert(coord, CoordType("UNKNOWN"), CoordType("UNKNOWN"))
 	if !errors.Is(err, knifer.ErrCodeInvalidInput) {
-		t.Fatalf("Convert unsupported error = %v", err)
+		t.Fatalf("Convert unsupported same type error = %v", err)
+	}
+}
+
+func TestConvertRejectsUnsupportedPair(t *testing.T) {
+	_, err := Convert(Coord{}, WGS84, CoordType("UNKNOWN"))
+	if !errors.Is(err, knifer.ErrCodeInvalidInput) {
+		t.Fatalf("Convert unsupported pair error = %v", err)
 	}
 }
 
@@ -45,6 +116,38 @@ func TestInChinaAndDistance(t *testing.T) {
 	}
 	if d := Distance(Coord{Lng: 0, Lat: 0}, Coord{Lng: 0, Lat: 1}); math.Abs(d-111195) > 200 {
 		t.Fatalf("Distance = %.2f", d)
+	}
+}
+
+func TestInChinaBoundaryValues(t *testing.T) {
+	tests := []struct {
+		name string
+		lng  float64
+		lat  float64
+		want bool
+	}{
+		{name: "minimum included", lng: 72.004, lat: 0.8293, want: true},
+		{name: "maximum included", lng: 137.8347, lat: 55.8271, want: true},
+		{name: "longitude below", lng: 72.0039, lat: 30, want: false},
+		{name: "latitude above", lng: 100, lat: 55.8272, want: false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := InChina(tt.lng, tt.lat); got != tt.want {
+				t.Fatalf("InChina(%f, %f) = %v, want %v", tt.lng, tt.lat, got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDistanceAntipodalIsFinite(t *testing.T) {
+	d := Distance(Coord{Lng: 0, Lat: 0}, Coord{Lng: 180, Lat: 0})
+	if math.IsNaN(d) || math.IsInf(d, 0) {
+		t.Fatalf("Distance returned non-finite value: %v", d)
+	}
+	want := math.Pi * earthRadiusM
+	if math.Abs(d-want) > 1 {
+		t.Fatalf("Distance antipodal = %.2f, want %.2f", d, want)
 	}
 }
 

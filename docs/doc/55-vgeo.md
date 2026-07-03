@@ -11,7 +11,7 @@ Choose explicit conversions when the source and target systems are known. Use `C
 | GPS to China map coordinates | `WGS84ToGCJ02` | Applies the GCJ-02 offset only inside a rough China bounding box. |
 | China map coordinates back to GPS | `GCJ02ToWGS84` | Uses the common approximate inverse; it is suitable for meter-level utility workflows, not surveying. |
 | Baidu map coordinates | `GCJ02ToBD09`, `BD09ToGCJ02`, `WGS84ToBD09`, `BD09ToWGS84` | BD-09 conversions compose through GCJ-02 where needed. |
-| Runtime coordinate-system routing | `Convert` | Returns `ErrCodeInvalidInput` for unsupported pairs such as BD09MC conversions. |
+| Runtime coordinate-system routing | `Convert` | Supports WGS-84, GCJ-02, BD-09, and BD-09 Mercator; returns `ErrCodeInvalidInput` for unknown coordinate systems. |
 | Distance between coordinates | `Distance` | Returns meters using the Haversine formula. |
 | Offset decision checks | `InChina` | Uses a coarse bounding box, not administrative-boundary geometry. |
 
@@ -26,7 +26,7 @@ Choose explicit conversions when the source and target systems are known. Use `C
 ## When not to use vgeo
 
 - Use a GIS or geodesy library for projections, datum transforms, route planning, or administrative-boundary checks.
-- Do not use `BD09MC` with `Convert` yet; it is reserved in the type set but unsupported by the current conversion implementation.
+- BD-09 Mercator support is intended for Baidu map interoperability, not general-purpose projection work.
 - Do not assume `InChina` is an exact policy boundary.
 
 ## Related packages
