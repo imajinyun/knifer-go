@@ -285,14 +285,17 @@ func TestAssignEntityPointerAndSQLScannerFields(t *testing.T) {
 		Name       *string        `db:"name"`
 		Nickname   *string        `db:"nickname"`
 		Age        *int           `db:"age"`
+		CreatedAt  *time.Time     `db:"created_at"`
 		NullName   sql.NullString `db:"null_name"`
 		NullAge    sql.NullInt64  `db:"null_age"`
 		MissingPtr *int           `db:"missing_ptr"`
 	}
+	createdAt := time.Unix(1700000000, 0).UTC()
 	entity := EntityFromMap("users", map[string]any{
 		"name":        "alice",
 		"nickname":    nil,
 		"age":         int64(42),
+		"created_at":  createdAt,
 		"null_name":   "Alice",
 		"null_age":    int64(43),
 		"missing_ptr": nil,
@@ -309,6 +312,9 @@ func TestAssignEntityPointerAndSQLScannerFields(t *testing.T) {
 	}
 	if dst.Age == nil || *dst.Age != 42 {
 		t.Fatalf("Age = %#v, want pointer to 42", dst.Age)
+	}
+	if dst.CreatedAt == nil || !dst.CreatedAt.Equal(createdAt) {
+		t.Fatalf("CreatedAt = %#v, want %v", dst.CreatedAt, createdAt)
 	}
 	if !dst.NullName.Valid || dst.NullName.String != "Alice" {
 		t.Fatalf("NullName = %#v, want valid Alice", dst.NullName)
@@ -336,5 +342,46 @@ func TestAssignEntityScannerError(t *testing.T) {
 	assertDBCode(t, err, knifer.ErrCodeInternal)
 	if !strings.Contains(err.Error(), "scanner rejected value") {
 		t.Fatalf("AssignEntity scanner error = %v, want scanner cause", err)
+	}
+}
+
+func TestAssignEntityParsesTextScalars(t *testing.T) {
+	entity := EntityFromMap("users", map[string]any{
+		"active":     []byte("true"),
+		"age":        "42",
+		"ratio":      []byte("3.5"),
+		"unsigned":   "7",
+		"name_bytes": []byte("alice"),
+	})
+	var dst struct {
+		Active    bool
+		Age       int8
+		Ratio     float32
+		Unsigned  uint8
+		NameBytes *string `db:"name_bytes"`
+	}
+	if err := AssignEntity(entity, &dst); err != nil {
+		t.Fatalf("AssignEntity text scalars: %v", err)
+	}
+	if !dst.Active || dst.Age != 42 || dst.Ratio != 3.5 || dst.Unsigned != 7 || dst.NameBytes == nil || *dst.NameBytes != "alice" {
+		t.Fatalf("assigned text scalar dst = %#v", dst)
+	}
+}
+
+func TestAssignEntityRejectsInvalidTextScalars(t *testing.T) {
+	tests := []struct {
+		name   string
+		entity Entity
+		dst    any
+	}{
+		{name: "invalid bool", entity: EntityFromMap("users", map[string]any{"active": "not-bool"}), dst: &struct{ Active bool }{}},
+		{name: "int overflow", entity: EntityFromMap("users", map[string]any{"age": "128"}), dst: &struct{ Age int8 }{}},
+		{name: "invalid float", entity: EntityFromMap("users", map[string]any{"ratio": "nan?"}), dst: &struct{ Ratio float64 }{}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := AssignEntity(tt.entity, tt.dst)
+			assertDBCode(t, err, knifer.ErrCodeInternal)
+		})
 	}
 }

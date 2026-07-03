@@ -142,6 +142,25 @@ func TestFacadeAssignEntityPointerAndNullFields(t *testing.T) {
 	}
 }
 
+func TestFacadeAssignEntityParsesTextScalars(t *testing.T) {
+	entity := EntityFromMap("users", map[string]any{
+		"active": []byte("true"),
+		"age":    "42",
+		"ratio":  []byte("3.5"),
+	})
+	var dst struct {
+		Active bool
+		Age    int8
+		Ratio  float32
+	}
+	if err := AssignEntity(entity, &dst); err != nil {
+		t.Fatalf("AssignEntity text scalars: %v", err)
+	}
+	if !dst.Active || dst.Age != 42 || dst.Ratio != 3.5 {
+		t.Fatalf("assigned text scalar dst = %#v", dst)
+	}
+}
+
 func TestFacadeScanRowsAndScanOne(t *testing.T) {
 	db, err := sql.Open("vdb_pool_test", "")
 	if err != nil {

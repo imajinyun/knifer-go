@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -162,11 +163,61 @@ func setValue(dst reflect.Value, value any) error {
 		dst.Set(src.Convert(dst.Type()))
 		return nil
 	}
+	if err := setScalarFromText(dst, value); err == nil {
+		return nil
+	}
 	if dst.Kind() == reflect.String {
 		dst.SetString(fmt.Sprint(value))
 		return nil
 	}
 	return fmt.Errorf("cannot assign %T to %s", value, dst.Type())
+}
+
+func setScalarFromText(dst reflect.Value, value any) error {
+	var text string
+	switch v := value.(type) {
+	case string:
+		text = strings.TrimSpace(v)
+	case []byte:
+		text = strings.TrimSpace(string(v))
+	default:
+		return fmt.Errorf("not text")
+	}
+	if text == "" {
+		return fmt.Errorf("empty text")
+	}
+	switch dst.Kind() {
+	case reflect.Bool:
+		parsed, err := strconv.ParseBool(text)
+		if err != nil {
+			return err
+		}
+		dst.SetBool(parsed)
+		return nil
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		parsed, err := strconv.ParseInt(text, 10, typeBits(dst.Type()))
+		if err != nil {
+			return err
+		}
+		dst.SetInt(parsed)
+		return nil
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		parsed, err := strconv.ParseUint(text, 10, typeBits(dst.Type()))
+		if err != nil {
+			return err
+		}
+		dst.SetUint(parsed)
+		return nil
+	case reflect.Float32, reflect.Float64:
+		parsed, err := strconv.ParseFloat(text, typeBits(dst.Type()))
+		if err != nil {
+			return err
+		}
+		dst.SetFloat(parsed)
+		return nil
+	default:
+		return fmt.Errorf("not scalar")
+	}
 }
 
 func canConvertWithoutOverflow(src reflect.Value, dstType reflect.Type) bool {
