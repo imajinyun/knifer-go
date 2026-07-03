@@ -7,4 +7,8 @@
 //
 // This package only acts as a facade. Concrete implementations live in the
 // corresponding internal subpackage.
+//
+// Start here:
+//   - Quickstart: https://github.com/imajinyun/knifer-go/blob/main/docs/doc/22-vhttp.md
+//   - Safe HTTP cookbook: https://github.com/imajinyun/knifer-go/blob/main/docs/doc/safe-http-cookbook.md
 package vhttp

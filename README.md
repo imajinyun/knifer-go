@@ -6,6 +6,10 @@
 
 `knifer-go` is a Go / Golang utility library for strings, slices, maps, JSON, files, HTTP, URL safety, crypto, JWT, config, cache, IDs, logging, and common application helpers. It exposes focused `v*` packages so developers and AI coding agents can import only the tools they need.
 
+New here: start with [10 tasks in 10 minutes](docs/doc/first-use-golden-paths.md),
+the [task index](docs/doc/task-index.md), the [documentation hub](docs/doc/README.md),
+or [pkg.go.dev](https://pkg.go.dev/github.com/imajinyun/knifer-go).
+
 ![knifer-go](./knifer-go.jpeg)
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/imajinyun/knifer-go.svg)](https://pkg.go.dev/github.com/imajinyun/knifer-go)

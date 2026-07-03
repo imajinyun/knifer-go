@@ -66,6 +66,45 @@ def load_json(path, label):
         sys.exit(1)
 
 
+def is_doc_go_comment_only(path):
+    if not path.endswith("/doc.go"):
+        return False
+    file_path = os.path.join(root_dir, path)
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            lines = f.read().splitlines()
+    except UnicodeDecodeError:
+        return False
+    in_block_comment = False
+    seen_package = False
+    for raw_line in lines:
+        line = raw_line.strip()
+        if not line:
+            continue
+        if in_block_comment:
+            if "*/" in line:
+                in_block_comment = False
+                line = line.split("*/", 1)[1].strip()
+                if not line:
+                    continue
+            else:
+                continue
+        if line.startswith("//"):
+            continue
+        if line.startswith("/*"):
+            if "*/" not in line:
+                in_block_comment = True
+                continue
+            line = line.split("*/", 1)[1].strip()
+            if not line:
+                continue
+        if line.startswith("package "):
+            seen_package = True
+            continue
+        return False
+    return seen_package
+
+
 context = require_mapping(load_json(ai_context, "ai-context.json"), "ai-context.json")
 evidence = require_mapping(load_json(evidence_file, "Agent evidence"), "agent evidence")
 
@@ -266,14 +305,17 @@ else:
     for path in expected_security_sensitive_paths:
         if path not in combined_security_output:
             add_error(f"checks.security_sensitive_diff output must mention changed security-sensitive path {path!r}")
-    example_only_security_diff = all(path.endswith("/example_test.go") for path in expected_security_sensitive_paths)
-    if example_only_security_diff:
+    documentation_only_security_diff = all(
+        path.endswith("/example_test.go") or is_doc_go_comment_only(path)
+        for path in expected_security_sensitive_paths
+    )
+    if documentation_only_security_diff:
         if security_sensitive_status != "passed":
-            add_error("checks.security_sensitive_diff.status may be passed for security-sensitive example-only diffs")
+            add_error("checks.security_sensitive_diff.status may be passed for security-sensitive example/doc-only diffs")
         if isinstance(security_sensitive_exit_code, int) and security_sensitive_exit_code != 0:
-            add_error("checks.security_sensitive_diff.exit_code must be 0 for security-sensitive example-only diffs")
-        if "example-only diff" not in combined_security_output:
-            add_error("checks.security_sensitive_diff output must explain security-sensitive example-only diff")
+            add_error("checks.security_sensitive_diff.exit_code must be 0 for security-sensitive example/doc-only diffs")
+        if "example/doc-only diff" not in combined_security_output:
+            add_error("checks.security_sensitive_diff output must explain security-sensitive example/doc-only diff")
     else:
         if security_sensitive_status != "failed":
             add_error("checks.security_sensitive_diff.status must be failed when security-sensitive non-example paths changed")

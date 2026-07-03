@@ -71,19 +71,64 @@ if [ -z "${matched_paths}" ]; then
 	exit 0
 fi
 
-non_example_paths="$(
-	python3 - "${matched_paths}" <<'PY'
+non_documentation_paths="$(
+	python3 - "${ROOT_DIR}" "${matched_paths}" <<'PY'
+from pathlib import Path
 import sys
 
-paths = [line.strip() for line in sys.argv[1].splitlines() if line.strip()]
+root = Path(sys.argv[1])
+paths = [line.strip() for line in sys.argv[2].splitlines() if line.strip()]
+
+
+def is_doc_go_comment_only(path: str) -> bool:
+    if not path.endswith("/doc.go"):
+        return False
+    file_path = root / path
+    try:
+        lines = file_path.read_text(encoding="utf-8").splitlines()
+    except UnicodeDecodeError:
+        return False
+    in_block_comment = False
+    seen_package = False
+    for raw_line in lines:
+        line = raw_line.strip()
+        if not line:
+            continue
+        if in_block_comment:
+            if "*/" in line:
+                in_block_comment = False
+                line = line.split("*/", 1)[1].strip()
+                if not line:
+                    continue
+            else:
+                continue
+        if line.startswith("//"):
+            continue
+        if line.startswith("/*"):
+            if "*/" not in line:
+                in_block_comment = True
+                continue
+            line = line.split("*/", 1)[1].strip()
+            if not line:
+                continue
+        if line.startswith("package "):
+            seen_package = True
+            continue
+        return False
+    return seen_package
+
+
 for path in paths:
-    if not path.endswith("/example_test.go"):
-        print(path)
+    if path.endswith("/example_test.go"):
+        continue
+    if is_doc_go_comment_only(path):
+        continue
+    print(path)
 PY
 )"
 
-if [ -z "${non_example_paths}" ]; then
-	echo "security-sensitive diff check passed: security-sensitive example-only diff detected; agent-security-check evidence is still required by change policy"
+if [ -z "${non_documentation_paths}" ]; then
+	echo "security-sensitive diff check passed: security-sensitive example/doc-only diff detected; agent-security-check evidence is still required by change policy"
 	printf '%s\n' "${matched_paths}" | while IFS= read -r path; do echo "  - ${path}"; done
 	exit 0
 fi

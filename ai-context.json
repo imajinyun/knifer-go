@@ -1669,6 +1669,19 @@
     "required_commands": ["make agent-check", "make agent-full-check", "make release-check", "make api-freeze-check", "make release-notes-check"],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check", "release-notes-check", "api-freeze-check"]
   },
+  "docs_pkg_discovery_polish_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "readme_path": "README.md",
+    "docs_hub_path": "docs/doc/README.md",
+    "sprint": 66,
+    "status": "completed",
+    "top_facades": ["vhttp", "vcrypto", "vjson", "vfile"],
+    "required_readme_links": ["docs/doc/first-use-golden-paths.md", "docs/doc/task-index.md", "docs/doc/README.md", "pkg.go.dev/github.com/imajinyun/knifer-go"],
+    "required_docs_hub_links": ["first-use-golden-paths.md", "task-index.md", "facade-tiering.md", "pkg.go.dev/github.com/imajinyun/knifer-go"],
+    "required_pkg_comment_links": ["docs/doc/22-vhttp.md", "docs/doc/safe-http-cookbook.md", "docs/doc/11-vcrypto.md", "docs/doc/safe-crypto-cookbook.md", "docs/doc/27-vjson.md", "docs/doc/17-vfile.md", "docs/doc/daily-json-file-faq.md"],
+    "required_boundaries": ["README first screen points to first-use paths", "docs hub separates new-user and task lookup entry points", "top facade package comments include pkg.go.dev-visible first links", "discovery polish does not add public APIs"],
+    "required_checks": ["tools-gen", "docs-check", "ai-context-check", "governance-maturity-check"]
+  },
   "error_model": {
     "taxonomy": [
       { "category": "invalid input", "code": "GK_INVALID_INPUT", "use_when": "Caller-provided arguments, payloads, or configuration values are malformed." },

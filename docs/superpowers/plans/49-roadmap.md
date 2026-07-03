@@ -130,6 +130,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 63 | Completed | Docs Task Index Auto-Check v2 | Added `task-index` auto-check governance that validates default facades against `tools.json`, public facades, related public facades, and star domains from AI metadata. |
 | 64 | Completed | Top5 Comparison Refresh Workflow | Added explicit `utility-comparison-refresh` workflow governance for GitHub API refreshes while keeping ordinary docs, quick, agent, and CI gates network-free. |
 | 65 | Completed | Facade Tiering Generated View | Added generated `facade-tiering.md` dependency tier and security overlay views from `dependency_tiers` and `security_sensitive_packages` so AI metadata remains the single source of truth. |
+| 66 | Completed | Docs/pkg.go.dev Discovery Polish | Added first-use discovery links to the README first screen, docs hub, and top facade package comments for pkg.go.dev-visible navigation. |
 
 ## Active workflow
 
@@ -220,6 +221,8 @@ Sprint 63 completed task-index auto-check governance: `task_index_auto_check_gov
 Sprint 64 completed top5 comparison refresh workflow governance: `utility_top5_refresh_workflow_governance` records the explicit `make utility-comparison-refresh` entry point, the `bin/update_utility_comparison.py` GitHub API script, the files it updates, and the rule that ordinary docs, quick, agent, and CI gates must not depend on network refreshes.
 
 Sprint 65 completed facade tiering generated-view governance: `facade_tiering_generated_view_governance` records the `make facade-tiering-gen` entry point and validates that `facade-tiering.md` generated blocks match `dependency_tiers` and `security_sensitive_packages`.
+
+Sprint 66 completed docs/pkg.go.dev discovery polish governance: `docs_pkg_discovery_polish_governance` records README first-screen discovery links, docs hub start-here links, and pkg.go.dev-visible first links in `vhttp`, `vcrypto`, `vjson`, and `vfile` package comments.
 
 Recommended roadmap loop:
 

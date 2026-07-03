@@ -62,6 +62,7 @@
     "collection_mindshare_pack_governance",
     "collection_advanced_backlog_governance",
     "adoption_trust_governance",
+    "docs_pkg_discovery_polish_governance",
     "error_model",
     "dynamic_semantic_contracts",
     "v1_readiness",
@@ -1029,6 +1030,24 @@
         "required_entrypoints": { "$ref": "#/$defs/string_array" },
         "required_paths": { "$ref": "#/$defs/string_array" },
         "required_commands": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "docs_pkg_discovery_polish_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "readme_path", "docs_hub_path", "sprint", "status", "top_facades", "required_readme_links", "required_docs_hub_links", "required_pkg_comment_links", "required_boundaries", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "readme_path": { "type": "string", "minLength": 1 },
+        "docs_hub_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "top_facades": { "$ref": "#/$defs/string_array" },
+        "required_readme_links": { "$ref": "#/$defs/string_array" },
+        "required_docs_hub_links": { "$ref": "#/$defs/string_array" },
+        "required_pkg_comment_links": { "$ref": "#/$defs/string_array" },
+        "required_boundaries": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
       },
       "additionalProperties": false

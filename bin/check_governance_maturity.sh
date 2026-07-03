@@ -3837,6 +3837,103 @@ def validate_adoption_trust_governance() -> None:
 		add_error(f"{roadmap_path} must mention adoption_trust_governance")
 
 
+def validate_docs_pkg_discovery_polish_governance() -> None:
+	governance = require_mapping(ai_context.get("docs_pkg_discovery_polish_governance"), "docs_pkg_discovery_polish_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("docs_pkg_discovery_polish_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	readme_path = governance.get("readme_path")
+	if readme_path != "README.md":
+		add_error("docs_pkg_discovery_polish_governance.readme_path must be README.md")
+		readme_path = "README.md"
+	docs_hub_path = governance.get("docs_hub_path")
+	if docs_hub_path != "docs/doc/README.md":
+		add_error("docs_pkg_discovery_polish_governance.docs_hub_path must be docs/doc/README.md")
+		docs_hub_path = "docs/doc/README.md"
+	if governance.get("sprint") != 66:
+		add_error("docs_pkg_discovery_polish_governance.sprint must be 66")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("docs_pkg_discovery_polish_governance.status must be active or completed")
+	top_facades = require_string_list(governance.get("top_facades"), "docs_pkg_discovery_polish_governance.top_facades")
+	expected_top_facades = ["vhttp", "vcrypto", "vjson", "vfile"]
+	if top_facades != expected_top_facades:
+		add_error("docs_pkg_discovery_polish_governance.top_facades must be ordered as: " + ", ".join(expected_top_facades))
+	readme_links = require_string_list(governance.get("required_readme_links"), "docs_pkg_discovery_polish_governance.required_readme_links")
+	expected_readme_links = ["docs/doc/first-use-golden-paths.md", "docs/doc/task-index.md", "docs/doc/README.md", "pkg.go.dev/github.com/imajinyun/knifer-go"]
+	if readme_links != expected_readme_links:
+		add_error("docs_pkg_discovery_polish_governance.required_readme_links must be ordered as: " + ", ".join(expected_readme_links))
+	docs_hub_links = require_string_list(governance.get("required_docs_hub_links"), "docs_pkg_discovery_polish_governance.required_docs_hub_links")
+	expected_docs_hub_links = ["first-use-golden-paths.md", "task-index.md", "facade-tiering.md", "pkg.go.dev/github.com/imajinyun/knifer-go"]
+	if docs_hub_links != expected_docs_hub_links:
+		add_error("docs_pkg_discovery_polish_governance.required_docs_hub_links must be ordered as: " + ", ".join(expected_docs_hub_links))
+	pkg_comment_links = require_string_list(governance.get("required_pkg_comment_links"), "docs_pkg_discovery_polish_governance.required_pkg_comment_links")
+	expected_pkg_comment_links = [
+		"docs/doc/22-vhttp.md",
+		"docs/doc/safe-http-cookbook.md",
+		"docs/doc/11-vcrypto.md",
+		"docs/doc/safe-crypto-cookbook.md",
+		"docs/doc/27-vjson.md",
+		"docs/doc/17-vfile.md",
+		"docs/doc/daily-json-file-faq.md",
+	]
+	if pkg_comment_links != expected_pkg_comment_links:
+		add_error("docs_pkg_discovery_polish_governance.required_pkg_comment_links must be ordered as: " + ", ".join(expected_pkg_comment_links))
+	boundaries = require_string_list(governance.get("required_boundaries"), "docs_pkg_discovery_polish_governance.required_boundaries")
+	expected_boundaries = [
+		"README first screen points to first-use paths",
+		"docs hub separates new-user and task lookup entry points",
+		"top facade package comments include pkg.go.dev-visible first links",
+		"discovery polish does not add public APIs",
+	]
+	if boundaries != expected_boundaries:
+		add_error("docs_pkg_discovery_polish_governance.required_boundaries must be ordered as: " + ", ".join(expected_boundaries))
+	required_checks = require_string_list(governance.get("required_checks"), "docs_pkg_discovery_polish_governance.required_checks")
+	for check in ("tools-gen", "docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"docs_pkg_discovery_polish_governance.required_checks must include {check}")
+	readme_text = (root / readme_path).read_text(encoding="utf-8") if (root / readme_path).exists() else ""
+	readme_first_screen = "\n".join(readme_text.splitlines()[:40])
+	for phrase in ["New here"] + readme_links:
+		if readme_first_screen and phrase not in readme_first_screen:
+			add_error(f"README.md first screen must include {phrase!r}")
+	docs_hub_text = (root / docs_hub_path).read_text(encoding="utf-8") if (root / docs_hub_path).exists() else ""
+	for phrase in ["Start here", "New users", "Task-to-facade lookup"] + docs_hub_links:
+		if docs_hub_text and phrase not in docs_hub_text:
+			add_error(f"{docs_hub_path} must include {phrase!r}")
+	facade_required_links = {
+		"vhttp": ["docs/doc/22-vhttp.md", "docs/doc/safe-http-cookbook.md"],
+		"vcrypto": ["docs/doc/11-vcrypto.md", "docs/doc/safe-crypto-cookbook.md"],
+		"vjson": ["docs/doc/27-vjson.md", "docs/doc/daily-json-file-faq.md"],
+		"vfile": ["docs/doc/17-vfile.md", "docs/doc/daily-json-file-faq.md"],
+	}
+	for facade in top_facades:
+		doc_go_path = root / facade / "doc.go"
+		if not doc_go_path.exists():
+			add_error(f"{facade}/doc.go must exist")
+			continue
+		doc_go_text = doc_go_path.read_text(encoding="utf-8")
+		for phrase in ["Start here", "https://github.com/imajinyun/knifer-go/blob/main/"] + facade_required_links.get(facade, []):
+			if phrase not in doc_go_text:
+				add_error(f"{facade}/doc.go must include {phrase!r}")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_66_rows = [row for row in sprint_rows if row.get("Sprint") == "66"]
+	if len(sprint_66_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 66 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_66_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 66 status must be {expected_status}")
+		sprint_text = " ".join(sprint_66_rows[0].values())
+		for phrase in ("pkg.go.dev", "README", "docs hub", "package comments"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 66 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "docs_pkg_discovery_polish_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention docs_pkg_discovery_polish_governance")
+
+
 def validate_example_depth_governance() -> None:
 	governance = require_mapping(ai_context.get("example_depth_governance"), "example_depth_governance")
 	sprint = governance.get("sprint")
@@ -4276,6 +4373,7 @@ if not bench_only:
 	validate_weak_facade_example_density_governance_2()
 	validate_weak_facade_example_density_governance_3()
 	validate_adoption_trust_governance()
+	validate_docs_pkg_discovery_polish_governance()
 	validate_example_depth_governance()
 	validate_api_convergence()
 	validate_lifecycle()

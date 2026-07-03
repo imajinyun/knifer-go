@@ -24,6 +24,13 @@
 
 ## 🧭 Quick navigation
 
+Start here:
+
+- New users: [`first-use-golden-paths.md`](first-use-golden-paths.md)
+- Task-to-facade lookup: [`task-index.md`](task-index.md)
+- Import boundaries: [`facade-tiering.md`](facade-tiering.md)
+- Online package docs: [pkg.go.dev/github.com/imajinyun/knifer-go](https://pkg.go.dev/github.com/imajinyun/knifer-go)
+
 - 🏠 Root README: [`../../README.md`](../../README.md)
 - 🌐 Online Go docs: [pkg.go.dev/github.com/imajinyun/knifer-go](https://pkg.go.dev/github.com/imajinyun/knifer-go)
 - 🧾 Public API snapshot: [`../api/exports.txt`](../api/exports.txt)
