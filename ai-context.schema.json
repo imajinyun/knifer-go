@@ -37,6 +37,7 @@
     "safe_crypto_benchmark_scope_governance",
     "utility_library_comparison_governance",
     "utility_top5_comparison_governance_v2",
+    "utility_top5_refresh_workflow_governance",
     "safe_crypto_advanced_closeout_governance",
     "go_version_adoption_governance",
     "collections_comparison_governance",
@@ -540,6 +541,27 @@
         "top5": { "$ref": "#/$defs/string_array" },
         "required_sections": { "$ref": "#/$defs/string_array" },
         "required_paths": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "utility_top5_refresh_workflow_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "doc_path", "script_path", "make_target", "command", "sprint", "status", "refresh_scope", "explicit_only", "network_required", "default_gate_exclusions", "updated_files", "required_boundaries", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "doc_path": { "type": "string", "minLength": 1 },
+        "script_path": { "type": "string", "minLength": 1 },
+        "make_target": { "type": "string", "minLength": 1 },
+        "command": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "refresh_scope": { "$ref": "#/$defs/string_array" },
+        "explicit_only": { "type": "boolean" },
+        "network_required": { "type": "boolean" },
+        "default_gate_exclusions": { "$ref": "#/$defs/string_array" },
+        "updated_files": { "$ref": "#/$defs/string_array" },
+        "required_boundaries": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
       },
       "additionalProperties": false

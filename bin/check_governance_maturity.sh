@@ -1838,7 +1838,7 @@ def validate_utility_top5_comparison_governance_v2() -> None:
 	if top5 != expected_top5:
 		add_error("utility_top5_comparison_governance_v2.top5 must be ordered as: " + ", ".join(expected_top5))
 	sections = require_string_list(governance.get("required_sections"), "utility_top5_comparison_governance_v2.required_sections")
-	expected_sections = ["GitHub Top 5 Utility Libraries", "Comparison Matrix", "Decision Rules", "Gap Summary", "TODO Lanes", "Sources"]
+	expected_sections = ["GitHub Top 5 Utility Libraries", "Comparison Matrix", "Decision Rules", "Gap Summary", "TODO Lanes", "Refresh Workflow", "Sources"]
 	if sections != expected_sections:
 		add_error("utility_top5_comparison_governance_v2.required_sections must be ordered as: " + ", ".join(expected_sections))
 	paths = require_string_list(governance.get("required_paths"), "utility_top5_comparison_governance_v2.required_paths")
@@ -1879,6 +1879,113 @@ def validate_utility_top5_comparison_governance_v2() -> None:
 	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
 	if "utility_top5_comparison_governance_v2" not in roadmap_text:
 		add_error(f"{roadmap_path} must mention utility_top5_comparison_governance_v2")
+
+
+def validate_utility_top5_refresh_workflow_governance() -> None:
+	governance = require_mapping(ai_context.get("utility_top5_refresh_workflow_governance"), "utility_top5_refresh_workflow_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("utility_top5_refresh_workflow_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("utility_top5_refresh_workflow_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/utility-library-comparison.md"
+	script_path = governance.get("script_path")
+	if not isinstance(script_path, str) or not script_path.strip():
+		add_error("utility_top5_refresh_workflow_governance.script_path must be non-empty")
+		script_path = "bin/update_utility_comparison.py"
+	make_target = governance.get("make_target")
+	if make_target != "utility-comparison-refresh":
+		add_error("utility_top5_refresh_workflow_governance.make_target must be utility-comparison-refresh")
+		make_target = "utility-comparison-refresh"
+	command_name = governance.get("command")
+	if command_name != "utility_comparison_refresh":
+		add_error("utility_top5_refresh_workflow_governance.command must be utility_comparison_refresh")
+	if governance.get("sprint") != 64:
+		add_error("utility_top5_refresh_workflow_governance.sprint must be 64")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("utility_top5_refresh_workflow_governance.status must be active or completed")
+	scope = require_string_list(governance.get("refresh_scope"), "utility_top5_refresh_workflow_governance.refresh_scope")
+	expected_scope = ["samber/lo", "duke-git/lancet", "thoas/go-funk", "spf13/cast", "gookit/goutil"]
+	if scope != expected_scope:
+		add_error("utility_top5_refresh_workflow_governance.refresh_scope must be ordered as: " + ", ".join(expected_scope))
+	if governance.get("explicit_only") is not True:
+		add_error("utility_top5_refresh_workflow_governance.explicit_only must be true")
+	if governance.get("network_required") is not True:
+		add_error("utility_top5_refresh_workflow_governance.network_required must be true")
+	default_gate_exclusions = require_string_list(governance.get("default_gate_exclusions"), "utility_top5_refresh_workflow_governance.default_gate_exclusions")
+	expected_exclusions = ["docs-check", "quick-check", "agent-check", "ci-test"]
+	if default_gate_exclusions != expected_exclusions:
+		add_error("utility_top5_refresh_workflow_governance.default_gate_exclusions must be ordered as: " + ", ".join(expected_exclusions))
+	updated_files = require_string_list(governance.get("updated_files"), "utility_top5_refresh_workflow_governance.updated_files")
+	expected_updated_files = ["docs/doc/utility-library-comparison.md", "ai-context.json"]
+	if updated_files != expected_updated_files:
+		add_error("utility_top5_refresh_workflow_governance.updated_files must be ordered as: " + ", ".join(expected_updated_files))
+	required_boundaries = require_string_list(governance.get("required_boundaries"), "utility_top5_refresh_workflow_governance.required_boundaries")
+	expected_boundaries = [
+		"do not run from ordinary docs-check",
+		"do not depend on network in ordinary gates",
+		"refresh writes comparison docs and AI metadata together",
+		"GitHub API sources stay visible",
+	]
+	if required_boundaries != expected_boundaries:
+		add_error("utility_top5_refresh_workflow_governance.required_boundaries must be ordered as: " + ", ".join(expected_boundaries))
+	required_checks = require_string_list(governance.get("required_checks"), "utility_top5_refresh_workflow_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"utility_top5_refresh_workflow_governance.required_checks must include {check}")
+	for path in (doc_path, script_path):
+		if not (root / path).exists():
+			add_error(f"{path} must exist")
+	command = require_mapping(commands.get("utility_comparison_refresh"), "commands.utility_comparison_refresh")
+	if command.get("cmd") != "make utility-comparison-refresh":
+		add_error("commands.utility_comparison_refresh.cmd must be make utility-comparison-refresh")
+	if command.get("safe_for_agent_auto_run") is not False:
+		add_error("commands.utility_comparison_refresh.safe_for_agent_auto_run must be false")
+	if command.get("requires_user_consent") is not True:
+		add_error("commands.utility_comparison_refresh.requires_user_consent must be true")
+	if command.get("writes_workspace") is not True:
+		add_error("commands.utility_comparison_refresh.writes_workspace must be true")
+	if command.get("network_required") is not True:
+		add_error("commands.utility_comparison_refresh.network_required must be true")
+	for path in updated_files:
+		if path not in command.get("writes_files", []):
+			add_error(f"commands.utility_comparison_refresh.writes_files must include {path}")
+	if not re.search(rf"^{re.escape(make_target)}:(?:\s|$)", makefile, flags=re.MULTILINE):
+		add_error(f"Makefile must define target {make_target}")
+	else:
+		target_match = re.search(rf"^{re.escape(make_target)}:(?:[^\n]*)\n(?P<body>(?:\t.*\n)+)", makefile, flags=re.MULTILINE)
+		target_body = target_match.group("body") if target_match else ""
+		if script_path not in target_body or "--write" not in target_body:
+			add_error(f"Makefile target {make_target} must run {script_path} --write")
+	for gate in default_gate_exclusions:
+		if make_target_depends_on(gate, make_target):
+			add_error(f"Makefile target {gate} must not depend on network refresh target {make_target}")
+	script_text = (root / script_path).read_text(encoding="utf-8") if (root / script_path).exists() else ""
+	for phrase in scope + ["api.github.com/repos", "--write", "Last checked", "utility_top5_comparison_governance_v2", "urllib.request"]:
+		if script_text and phrase not in script_text:
+			add_error(f"{script_path} must include {phrase!r}")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for phrase in scope + ["Last checked:", "GitHub API", "Keep this top5 comparison governed by current GitHub metadata"]:
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_64_rows = [row for row in sprint_rows if row.get("Sprint") == "64"]
+	if len(sprint_64_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 64 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_64_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 64 status must be {expected_status}")
+		sprint_text = " ".join(sprint_64_rows[0].values())
+		for phrase in ("utility-comparison-refresh", "GitHub API", "explicit", "network"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 64 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "utility_top5_refresh_workflow_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention utility_top5_refresh_workflow_governance")
 
 
 def validate_safe_crypto_advanced_closeout_governance() -> None:
@@ -3982,6 +4089,7 @@ if not bench_only:
 	validate_safe_crypto_benchmark_scope_governance()
 	validate_utility_library_comparison_governance()
 	validate_utility_top5_comparison_governance_v2()
+	validate_utility_top5_refresh_workflow_governance()
 	validate_safe_crypto_advanced_closeout_governance()
 	validate_go_version_adoption_governance()
 	validate_collections_comparison_governance()

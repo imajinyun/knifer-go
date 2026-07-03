@@ -128,6 +128,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 61 | Completed | Cast Migration Examples Ratchet | Added executable `vconv` cast migration examples for strict conversion, weak conversion, default fallback, custom parser policy, slice/map boundaries, duration/time boundaries, and overflow handling. |
 | 62 | Completed | Debug/Test API Decision Backlog v2 | Expanded `developer-debug-test-backlog.md` with API decision answers for `vtest` and `vdump`, including repeated workflows, redaction policy, golden-file scope, and non-goals. |
 | 63 | Completed | Docs Task Index Auto-Check v2 | Added `task-index` auto-check governance that validates default facades against `tools.json`, public facades, related public facades, and star domains from AI metadata. |
+| 64 | Completed | Top5 Comparison Refresh Workflow | Added explicit `utility-comparison-refresh` workflow governance for GitHub API refreshes while keeping ordinary docs, quick, agent, and CI gates network-free. |
 
 ## Active workflow
 
@@ -214,6 +215,8 @@ Sprint 61 completed vconv cast migration examples governance: `vconv_cast_migrat
 Sprint 62 completed developer debug/test API decision governance: `developer_debug_test_api_decision_governance` records whether `vtest` and `vdump` are worth implementing and keeps the planned-only status machine-checked.
 
 Sprint 63 completed task-index auto-check governance: `task_index_auto_check_governance` parses `task-index.md` tables and validates default facades against `docs/api/tools.json`, public facades, related public facades, and star domains from `task_index_governance`.
+
+Sprint 64 completed top5 comparison refresh workflow governance: `utility_top5_refresh_workflow_governance` records the explicit `make utility-comparison-refresh` entry point, the `bin/update_utility_comparison.py` GitHub API script, the files it updates, and the rule that ordinary docs, quick, agent, and CI gates must not depend on network refreshes.
 
 Recommended roadmap loop:
 

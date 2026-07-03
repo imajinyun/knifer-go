@@ -54,6 +54,17 @@ frameworks, ORMs, CLI frameworks, or test frameworks.
 - Debug/test helper candidates belong in `docs/doc/developer-debug-test-backlog.md` until `vtest` or `vdump` are implemented.
 - Keep this top5 comparison governed by current GitHub metadata and refresh the stars/date deliberately.
 
+## Refresh Workflow
+
+Run `make utility-comparison-refresh` only when intentionally refreshing the
+GitHub Top 5 table. The target calls `bin/update_utility_comparison.py --write`,
+uses the GitHub API, and updates `docs/doc/utility-library-comparison.md` plus
+`ai-context.json` together.
+
+This refresh is explicit opt-in because it requires network access and writes
+workspace files. Ordinary gates such as `make docs-check`, `make quick-check`,
+`make agent-check`, and `make ci-test` must not depend on it.
+
 ## Sources
 
 - GitHub API: `https://api.github.com/repos/samber/lo`

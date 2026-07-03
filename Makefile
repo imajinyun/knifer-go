@@ -1,4 +1,4 @@
-.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check docs-gen docs-check generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
+.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check docs-gen docs-check utility-comparison-refresh generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -64,6 +64,7 @@ help:
 	@echo "  docs-quickstart-check Verify facade quickstart documentation structure"
 	@echo "  docs-gen        Regenerate documentation artifacts"
 	@echo "  docs-check      Verify generated documentation artifacts are current"
+	@echo "  utility-comparison-refresh Refresh top5 utility comparison from GitHub API"
 	@echo "  ai-context-check Verify machine-readable AI context metadata"
 	@echo "  ci-workflow-check Verify CI workflow governance invariants"
 	@echo "  check           Run local stability gates"
@@ -179,6 +180,9 @@ docs-quickstart-check:
 docs-gen: tools-gen
 
 docs-check: tools-check docs-quickstart-check
+
+utility-comparison-refresh:
+	python3 bin/update_utility_comparison.py --write
 
 ai-context-check:
 	bash bin/check_ai_context.sh

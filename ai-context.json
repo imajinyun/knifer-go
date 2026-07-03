@@ -292,6 +292,17 @@
       "writes_files": ["docs/api/tools.json", "docs/api/tools.md"],
       "notes": "Regenerates documentation artifacts that are derived from source code. Only run after confirming generated output is expected."
     },
+    "utility_comparison_refresh": {
+      "cmd": "make utility-comparison-refresh",
+      "safe_for_agent_auto_run": false,
+      "requires_user_consent": true,
+      "writes_workspace": true,
+      "writes_git_config": false,
+      "network_required": true,
+      "risk_level": "medium",
+      "writes_files": ["docs/doc/utility-library-comparison.md", "ai-context.json"],
+      "notes": "Explicit opt-in refresh for GitHub Top 5 utility library metadata; it uses GitHub API network calls and updates comparison documentation plus AI metadata."
+    },
     "api_update": {
       "cmd": "UPDATE_API=1 make api-check",
       "safe_for_agent_auto_run": false,
@@ -1279,8 +1290,24 @@
     "status": "completed",
     "last_checked": "2026-07-02",
     "top5": ["samber/lo", "duke-git/lancet", "thoas/go-funk", "spf13/cast", "gookit/goutil"],
-    "required_sections": ["GitHub Top 5 Utility Libraries", "Comparison Matrix", "Decision Rules", "Gap Summary", "TODO Lanes", "Sources"],
+    "required_sections": ["GitHub Top 5 Utility Libraries", "Comparison Matrix", "Decision Rules", "Gap Summary", "TODO Lanes", "Refresh Workflow", "Sources"],
     "required_paths": ["collection-golden-paths.md", "collections-comparison.md", "vconv-cast-migration.md", "dynamic-data-toolkit-matrix.md", "daily-developer-utilities.md", "developer-debug-test-backlog.md", "facade-tiering.md", "benchmark-trust.md"],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
+  "utility_top5_refresh_workflow_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/utility-library-comparison.md",
+    "script_path": "bin/update_utility_comparison.py",
+    "make_target": "utility-comparison-refresh",
+    "command": "utility_comparison_refresh",
+    "sprint": 64,
+    "status": "completed",
+    "refresh_scope": ["samber/lo", "duke-git/lancet", "thoas/go-funk", "spf13/cast", "gookit/goutil"],
+    "explicit_only": true,
+    "network_required": true,
+    "default_gate_exclusions": ["docs-check", "quick-check", "agent-check", "ci-test"],
+    "updated_files": ["docs/doc/utility-library-comparison.md", "ai-context.json"],
+    "required_boundaries": ["do not run from ordinary docs-check", "do not depend on network in ordinary gates", "refresh writes comparison docs and AI metadata together", "GitHub API sources stay visible"],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
   },
   "safe_crypto_advanced_closeout_governance": {
