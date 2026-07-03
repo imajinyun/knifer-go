@@ -3,10 +3,14 @@ package vconv_test
 import (
 	"errors"
 	"fmt"
+	"math"
 	"strconv"
+	"time"
 
 	knifer "github.com/imajinyun/knifer-go"
 	"github.com/imajinyun/knifer-go/vconv"
+	"github.com/imajinyun/knifer-go/vmap"
+	"github.com/imajinyun/knifer-go/vslice"
 )
 
 func ExampleToInt() {
@@ -317,4 +321,73 @@ func ExampleToBytesWithOptions() {
 
 	fmt.Println(string(vconv.ToBytesWithOptions(true, vconv.WithFormatBoolFunc(formatter))))
 	// Output: enabled
+}
+
+func Example_castMigration_strictConversion() {
+	port, err := vconv.ToIntE("8080")
+
+	fmt.Println(port)
+	fmt.Println(err)
+	// Output:
+	// 8080
+	// <nil>
+}
+
+func Example_castMigration_weakConversion() {
+	count := vconv.ToInt("not-a-number")
+
+	fmt.Println(count)
+	// Output: 0
+}
+
+func Example_castMigration_defaultFallback() {
+	limit := vconv.ToIntDefault("bad", 100)
+
+	fmt.Println(limit)
+	// Output: 100
+}
+
+func Example_castMigration_customParserPolicy() {
+	value, err := vconv.ToIntEWithOptions("max", vconv.WithParseIntFunc(func(s string, base, bitSize int) (int64, error) {
+		if s == "max" {
+			return 100, nil
+		}
+		return strconv.ParseInt(s, base, bitSize)
+	}))
+
+	fmt.Println(value)
+	fmt.Println(err)
+	// Output:
+	// 100
+	// <nil>
+}
+
+func Example_castMigration_sliceMapBoundary() {
+	numbers := vslice.Map([]string{"1", "2"}, func(s string) int { return vconv.ToInt(s) })
+	picked := vmap.Pick(map[string]any{"port": 8080, "debug": true}, "port")
+
+	fmt.Println(numbers)
+	fmt.Println(picked)
+	// Output:
+	// [1 2]
+	// map[port:8080]
+}
+
+func Example_castMigration_durationTimeBoundary() {
+	timeout, err := time.ParseDuration("150ms")
+
+	fmt.Println(timeout)
+	fmt.Println(err)
+	fmt.Println(vconv.ToInt64(timeout))
+	// Output:
+	// 150ms
+	// <nil>
+	// 150000000
+}
+
+func Example_castMigration_overflowHandling() {
+	_, err := vconv.ToInt64E(uint64(math.MaxInt64) + 1)
+
+	fmt.Println(errors.Is(err, vconv.ErrInvalidConversion))
+	// Output: true
 }

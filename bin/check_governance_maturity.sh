@@ -2380,6 +2380,78 @@ def validate_vconv_cast_migration_governance() -> None:
 		add_error(f"{roadmap_path} must mention vconv_cast_migration_governance")
 
 
+def validate_vconv_cast_migration_examples_governance() -> None:
+	governance = require_mapping(ai_context.get("vconv_cast_migration_examples_governance"), "vconv_cast_migration_examples_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("vconv_cast_migration_examples_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("vconv_cast_migration_examples_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/vconv-cast-migration.md"
+	example_path = governance.get("example_path")
+	if example_path != "vconv/example_test.go":
+		add_error("vconv_cast_migration_examples_governance.example_path must be vconv/example_test.go")
+		example_path = "vconv/example_test.go"
+	if governance.get("sprint") != 61:
+		add_error("vconv_cast_migration_examples_governance.sprint must be 61")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("vconv_cast_migration_examples_governance.status must be active or completed")
+	if governance.get("package") != "vconv":
+		add_error("vconv_cast_migration_examples_governance.package must be vconv")
+	if governance.get("competitor") != "spf13/cast":
+		add_error("vconv_cast_migration_examples_governance.competitor must be spf13/cast")
+	examples = require_string_list(governance.get("required_examples"), "vconv_cast_migration_examples_governance.required_examples")
+	expected_examples = [
+		"Example_castMigration_strictConversion",
+		"Example_castMigration_weakConversion",
+		"Example_castMigration_defaultFallback",
+		"Example_castMigration_customParserPolicy",
+		"Example_castMigration_sliceMapBoundary",
+		"Example_castMigration_durationTimeBoundary",
+		"Example_castMigration_overflowHandling",
+	]
+	if examples != expected_examples:
+		add_error("vconv_cast_migration_examples_governance.required_examples must be ordered as: " + ", ".join(expected_examples))
+	workflows = require_string_list(governance.get("required_workflows"), "vconv_cast_migration_examples_governance.required_workflows")
+	expected_workflows = ["strict conversion", "weak conversion", "default fallback", "custom parser policy", "slice/map conversion", "duration/time conversion", "overflow handling"]
+	if workflows != expected_workflows:
+		add_error("vconv_cast_migration_examples_governance.required_workflows must be ordered as: " + ", ".join(expected_workflows))
+	required_checks = require_string_list(governance.get("required_checks"), "vconv_cast_migration_examples_governance.required_checks")
+	for check in ("go test ./vconv", "tools-gen", "docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"vconv_cast_migration_examples_governance.required_checks must include {check}")
+	if not (root / doc_path).exists():
+		add_error(f"{doc_path} must exist")
+	if not (root / example_path).exists():
+		add_error(f"{example_path} must exist")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	example_text = (root / example_path).read_text(encoding="utf-8") if (root / example_path).exists() else ""
+	for phrase in workflows + ["spf13/cast", "vconv"]:
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	for example in examples:
+		if example_text and f"func {example}()" not in example_text:
+			add_error(f"{example_path} must include {example}")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_61_rows = [row for row in sprint_rows if row.get("Sprint") == "61"]
+	if len(sprint_61_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 61 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_61_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 61 status must be {expected_status}")
+		sprint_text = " ".join(sprint_61_rows[0].values())
+		for phrase in ("vconv", "cast", "examples", "strict", "overflow"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 61 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "vconv_cast_migration_examples_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention vconv_cast_migration_examples_governance")
+
+
 def validate_dynamic_data_toolkit_matrix_governance() -> None:
 	governance = require_mapping(ai_context.get("dynamic_data_toolkit_matrix_governance"), "dynamic_data_toolkit_matrix_governance")
 	roadmap_path = governance.get("roadmap_path")
@@ -3737,6 +3809,7 @@ if not bench_only:
 	validate_collection_advanced_backlog_governance()
 	validate_vconv_vbean_migration_governance()
 	validate_vconv_cast_migration_governance()
+	validate_vconv_cast_migration_examples_governance()
 	validate_dynamic_data_toolkit_matrix_governance()
 	validate_task_index_governance()
 	validate_facade_tiering_import_governance()

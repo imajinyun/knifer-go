@@ -125,6 +125,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 58 | Completed | Public Comparison Governance v2 | Updated `utility-library-comparison.md` with top5 stars, scope, last-checked metadata, sources, gap summary, and TODO lanes. |
 | 59 | Completed | vconf/vobj Example Ratchet | ratchet for `vconf` and `vobj` from below-25-percent example coverage to at least 15 examples and 18 examples respectively, then guarded the new baseline with machine-checked example density governance. |
 | 60 | Completed | Collection Advanced Backlog | Added `collection-advanced-backlog.md` for slice partition by predicate, zip N, cartesian product, channel helpers, parallel transforms, and iterator-first helpers before implementing more collection APIs. |
+| 61 | Completed | Cast Migration Examples Ratchet | Added executable `vconv` cast migration examples for strict conversion, weak conversion, default fallback, custom parser policy, slice/map boundaries, duration/time boundaries, and overflow handling. |
 
 ## Active workflow
 
@@ -205,6 +206,8 @@ Sprint 58 completed public comparison governance v2: `utility_top5_comparison_go
 Sprint 59 completed vconf/vobj example-density governance: `weak_facade_example_density_governance_3` records the dynamic-data example ratchet for `vconf` and `vobj`, with security-sensitive validation for `vconf`.
 
 Sprint 60 completed collection advanced backlog governance: `collection_advanced_backlog_governance` records advanced collection candidates and requires API decision cards, executable examples, and benchmark evidence before implementation.
+
+Sprint 61 completed vconv cast migration examples governance: `vconv_cast_migration_examples_governance` records executable cast migration examples in `vconv/example_test.go` for `spf13/cast` migration workflows.
 
 Recommended roadmap loop:
 

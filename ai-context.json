@@ -1359,6 +1359,18 @@
     "required_boundaries": ["vconv is scalar-first", "E helpers at trust boundaries", "do not move collection conversion into vconv"],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
   },
+  "vconv_cast_migration_examples_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/vconv-cast-migration.md",
+    "example_path": "vconv/example_test.go",
+    "sprint": 61,
+    "status": "completed",
+    "package": "vconv",
+    "competitor": "spf13/cast",
+    "required_examples": ["Example_castMigration_strictConversion", "Example_castMigration_weakConversion", "Example_castMigration_defaultFallback", "Example_castMigration_customParserPolicy", "Example_castMigration_sliceMapBoundary", "Example_castMigration_durationTimeBoundary", "Example_castMigration_overflowHandling"],
+    "required_workflows": ["strict conversion", "weak conversion", "default fallback", "custom parser policy", "slice/map conversion", "duration/time conversion", "overflow handling"],
+    "required_checks": ["go test ./vconv", "tools-gen", "docs-check", "ai-context-check", "governance-maturity-check"]
+  },
   "dynamic_data_toolkit_matrix_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
     "doc_path": "docs/doc/dynamic-data-toolkit-matrix.md",

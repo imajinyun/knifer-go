@@ -42,6 +42,7 @@
     "collections_comparison_governance",
     "vconv_vbean_migration_governance",
     "vconv_cast_migration_governance",
+    "vconv_cast_migration_examples_governance",
     "dynamic_data_toolkit_matrix_governance",
     "task_index_governance",
     "facade_tiering_import_governance",
@@ -618,6 +619,23 @@
         "competitor": { "type": "string", "minLength": 1 },
         "required_workflows": { "$ref": "#/$defs/string_array" },
         "required_boundaries": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "vconv_cast_migration_examples_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "doc_path", "example_path", "sprint", "status", "package", "competitor", "required_examples", "required_workflows", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "doc_path": { "type": "string", "minLength": 1 },
+        "example_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "package": { "type": "string", "minLength": 1 },
+        "competitor": { "type": "string", "minLength": 1 },
+        "required_examples": { "$ref": "#/$defs/string_array" },
+        "required_workflows": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
       },
       "additionalProperties": false
