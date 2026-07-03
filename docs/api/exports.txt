@@ -1098,6 +1098,7 @@ github.com/imajinyun/knifer-go/vfile
   func IsFile(path string) bool
   func IsFileWithOptions(path string, opts ...StatOption) bool
   func IsImage(ft FileType) bool
+  func IsLocalPath(path string) bool
   func IsVideo(ft FileType) bool
   func MainName(path string) string
   func Mkdir(dir string, opts ...DirOption) error
@@ -1119,6 +1120,7 @@ github.com/imajinyun/knifer-go/vfile
   func ReadString(r io.Reader) (string, error)
   func ReadStringWithOptions(r io.Reader, opts ...ReadOption) (string, error)
   func ReaderFromString(s string) io.Reader
+  func SafeJoin(root string, path string) (string, error)
   func Size(path string) int64
   func SizeWithOptions(path string, opts ...StatOption) int64
   func Touch(path string, opts ...WriteOption) error

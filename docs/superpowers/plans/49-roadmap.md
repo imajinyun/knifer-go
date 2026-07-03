@@ -9,15 +9,15 @@ This baseline is derived from `docs/api/tools.json.summary`. `make governance-ma
 | Metric | Value |
 | --- | ---: |
 | Public facade packages | 55 |
-| Public functions | 2763 |
+| Public functions | 2765 |
 | Functions with executable examples | 1748 |
 | Context-aware functions | 36 |
-| Functions returning errors | 687 |
-| Recommended public functions | 2741 |
+| Functions returning errors | 688 |
+| Recommended public functions | 2743 |
 | Compatibility public functions | 22 |
 | Empty function synopses | 0 |
 | Facade-sourced function synopses | 2110 |
-| Internal-sourced function synopses | 653 |
+| Internal-sourced function synopses | 655 |
 
 ## 90-Day Star Domain Scorecard
 
@@ -25,7 +25,7 @@ This baseline is derived from `docs/api/tools.json.summary`. `make governance-ma
 | --- | ---: | ---: | ---: | --- | --- | ---: | --- | --- | --- | --- |
 | Safe HTTP (`vhttp`, `vresty`, `vurl`) | 364 | 349 | 95.9% | `internal/httpx/http` 85.0%, `internal/httpx/resty` 80.4%, `internal/url` 87.7%, shared helpers 86.8% | `vhttp` 100.0%, `vresty` 100.0%, `vurl` 100.0% | 10 | Present in `docs/doc/README.md`, `docs/doc/22-vhttp.md`, and `docs/doc/41-vresty.md` | Present in `docs/doc/22-vhttp.md` and `docs/doc/41-vresty.md` | Present in `docs/doc/22-vhttp.md` and `docs/doc/41-vresty.md` | Present in `docs/doc/safe-http-cookbook.md` |
 | Safe crypto (`vcrypto`, `vrand`, `vjwt`) | 244 | 197 | 80.7% | `internal/crypto` 94.1%, `internal/rand` 94.2%, `internal/jwt` 85.5% | `vcrypto` 100.0%, `vrand` 100.0%, `vjwt` 100.0% | 7 | Present in `docs/doc/11-vcrypto.md` and `docs/doc/38-vrand.md` | Present in `docs/doc/11-vcrypto.md` and `docs/doc/38-vrand.md` | Present in `docs/doc/safe-crypto-cookbook.md` | Present in `docs/doc/safe-crypto-cookbook.md` |
-| Daily JSON/file (`vjson`, `vfile`) | 133 | 133 | 100.0% | `internal/json` 88.9%, `internal/file` 88.6% | `vjson` 100.0%, `vfile` 100.0% | 4 | Present in `docs/doc/27-vjson.md` for JSON and `docs/doc/17-vfile.md` for file workflows | Present in `docs/doc/daily-json-file-faq.md` | Present in `docs/doc/27-vjson.md` for JSON stdlib boundary; filesystem safety guidance present in `docs/doc/17-vfile.md` | Present in `docs/doc/27-vjson.md` and `docs/doc/17-vfile.md` |
+| Daily JSON/file (`vjson`, `vfile`) | 135 | 133 | 98.5% | `internal/json` 88.9%, `internal/file` 88.6% | `vjson` 100.0%, `vfile` 100.0% | 4 | Present in `docs/doc/27-vjson.md` for JSON and `docs/doc/17-vfile.md` for file workflows | Present in `docs/doc/daily-json-file-faq.md` | Present in `docs/doc/27-vjson.md` for JSON stdlib boundary; filesystem safety guidance present in `docs/doc/17-vfile.md` | Present in `docs/doc/27-vjson.md` and `docs/doc/17-vfile.md` |
 
 ## Strategic themes
 

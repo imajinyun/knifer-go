@@ -100,7 +100,9 @@ func Copy(dst io.Writer, src io.Reader) (int64, error) { return fileimpl.IoCopy(
 func CopyWithOptions(dst io.Writer, src io.Reader, opts ...ReadOption) (int64, error) {
 	return fileimpl.IoCopyWithOptions(dst, src, opts...)
 }
-func CloseQuietly(c io.Closer) { fileimpl.CloseQuietly(c) }
+func CloseQuietly(c io.Closer)                   { fileimpl.CloseQuietly(c) }
+func IsLocalPath(path string) bool               { return fileimpl.IsLocalPath(path) }
+func SafeJoin(root, path string) (string, error) { return fileimpl.SafeJoin(root, path) }
 
 // Exists reports whether a file or directory exists at path.
 func Exists(path string) bool { return ExistsWithOptions(path) }

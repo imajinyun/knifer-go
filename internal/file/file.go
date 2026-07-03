@@ -311,6 +311,67 @@ func CloseQuietly(c io.Closer) {
 	_ = c.Close()
 }
 
+// IsLocalPath reports whether path is a relative path that cannot escape its base.
+func IsLocalPath(path string) bool {
+	path = strings.TrimSpace(path)
+	if path == "" {
+		return false
+	}
+	if strings.Contains(path, `\`) || strings.HasPrefix(path, `\\`) {
+		return false
+	}
+	if len(path) >= 2 && path[1] == ':' {
+		return false
+	}
+	if filepath.IsAbs(path) {
+		return false
+	}
+	clean := filepath.Clean(path)
+	return clean != "." && clean != ".." && !strings.HasPrefix(clean, ".."+string(filepath.Separator))
+}
+
+// SafeJoin joins path under root and verifies that the result stays inside root.
+func SafeJoin(root, path string) (string, error) {
+	if strings.TrimSpace(root) == "" {
+		return "", invalidInputf("root path is empty")
+	}
+	if !IsLocalPath(path) {
+		return "", invalidInputf("unsafe local path: %s", path)
+	}
+	rootAbs, err := filepath.Abs(root)
+	if err != nil {
+		return "", wrapFileIO("resolve root path "+root, err)
+	}
+	target := filepath.Join(rootAbs, filepath.Clean(path))
+	targetAbs, err := filepath.Abs(target)
+	if err != nil {
+		return "", wrapFileIO("resolve target path "+target, err)
+	}
+	if err := ensureInsideRoot(rootAbs, targetAbs, path); err != nil {
+		return "", err
+	}
+	parentAbs := filepath.Dir(targetAbs)
+	realRoot, rootErr := filepath.EvalSymlinks(rootAbs)
+	realParent, parentErr := filepath.EvalSymlinks(parentAbs)
+	if rootErr == nil && parentErr == nil {
+		if err := ensureInsideRoot(realRoot, realParent, path); err != nil {
+			return "", err
+		}
+	}
+	return targetAbs, nil
+}
+
+func ensureInsideRoot(rootAbs, targetAbs, original string) error {
+	rel, err := filepath.Rel(rootAbs, targetAbs)
+	if err != nil {
+		return wrapFileIO("validate path "+original, err)
+	}
+	if rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) || filepath.IsAbs(rel) {
+		return invalidInputf("path escapes root: %s", original)
+	}
+	return nil
+}
+
 // This section provides file and filename helpers aligned with the utility toolkit-core FileUtil and FileNameUtil.
 
 // FileExists reports whether a file or directory exists.

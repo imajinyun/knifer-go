@@ -11,17 +11,17 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Schema | 1.7 |
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
-| Functions | 2763 |
+| Functions | 2765 |
 | Functions with examples | 1748 |
 | Context-aware functions | 36 |
-| Functions returning error | 687 |
+| Functions returning error | 688 |
 | Variadic functions | 804 |
-| API status: recommended | 2741 |
+| API status: recommended | 2743 |
 | API status: compatibility | 22 |
 | API status: experimental | 0 |
 | API status: deprecated | 0 |
 | Synopsis source: facade | 2110 |
-| Synopsis source: internal | 653 |
+| Synopsis source: internal | 655 |
 | Synopsis source: empty | 0 |
 
 ## Packages
@@ -1128,12 +1128,13 @@ Import path: `github.com/imajinyun/knifer-go/vfile`
 
 Package vfile provides public APIs for file and IO utilities.
 
-Quality: 68 functions · 68 with examples · 100.0% example coverage · statuses: recommended=68, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=62, internal=6, empty=0
+Quality: 70 functions · 68 with examples · 97.1% example coverage · statuses: recommended=70, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=62, internal=8, empty=0
 
 Recommended entrypoints:
 
 | Function | Profile | Rationale |
 | --- | --- | --- |
+| `SafeJoin` | safe | Prefer when inputs cross trust boundaries or need explicit safety checks. |
 | `AppendFileString` | error | Prefer when callers must distinguish invalid input or provider failure from default values. |
 | `ExistsWithOptions` | options | Prefer when providers, limits, parsers, or policies must be reviewable at the call site. |
 | `CloseQuietly` | day-one | Start here for concise, trusted-input use cases in this package. |
@@ -1142,11 +1143,11 @@ Golden path API set:
 
 | Function | Use when | Avoid when |
 | --- | --- | --- |
+| `SafeJoin` | Use first when inputs are external, remote, file-backed, or security-sensitive. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `AppendFileString` | Use first when callers must observe invalid input or provider failure. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `ExistsWithOptions` | Use first when policies, providers, parsers, limits, or clocks must be explicit. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `CloseQuietly` | Use first for concise trusted-input workflows in vfile. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vfile. |
 | `AppendFileStringWithOptions` | Use first for concise trusted-input workflows in vfile. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vfile. |
-| `Copy` | Use first for concise trusted-input workflows in vfile. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vfile. |
 
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
@@ -1173,6 +1174,7 @@ Golden path API set:
 | `IsFile` | `func IsFile(path string) bool` | recommended | IsFile reports whether path exists and is a regular file. | facade | `ExampleIsFile` |
 | `IsFileWithOptions` | `func IsFileWithOptions(path string, opts ...StatOption) bool` | recommended | IsFileWithOptions reports whether path exists and is a regular file using per-call stat options. | facade | `ExampleIsFileWithOptions` |
 | `IsImage` | `func IsImage(ft FileType) bool` | recommended | IsImage reports whether ft is an image file type. | facade | `ExampleIsImage` |
+| `IsLocalPath` | `func IsLocalPath(path string) bool` | recommended | IsLocalPath reports whether path is a relative path that cannot escape its base. | internal | — |
 | `IsVideo` | `func IsVideo(ft FileType) bool` | recommended | IsVideo reports whether ft is a video file type. | facade | `ExampleIsVideo` |
 | `MainName` | `func MainName(path string) string` | recommended | MainName returns the file name without its extension; parent directories are ignored. | internal | `ExampleMainName` |
 | `Mkdir` | `func Mkdir(dir string, opts ...DirOption) error` | recommended | Mkdir creates dir with directory options. | facade | `ExampleMkdir` |
@@ -1194,6 +1196,7 @@ Golden path API set:
 | `ReadString` | `func ReadString(r io.Reader) (string, error)` | recommended | ReadString reads all data from r as a string using the default read-size guard. | facade | `ExampleReadString` |
 | `ReadStringWithOptions` | `func ReadStringWithOptions(r io.Reader, opts ...ReadOption) (string, error)` | recommended | ReadStringWithOptions reads data from r as a string with per-call read options. | facade | `ExampleReadStringWithOptions` |
 | `ReaderFromString` | `func ReaderFromString(s string) io.Reader` | recommended | ReaderFromString converts a string to an io.Reader. | internal | `ExampleReaderFromString` |
+| `SafeJoin` | `func SafeJoin(root string, path string) (string, error)` | recommended | SafeJoin joins path under root and verifies that the result stays inside root. | internal | — |
 | `Size` | `func Size(path string) int64` | recommended | Size returns the file size in bytes, or -1 when path is missing or not a regular file. | facade | `ExampleSize` |
 | `SizeWithOptions` | `func SizeWithOptions(path string, opts ...StatOption) int64` | recommended | SizeWithOptions returns the file size using per-call stat options. | facade | `ExampleSizeWithOptions` |
 | `Touch` | `func Touch(path string, opts ...WriteOption) error` | recommended | Touch creates path when missing and updates its timestamp. | facade | `ExampleTouch` |

@@ -3,21 +3,21 @@
   "module": "github.com/imajinyun/knifer-go",
   "summary": {
     "package_count": 55,
-    "function_count": 2763,
+    "function_count": 2765,
     "functions_with_examples": 1748,
     "context_aware_functions": 36,
-    "returns_error_functions": 687,
+    "returns_error_functions": 688,
     "variadic_functions": 804,
     "status_counts": {
       "compatibility": 22,
       "deprecated": 0,
       "experimental": 0,
-      "recommended": 2741
+      "recommended": 2743
     },
     "synopsis_sources": {
       "empty": 0,
       "facade": 2110,
-      "internal": 653
+      "internal": 655
     }
   },
   "packages": [
@@ -15610,22 +15610,27 @@
       "name": "vfile",
       "synopsis": "Package vfile provides public APIs for file and IO utilities.",
       "summary": {
-        "function_count": 68,
+        "function_count": 70,
         "functions_with_examples": 68,
-        "example_coverage_percent": 100,
+        "example_coverage_percent": 97.1,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
           "experimental": 0,
-          "recommended": 68
+          "recommended": 70
         },
         "synopsis_sources": {
           "empty": 0,
           "facade": 62,
-          "internal": 6
+          "internal": 8
         }
       },
       "golden_path": [
+        {
+          "name": "SafeJoin",
+          "use_when": "Use first when inputs are external, remote, file-backed, or security-sensitive.",
+          "avoid_when": "Avoid for trivial in-memory code where the standard library is clearer."
+        },
         {
           "name": "AppendFileString",
           "use_when": "Use first when callers must observe invalid input or provider failure.",
@@ -15645,14 +15650,14 @@
           "name": "AppendFileStringWithOptions",
           "use_when": "Use first for concise trusted-input workflows in vfile.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vfile."
-        },
-        {
-          "name": "Copy",
-          "use_when": "Use first for concise trusted-input workflows in vfile.",
-          "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vfile."
         }
       ],
       "recommended_entrypoints": [
+        {
+          "name": "SafeJoin",
+          "profile": "safe",
+          "rationale": "Prefer when inputs cross trust boundaries or need explicit safety checks."
+        },
         {
           "name": "AppendFileString",
           "profile": "error",
@@ -16238,6 +16243,25 @@
           ]
         },
         {
+          "name": "IsLocalPath",
+          "signature": "func IsLocalPath(path string) bool",
+          "synopsis": "IsLocalPath reports whether path is a relative path that cannot escape its base.",
+          "synopsis_source": "internal",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "path",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "bool"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
           "name": "IsVideo",
           "signature": "func IsVideo(ft FileType) bool",
           "synopsis": "IsVideo reports whether ft is a video file type.",
@@ -16766,6 +16790,30 @@
           "examples": [
             "ExampleReaderFromString"
           ]
+        },
+        {
+          "name": "SafeJoin",
+          "signature": "func SafeJoin(root string, path string) (string, error)",
+          "synopsis": "SafeJoin joins path under root and verifies that the result stays inside root.",
+          "synopsis_source": "internal",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "root",
+              "type": "string"
+            },
+            {
+              "name": "path",
+              "type": "string"
+            }
+          ],
+          "results": [
+            "string",
+            "error"
+          ],
+          "returns_error": true,
+          "context_aware": false,
+          "variadic": false
         },
         {
           "name": "Size",
