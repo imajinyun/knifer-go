@@ -39,6 +39,7 @@
 - 🧭 Go version adoption policy: [`go-version-adoption-policy.md`](go-version-adoption-policy.md)
 - 🧩 Collections comparison: [`collections-comparison.md`](collections-comparison.md)
 - 🧱 Collection golden paths: [`collection-golden-paths.md`](collection-golden-paths.md)
+- 🧮 Collection advanced backlog: [`collection-advanced-backlog.md`](collection-advanced-backlog.md)
 - 🔁 Conversion and bean migration matrix: [`vconv-vbean-migration.md`](vconv-vbean-migration.md)
 - 🔄 vconv cast migration cookbook: [`vconv-cast-migration.md`](vconv-cast-migration.md)
 - 🧬 Dynamic data toolkit matrix: [`dynamic-data-toolkit-matrix.md`](dynamic-data-toolkit-matrix.md)

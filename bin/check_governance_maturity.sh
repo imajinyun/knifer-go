@@ -2190,6 +2190,76 @@ def validate_collection_mindshare_pack_governance() -> None:
 		add_error(f"{roadmap_path} must mention collection_mindshare_pack_governance")
 
 
+def validate_collection_advanced_backlog_governance() -> None:
+	governance = require_mapping(ai_context.get("collection_advanced_backlog_governance"), "collection_advanced_backlog_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("collection_advanced_backlog_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("collection_advanced_backlog_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/collection-advanced-backlog.md"
+	readme_path = governance.get("readme_path")
+	if readme_path != "README.md":
+		add_error("collection_advanced_backlog_governance.readme_path must be README.md")
+		readme_path = "README.md"
+	if governance.get("sprint") != 60:
+		add_error("collection_advanced_backlog_governance.sprint must be 60")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("collection_advanced_backlog_governance.status must be active or completed")
+	packages = require_string_list(governance.get("packages"), "collection_advanced_backlog_governance.packages")
+	expected_packages = ["vslice", "vmap", "vset", "vjob"]
+	if packages != expected_packages:
+		add_error("collection_advanced_backlog_governance.packages must be ordered as: " + ", ".join(expected_packages))
+	lanes = require_string_list(governance.get("candidate_lanes"), "collection_advanced_backlog_governance.candidate_lanes")
+	expected_lanes = ["slice partition by predicate", "zip N", "cartesian product", "channel helpers", "parallel transforms", "iterator-first helpers"]
+	if lanes != expected_lanes:
+		add_error("collection_advanced_backlog_governance.candidate_lanes must be ordered as: " + ", ".join(expected_lanes))
+	boundaries = require_string_list(governance.get("required_boundaries"), "collection_advanced_backlog_governance.required_boundaries")
+	expected_boundaries = [
+		"do not copy every helper from lo or lancet",
+		"require an API decision card before implementation",
+		"require executable examples before public API",
+		"require benchmark evidence before allocation-heavy helpers",
+		"keep error and cancellation contracts explicit",
+	]
+	if boundaries != expected_boundaries:
+		add_error("collection_advanced_backlog_governance.required_boundaries must be ordered as: " + ", ".join(expected_boundaries))
+	required_checks = require_string_list(governance.get("required_checks"), "collection_advanced_backlog_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"collection_advanced_backlog_governance.required_checks must include {check}")
+	if not (root / doc_path).exists():
+		add_error(f"{doc_path} must exist")
+	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
+	for phrase in packages + lanes + boundaries + ["Collection Advanced Backlog", "Candidate Lanes", "Required API Decision Card Questions"]:
+		if doc_text and phrase not in doc_text:
+			add_error(f"{doc_path} must include {phrase!r}")
+	readme_text = (root / readme_path).read_text(encoding="utf-8") if (root / readme_path).exists() else ""
+	if "collection-advanced-backlog.md" not in readme_text:
+		add_error("README.md must link docs/doc/collection-advanced-backlog.md")
+	doc_index_text = (root / "docs/doc/README.md").read_text(encoding="utf-8")
+	if "collection-advanced-backlog.md" not in doc_index_text:
+		add_error("docs/doc/README.md must link docs/doc/collection-advanced-backlog.md")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_60_rows = [row for row in sprint_rows if row.get("Sprint") == "60"]
+	if len(sprint_60_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 60 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_60_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 60 status must be {expected_status}")
+		sprint_text = " ".join(sprint_60_rows[0].values())
+		for phrase in ("collection-advanced-backlog", "partition", "zip", "parallel", "iterator"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 60 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "collection_advanced_backlog_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention collection_advanced_backlog_governance")
+
+
 def validate_vconv_vbean_migration_governance() -> None:
 	governance = require_mapping(ai_context.get("vconv_vbean_migration_governance"), "vconv_vbean_migration_governance")
 	roadmap_path = governance.get("roadmap_path")
@@ -3664,6 +3734,7 @@ if not bench_only:
 	validate_go_version_adoption_governance()
 	validate_collections_comparison_governance()
 	validate_collection_mindshare_pack_governance()
+	validate_collection_advanced_backlog_governance()
 	validate_vconv_vbean_migration_governance()
 	validate_vconv_cast_migration_governance()
 	validate_dynamic_data_toolkit_matrix_governance()

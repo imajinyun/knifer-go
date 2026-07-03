@@ -1554,6 +1554,17 @@
     ],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
   },
+  "collection_advanced_backlog_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/collection-advanced-backlog.md",
+    "readme_path": "README.md",
+    "sprint": 60,
+    "status": "completed",
+    "packages": ["vslice", "vmap", "vset", "vjob"],
+    "candidate_lanes": ["slice partition by predicate", "zip N", "cartesian product", "channel helpers", "parallel transforms", "iterator-first helpers"],
+    "required_boundaries": ["do not copy every helper from lo or lancet", "require an API decision card before implementation", "require executable examples before public API", "require benchmark evidence before allocation-heavy helpers", "keep error and cancellation contracts explicit"],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
   "adoption_trust_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
     "doc_path": "docs/doc/adoption-trust.md",

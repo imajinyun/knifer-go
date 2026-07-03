@@ -259,6 +259,7 @@ First time here? Start with [`docs/doc/first-use-golden-paths.md`](docs/doc/firs
 
 For a broader comparison, see [`docs/doc/utility-library-comparison.md`](docs/doc/utility-library-comparison.md). For daily CLI, system, file, network, job, and logging tasks, see [`docs/doc/daily-developer-utilities.md`](docs/doc/daily-developer-utilities.md).
 For collection workflows by task, see [`docs/doc/collection-golden-paths.md`](docs/doc/collection-golden-paths.md).
+For advanced collection API candidates, see [`docs/doc/collection-advanced-backlog.md`](docs/doc/collection-advanced-backlog.md).
 For type-conversion migration from `spf13/cast`, see [`docs/doc/vconv-cast-migration.md`](docs/doc/vconv-cast-migration.md).
 For dynamic config, map/struct, JSON, object, reflection, and scalar-conversion boundaries, see [`docs/doc/dynamic-data-toolkit-matrix.md`](docs/doc/dynamic-data-toolkit-matrix.md).
 For planned debug and test utility lanes, see [`docs/doc/developer-debug-test-backlog.md`](docs/doc/developer-debug-test-backlog.md).

@@ -55,6 +55,7 @@
     "weak_facade_example_density_governance_2",
     "weak_facade_example_density_governance_3",
     "collection_mindshare_pack_governance",
+    "collection_advanced_backlog_governance",
     "adoption_trust_governance",
     "error_model",
     "dynamic_semantic_contracts",
@@ -899,6 +900,22 @@
             "additionalProperties": false
           }
         },
+        "required_boundaries": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "collection_advanced_backlog_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "doc_path", "readme_path", "sprint", "status", "packages", "candidate_lanes", "required_boundaries", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "doc_path": { "type": "string", "minLength": 1 },
+        "readme_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "packages": { "$ref": "#/$defs/string_array" },
+        "candidate_lanes": { "$ref": "#/$defs/string_array" },
         "required_boundaries": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
       },
