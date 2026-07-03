@@ -478,8 +478,10 @@ func FileAppendStringWithOptions(path, content string, opts ...WriteOption) erro
 	if err != nil {
 		return wrapFileIO("open file "+path, err)
 	}
-	defer CloseQuietly(f)
 	_, err = io.WriteString(f, content)
+	if closeErr := f.Close(); err == nil {
+		err = closeErr
+	}
 	return wrapFileIO("append file "+path, err)
 }
 

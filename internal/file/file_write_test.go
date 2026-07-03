@@ -96,3 +96,17 @@ func TestFileWriteProviderOptions(t *testing.T) {
 		t.Fatalf("FileAppendString() with provider error = %v", err)
 	}
 }
+
+func TestFileAppendStringReturnsCloseError(t *testing.T) {
+	closeErr := errors.New("close failed")
+	err := FileAppendString("append.txt", "payload",
+		WithCreateParents(false),
+		WithOpenFile(func(string, int, fs.FileMode) (io.WriteCloser, error) {
+			return closeErrorWriteCloser{Writer: io.Discard, err: closeErr}, nil
+		}),
+	)
+	assertFileCode(t, err, knifer.ErrCodeInternal)
+	if !errors.Is(err, closeErr) {
+		t.Fatalf("FileAppendString close error = %v, want close cause", err)
+	}
+}
