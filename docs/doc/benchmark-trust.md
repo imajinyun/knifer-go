@@ -52,7 +52,7 @@ baseline unless repeated runs and benchstat prove a change.
 | Slice facade helpers | `make bench-facade BENCH=Benchmark BENCHCOUNT=10 BENCHTIME=3s` | Measuring `vslice` helper overhead for map, filter, windows, zip, and deduplication. |
 | Map facade helpers | `make bench-facade BENCH=Benchmark BENCHCOUNT=10 BENCHTIME=3s` | Measuring `vmap` helper overhead for filter, sorted keys, merge, and error-aware transforms. |
 | Internal slice/map helpers | `make bench-core BENCH=Benchmark BENCHCOUNT=10 BENCHTIME=3s` | Measuring implementation hot paths before changing shared collection behavior. |
-| Set helpers | `go test ./vset` today; add focused benchmarks before publishing set performance claims. | `vset` currently has deterministic behavior tests; do not publish set throughput claims without a benchmark suite. |
+| Set helpers | `go test -bench=Benchmark -benchmem -benchtime=100ms -count=1 -run=^$ ./vset` for smoke; use repeated runs and benchstat before claims. | Measures `Contains`, `Union`, `Intersect`, `Sub`, `Members`, JSON marshal, and JSON unmarshal. |
 
 Collection benchmark rules:
 
@@ -61,6 +61,7 @@ Collection benchmark rules:
 - internal slice/map helpers
 - set helpers
 - collection benchmark output is local baseline evidence
+- vset benchmark suite covers contains union intersect sub members json marshal json unmarshal
 - compare against direct stdlib loops when claiming helper overhead.
 - include input shape, item count, key distribution, and value type.
 - run repeated benchmarks before and after a change.
@@ -69,4 +70,3 @@ Collection benchmark rules:
   the same work and the command is reproducible.
 - publish collection benchmark output as evidence not marketing.
 - keep collection benchmark quick gates deterministic and bounded.
-- vset currently has deterministic behavior tests.

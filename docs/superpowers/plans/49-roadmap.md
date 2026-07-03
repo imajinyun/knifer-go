@@ -119,7 +119,7 @@ The Hutool gap-closure lane is implemented and the active work has moved from fe
 | 52 | Completed | vconv Cast Migration Cookbook | Added `vconv-cast-migration.md` for `spf13/cast` migration across strict conversion, weak conversion, default fallback, custom parser policy, slice/map conversion, duration/time conversion, and overflow handling. |
 | 53 | Completed | Dynamic Data Toolkit Matrix | Added `dynamic-data-toolkit-matrix.md` for `vconf`, `vbean`, `vjson`, `vobj`, `vref`, and `vconv` boundaries across config, map/struct, JSON path, object checks, reflection, and scalar conversion workflows. |
 | 54 | Completed | Task Index / API Discoverability Simplification | Added `task-index.md` as a day-one, star-domain, and daily task index that maps each task to one default facade and a small related-facade set. |
-| 55 | Completed | Collection Benchmark Trust | Added collection benchmark trust guidance for `vslice`, `vmap`, and `vset`, keeping benchmark output local-baseline evidence that requires repeated runs and `benchstat` before claims. |
+| 55 | Completed | Collection Benchmark Trust | Added `vset` benchmark coverage for contains, set algebra, members, and JSON paths, then updated `vslice`, `vmap`, and `vset` collection benchmark trust guidance for repeated runs and `benchstat` before claims. |
 | 56 | Completed | Developer Debug/Test Utilities Backlog | Added `developer-debug-test-backlog.md` for planned `vtest` and `vdump` lanes while keeping current debug and test utility entry points on `vcli`, `vsys`, `vfile`, and `vlog`. |
 | 57 | Completed | Facade Tiering and Import Guide | Added `facade-tiering.md` for day-one defaults, core facades, heavy extension facades, provider contract facades, and security-sensitive import boundaries. |
 | 58 | Completed | Public Comparison Governance v2 | Updated `utility-library-comparison.md` with top5 stars, scope, last-checked metadata, sources, gap summary, and TODO lanes. |
@@ -193,7 +193,7 @@ Sprint 53 completed dynamic data toolkit governance: `dynamic_data_toolkit_matri
 
 Sprint 54 completed task-index governance: `task_index_governance` records `task-index.md` as the default API discoverability surface for day-one, star-domain, and daily workflows.
 
-Sprint 55 completed collection benchmark trust governance: `collections_benchmark_trust_governance` records collection benchmark scope for `vslice`, `vmap`, and `vset`, including benchstat requirements and non-marketing evidence boundaries.
+Sprint 55 completed collection benchmark trust governance: `collections_benchmark_trust_governance` records collection benchmark scope for `vslice`, `vmap`, and `vset`, including `vset` benchmark-suite coverage, benchstat requirements, and non-marketing evidence boundaries.
 
 Sprint 56 completed developer debug/test backlog governance: `developer_debug_test_backlog_governance` records the planned-only `vtest` and `vdump` lanes and prevents them from being documented as current public facades before implementation.
 

@@ -2847,7 +2847,7 @@ def validate_collections_benchmark_trust_governance() -> None:
 	expected_commands = [
 		"make bench-facade BENCH=Benchmark BENCHCOUNT=10 BENCHTIME=3s",
 		"make bench-core BENCH=Benchmark BENCHCOUNT=10 BENCHTIME=3s",
-		"go test ./vset",
+		"go test -bench=Benchmark -benchmem -benchtime=100ms -count=1 -run=^$ ./vset",
 	]
 	if commands != expected_commands:
 		add_error("collections_benchmark_trust_governance.commands must be ordered as: " + ", ".join(expected_commands))
@@ -2858,6 +2858,7 @@ def validate_collections_benchmark_trust_governance() -> None:
 		"run repeated benchmarks before and after a change",
 		"use benchstat before documenting improvement or regression",
 		"publish collection benchmark output as evidence not marketing",
+		"vset benchmark suite covers contains union intersect sub members json marshal json unmarshal",
 	]
 	if boundaries != expected_boundaries:
 		add_error("collections_benchmark_trust_governance.required_boundaries must be ordered as: " + ", ".join(expected_boundaries))
@@ -2868,7 +2869,7 @@ def validate_collections_benchmark_trust_governance() -> None:
 	if not (root / doc_path).exists():
 		add_error(f"{doc_path} must exist")
 	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
-	for phrase in packages + scopes + commands + boundaries + ["Collection Benchmarks", "samber/lo", "duke-git/lancet", "vset currently has deterministic behavior tests"]:
+	for phrase in packages + scopes + commands + boundaries + ["Collection Benchmarks", "samber/lo", "duke-git/lancet"]:
 		if doc_text and phrase not in doc_text:
 			add_error(f"{doc_path} must include {phrase!r}")
 	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
