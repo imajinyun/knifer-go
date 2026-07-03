@@ -20,17 +20,9 @@ func ScanRows(rows *sql.Rows) ([]Entity, error) {
 	}
 	out := make([]Entity, 0)
 	for rows.Next() {
-		values := make([]any, len(cols))
-		dest := make([]any, len(cols))
-		for i := range values {
-			dest[i] = &values[i]
-		}
-		if err := rows.Scan(dest...); err != nil {
-			return nil, wrapInternal("db: scan row", err)
-		}
-		entity := NewEntity("")
-		for i, col := range cols {
-			entity.Values[col] = normalizeDBValue(values[i])
+		entity, err := scanCurrentRow(rows, cols)
+		if err != nil {
+			return nil, err
 		}
 		out = append(out, entity)
 	}
@@ -42,14 +34,41 @@ func ScanRows(rows *sql.Rows) ([]Entity, error) {
 
 // ScanOne scans the first row into Entity.
 func ScanOne(rows *sql.Rows) (Entity, bool, error) {
-	items, err := ScanRows(rows)
+	if rows == nil {
+		return Entity{}, false, invalidInputf("db: rows is nil")
+	}
+	defer func() { _ = rows.Close() }()
+	cols, err := rows.Columns()
+	if err != nil {
+		return Entity{}, false, wrapInternal("db: read columns", err)
+	}
+	if !rows.Next() {
+		if err := rows.Err(); err != nil {
+			return Entity{}, false, wrapInternal("db: iterate rows", err)
+		}
+		return Entity{}, false, nil
+	}
+	entity, err := scanCurrentRow(rows, cols)
 	if err != nil {
 		return Entity{}, false, err
 	}
-	if len(items) == 0 {
-		return Entity{}, false, nil
+	return entity, true, nil
+}
+
+func scanCurrentRow(rows *sql.Rows, cols []string) (Entity, error) {
+	values := make([]any, len(cols))
+	dest := make([]any, len(cols))
+	for i := range values {
+		dest[i] = &values[i]
 	}
-	return items[0], true, nil
+	if err := rows.Scan(dest...); err != nil {
+		return Entity{}, wrapInternal("db: scan row", err)
+	}
+	entity := NewEntity("")
+	for i, col := range cols {
+		entity.Values[col] = normalizeDBValue(values[i])
+	}
+	return entity, nil
 }
 
 func normalizeDBValue(v any) any {

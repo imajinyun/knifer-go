@@ -88,6 +88,49 @@ func TestScanRowsNormalizesBytesAndReportsIteratorErrors(t *testing.T) {
 	}
 }
 
+func TestScanOneOnlyScansFirstRowAndCloses(t *testing.T) {
+	closed := false
+	rowsDB := newFakeDB(&fakeBehavior{queryFunc: func(string) (driver.Rows, error) {
+		return &fakeRows{
+			cols:    []string{"id", "name"},
+			data:    [][]driver.Value{{int64(1), []byte("alice")}},
+			nextErr: errors.New("second row should not be read"),
+			closeFn: func() { closed = true },
+		}, nil
+	}})
+	defer func() { _ = rowsDB.Close() }()
+	rows, err := rowsDB.sqlDB.Query("SELECT id, name FROM users")
+	if err != nil {
+		t.Fatalf("Query: %v", err)
+	}
+	entity, ok, err := ScanOne(rows)
+	if err != nil {
+		t.Fatalf("ScanOne should ignore later iterator error after first row: %v", err)
+	}
+	if !ok || entity.Values["id"] != int64(1) || entity.Values["name"] != "alice" {
+		t.Fatalf("ScanOne entity=%#v ok=%v", entity, ok)
+	}
+	if !closed {
+		t.Fatal("ScanOne should close rows")
+	}
+
+	allRowsDB := newFakeDB(&fakeBehavior{queryFunc: func(string) (driver.Rows, error) {
+		return &fakeRows{
+			cols:    []string{"id"},
+			data:    [][]driver.Value{{int64(1)}},
+			nextErr: errors.New("iterator boom"),
+		}, nil
+	}})
+	defer func() { _ = allRowsDB.Close() }()
+	allRows, err := allRowsDB.sqlDB.Query("SELECT id FROM users")
+	if err != nil {
+		t.Fatalf("Query all rows: %v", err)
+	}
+	if _, err := ScanRows(allRows); !errors.Is(err, knifer.ErrCodeInternal) {
+		t.Fatalf("ScanRows iterator err = %v, want ErrCodeInternal", err)
+	}
+}
+
 func TestDBErrorsAndOptions(t *testing.T) {
 	cause := errors.New("driver down")
 	if got := (*DBError)(nil).Error(); got != "" {

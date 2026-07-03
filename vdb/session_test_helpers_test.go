@@ -6,8 +6,11 @@ import (
 	"io"
 )
 
+var scriptedRowsForTest driver.Rows
+
 func init() {
 	sql.Register("vdb_pool_test", poolTestDriver{})
+	sql.Register("vdb_scripted_rows_test", scriptedRowsDriver{})
 }
 
 type poolTestDriver struct{}
@@ -37,3 +40,57 @@ type poolTestTx struct{}
 
 func (poolTestTx) Commit() error   { return nil }
 func (poolTestTx) Rollback() error { return nil }
+
+type scriptedRowsDriver struct{}
+
+func (scriptedRowsDriver) Open(string) (driver.Conn, error) { return scriptedRowsConn{}, nil }
+
+type scriptedRowsConn struct{}
+
+func (scriptedRowsConn) Prepare(string) (driver.Stmt, error) { return scriptedRowsStmt{}, nil }
+func (scriptedRowsConn) Close() error                        { return nil }
+func (scriptedRowsConn) Begin() (driver.Tx, error)           { return poolTestTx{}, nil }
+
+type scriptedRowsStmt struct{}
+
+func (scriptedRowsStmt) Close() error  { return nil }
+func (scriptedRowsStmt) NumInput() int { return -1 }
+func (scriptedRowsStmt) Exec([]driver.Value) (driver.Result, error) {
+	return driver.RowsAffected(0), nil
+}
+
+func (scriptedRowsStmt) Query([]driver.Value) (driver.Rows, error) {
+	if scriptedRowsForTest != nil {
+		return scriptedRowsForTest, nil
+	}
+	return poolTestRows{}, nil
+}
+
+type scriptedRows struct {
+	cols    []string
+	data    [][]driver.Value
+	pos     int
+	nextErr error
+	closed  *bool
+}
+
+func (r *scriptedRows) Columns() []string { return r.cols }
+
+func (r *scriptedRows) Close() error {
+	if r.closed != nil {
+		*r.closed = true
+	}
+	return nil
+}
+
+func (r *scriptedRows) Next(dest []driver.Value) error {
+	if r.pos >= len(r.data) {
+		if r.nextErr != nil {
+			return r.nextErr
+		}
+		return io.EOF
+	}
+	copy(dest, r.data[r.pos])
+	r.pos++
+	return nil
+}

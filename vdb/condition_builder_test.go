@@ -2,6 +2,7 @@ package vdb
 
 import (
 	"database/sql"
+	"database/sql/driver"
 	"errors"
 	"reflect"
 	"testing"
@@ -175,5 +176,37 @@ func TestFacadeScanRowsAndScanOne(t *testing.T) {
 	}
 	if entity.Table != "" {
 		t.Fatalf("ScanOne entity = %#v, want empty", entity)
+	}
+}
+
+func TestFacadeScanOneOnlyReadsFirstRow(t *testing.T) {
+	closed := false
+	scriptedRowsForTest = &scriptedRows{
+		cols:    []string{"id", "name"},
+		data:    [][]driver.Value{{int64(1), []byte("alice")}},
+		nextErr: errors.New("second row should not be read"),
+		closed:  &closed,
+	}
+	defer func() { scriptedRowsForTest = nil }()
+
+	db, err := sql.Open("vdb_scripted_rows_test", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = db.Close() }()
+
+	rows, err := db.Query("SELECT id, name FROM users")
+	if err != nil {
+		t.Fatal(err)
+	}
+	entity, ok, err := ScanOne(rows)
+	if err != nil {
+		t.Fatalf("ScanOne should ignore later iterator error after first row: %v", err)
+	}
+	if !ok || entity.Values["id"] != int64(1) || entity.Values["name"] != "alice" {
+		t.Fatalf("ScanOne entity=%#v ok=%v", entity, ok)
+	}
+	if !closed {
+		t.Fatal("ScanOne should close rows")
 	}
 }

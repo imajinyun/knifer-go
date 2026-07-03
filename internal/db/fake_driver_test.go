@@ -102,10 +102,16 @@ type fakeRows struct {
 	data    [][]driver.Value
 	pos     int
 	nextErr error
+	closeFn func()
 }
 
 func (r *fakeRows) Columns() []string { return r.cols }
-func (r *fakeRows) Close() error      { return nil }
+func (r *fakeRows) Close() error {
+	if r.closeFn != nil {
+		r.closeFn()
+	}
+	return nil
+}
 
 func (r *fakeRows) Next(dest []driver.Value) error {
 	if r.pos >= len(r.data) {
