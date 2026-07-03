@@ -2,7 +2,9 @@ package db
 
 import (
 	"reflect"
+	"strings"
 	"testing"
+	"unicode"
 )
 
 func TestUtilityTypes(t *testing.T) {
@@ -29,10 +31,23 @@ func TestIdentifierSafety(t *testing.T) {
 		{name: "qualified identifier", in: "users.name", want: true},
 		{name: "qualified wildcard", in: "users.*", want: true},
 		{name: "wrapped identifier", in: "`users`.`name`", want: true},
+		{name: "quoted identifier", in: `"users"."name"`, want: true},
+		{name: "bracket identifier", in: "[users].[name]", want: true},
+		{name: "unicode identifier", in: "订单.用户", want: true},
+		{name: "leading underscore", in: "_system.table_1", want: true},
 		{name: "statement injection", in: "users; drop table users", want: false},
 		{name: "function expression", in: "COUNT(*)", want: false},
 		{name: "whitespace separated", in: "users name", want: false},
 		{name: "comment injection", in: "users--", want: false},
+		{name: "block comment injection", in: "users/*comment*/", want: false},
+		{name: "line comment injection", in: "users--comment", want: false},
+		{name: "slash comment", in: "users/name", want: false},
+		{name: "backslash path", in: `users\name`, want: false},
+		{name: "empty path part", in: "users..name", want: false},
+		{name: "leading digit", in: "1users", want: false},
+		{name: "quoted expression", in: "`COUNT(*)`", want: false},
+		{name: "mismatched quote", in: "`users\"", want: false},
+		{name: "wildcard in middle", in: "users.*.name", want: true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -41,6 +56,70 @@ func TestIdentifierSafety(t *testing.T) {
 			}
 		})
 	}
+}
+
+func FuzzIsSafeIdentifier(f *testing.F) {
+	seeds := []string{
+		"users",
+		"users.name",
+		"users.*",
+		"`users`.`name`",
+		`"users"."name"`,
+		"[users].[name]",
+		"订单.用户",
+		"users; drop table users",
+		"COUNT(*)",
+		"users--comment",
+		"users/*comment*/",
+		"users name",
+		"users..name",
+		"1users",
+		"",
+	}
+	for _, seed := range seeds {
+		f.Add(seed)
+	}
+	f.Fuzz(func(t *testing.T, input string) {
+		if !IsSafeIdentifier(input) {
+			return
+		}
+		trimmed := strings.TrimSpace(input)
+		if trimmed == "" || strings.Contains(trimmed, "..") {
+			t.Fatalf("IsSafeIdentifier(%q)=true for empty or double-dot path", input)
+		}
+		dangerous := []string{";", "--", "/*", "*/", "(", ")", "/", `\`, " "}
+		for _, token := range dangerous {
+			if strings.Contains(trimmed, token) {
+				t.Fatalf("IsSafeIdentifier(%q)=true with dangerous token %q", input, token)
+			}
+		}
+		for _, part := range strings.Split(trimmed, ".") {
+			part = strings.TrimSpace(part)
+			if part == "" {
+				t.Fatalf("IsSafeIdentifier(%q)=true with empty part", input)
+			}
+			if part == "*" {
+				continue
+			}
+			if isWrappedIdentifierPart(part) {
+				part = part[1 : len(part)-1]
+			}
+			if part == "" {
+				t.Fatalf("IsSafeIdentifier(%q)=true with empty wrapped part", input)
+			}
+			for i, r := range part {
+				if i == 0 {
+					if r != '_' && !unicode.IsLetter(r) {
+						t.Fatalf("IsSafeIdentifier(%q)=true with invalid leading rune %q", input, r)
+					}
+					continue
+				}
+				if r != '_' && !unicode.IsLetter(r) && !unicode.IsDigit(r) {
+					t.Fatalf("IsSafeIdentifier(%q)=true with invalid rune %q", input, r)
+				}
+			}
+		}
+	})
 }
 
 func TestNormalizeDialectAndWrappers(t *testing.T) {

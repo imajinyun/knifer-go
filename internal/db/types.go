@@ -118,6 +118,9 @@ func IsSafeIdentifier(name string) bool {
 	if name == "" || strings.Contains(name, "..") {
 		return false
 	}
+	if strings.IndexFunc(name, unicode.IsSpace) >= 0 {
+		return false
+	}
 	if name == "*" {
 		return true
 	}
