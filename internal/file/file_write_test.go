@@ -110,3 +110,34 @@ func TestFileAppendStringReturnsCloseError(t *testing.T) {
 		t.Fatalf("FileAppendString close error = %v, want close cause", err)
 	}
 }
+
+func TestFileWriteBytesReturnsCloseError(t *testing.T) {
+	closeErr := errors.New("close failed")
+	err := FileWriteBytes("out.txt", []byte("payload"),
+		WithCreateParents(false),
+		WithOpenFile(func(string, int, fs.FileMode) (io.WriteCloser, error) {
+			return closeErrorWriteCloser{Writer: io.Discard, err: closeErr}, nil
+		}),
+	)
+	assertFileCode(t, err, knifer.ErrCodeInternal)
+	if !errors.Is(err, closeErr) {
+		t.Fatalf("FileWriteBytes close error = %v, want close cause", err)
+	}
+}
+
+func TestTouchReturnsCloseError(t *testing.T) {
+	closeErr := errors.New("close failed")
+	err := Touch("touch.txt",
+		WithCreateParents(false),
+		WithStat(func(string) (fs.FileInfo, error) {
+			return nil, os.ErrNotExist
+		}),
+		WithOpenFile(func(string, int, fs.FileMode) (io.WriteCloser, error) {
+			return closeErrorWriteCloser{Writer: io.Discard, err: closeErr}, nil
+		}),
+	)
+	assertFileCode(t, err, knifer.ErrCodeInternal)
+	if !errors.Is(err, closeErr) {
+		t.Fatalf("Touch close error = %v, want close cause", err)
+	}
+}
