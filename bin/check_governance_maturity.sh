@@ -96,6 +96,10 @@ def extract_markdown_rows(path: Path, heading: str) -> list[dict[str, str]]:
 	return rows
 
 
+def extract_backticked_facades(value: str) -> list[str]:
+	return re.findall(r"`(v[A-Za-z0-9_]*)`", value)
+
+
 def file_exists(reference: str) -> bool:
 	path = reference.split(":", 1)[0]
 	return (root / path).exists()
@@ -2592,6 +2596,112 @@ def validate_task_index_governance() -> None:
 		add_error(f"{roadmap_path} must mention task_index_governance")
 
 
+def validate_task_index_auto_check_governance() -> None:
+	governance = require_mapping(ai_context.get("task_index_auto_check_governance"), "task_index_auto_check_governance")
+	roadmap_path = governance.get("roadmap_path")
+	if not isinstance(roadmap_path, str) or not roadmap_path.strip():
+		add_error("task_index_auto_check_governance.roadmap_path must be non-empty")
+		roadmap_path = "docs/superpowers/plans/49-roadmap.md"
+	doc_path = governance.get("doc_path")
+	if not isinstance(doc_path, str) or not doc_path.strip():
+		add_error("task_index_auto_check_governance.doc_path must be non-empty")
+		doc_path = "docs/doc/task-index.md"
+	if governance.get("sprint") != 63:
+		add_error("task_index_auto_check_governance.sprint must be 63")
+	status = governance.get("status")
+	if status not in {"active", "completed"}:
+		add_error("task_index_auto_check_governance.status must be active or completed")
+	if governance.get("source_governance") != "task_index_governance":
+		add_error("task_index_auto_check_governance.source_governance must be task_index_governance")
+	if governance.get("tool_catalog_path") != "docs/api/tools.json":
+		add_error("task_index_auto_check_governance.tool_catalog_path must be docs/api/tools.json")
+	if governance.get("public_facades_source") != "public_facades":
+		add_error("task_index_auto_check_governance.public_facades_source must be public_facades")
+	if governance.get("star_domain_source") != "task_index_governance.star_domains":
+		add_error("task_index_auto_check_governance.star_domain_source must be task_index_governance.star_domains")
+	required_tables = require_string_list(governance.get("required_tables"), "task_index_auto_check_governance.required_tables")
+	expected_tables = ["Day-One Tasks", "Star Domains", "Daily Domains"]
+	if required_tables != expected_tables:
+		add_error("task_index_auto_check_governance.required_tables must be ordered as: " + ", ".join(expected_tables))
+	required_cross_checks = require_string_list(governance.get("required_cross_checks"), "task_index_auto_check_governance.required_cross_checks")
+	expected_cross_checks = [
+		"default facades exist in docs/api/tools.json",
+		"default facades are public facades",
+		"related facades are public facades",
+		"star domain rows match ai-context star domains",
+		"day-one default facades match task_index_governance",
+	]
+	if required_cross_checks != expected_cross_checks:
+		add_error("task_index_auto_check_governance.required_cross_checks must be ordered as: " + ", ".join(expected_cross_checks))
+	required_checks = require_string_list(governance.get("required_checks"), "task_index_auto_check_governance.required_checks")
+	for check in ("docs-check", "ai-context-check", "governance-maturity-check"):
+		if check not in required_checks:
+			add_error(f"task_index_auto_check_governance.required_checks must include {check}")
+
+	doc_file = root / doc_path
+	if not doc_file.exists():
+		add_error(f"{doc_path} must exist")
+	task_index = require_mapping(ai_context.get("task_index_governance"), "task_index_governance")
+	expected_day_one_defaults = require_string_list(task_index.get("default_facades"), "task_index_governance.default_facades")
+	expected_star_domains = require_string_list(task_index.get("star_domains"), "task_index_governance.star_domains")
+	if doc_file.exists():
+		day_one_rows = extract_markdown_rows(doc_file, "Day-One Tasks")
+		star_domain_rows = extract_markdown_rows(doc_file, "Star Domains")
+		daily_domain_rows = extract_markdown_rows(doc_file, "Daily Domains")
+	else:
+		day_one_rows = []
+		star_domain_rows = []
+		daily_domain_rows = []
+	for heading, rows in (
+		("Day-One Tasks", day_one_rows),
+		("Star Domains", star_domain_rows),
+		("Daily Domains", daily_domain_rows),
+	):
+		if not rows:
+			add_error(f"{doc_path} {heading} table must have at least one data row")
+		for index, row in enumerate(rows, start=1):
+			default_facades = extract_backticked_facades(row.get("Default facade", ""))
+			if len(default_facades) != 1:
+				add_error(f"{doc_path} {heading} row {index} must contain exactly one backticked Default facade")
+				continue
+			default_facade = default_facades[0]
+			if default_facade not in public_facades:
+				add_error(f"{doc_path} {heading} row {index} default facade {default_facade} is not in ai-context.public_facades")
+			if default_facade not in tool_packages:
+				add_error(f"{doc_path} {heading} row {index} default facade {default_facade} is missing from docs/api/tools.json")
+			for related_facade in extract_backticked_facades(row.get("Related facades", "")):
+				if related_facade not in public_facades:
+					add_error(f"{doc_path} {heading} row {index} related facade {related_facade} is not in ai-context.public_facades")
+	day_one_defaults = [extract_backticked_facades(row.get("Default facade", ""))[0] for row in day_one_rows if len(extract_backticked_facades(row.get("Default facade", ""))) == 1]
+	if day_one_defaults != expected_day_one_defaults:
+		add_error(f"{doc_path} Day-One Tasks default facades must match task_index_governance.default_facades")
+	star_domain_names = [row.get("Domain", "") for row in star_domain_rows]
+	if star_domain_names != expected_star_domains:
+		add_error(f"{doc_path} Star Domains rows must match task_index_governance.star_domains")
+	for row in star_domain_rows + daily_domain_rows:
+		start_here = row.get("Start here", "")
+		for link in re.findall(r"\]\(([^)]+)\)", start_here):
+			if link.startswith(("http://", "https://", "#")):
+				continue
+			if not (doc_file.parent / link).exists():
+				add_error(f"{doc_path} references missing Start here link {link}")
+	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
+	sprint_63_rows = [row for row in sprint_rows if row.get("Sprint") == "63"]
+	if len(sprint_63_rows) != 1:
+		add_error(f"{roadmap_path} Sprint order must contain exactly one Sprint 63 row")
+	else:
+		expected_status = "Completed" if status == "completed" else "Active"
+		if sprint_63_rows[0].get("Status") != expected_status:
+			add_error(f"{roadmap_path} Sprint 63 status must be {expected_status}")
+		sprint_text = " ".join(sprint_63_rows[0].values())
+		for phrase in ("task-index", "tools.json", "public facades", "star domains"):
+			if phrase not in sprint_text:
+				add_error(f"{roadmap_path} Sprint 63 row must mention {phrase!r}")
+	roadmap_text = (root / roadmap_path).read_text(encoding="utf-8") if (root / roadmap_path).exists() else ""
+	if "task_index_auto_check_governance" not in roadmap_text:
+		add_error(f"{roadmap_path} must mention task_index_auto_check_governance")
+
+
 def validate_facade_tiering_import_governance() -> None:
 	governance = require_mapping(ai_context.get("facade_tiering_import_governance"), "facade_tiering_import_governance")
 	roadmap_path = governance.get("roadmap_path")
@@ -3882,6 +3992,7 @@ if not bench_only:
 	validate_vconv_cast_migration_examples_governance()
 	validate_dynamic_data_toolkit_matrix_governance()
 	validate_task_index_governance()
+	validate_task_index_auto_check_governance()
 	validate_facade_tiering_import_governance()
 	validate_daily_developer_toolkit_governance()
 	validate_daily_utility_cookbook_v2_governance()

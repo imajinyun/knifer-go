@@ -45,6 +45,7 @@
     "vconv_cast_migration_examples_governance",
     "dynamic_data_toolkit_matrix_governance",
     "task_index_governance",
+    "task_index_auto_check_governance",
     "facade_tiering_import_governance",
     "daily_developer_toolkit_governance",
     "daily_utility_cookbook_v2_governance",
@@ -672,6 +673,24 @@
         "daily_domains": { "$ref": "#/$defs/string_array" },
         "default_facades": { "$ref": "#/$defs/string_array" },
         "required_boundaries": { "$ref": "#/$defs/string_array" },
+        "required_checks": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "task_index_auto_check_governance": {
+      "type": "object",
+      "required": ["roadmap_path", "doc_path", "sprint", "status", "source_governance", "tool_catalog_path", "public_facades_source", "star_domain_source", "required_tables", "required_cross_checks", "required_checks"],
+      "properties": {
+        "roadmap_path": { "type": "string", "minLength": 1 },
+        "doc_path": { "type": "string", "minLength": 1 },
+        "sprint": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "source_governance": { "type": "string", "minLength": 1 },
+        "tool_catalog_path": { "type": "string", "minLength": 1 },
+        "public_facades_source": { "type": "string", "minLength": 1 },
+        "star_domain_source": { "type": "string", "minLength": 1 },
+        "required_tables": { "$ref": "#/$defs/string_array" },
+        "required_cross_checks": { "$ref": "#/$defs/string_array" },
         "required_checks": { "$ref": "#/$defs/string_array" }
       },
       "additionalProperties": false

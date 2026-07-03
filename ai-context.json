@@ -1396,6 +1396,19 @@
     "required_boundaries": ["choose one default facade first", "related facades only when workflow crosses package boundaries", "Safe/E/WithOptions flows at trust boundaries", "do not import internal packages"],
     "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
   },
+  "task_index_auto_check_governance": {
+    "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
+    "doc_path": "docs/doc/task-index.md",
+    "sprint": 63,
+    "status": "completed",
+    "source_governance": "task_index_governance",
+    "tool_catalog_path": "docs/api/tools.json",
+    "public_facades_source": "public_facades",
+    "star_domain_source": "task_index_governance.star_domains",
+    "required_tables": ["Day-One Tasks", "Star Domains", "Daily Domains"],
+    "required_cross_checks": ["default facades exist in docs/api/tools.json", "default facades are public facades", "related facades are public facades", "star domain rows match ai-context star domains", "day-one default facades match task_index_governance"],
+    "required_checks": ["docs-check", "ai-context-check", "governance-maturity-check"]
+  },
   "facade_tiering_import_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
     "doc_path": "docs/doc/facade-tiering.md",
