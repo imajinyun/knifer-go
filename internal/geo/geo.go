@@ -156,6 +156,36 @@ func BD09ToWGS84(coord Coord) Coord {
 	return GCJ02ToWGS84(BD09ToGCJ02(coord))
 }
 
+// WGS84ToBD09MC converts WGS-84 coordinates to Baidu Mercator.
+func WGS84ToBD09MC(coord Coord) Coord {
+	return BD09ToBD09MC(WGS84ToBD09(coord))
+}
+
+// BD09MCToWGS84 converts Baidu Mercator coordinates to WGS-84.
+func BD09MCToWGS84(coord Coord) Coord {
+	return BD09ToWGS84(BD09MCToBD09(coord))
+}
+
+// GCJ02ToBD09MC converts GCJ-02 coordinates to Baidu Mercator.
+func GCJ02ToBD09MC(coord Coord) Coord {
+	return BD09ToBD09MC(GCJ02ToBD09(coord))
+}
+
+// BD09MCToGCJ02 converts Baidu Mercator coordinates to GCJ-02.
+func BD09MCToGCJ02(coord Coord) Coord {
+	return BD09ToGCJ02(BD09MCToBD09(coord))
+}
+
+// BD09ToBD09MC converts BD-09 longitude/latitude coordinates to Baidu Mercator.
+func BD09ToBD09MC(coord Coord) Coord {
+	return bd09ToBD09MC(coord)
+}
+
+// BD09MCToBD09 converts Baidu Mercator coordinates to BD-09 longitude/latitude.
+func BD09MCToBD09(coord Coord) Coord {
+	return bd09MCToBD09(coord)
+}
+
 // Distance returns the great-circle distance between two coordinates in meters.
 func Distance(a, b Coord) float64 {
 	lat1 := a.Lat * math.Pi / 180

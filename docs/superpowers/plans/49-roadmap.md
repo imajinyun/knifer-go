@@ -9,14 +9,14 @@ This baseline is derived from `docs/api/tools.json.summary`. `make governance-ma
 | Metric | Value |
 | --- | ---: |
 | Public facade packages | 55 |
-| Public functions | 2757 |
+| Public functions | 2763 |
 | Functions with executable examples | 1748 |
 | Context-aware functions | 36 |
 | Functions returning errors | 687 |
-| Recommended public functions | 2735 |
+| Recommended public functions | 2741 |
 | Compatibility public functions | 22 |
 | Empty function synopses | 0 |
-| Facade-sourced function synopses | 2104 |
+| Facade-sourced function synopses | 2110 |
 | Internal-sourced function synopses | 653 |
 
 ## 90-Day Star Domain Scorecard

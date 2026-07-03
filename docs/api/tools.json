@@ -3,7 +3,7 @@
   "module": "github.com/imajinyun/knifer-go",
   "summary": {
     "package_count": 55,
-    "function_count": 2757,
+    "function_count": 2763,
     "functions_with_examples": 1748,
     "context_aware_functions": 36,
     "returns_error_functions": 687,
@@ -12,11 +12,11 @@
       "compatibility": 22,
       "deprecated": 0,
       "experimental": 0,
-      "recommended": 2735
+      "recommended": 2741
     },
     "synopsis_sources": {
       "empty": 0,
-      "facade": 2104,
+      "facade": 2110,
       "internal": 653
     }
   },
@@ -17983,18 +17983,18 @@
       "name": "vgeo",
       "synopsis": "Package vgeo provides public APIs for coordinate conversion utilities.",
       "summary": {
-        "function_count": 9,
+        "function_count": 15,
         "functions_with_examples": 9,
-        "example_coverage_percent": 100,
+        "example_coverage_percent": 60,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
           "experimental": 0,
-          "recommended": 9
+          "recommended": 15
         },
         "synopsis_sources": {
           "empty": 0,
-          "facade": 9,
+          "facade": 15,
           "internal": 0
         }
       },
@@ -18010,17 +18010,17 @@
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo."
         },
         {
-          "name": "BD09ToWGS84",
+          "name": "BD09MCToBD09",
           "use_when": "Use first for concise trusted-input workflows in vgeo.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo."
         },
         {
-          "name": "Distance",
+          "name": "BD09MCToGCJ02",
           "use_when": "Use first for concise trusted-input workflows in vgeo.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo."
         },
         {
-          "name": "GCJ02ToBD09",
+          "name": "BD09MCToWGS84",
           "use_when": "Use first for concise trusted-input workflows in vgeo.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo."
         }
@@ -18038,6 +18038,82 @@
         }
       ],
       "functions": [
+        {
+          "name": "BD09MCToBD09",
+          "signature": "func BD09MCToBD09(coord Coord) Coord",
+          "synopsis": "BD09MCToBD09 converts Baidu Mercator coordinates to BD-09 longitude/latitude.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "coord",
+              "type": "Coord"
+            }
+          ],
+          "results": [
+            "Coord"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "BD09MCToGCJ02",
+          "signature": "func BD09MCToGCJ02(coord Coord) Coord",
+          "synopsis": "BD09MCToGCJ02 converts Baidu Mercator coordinates to GCJ-02.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "coord",
+              "type": "Coord"
+            }
+          ],
+          "results": [
+            "Coord"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "BD09MCToWGS84",
+          "signature": "func BD09MCToWGS84(coord Coord) Coord",
+          "synopsis": "BD09MCToWGS84 converts Baidu Mercator coordinates to WGS-84.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "coord",
+              "type": "Coord"
+            }
+          ],
+          "results": [
+            "Coord"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
+          "name": "BD09ToBD09MC",
+          "signature": "func BD09ToBD09MC(coord Coord) Coord",
+          "synopsis": "BD09ToBD09MC converts BD-09 longitude/latitude coordinates to Baidu Mercator.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "coord",
+              "type": "Coord"
+            }
+          ],
+          "results": [
+            "Coord"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
         {
           "name": "BD09ToGCJ02",
           "signature": "func BD09ToGCJ02(coord Coord) Coord",
@@ -18162,6 +18238,25 @@
           ]
         },
         {
+          "name": "GCJ02ToBD09MC",
+          "signature": "func GCJ02ToBD09MC(coord Coord) Coord",
+          "synopsis": "GCJ02ToBD09MC converts GCJ-02 coordinates to Baidu Mercator.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "coord",
+              "type": "Coord"
+            }
+          ],
+          "results": [
+            "Coord"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
+        },
+        {
           "name": "GCJ02ToWGS84",
           "signature": "func GCJ02ToWGS84(coord Coord) Coord",
           "synopsis": "GCJ02ToWGS84 converts GCJ-02 coordinates back to WGS-84.",
@@ -18230,6 +18325,25 @@
           "examples": [
             "ExampleWGS84ToBD09"
           ]
+        },
+        {
+          "name": "WGS84ToBD09MC",
+          "signature": "func WGS84ToBD09MC(coord Coord) Coord",
+          "synopsis": "WGS84ToBD09MC converts WGS-84 coordinates to Baidu Mercator.",
+          "synopsis_source": "facade",
+          "status": "recommended",
+          "params": [
+            {
+              "name": "coord",
+              "type": "Coord"
+            }
+          ],
+          "results": [
+            "Coord"
+          ],
+          "returns_error": false,
+          "context_aware": false,
+          "variadic": false
         },
         {
           "name": "WGS84ToGCJ02",

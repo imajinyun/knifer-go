@@ -11,16 +11,16 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Schema | 1.7 |
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
-| Functions | 2757 |
+| Functions | 2763 |
 | Functions with examples | 1748 |
 | Context-aware functions | 36 |
 | Functions returning error | 687 |
 | Variadic functions | 804 |
-| API status: recommended | 2735 |
+| API status: recommended | 2741 |
 | API status: compatibility | 22 |
 | API status: experimental | 0 |
 | API status: deprecated | 0 |
-| Synopsis source: facade | 2104 |
+| Synopsis source: facade | 2110 |
 | Synopsis source: internal | 653 |
 | Synopsis source: empty | 0 |
 
@@ -1305,7 +1305,7 @@ Import path: `github.com/imajinyun/knifer-go/vgeo`
 
 Package vgeo provides public APIs for coordinate conversion utilities.
 
-Quality: 9 functions · 9 with examples · 100.0% example coverage · statuses: recommended=9, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=9, internal=0, empty=0
+Quality: 15 functions · 9 with examples · 60.0% example coverage · statuses: recommended=15, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=15, internal=0, empty=0
 
 Recommended entrypoints:
 
@@ -1320,20 +1320,26 @@ Golden path API set:
 | --- | --- | --- |
 | `Convert` | Use first when callers must observe invalid input or provider failure. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `BD09ToGCJ02` | Use first for concise trusted-input workflows in vgeo. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo. |
-| `BD09ToWGS84` | Use first for concise trusted-input workflows in vgeo. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo. |
-| `Distance` | Use first for concise trusted-input workflows in vgeo. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo. |
-| `GCJ02ToBD09` | Use first for concise trusted-input workflows in vgeo. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo. |
+| `BD09MCToBD09` | Use first for concise trusted-input workflows in vgeo. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo. |
+| `BD09MCToGCJ02` | Use first for concise trusted-input workflows in vgeo. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo. |
+| `BD09MCToWGS84` | Use first for concise trusted-input workflows in vgeo. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vgeo. |
 
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
+| `BD09MCToBD09` | `func BD09MCToBD09(coord Coord) Coord` | recommended | BD09MCToBD09 converts Baidu Mercator coordinates to BD-09 longitude/latitude. | facade | — |
+| `BD09MCToGCJ02` | `func BD09MCToGCJ02(coord Coord) Coord` | recommended | BD09MCToGCJ02 converts Baidu Mercator coordinates to GCJ-02. | facade | — |
+| `BD09MCToWGS84` | `func BD09MCToWGS84(coord Coord) Coord` | recommended | BD09MCToWGS84 converts Baidu Mercator coordinates to WGS-84. | facade | — |
+| `BD09ToBD09MC` | `func BD09ToBD09MC(coord Coord) Coord` | recommended | BD09ToBD09MC converts BD-09 longitude/latitude coordinates to Baidu Mercator. | facade | — |
 | `BD09ToGCJ02` | `func BD09ToGCJ02(coord Coord) Coord` | recommended | BD09ToGCJ02 converts BD-09 coordinates to GCJ-02. | facade | `ExampleBD09ToGCJ02` |
 | `BD09ToWGS84` | `func BD09ToWGS84(coord Coord) Coord` | recommended | BD09ToWGS84 converts BD-09 coordinates to WGS-84. | facade | `ExampleBD09ToWGS84` |
 | `Convert` | `func Convert(coord Coord, fromType CoordType, toType CoordType) (Coord, error)` | recommended | Convert converts coord between supported coordinate systems. | facade | `ExampleConvert` |
 | `Distance` | `func Distance(a Coord, b Coord) float64` | recommended | Distance returns the great-circle distance between two coordinates in meters. | facade | `ExampleDistance` |
 | `GCJ02ToBD09` | `func GCJ02ToBD09(coord Coord) Coord` | recommended | GCJ02ToBD09 converts GCJ-02 coordinates to BD-09. | facade | `ExampleGCJ02ToBD09` |
+| `GCJ02ToBD09MC` | `func GCJ02ToBD09MC(coord Coord) Coord` | recommended | GCJ02ToBD09MC converts GCJ-02 coordinates to Baidu Mercator. | facade | — |
 | `GCJ02ToWGS84` | `func GCJ02ToWGS84(coord Coord) Coord` | recommended | GCJ02ToWGS84 converts GCJ-02 coordinates back to WGS-84. | facade | `ExampleGCJ02ToWGS84` |
 | `InChina` | `func InChina(lng float64, lat float64) bool` | recommended | InChina reports whether a longitude/latitude pair falls inside a rough mainland China bounding box. | facade | `ExampleInChina` |
 | `WGS84ToBD09` | `func WGS84ToBD09(coord Coord) Coord` | recommended | WGS84ToBD09 converts WGS-84 coordinates to BD-09. | facade | `ExampleWGS84ToBD09` |
+| `WGS84ToBD09MC` | `func WGS84ToBD09MC(coord Coord) Coord` | recommended | WGS84ToBD09MC converts WGS-84 coordinates to Baidu Mercator. | facade | — |
 | `WGS84ToGCJ02` | `func WGS84ToGCJ02(coord Coord) Coord` | recommended | WGS84ToGCJ02 converts GPS coordinates to GCJ-02. | facade | `ExampleWGS84ToGCJ02` |
 
 ### vhan

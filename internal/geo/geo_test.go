@@ -47,6 +47,35 @@ func TestConvertBD09MCRoundTrip(t *testing.T) {
 	}
 }
 
+func TestBD09MCConvenienceFunctionsMatchConvert(t *testing.T) {
+	wgs := Coord{Lng: 116.397389, Lat: 39.908722}
+	gcj := WGS84ToGCJ02(wgs)
+	bd := WGS84ToBD09(wgs)
+
+	mcFromWGS, err := Convert(wgs, WGS84, BD09MC)
+	if err != nil {
+		t.Fatalf("Convert WGS84 to BD09MC error = %v", err)
+	}
+	if got := WGS84ToBD09MC(wgs); got != mcFromWGS {
+		t.Fatalf("WGS84ToBD09MC = %#v, want %#v", got, mcFromWGS)
+	}
+	if got := GCJ02ToBD09MC(gcj); Distance(BD09MCToBD09(got), bd) > 1 {
+		t.Fatalf("GCJ02ToBD09MC round trip through BD09 distance = %.2fm", Distance(BD09MCToBD09(got), bd))
+	}
+	if got := BD09ToBD09MC(bd); got != mcFromWGS {
+		t.Fatalf("BD09ToBD09MC = %#v, want %#v", got, mcFromWGS)
+	}
+	if got := BD09MCToBD09(mcFromWGS); Distance(got, bd) > 1 {
+		t.Fatalf("BD09MCToBD09 distance = %.2fm", Distance(got, bd))
+	}
+	if got := BD09MCToGCJ02(mcFromWGS); Distance(got, gcj) > 1 {
+		t.Fatalf("BD09MCToGCJ02 distance = %.2fm", Distance(got, gcj))
+	}
+	if got := BD09MCToWGS84(mcFromWGS); Distance(got, wgs) > 2 {
+		t.Fatalf("BD09MCToWGS84 distance = %.2fm", Distance(got, wgs))
+	}
+}
+
 func TestConvertBD09MCNegativeAndClamped(t *testing.T) {
 	bd := Coord{Lng: -200, Lat: -90}
 	mc, err := Convert(bd, BD09, BD09MC)

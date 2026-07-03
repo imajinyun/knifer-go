@@ -45,6 +45,24 @@ func WGS84ToBD09(coord Coord) Coord { return geoimpl.WGS84ToBD09(coord) }
 // BD09ToWGS84 converts BD-09 coordinates to WGS-84.
 func BD09ToWGS84(coord Coord) Coord { return geoimpl.BD09ToWGS84(coord) }
 
+// WGS84ToBD09MC converts WGS-84 coordinates to Baidu Mercator.
+func WGS84ToBD09MC(coord Coord) Coord { return geoimpl.WGS84ToBD09MC(coord) }
+
+// BD09MCToWGS84 converts Baidu Mercator coordinates to WGS-84.
+func BD09MCToWGS84(coord Coord) Coord { return geoimpl.BD09MCToWGS84(coord) }
+
+// GCJ02ToBD09MC converts GCJ-02 coordinates to Baidu Mercator.
+func GCJ02ToBD09MC(coord Coord) Coord { return geoimpl.GCJ02ToBD09MC(coord) }
+
+// BD09MCToGCJ02 converts Baidu Mercator coordinates to GCJ-02.
+func BD09MCToGCJ02(coord Coord) Coord { return geoimpl.BD09MCToGCJ02(coord) }
+
+// BD09ToBD09MC converts BD-09 longitude/latitude coordinates to Baidu Mercator.
+func BD09ToBD09MC(coord Coord) Coord { return geoimpl.BD09ToBD09MC(coord) }
+
+// BD09MCToBD09 converts Baidu Mercator coordinates to BD-09 longitude/latitude.
+func BD09MCToBD09(coord Coord) Coord { return geoimpl.BD09MCToBD09(coord) }
+
 // Distance returns the great-circle distance between two coordinates in meters.
 func Distance(a, b Coord) float64 { return geoimpl.Distance(a, b) }
 

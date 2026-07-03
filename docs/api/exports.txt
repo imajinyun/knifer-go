@@ -1210,14 +1210,20 @@ github.com/imajinyun/knifer-go/vgeo
   const BD09MC CoordType = "BD09MC"
   const GCJ02 CoordType = "GCJ02"
   const WGS84 CoordType = "WGS84"
+  func BD09MCToBD09(coord Coord) Coord
+  func BD09MCToGCJ02(coord Coord) Coord
+  func BD09MCToWGS84(coord Coord) Coord
+  func BD09ToBD09MC(coord Coord) Coord
   func BD09ToGCJ02(coord Coord) Coord
   func BD09ToWGS84(coord Coord) Coord
   func Convert(coord Coord, fromType CoordType, toType CoordType) (Coord, error)
   func Distance(a Coord, b Coord) float64
   func GCJ02ToBD09(coord Coord) Coord
+  func GCJ02ToBD09MC(coord Coord) Coord
   func GCJ02ToWGS84(coord Coord) Coord
   func InChina(lng float64, lat float64) bool
   func WGS84ToBD09(coord Coord) Coord
+  func WGS84ToBD09MC(coord Coord) Coord
   func WGS84ToGCJ02(coord Coord) Coord
   type Coord = github.com/imajinyun/knifer-go/internal/geo.Coord
   type CoordType = github.com/imajinyun/knifer-go/internal/geo.CoordType

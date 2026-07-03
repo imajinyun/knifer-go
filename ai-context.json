@@ -558,7 +558,7 @@
       "schema": "1.7",
       "recommended_profile_schema": "recommended_entrypoints profiles: day-one, safe, error, options, compatibility; golden_path lists 1-7 APIs with use_when and avoid_when guidance",
       "package_count": 55,
-      "function_count": 2757,
+      "function_count": 2763,
       "functions_with_examples": 1748,
       "context_aware_functions": 36,
       "returns_error_functions": 687,
@@ -566,11 +566,11 @@
         "compatibility": 22,
         "deprecated": 0,
         "experimental": 0,
-        "recommended": 2735
+        "recommended": 2741
       },
       "synopsis_sources": {
         "empty": 0,
-        "facade": 2104,
+        "facade": 2110,
         "internal": 653
       },
       "regenerate_command": "tools_update",
@@ -707,7 +707,7 @@
       "verr": { "primary": ["Recover", "GetStackTraceWithOptions", "ErrorIs", "MustExit", "ConfigureDefaultLogFunc"], "advanced": [], "compatibility": ["MustExit", "MustExitWithOptions"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
       "vfile": { "primary": ["AppendFileString", "ExistsWithOptions", "CloseQuietly", "AppendFileStringWithOptions", "Copy"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vform": { "primary": ["IsChineseWithOptions", "IsEmail", "IsChinese", "IsEmailWithOptions", "IsIDCard"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
-      "vgeo": { "primary": ["BD09ToGCJ02", "BD09ToWGS84", "Convert", "Distance", "GCJ02ToBD09"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
+      "vgeo": { "primary": ["Convert", "BD09ToGCJ02", "BD09MCToBD09", "BD09MCToGCJ02", "BD09MCToWGS84"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vftp": { "primary": ["Download", "New", "WithProvider", "List", "Upload"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vhash": { "primary": ["NewConsistentHash", "AdditiveHash", "ApHash", "BkdrHash", "DjbHash"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vhttp": { "primary": ["DeleteSafe", "Download", "CleanHTMLWithOptions", "AddGlobalHeader", "BuildBasicAuth"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
