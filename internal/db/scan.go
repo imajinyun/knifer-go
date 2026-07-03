@@ -114,8 +114,21 @@ func AssignEntity(entity Entity, dst any) error {
 }
 
 func setValue(dst reflect.Value, value any) error {
+	if dst.CanAddr() {
+		if scanner, ok := dst.Addr().Interface().(sql.Scanner); ok {
+			return scanner.Scan(value)
+		}
+	}
 	if value == nil {
 		dst.Set(reflect.Zero(dst.Type()))
+		return nil
+	}
+	if dst.Kind() == reflect.Pointer {
+		elem := reflect.New(dst.Type().Elem())
+		if err := setValue(elem.Elem(), value); err != nil {
+			return err
+		}
+		dst.Set(elem)
 		return nil
 	}
 	src := reflect.ValueOf(value)

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
+	"fmt"
 	"reflect"
 	"strings"
 	"testing"
@@ -233,5 +234,64 @@ func TestAssignEntityAllowsSafeNumericConversion(t *testing.T) {
 	}
 	if dst.SmallInt != 127 || dst.SmallUint != 255 || dst.Whole != 42 {
 		t.Fatalf("assigned numeric dst = %#v", dst)
+	}
+}
+
+func TestAssignEntityPointerAndSQLScannerFields(t *testing.T) {
+	type nullableDTO struct {
+		Name       *string        `db:"name"`
+		Nickname   *string        `db:"nickname"`
+		Age        *int           `db:"age"`
+		NullName   sql.NullString `db:"null_name"`
+		NullAge    sql.NullInt64  `db:"null_age"`
+		MissingPtr *int           `db:"missing_ptr"`
+	}
+	entity := EntityFromMap("users", map[string]any{
+		"name":        "alice",
+		"nickname":    nil,
+		"age":         int64(42),
+		"null_name":   "Alice",
+		"null_age":    int64(43),
+		"missing_ptr": nil,
+	})
+	var dst nullableDTO
+	if err := AssignEntity(entity, &dst); err != nil {
+		t.Fatalf("AssignEntity pointer/scanner fields: %v", err)
+	}
+	if dst.Name == nil || *dst.Name != "alice" {
+		t.Fatalf("Name = %#v, want pointer to alice", dst.Name)
+	}
+	if dst.Nickname != nil {
+		t.Fatalf("Nickname = %#v, want nil", dst.Nickname)
+	}
+	if dst.Age == nil || *dst.Age != 42 {
+		t.Fatalf("Age = %#v, want pointer to 42", dst.Age)
+	}
+	if !dst.NullName.Valid || dst.NullName.String != "Alice" {
+		t.Fatalf("NullName = %#v, want valid Alice", dst.NullName)
+	}
+	if !dst.NullAge.Valid || dst.NullAge.Int64 != 43 {
+		t.Fatalf("NullAge = %#v, want valid 43", dst.NullAge)
+	}
+	if dst.MissingPtr != nil {
+		t.Fatalf("MissingPtr = %#v, want nil", dst.MissingPtr)
+	}
+}
+
+type failingScanner struct{}
+
+func (f *failingScanner) Scan(any) error {
+	return fmt.Errorf("scanner rejected value")
+}
+
+func TestAssignEntityScannerError(t *testing.T) {
+	entity := EntityFromMap("users", map[string]any{"value": "bad"})
+	var dst struct {
+		Value failingScanner `db:"value"`
+	}
+	err := AssignEntity(entity, &dst)
+	assertDBCode(t, err, knifer.ErrCodeInternal)
+	if !strings.Contains(err.Error(), "scanner rejected value") {
+		t.Fatalf("AssignEntity scanner error = %v, want scanner cause", err)
 	}
 }

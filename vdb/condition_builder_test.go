@@ -111,6 +111,36 @@ func TestFacadeAssignEntityRejectsNumericOverflow(t *testing.T) {
 	}
 }
 
+func TestFacadeAssignEntityPointerAndNullFields(t *testing.T) {
+	entity := EntityFromMap("users", map[string]any{
+		"name":     "alice",
+		"nickname": nil,
+		"age":      int64(42),
+		"label":    "A",
+	})
+	var dst struct {
+		Name     *string        `db:"name"`
+		Nickname *string        `db:"nickname"`
+		Age      *int           `db:"age"`
+		Label    sql.NullString `db:"label"`
+	}
+	if err := AssignEntity(entity, &dst); err != nil {
+		t.Fatalf("AssignEntity pointer/null fields: %v", err)
+	}
+	if dst.Name == nil || *dst.Name != "alice" {
+		t.Fatalf("Name = %#v, want pointer to alice", dst.Name)
+	}
+	if dst.Nickname != nil {
+		t.Fatalf("Nickname = %#v, want nil", dst.Nickname)
+	}
+	if dst.Age == nil || *dst.Age != 42 {
+		t.Fatalf("Age = %#v, want pointer to 42", dst.Age)
+	}
+	if !dst.Label.Valid || dst.Label.String != "A" {
+		t.Fatalf("Label = %#v, want valid A", dst.Label)
+	}
+}
+
 func TestFacadeScanRowsAndScanOne(t *testing.T) {
 	db, err := sql.Open("vdb_pool_test", "")
 	if err != nil {
