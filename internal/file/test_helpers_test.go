@@ -3,6 +3,7 @@ package file
 import (
 	"bytes"
 	"errors"
+	"io"
 	"io/fs"
 	"testing"
 	"time"
@@ -19,6 +20,13 @@ func (w *bufferWriteCloser) Close() error {
 	w.closed = true
 	return nil
 }
+
+type closeErrorWriteCloser struct {
+	io.Writer
+	err error
+}
+
+func (w closeErrorWriteCloser) Close() error { return w.err }
 
 type fakeFileInfo struct {
 	name string

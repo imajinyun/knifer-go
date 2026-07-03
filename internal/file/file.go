@@ -559,8 +559,10 @@ func FileCopyWithOptions(src, dst string, opts ...WriteOption) error {
 	if err != nil {
 		return wrapFileIO("open destination file "+dst, err)
 	}
-	defer CloseQuietly(out)
 	_, err = io.Copy(out, in)
+	if closeErr := out.Close(); err == nil {
+		err = closeErr
+	}
 	return wrapFileIO("copy file "+src+" to "+dst, err)
 }
 

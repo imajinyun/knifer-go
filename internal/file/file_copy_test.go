@@ -78,3 +78,25 @@ func TestFileCopyProviderOptions(t *testing.T) {
 		t.Fatalf("copied content = %q, want abc", got)
 	}
 }
+
+func TestFileCopyReturnsDestinationCloseError(t *testing.T) {
+	closeErr := errors.New("close failed")
+	err := FileCopy("src.txt", "dst.txt",
+		WithStat(func(path string) (fs.FileInfo, error) {
+			if path == "src.txt" {
+				return fakeFileInfo{name: path, size: 3}, nil
+			}
+			return nil, os.ErrNotExist
+		}),
+		WithOpen(func(string) (io.ReadCloser, error) {
+			return io.NopCloser(strings.NewReader("abc")), nil
+		}),
+		WithOpenFile(func(string, int, fs.FileMode) (io.WriteCloser, error) {
+			return closeErrorWriteCloser{Writer: io.Discard, err: closeErr}, nil
+		}),
+	)
+	assertFileCode(t, err, knifer.ErrCodeInternal)
+	if !errors.Is(err, closeErr) {
+		t.Fatalf("FileCopy close error = %v, want close cause", err)
+	}
+}
