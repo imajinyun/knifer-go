@@ -398,6 +398,9 @@ func formatValue(value reflect.Value) string {
 	case reflect.Float64:
 		return strconv.FormatFloat(value.Float(), 'f', -1, 64)
 	default:
+		if !value.CanInterface() {
+			return ""
+		}
 		return fmt.Sprint(value.Interface())
 	}
 }

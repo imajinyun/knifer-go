@@ -3,6 +3,7 @@ package csvx
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -174,6 +175,16 @@ func TestStructsToRecordsPointersAndScalarKinds(t *testing.T) {
 	}
 	if got := records[2]; strings.Join(got, ",") != ",,,," {
 		t.Fatalf("StructsToRecords nil pointer row = %#v", got)
+	}
+}
+
+func TestFormatValueDoesNotPanicOnUnexportedField(t *testing.T) {
+	type privateRow struct {
+		hidden struct{ Name string }
+	}
+	value := reflect.ValueOf(privateRow{hidden: struct{ Name string }{Name: "secret"}}).Field(0)
+	if got := formatValue(value); got != "" {
+		t.Fatalf("formatValue(unexported struct) = %q, want empty string", got)
 	}
 }
 
