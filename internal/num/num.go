@@ -1048,13 +1048,13 @@ func ParseIntWithOptions(number string, opts ...ParseOption) int {
 		if err != nil {
 			return 0
 		}
-		return int64ToInt(v, 0)
+		return int64ToInt(v)
 	}
 	if strings.ContainsAny(s, "eE") {
 		return 0
 	}
 	if i, err := cfg.parseInt(s, 10, 0); err == nil {
-		return int64ToInt(i, 0)
+		return int64ToInt(i)
 	}
 	f, _ := cfg.parseFloat(strings.ReplaceAll(s, ",", ""), 64)
 	v, _ := float64ToInt(f, 0)
@@ -1096,13 +1096,13 @@ func parseIntChecked(number string, opts ...ParseOption) (int, bool) {
 		if err != nil {
 			return 0, false
 		}
-		return int64ToInt(v, 0), int64FitsInt(v)
+		return int64ToInt(v), int64FitsInt(v)
 	}
 	if strings.ContainsAny(s, "eE") {
 		return 0, false
 	}
 	if i, err := cfg.parseInt(s, 10, 0); err == nil {
-		return int64ToInt(i, 0), int64FitsInt(i)
+		return int64ToInt(i), int64FitsInt(i)
 	}
 	f, err := cfg.parseFloat(strings.ReplaceAll(s, ",", ""), 64)
 	if err != nil {
@@ -1135,9 +1135,9 @@ func int64FitsInt(v int64) bool {
 	return v >= minIntValue && v <= maxIntValue
 }
 
-func int64ToInt(v int64, fallback int) int {
+func int64ToInt(v int64) int {
 	if !int64FitsInt(v) {
-		return fallback
+		return 0
 	}
 	return int(v)
 }
