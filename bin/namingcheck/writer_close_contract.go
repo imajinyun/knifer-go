@@ -36,6 +36,7 @@ func writerCloseCheckApplies(path string) bool {
 		"internal/httpx/resty/",
 		"internal/imgx/",
 		"internal/net/",
+		"internal/poi/",
 		"internal/xml/",
 		"internal/zip/",
 	}
