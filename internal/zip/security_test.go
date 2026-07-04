@@ -13,7 +13,7 @@ import (
 )
 
 func TestUnzipRejectsPathTraversal(t *testing.T) {
-	for _, name := range []string{"../evil.txt", "/evil.txt"} {
+	for _, name := range []string{"../evil.txt", "/evil.txt", `..\evil.txt`, `dir\..\evil.txt`} {
 		t.Run(name, func(t *testing.T) {
 			tmp := t.TempDir()
 			archive := filepath.Join(tmp, "bad.zip")
@@ -23,6 +23,48 @@ func TestUnzipRejectsPathTraversal(t *testing.T) {
 			}
 			assertZipCode(t, UnzipTo(archive, filepath.Join(tmp, "dest")), knifer.ErrCodeInvalidInput)
 		})
+	}
+}
+
+func TestUnzipRejectsNestedSymlinkEscape(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("symlink behavior differs on windows")
+	}
+
+	tmp := t.TempDir()
+	dest := filepath.Join(tmp, "dest")
+	outside := filepath.Join(tmp, "outside")
+	linkDir := filepath.Join(dest, "a", "b", "link")
+	if err := os.MkdirAll(filepath.Dir(linkDir), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(outside, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(outside, linkDir); err != nil {
+		t.Fatalf("create symlink: %v", err)
+	}
+
+	var buf bytes.Buffer
+	zw := archivezip.NewWriter(&buf)
+	w, err := zw.Create("a/b/link/evil.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := w.Write([]byte("bad")); err != nil {
+		t.Fatal(err)
+	}
+	if err := zw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	r, err := archivezip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
+	if err != nil {
+		t.Fatalf("NewReader: %v", err)
+	}
+
+	assertZipCode(t, UnzipReaderTo(r, dest), knifer.ErrCodeInvalidInput)
+	if _, err := os.Stat(filepath.Join(outside, "evil.txt")); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("nested symlink escape wrote outside file, stat err=%v", err)
 	}
 }
 

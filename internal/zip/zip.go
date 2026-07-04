@@ -1295,6 +1295,9 @@ func cleanEntryName(name string) (string, error) {
 	if name == "" || filepath.IsAbs(name) {
 		return "", invalidInputf("invalid zip entry name %q", name)
 	}
+	if strings.Contains(name, `\`) || strings.HasPrefix(name, `\\`) || len(name) >= 2 && name[1] == ':' {
+		return "", invalidInputf("invalid zip entry name %q", name)
+	}
 	cleaned := filepath.ToSlash(filepath.Clean(name))
 	if cleaned == "." || strings.HasPrefix(cleaned, "../") || cleaned == ".." || strings.HasPrefix(cleaned, "/") {
 		return "", invalidInputf("invalid zip entry name %q", name)
