@@ -154,6 +154,15 @@ func writeTestFile(t *testing.T, root, name, content string) {
 	}
 }
 
+func repoRoot(t *testing.T) string {
+	t.Helper()
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Getwd() error = %v", err)
+	}
+	return filepath.Dir(wd)
+}
+
 func TestCheckReleaseNotesAcceptsVersionedRelease(t *testing.T) {
 	changelog := writeGovernanceFixture(t, `# Changelog
 
@@ -244,6 +253,46 @@ func writeGovernanceFixture(t *testing.T, content string) string {
 		t.Fatalf("WriteFile() error = %v", err)
 	}
 	return path
+}
+
+func TestCoverageCheckRequiresChangedSecuritySensitivePackageData(t *testing.T) {
+	root := repoRoot(t)
+	coverage := filepath.Join(t.TempDir(), "coverage.out")
+	module := "github.com/imajinyun/knifer-go"
+	if err := os.WriteFile(coverage, []byte("mode: set\n"+module+"/vurl/url.go:1.1,1.2 1 1\n"), 0o600); err != nil {
+		t.Fatalf("WriteFile() error = %v", err)
+	}
+
+	runCoverage := func() ([]byte, error) {
+		cmd := exec.Command("bash", filepath.Join(root, "bin/check_coverage.sh"), coverage)
+		cmd.Dir = root
+		cmd.Env = append(os.Environ(),
+			"COVERAGE_THRESHOLD=0",
+			"PACKAGE_COVERAGE_THRESHOLDS= ",
+			"SECURITY_SENSITIVE_COVERAGE_PATHS= ",
+			"CHANGED_SECURITY_SENSITIVE_COVERAGE_PATHS="+module+"/vhttp",
+			"SECURITY_SENSITIVE_MIN_COVERAGE_THRESHOLD=0",
+		)
+		return cmd.CombinedOutput()
+	}
+	output, err := runCoverage()
+	if err == nil {
+		t.Fatalf("check_coverage.sh unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(string(output), "changed security-sensitive package(s) have no coverage data") {
+		t.Fatalf("coverage check output missing changed package error:\n%s", output)
+	}
+
+	if err := os.WriteFile(coverage, []byte("mode: set\n"+module+"/vhttp/request.go:1.1,1.2 1 1\n"), 0o600); err != nil {
+		t.Fatalf("WriteFile() error = %v", err)
+	}
+	output, err = runCoverage()
+	if err != nil {
+		t.Fatalf("check_coverage.sh with changed package coverage failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(string(output), "changed security-sensitive coverage data present for 1 package path") {
+		t.Fatalf("coverage check output missing changed package success:\n%s", output)
+	}
 }
 
 func TestAgentEvidenceCheckAcceptsSecurityMergeReadyEvidence(t *testing.T) {
