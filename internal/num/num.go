@@ -16,7 +16,11 @@ import (
 	"unicode"
 )
 
-const defaultDivScale = 10
+const (
+	defaultDivScale = 10
+	maxInt64Value   = int64(1<<63 - 1)
+	minInt64Value   = int64(-1 << 63)
+)
 
 var factorials = [...]uint64{
 	1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800,
@@ -179,6 +183,11 @@ func applyDoubleOptions(opts []DoubleOption) doubleConfig {
 	}
 	return cfg
 }
+
+var (
+	maxIntValue = int64(int(^uint(0) >> 1))
+	minIntValue = -maxIntValue - 1
+)
 
 // This file provides numeric helper functions for arithmetic, parsing, formatting,
 // comparison, random number generation, and low-level conversions.
@@ -1035,17 +1044,21 @@ func ParseIntWithOptions(number string, opts ...ParseOption) int {
 		return 0
 	}
 	if strings.HasPrefix(strings.ToLower(s), "0x") {
-		v, _ := cfg.parseInt(s[2:], 16, 0)
-		return int(v)
+		v, err := cfg.parseInt(s[2:], 16, 0)
+		if err != nil {
+			return 0
+		}
+		return int64ToInt(v, 0)
 	}
 	if strings.ContainsAny(s, "eE") {
 		return 0
 	}
 	if i, err := cfg.parseInt(s, 10, 0); err == nil {
-		return int(i)
+		return int64ToInt(i, 0)
 	}
 	f, _ := cfg.parseFloat(strings.ReplaceAll(s, ",", ""), 64)
-	return int(f)
+	v, _ := float64ToInt(f, 0)
+	return v
 }
 
 // ParseLong parses an int64 with tolerant handling for blank, hex, and decimal fractions.
@@ -1068,7 +1081,86 @@ func ParseLongWithOptions(number string, opts ...ParseOption) int64 {
 		return i
 	}
 	f, _ := cfg.parseFloat(strings.ReplaceAll(s, ",", ""), 64)
-	return int64(f)
+	v, _ := float64ToInt64(f, 0)
+	return v
+}
+
+func parseIntChecked(number string, opts ...ParseOption) (int, bool) {
+	cfg := applyParseOptions(opts)
+	s := strings.TrimSpace(number)
+	if s == "" || strings.HasPrefix(s, ".") {
+		return 0, false
+	}
+	if strings.HasPrefix(strings.ToLower(s), "0x") {
+		v, err := cfg.parseInt(s[2:], 16, 0)
+		if err != nil {
+			return 0, false
+		}
+		return int64ToInt(v, 0), int64FitsInt(v)
+	}
+	if strings.ContainsAny(s, "eE") {
+		return 0, false
+	}
+	if i, err := cfg.parseInt(s, 10, 0); err == nil {
+		return int64ToInt(i, 0), int64FitsInt(i)
+	}
+	f, err := cfg.parseFloat(strings.ReplaceAll(s, ",", ""), 64)
+	if err != nil {
+		return 0, false
+	}
+	return float64ToInt(f, 0)
+}
+
+func parseLongChecked(number string, opts ...ParseOption) (int64, bool) {
+	cfg := applyParseOptions(opts)
+	s := strings.TrimSpace(number)
+	if s == "" || strings.HasPrefix(s, ".") {
+		return 0, false
+	}
+	if strings.HasPrefix(strings.ToLower(s), "0x") {
+		v, err := cfg.parseInt(s[2:], 16, 64)
+		return v, err == nil
+	}
+	if i, err := cfg.parseInt(s, 10, 64); err == nil {
+		return i, true
+	}
+	f, err := cfg.parseFloat(strings.ReplaceAll(s, ",", ""), 64)
+	if err != nil {
+		return 0, false
+	}
+	return float64ToInt64(f, 0)
+}
+
+func int64FitsInt(v int64) bool {
+	return v >= minIntValue && v <= maxIntValue
+}
+
+func int64ToInt(v int64, fallback int) int {
+	if !int64FitsInt(v) {
+		return fallback
+	}
+	return int(v)
+}
+
+func float64ToInt(v float64, fallback int) (int, bool) {
+	if math.IsNaN(v) || math.IsInf(v, 0) || v < float64(minIntValue) {
+		return fallback, false
+	}
+	if maxIntValue == maxInt64Value {
+		if v >= float64(maxIntValue) {
+			return fallback, false
+		}
+	} else if v > float64(maxIntValue) {
+		return fallback, false
+	}
+	return int(v), true
+}
+
+func float64ToInt64(v float64, fallback int64) (int64, bool) {
+	if math.IsNaN(v) || math.IsInf(v, 0) || v < float64(minInt64Value) || v >= float64(maxInt64Value) {
+		return fallback, false
+	}
+	return int64(v), true
 }
 
 // ParseFloat parses a float32. Blank input returns 0.
@@ -1125,7 +1217,10 @@ func ParseIntDefaultWithOptions(numberStr string, defaultValue int, opts ...Pars
 	if !IsNumberWithOptions(numberStr, opts...) && !strings.Contains(numberStr, ",") {
 		return defaultValue
 	}
-	return ParseIntWithOptions(numberStr, opts...)
+	if v, ok := parseIntChecked(numberStr, opts...); ok {
+		return v
+	}
+	return defaultValue
 }
 
 // ParseLongDefault parses an int64 or returns defaultValue on failure.
@@ -1141,7 +1236,10 @@ func ParseLongDefaultWithOptions(numberStr string, defaultValue int64, opts ...P
 	if !IsNumberWithOptions(numberStr, opts...) && !strings.Contains(numberStr, ",") {
 		return defaultValue
 	}
-	return ParseLongWithOptions(numberStr, opts...)
+	if v, ok := parseLongChecked(numberStr, opts...); ok {
+		return v
+	}
+	return defaultValue
 }
 
 // ParseFloatDefault parses a float32 or returns defaultValue on failure.

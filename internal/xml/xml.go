@@ -1222,6 +1222,9 @@ func parseScalar(s string, cfg parseConfig) any {
 	if i, err := cfg.parseInt(s, 10, 64); err == nil {
 		return i
 	}
+	if u, err := strconv.ParseUint(s, 10, 64); err == nil {
+		return u
+	}
 	if f, err := cfg.parseFloat(s, 64); err == nil {
 		return f
 	}

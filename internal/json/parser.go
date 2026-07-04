@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"strconv"
 )
 
 // parseBytes parses JSON bytes into *JSONObject, *JSONArray, or a primitive value.
@@ -109,9 +110,12 @@ func parseValue(dec *json.Decoder, tok json.Token, cfg *Config) (any, error) {
 	case string:
 		return t, nil
 	case json.Number:
-		// Prefer int64 and fall back to float64 on failure.
+		// Prefer exact integer representations before falling back to float64.
 		if i, err := t.Int64(); err == nil {
 			return i, nil
+		}
+		if u, err := strconv.ParseUint(t.String(), 10, 64); err == nil {
+			return u, nil
 		}
 		f, err := t.Float64()
 		if err != nil {

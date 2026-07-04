@@ -50,6 +50,13 @@ func TestMapConversions(t *testing.T) {
 	if customRoot["n"] != int64(99) || customRoot["f"] != 6.25 {
 		t.Fatalf("custom scalar parsers = %#v", customRoot)
 	}
+	bigMap, err := XMLToMap(`<root><n>9223372036854775808</n></root>`)
+	if err != nil {
+		t.Fatalf("XMLToMap large scalar: %v", err)
+	}
+	if got := bigMap["root"].(map[string]any)["n"]; got != uint64(9223372036854775808) {
+		t.Fatalf("large scalar = %#v (%T), want exact uint64", got, got)
+	}
 	if got := XMLNodeToMapInto(nil, nil); len(got) != 0 {
 		t.Fatalf("XMLNodeToMapInto nil = %#v", got)
 	}

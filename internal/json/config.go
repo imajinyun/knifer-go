@@ -92,6 +92,13 @@ func (c *Config) formatInt(v int64, base int) string {
 	return strconv.FormatInt(v, base)
 }
 
+func formatUint64(v uint64, cfg *Config) string {
+	if v <= maxInt64AsUint64 {
+		return configOrDefault(cfg).formatInt(int64(v), 10)
+	}
+	return strconv.FormatUint(v, 10)
+}
+
 func (c *Config) formatFloat(v float64, fmtByte byte, prec, bitSize int) string {
 	if c != nil && c.FormatFloatFunc != nil {
 		return c.FormatFloatFunc(v, fmtByte, prec, bitSize)

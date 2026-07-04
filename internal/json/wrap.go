@@ -3,9 +3,19 @@ package json
 import (
 	"bytes"
 	"encoding/json"
+	"math"
 	"reflect"
 	"sort"
+	"strconv"
 	"time"
+)
+
+const (
+	maxInt64Value     = int64(1<<63 - 1)
+	minInt64Value     = int64(-1 << 63)
+	maxInt64AsUint64  = uint64(1<<63 - 1)
+	maxSafeInt64Float = float64(maxInt64Value)
+	minSafeInt64Float = float64(minInt64Value)
 )
 
 // wrap converts any Go value into a JSON-compatible value: primitive, *JSONObject, *JSONArray, or Null.
@@ -34,7 +44,7 @@ func wrap(v any, cfg *Config) any {
 	case int64:
 		return x
 	case uint:
-		return int64(x)
+		return wrapUint64(uint64(x))
 	case uint8:
 		return int64(x)
 	case uint16:
@@ -42,7 +52,7 @@ func wrap(v any, cfg *Config) any {
 	case uint32:
 		return int64(x)
 	case uint64:
-		return int64(x)
+		return wrapUint64(x)
 	case float32:
 		return float64(x)
 	case float64:
@@ -50,6 +60,9 @@ func wrap(v any, cfg *Config) any {
 	case json.Number:
 		if i, err := x.Int64(); err == nil {
 			return i
+		}
+		if u, err := strconv.ParseUint(x.String(), 10, 64); err == nil {
+			return u
 		}
 		if f, err := x.Float64(); err == nil {
 			return f
@@ -119,6 +132,13 @@ func wrap(v any, cfg *Config) any {
 	return cfg.sprint(v)
 }
 
+func wrapUint64(v uint64) any {
+	if v <= maxInt64AsUint64 {
+		return int64(v)
+	}
+	return v
+}
+
 // toString converts any JSON value to a string.
 func toString(v any, def string, cfg *Config) string {
 	cfg = configOrDefault(cfg)
@@ -135,6 +155,8 @@ func toString(v any, def string, cfg *Config) string {
 		return "false"
 	case int64:
 		return cfg.formatInt(x, 10)
+	case uint64:
+		return strconv.FormatUint(x, 10)
 	case float64:
 		return cfg.formatFloat(x, 'f', -1, 64)
 	case *JSONObject:
@@ -154,8 +176,16 @@ func toInt64(v any, def int64, cfg *Config) int64 {
 	switch x := v.(type) {
 	case int64:
 		return x
+	case uint64:
+		if x <= maxInt64AsUint64 {
+			return int64(x)
+		}
+		return def
 	case float64:
-		return int64(x)
+		if i, ok := float64ToInt64(x); ok {
+			return i
+		}
+		return def
 	case bool:
 		if x {
 			return 1
@@ -168,10 +198,22 @@ func toInt64(v any, def int64, cfg *Config) int64 {
 		}
 		f, err := cfg.parseFloat(x, 64)
 		if err == nil {
-			return int64(f)
+			if i, ok := float64ToInt64(f); ok {
+				return i
+			}
 		}
 	}
 	return def
+}
+
+func float64ToInt64(v float64) (int64, bool) {
+	if math.IsNaN(v) || math.IsInf(v, 0) {
+		return 0, false
+	}
+	if v < minSafeInt64Float || v >= maxSafeInt64Float {
+		return 0, false
+	}
+	return int64(v), true
 }
 
 // toFloat64 converts to float64 and returns def on failure.
@@ -184,6 +226,8 @@ func toFloat64(v any, def float64, cfg *Config) float64 {
 	case float64:
 		return x
 	case int64:
+		return float64(x)
+	case uint64:
 		return float64(x)
 	case bool:
 		if x {
@@ -209,6 +253,8 @@ func toBool(v any, def bool, cfg *Config) bool {
 	case bool:
 		return x
 	case int64:
+		return x != 0
+	case uint64:
 		return x != 0
 	case float64:
 		return x != 0

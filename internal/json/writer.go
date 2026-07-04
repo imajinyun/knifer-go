@@ -38,6 +38,8 @@ func writeAny(sb *strings.Builder, v any, indent, depth int, cfg *Config) error 
 		}
 	case int64:
 		sb.WriteString(cfg.formatInt(x, 10))
+	case uint64:
+		sb.WriteString(formatUint64(x, cfg))
 	case float64:
 		// Match the utility toolkit by using the shortest form where possible.
 		s := cfg.formatFloat(x, 'f', -1, 64)
@@ -51,7 +53,7 @@ func writeAny(sb *strings.Builder, v any, indent, depth int, cfg *Config) error 
 		}
 		// Prevent recursion.
 		switch w.(type) {
-		case *JSONObject, *JSONArray, bool, int64, float64, string, jsonNull:
+		case *JSONObject, *JSONArray, bool, int64, uint64, float64, string, jsonNull:
 			return writeAny(sb, w, indent, depth, cfg)
 		}
 		return NewJSONError("unsupported JSON value type %T", v)

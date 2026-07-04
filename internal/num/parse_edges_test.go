@@ -37,3 +37,24 @@ func TestParseDefaultEdgeCases(t *testing.T) {
 		t.Fatal("ParseDoubleDefault cases failed")
 	}
 }
+
+func TestParseIntegerOverflowFallsBack(t *testing.T) {
+	overflowLong := "9223372036854775808"
+	if got := ParseLong(overflowLong); got != 0 {
+		t.Fatalf("ParseLong overflow = %d, want 0", got)
+	}
+	if got := ParseLongDefault(overflowLong, -9); got != -9 {
+		t.Fatalf("ParseLongDefault overflow = %d, want -9", got)
+	}
+
+	overflowInt := "9223372036854775808"
+	if got := ParseInt(overflowInt); got != 0 {
+		t.Fatalf("ParseInt overflow = %d, want 0", got)
+	}
+	if got := ParseIntDefault(overflowInt, -7); got != -7 {
+		t.Fatalf("ParseIntDefault overflow = %d, want -7", got)
+	}
+	if got := ParseLongDefault("9223372036854775808.0", -5); got != -5 {
+		t.Fatalf("ParseLongDefault float overflow = %d, want -5", got)
+	}
+}
