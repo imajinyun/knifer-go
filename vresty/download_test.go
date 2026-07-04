@@ -2,7 +2,9 @@ package vresty_test
 
 import (
 	"bytes"
+	"errors"
 	"io"
+	"io/fs"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -87,5 +89,26 @@ func TestFacadeDownloadAndFileWrappers(t *testing.T) {
 	}
 	if n, err := vresty.DownloadFileSafeWithOptions(server.URL, safeFile, []vresty.RequestOption{allowLocal}, vresty.WithSaveOverwrite(true)); err != nil || n != int64(len("download-text")) {
 		t.Fatalf("DownloadFileSafeWithOptions n=%d err=%v", n, err)
+	}
+}
+
+func TestFacadeDownloadFileReturnsCloseError(t *testing.T) {
+	closeErr := errors.New("close failed")
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("download-text"))
+	}))
+	defer server.Close()
+
+	n, err := vresty.DownloadFile(server.URL, "/virtual/resty.txt",
+		vresty.WithSaveMkdirAll(func(string, fs.FileMode) error { return nil }),
+		vresty.WithSaveOpenFile(func(string, int, fs.FileMode) (io.WriteCloser, error) {
+			return closeErrorWriteCloser{Writer: io.Discard, err: closeErr}, nil
+		}),
+	)
+	if n != int64(len("download-text")) {
+		t.Fatalf("DownloadFile close error bytes = %d, want %d", n, len("download-text"))
+	}
+	if !errors.Is(err, closeErr) {
+		t.Fatalf("DownloadFile close error = %v, want close cause", err)
 	}
 }

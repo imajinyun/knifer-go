@@ -1,6 +1,9 @@
 package http
 
 import (
+	"errors"
+	"io"
+	"io/fs"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -73,5 +76,26 @@ func TestDownloadFileToDirectory(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(dir, "foo.bin")); err != nil {
 		t.Fatalf("file should exist: %v", err)
+	}
+}
+
+func TestDownloadFileReturnsCloseError(t *testing.T) {
+	closeErr := errors.New("close failed")
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("file-close"))
+	}))
+	defer srv.Close()
+
+	n, err := DownloadFile(srv.URL, "/virtual/out.txt",
+		WithSaveMkdirAll(func(string, fs.FileMode) error { return nil }),
+		WithSaveOpenFile(func(string, int, fs.FileMode) (io.WriteCloser, error) {
+			return closeErrorWriteCloser{Writer: io.Discard, err: closeErr}, nil
+		}),
+	)
+	if n != int64(len("file-close")) {
+		t.Fatalf("DownloadFile close error bytes = %d, want %d", n, len("file-close"))
+	}
+	if !errors.Is(err, closeErr) {
+		t.Fatalf("DownloadFile close error = %v, want close cause", err)
 	}
 }

@@ -7,6 +7,8 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+
+	refimpl "github.com/imajinyun/knifer-go/internal/ref"
 )
 
 // ScanRows scans all rows into Entity values.
@@ -157,10 +159,14 @@ func setValue(dst reflect.Value, value any) error {
 		return nil
 	}
 	if src.Type().ConvertibleTo(dst.Type()) {
-		if !canConvertWithoutOverflow(src, dst.Type()) {
-			return fmt.Errorf("cannot assign %T value %v to %s without overflow", value, value, dst.Type())
+		if err := rejectFractionalNumericAssignment(src, dst.Type()); err != nil {
+			return err
 		}
-		dst.Set(src.Convert(dst.Type()))
+		converted, err := refimpl.SafeConvert(src, dst.Type())
+		if err != nil {
+			return fmt.Errorf("cannot assign %T value %v to %s without overflow: %w", value, value, dst.Type(), err)
+		}
+		dst.Set(converted)
 		return nil
 	}
 	if err := setScalarFromText(dst, value); err == nil {
@@ -171,6 +177,25 @@ func setValue(dst reflect.Value, value any) error {
 		return nil
 	}
 	return fmt.Errorf("cannot assign %T to %s", value, dst.Type())
+}
+
+func rejectFractionalNumericAssignment(src reflect.Value, dstType reflect.Type) error {
+	switch src.Kind() {
+	case reflect.Float32, reflect.Float64:
+	default:
+		return nil
+	}
+	switch dstType.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+	default:
+		return nil
+	}
+	value := src.Float()
+	if math.Trunc(value) != value {
+		return fmt.Errorf("cannot assign fractional float %v to %s", value, dstType)
+	}
+	return nil
 }
 
 func setScalarFromText(dst reflect.Value, value any) error {
@@ -220,70 +245,6 @@ func setScalarFromText(dst reflect.Value, value any) error {
 	}
 }
 
-func canConvertWithoutOverflow(src reflect.Value, dstType reflect.Type) bool {
-	switch src.Kind() {
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		value := src.Int()
-		switch dstType.Kind() {
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			min, max := signedIntegerBounds(typeBits(dstType))
-			return value >= min && value <= max
-		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-			if value < 0 {
-				return false
-			}
-			return uint64(value) <= unsignedIntegerMax(typeBits(dstType))
-		case reflect.Float32:
-			return math.Abs(float64(value)) <= math.MaxFloat32
-		case reflect.Float64:
-			return true
-		default:
-			return true
-		}
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-		value := src.Uint()
-		switch dstType.Kind() {
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			_, max := signedIntegerBounds(typeBits(dstType))
-			if max < 0 {
-				return false
-			}
-			return value <= uint64(max)
-		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-			return value <= unsignedIntegerMax(typeBits(dstType))
-		case reflect.Float32:
-			return true
-		case reflect.Float64:
-			return true
-		default:
-			return true
-		}
-	case reflect.Float32, reflect.Float64:
-		value := src.Float()
-		switch dstType.Kind() {
-		case reflect.Float32:
-			return math.Abs(value) <= math.MaxFloat32
-		case reflect.Float64:
-			return true
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			if math.Trunc(value) != value {
-				return false
-			}
-			min, max := signedFloatBounds(typeBits(dstType))
-			return value >= min && value <= max
-		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-			if math.Trunc(value) != value || value < 0 {
-				return false
-			}
-			return value <= unsignedFloatMax(typeBits(dstType))
-		default:
-			return true
-		}
-	default:
-		return true
-	}
-}
-
 func typeBits(t reflect.Type) int {
 	bits := t.Bits()
 	if bits == 0 {
@@ -294,31 +255,6 @@ func typeBits(t reflect.Type) int {
 
 func nativeIntBits() int {
 	return 32 << (^uint(0) >> 63)
-}
-
-func signedIntegerBounds(bits int) (int64, int64) {
-	if bits >= 64 {
-		const maxInt64 = int64(1<<63 - 1)
-		return -maxInt64 - 1, maxInt64
-	}
-	max := int64(1)<<(bits-1) - 1
-	return -max - 1, max
-}
-
-func unsignedIntegerMax(bits int) uint64 {
-	if bits >= 64 {
-		return ^uint64(0)
-	}
-	return uint64(1)<<bits - 1
-}
-
-func signedFloatBounds(bits int) (float64, float64) {
-	limit := math.Ldexp(1, bits-1)
-	return -limit, math.Nextafter(limit, 0)
-}
-
-func unsignedFloatMax(bits int) float64 {
-	return math.Nextafter(math.Ldexp(1, bits), 0)
 }
 
 func toSnake(s string) string {

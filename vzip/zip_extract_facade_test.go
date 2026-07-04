@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	knifer "github.com/imajinyun/knifer-go"
@@ -113,5 +114,43 @@ func TestFacadeUnzipRejectsSymlinkEscape(t *testing.T) {
 		return path, nil
 	})); !errors.Is(err, knifer.ErrCodeInvalidInput) {
 		t.Fatalf("UnzipToWithOptions symlink escape error = %v, want invalid input", err)
+	}
+}
+
+func TestFacadeUnzipRejectsSymlinkDirectoryEntryEscape(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("symlink behavior differs on windows")
+	}
+
+	tmp := t.TempDir()
+	dest := filepath.Join(tmp, "dest")
+	outside := filepath.Join(tmp, "outside")
+	if err := os.MkdirAll(dest, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(outside, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(outside, filepath.Join(dest, "link")); err != nil {
+		t.Fatalf("create symlink: %v", err)
+	}
+
+	var buf bytes.Buffer
+	zw := archivezip.NewWriter(&buf)
+	header := &archivezip.FileHeader{Name: "link/"}
+	header.SetMode(os.ModeDir | 0o755)
+	if _, err := zw.CreateHeader(header); err != nil {
+		t.Fatal(err)
+	}
+	if err := zw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	archive := filepath.Join(tmp, "symlink-dir.zip")
+	if err := os.WriteFile(archive, buf.Bytes(), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := vzip.UnzipTo(archive, dest); !errors.Is(err, knifer.ErrCodeInvalidInput) {
+		t.Fatalf("UnzipTo symlink directory entry error = %v, want invalid input", err)
 	}
 }

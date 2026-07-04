@@ -1167,14 +1167,26 @@ func extractFile(f *archivezip.File, destDir string, cfg archiveConfig, remainin
 		return 0, err
 	}
 	if f.FileInfo().IsDir() {
-		perm := cfg.dirPerm
+		perm := cfg.dirPerm.Perm()
 		if cfg.preserveMode {
-			perm = f.Mode()
+			perm = f.Mode().Perm()
 		}
-		return 0, cfg.mkdirAll(target, perm)
+		if err := validateNoSymlinkAncestorEscape(cfg, destDir, target); err != nil {
+			return 0, err
+		}
+		if err := cfg.mkdirAll(target, perm); err != nil {
+			return 0, err
+		}
+		if err := validateNoSymlinkEscape(cfg, destDir, target); err != nil {
+			return 0, err
+		}
+		return 0, nil
 	}
 	parent := filepath.Dir(target)
-	if err := cfg.mkdirAll(parent, cfg.dirPerm); err != nil {
+	if err := validateNoSymlinkAncestorEscape(cfg, destDir, parent); err != nil {
+		return 0, err
+	}
+	if err := cfg.mkdirAll(parent, cfg.dirPerm.Perm()); err != nil {
 		return 0, err
 	}
 	if err := validateNoSymlinkEscape(cfg, destDir, parent); err != nil {
@@ -1185,9 +1197,9 @@ func extractFile(f *archivezip.File, destDir string, cfg archiveConfig, remainin
 		return 0, err
 	}
 	defer func() { _ = r.Close() }()
-	perm := cfg.filePerm
+	perm := cfg.filePerm.Perm()
 	if cfg.preserveMode {
-		perm = f.Mode()
+		perm = f.Mode().Perm()
 	}
 	flag := os.O_CREATE | os.O_WRONLY | os.O_TRUNC
 	if !cfg.overwrite {
@@ -1228,6 +1240,47 @@ func validateNoSymlinkEscape(cfg archiveConfig, destDir, targetParent string) er
 	}
 	if rel == ".." || strings.HasPrefix(rel, ".."+string(os.PathSeparator)) {
 		return invalidInputf("zip entry target escapes destination through symlink")
+	}
+	return nil
+}
+
+func validateNoSymlinkAncestorEscape(cfg archiveConfig, destDir, targetPath string) error {
+	destAbs, err := filepath.Abs(destDir)
+	if err != nil {
+		return err
+	}
+	targetAbs, err := filepath.Abs(targetPath)
+	if err != nil {
+		return err
+	}
+	rel, err := filepath.Rel(destAbs, targetAbs)
+	if err != nil {
+		return err
+	}
+	if rel == ".." || strings.HasPrefix(rel, ".."+string(os.PathSeparator)) {
+		return invalidInputf("zip entry target escapes destination")
+	}
+	current := destAbs
+	if err := validateNoSymlinkEscape(cfg, destAbs, current); err != nil {
+		return err
+	}
+	if rel == "." {
+		return nil
+	}
+	for _, part := range strings.Split(rel, string(os.PathSeparator)) {
+		if part == "" || part == "." {
+			continue
+		}
+		current = filepath.Join(current, part)
+		if _, err := cfg.lstat(current); err != nil {
+			if os.IsNotExist(err) {
+				return nil
+			}
+			return err
+		}
+		if err := validateNoSymlinkEscape(cfg, destAbs, current); err != nil {
+			return err
+		}
 	}
 	return nil
 }

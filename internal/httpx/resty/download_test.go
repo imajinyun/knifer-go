@@ -2,6 +2,9 @@ package resty
 
 import (
 	"bytes"
+	"errors"
+	"io"
+	"io/fs"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
@@ -45,5 +48,26 @@ func TestAdditionalDownloadWrappers(t *testing.T) {
 	}
 	if _, err := DownloadFileSafe(srv.URL, filepath.Join(dir, "blocked.txt")); err == nil {
 		t.Fatal("DownloadFileSafe default policy error = nil")
+	}
+}
+
+func TestDownloadFileReturnsCloseError(t *testing.T) {
+	closeErr := errors.New("close failed")
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("resty-close"))
+	}))
+	defer srv.Close()
+
+	n, err := DownloadFile(srv.URL, "/virtual/resty.txt",
+		WithSaveMkdirAll(func(string, fs.FileMode) error { return nil }),
+		WithSaveOpenFile(func(string, int, fs.FileMode) (io.WriteCloser, error) {
+			return closeErrorWriteCloser{Writer: io.Discard, err: closeErr}, nil
+		}),
+	)
+	if n != int64(len("resty-close")) {
+		t.Fatalf("DownloadFile close error bytes = %d, want %d", n, len("resty-close"))
+	}
+	if !errors.Is(err, closeErr) {
+		t.Fatalf("DownloadFile close error = %v, want close cause", err)
 	}
 }
