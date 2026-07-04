@@ -45,3 +45,12 @@ func TestHMACSignerFactories(t *testing.T) {
 		t.Fatalf("MustHMACSigner alg = %q", got)
 	}
 }
+
+func TestMustHMACSignerPanicsOnInvalidAlgorithm(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Fatal("MustHMACSigner should panic on invalid algorithm")
+		}
+	}()
+	_ = vjwt.MustHMACSigner("bad", []byte("secret"))
+}

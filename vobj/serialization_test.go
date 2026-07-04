@@ -94,6 +94,7 @@ func TestFacadeSerializationOptionsAndValidation(t *testing.T) {
 	if !reflect.DeepEqual(out, src) {
 		t.Fatalf("MustDeserialize = %#v", out)
 	}
+	mustPanic(t, func() { _ = vobj.MustDeserialize[record]([]byte("bad gob")) })
 	if _, err := vobj.DeserializeToWithOptions[record]([]byte("bad"), nil); err == nil {
 		t.Fatal("DeserializeToWithOptions invalid data error = nil")
 	}
@@ -103,6 +104,16 @@ func TestFacadeSerializationOptionsAndValidation(t *testing.T) {
 	if err := vobj.ValidateAcceptedTypes(src, "not-record"); err == nil {
 		t.Fatal("ValidateAcceptedTypes rejected type error = nil")
 	}
+}
+
+func mustPanic(t *testing.T, fn func()) {
+	t.Helper()
+	defer func() {
+		if recover() == nil {
+			t.Fatal("expected panic")
+		}
+	}()
+	fn()
 }
 
 func TestDynamicObjectContractMatrix(t *testing.T) {

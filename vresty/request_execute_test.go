@@ -40,3 +40,12 @@ func TestFacadeRequestFollowRedirectOptions(t *testing.T) {
 		t.Fatalf("Body() = %q, want option headers", got)
 	}
 }
+
+func TestFacadeMustExecutePanicsOnError(t *testing.T) {
+	defer func() {
+		if recover() == nil {
+			t.Fatal("MustExecute should panic on request errors")
+		}
+	}()
+	vresty.NewRequest(vresty.MethodGet, "://bad").MustExecute()
+}
