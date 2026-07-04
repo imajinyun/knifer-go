@@ -158,9 +158,12 @@ func (c *Client) Send(ctx context.Context, message *Message) error {
 	}
 	sender, err := c.senderProvider(c.config)
 	if err != nil {
-		return err
+		return wrapProviderError("mail: create sender failed", err)
 	}
-	return sender.Send(ctx, message)
+	if err := sender.Send(ctx, message); err != nil {
+		return wrapProviderError("mail: send message failed", err)
+	}
+	return nil
 }
 
 // Dial opens a reusable SMTP connection for sending multiple messages.
@@ -170,16 +173,20 @@ func (c *Client) Dial(ctx context.Context) (SendCloser, error) {
 	}
 	sender, err := c.senderProvider(c.config)
 	if err != nil {
-		return nil, err
+		return nil, wrapProviderError("mail: create sender failed", err)
 	}
 	if sendCloser, ok := sender.(SendCloser); ok {
 		return sendCloser, nil
 	}
 	dialer, ok := sender.(senderDialer)
 	if !ok {
-		return nil, errors.New("mail: sender does not support Dial")
+		return nil, wrapProviderError("mail: sender does not support dial", errors.New("mail: sender does not support Dial"))
 	}
-	return dialer.Dial(ctx)
+	sendCloser, err := dialer.Dial(ctx)
+	if err != nil {
+		return nil, wrapProviderError("mail: dial sender failed", err)
+	}
+	return sendCloser, nil
 }
 
 // WithAuth sets SMTP username and password.
@@ -278,14 +285,17 @@ func (s smtpSender) Send(ctx context.Context, message *Message) (err error) {
 	defer cancel()
 	sendCloser, err := s.Dial(ctx)
 	if err != nil {
-		return err
+		return wrapProviderError("mail: open smtp connection failed", err)
 	}
 	defer func() {
-		if closeErr := sendCloser.Close(); err == nil {
-			err = closeErr
+		if closeErr := sendCloser.Close(); err == nil && closeErr != nil {
+			err = wrapProviderError("mail: close smtp connection failed", closeErr)
 		}
 	}()
-	return sendCloser.Send(ctx, message)
+	if err := sendCloser.Send(ctx, message); err != nil {
+		return wrapProviderError("mail: send smtp message failed", err)
+	}
+	return nil
 }
 
 func (s smtpSender) Dial(ctx context.Context) (sendCloser SendCloser, err error) {
@@ -373,7 +383,7 @@ func (s *smtpSendCloser) Send(ctx context.Context, message *Message) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.closed {
-		return errors.New("mail: smtp sender is closed")
+		return wrapProviderError("mail: smtp sender is closed", errors.New("mail: smtp sender is closed"))
 	}
 	stop := context.AfterFunc(ctx, func() { _ = s.conn.Close() })
 	defer stop()
@@ -432,7 +442,7 @@ func (s *smtpSendCloser) Close() error {
 	s.closed = true
 	if err := s.client.Quit(); err != nil {
 		_ = s.client.Close()
-		return fmt.Errorf("smtp quit: %w", err)
+		return wrapProviderError("smtp quit", err)
 	}
 	return nil
 }
@@ -442,7 +452,7 @@ func (s *smtpSendCloser) smtpError(ctx context.Context, operation string, err er
 		s.closed = true
 		return ctxErr
 	}
-	return fmt.Errorf("%s: %w", operation, err)
+	return wrapProviderError(operation, err)
 }
 
 func (s smtpSender) auth() smtp.Auth {
@@ -458,7 +468,7 @@ func (s smtpSender) auth() smtp.Auth {
 func (s smtpSender) dial(ctx context.Context, addr string, tlsConfig *tls.Config) (net.Conn, error) {
 	conn, err := s.config.DialContext(ctx, "tcp", addr)
 	if err != nil {
-		return nil, fmt.Errorf("smtp dial: %w", err)
+		return nil, wrapProviderError("smtp dial", err)
 	}
 	if s.config.TLSPolicy == TLSImplicit {
 		tlsConn := tls.Client(conn, tlsConfig)
@@ -467,7 +477,7 @@ func (s smtpSender) dial(ctx context.Context, addr string, tlsConfig *tls.Config
 		}
 		if err := tlsConn.HandshakeContext(ctx); err != nil {
 			_ = conn.Close()
-			return nil, fmt.Errorf("smtp tls handshake: %w", err)
+			return nil, wrapProviderError("smtp tls handshake", err)
 		}
 		return tlsConn, nil
 	}
@@ -511,5 +521,5 @@ func smtpContextError(ctx context.Context, operation string, err error) error {
 	if ctxErr := ctx.Err(); ctxErr != nil {
 		return ctxErr
 	}
-	return fmt.Errorf("%s: %w", operation, err)
+	return wrapProviderError(operation, err)
 }

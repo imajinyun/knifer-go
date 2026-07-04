@@ -5,8 +5,11 @@ import (
 	"crypto/tls"
 	"errors"
 	"net"
+	"strings"
 	"testing"
 	"time"
+
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 func TestNewClientRejectsBadConfig(t *testing.T) {
@@ -82,7 +85,66 @@ func TestClientOptionsAndProviderErrors(t *testing.T) {
 		t.Fatalf("NewClient(provider) error = %v", err)
 	}
 	var nilCtx context.Context
-	if err := client.Send(nilCtx, msg); !errors.Is(err, providerErr) {
+	err = client.Send(nilCtx, msg)
+	if !errors.Is(err, providerErr) {
 		t.Fatalf("Send(provider error) = %v, want %v", err, providerErr)
+	}
+	if !errors.Is(err, knifer.ErrCodeProviderFailure) {
+		t.Fatalf("Send(provider error) = %v, want ErrCodeProviderFailure", err)
+	}
+	if strings.Contains(err.Error(), "pass") || strings.Contains(err.Error(), "secret") {
+		t.Fatalf("provider error leaked credentials: %v", err)
+	}
+}
+
+func TestClientSenderErrorsPreserveCauseAndCode(t *testing.T) {
+	msg, err := NewMessage(WithFrom("from@example.com"), WithTo("to@example.com"), WithText("body"))
+	if err != nil {
+		t.Fatalf("NewMessage() error = %v", err)
+	}
+	sendErr := errors.New("provider send failed")
+	client, err := NewClient("smtp.example.com", 587,
+		WithAuth("user", "secret-password"),
+		WithSenderProvider(func(Config) (Sender, error) {
+			return SenderFunc(func(context.Context, *Message) error { return sendErr }), nil
+		}),
+	)
+	if err != nil {
+		t.Fatalf("NewClient() error = %v", err)
+	}
+	err = client.Send(context.Background(), msg)
+	if !errors.Is(err, sendErr) {
+		t.Fatalf("Send() error = %v, want send cause", err)
+	}
+	if !errors.Is(err, knifer.ErrCodeProviderFailure) {
+		t.Fatalf("Send() error = %v, want ErrCodeProviderFailure", err)
+	}
+	if strings.Contains(err.Error(), "secret-password") {
+		t.Fatalf("Send() error leaked password: %v", err)
+	}
+}
+
+func TestClientSenderSentinelErrorsKeepOriginalCode(t *testing.T) {
+	msg, err := NewMessage(WithFrom("from@example.com"), WithTo("to@example.com"), WithText("body"))
+	if err != nil {
+		t.Fatalf("NewMessage() error = %v", err)
+	}
+	client, err := NewClient("smtp.example.com", 587,
+		WithSenderProvider(func(Config) (Sender, error) {
+			return SenderFunc(func(context.Context, *Message) error { return ErrTLSRequired }), nil
+		}),
+	)
+	if err != nil {
+		t.Fatalf("NewClient() error = %v", err)
+	}
+	err = client.Send(context.Background(), msg)
+	if !errors.Is(err, ErrTLSRequired) {
+		t.Fatalf("Send() error = %v, want ErrTLSRequired", err)
+	}
+	if !errors.Is(err, knifer.ErrCodeUnsupported) {
+		t.Fatalf("Send() error = %v, want ErrCodeUnsupported", err)
+	}
+	if errors.Is(err, knifer.ErrCodeProviderFailure) {
+		t.Fatalf("Send() error = %v, should not be reclassified as provider failure", err)
 	}
 }
