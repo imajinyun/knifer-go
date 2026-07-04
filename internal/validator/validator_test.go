@@ -92,6 +92,34 @@ func TestValidatorOptionsFallbackToDefaults(t *testing.T) {
 	}
 }
 
+func TestNilValidatorOptionsDoNotClearPreviousMatchers(t *testing.T) {
+	if !IsEmailWithOptions("custom-email", WithEmailMatcher(func(s string) bool {
+		return s == "custom-email"
+	}), WithEmailMatcher(nil)) {
+		t.Fatal("nil email matcher cleared previous matcher")
+	}
+	if !IsMobileWithOptions("custom-mobile", WithMobileMatcher(func(s string) bool {
+		return s == "custom-mobile"
+	}), WithMobileMatcher(nil)) {
+		t.Fatal("nil mobile matcher cleared previous matcher")
+	}
+	if !IsIDCardWithOptions("custom-id", WithIDCardMatcher(func(s string) bool {
+		return s == "custom-id"
+	}), WithIDCardMatcher(nil)) {
+		t.Fatal("nil id card matcher cleared previous matcher")
+	}
+	if !IsChineseWithOptions("custom-chinese", WithChineseMatcher(func(s string) bool {
+		return s == "custom-chinese"
+	}), WithChineseMatcher(nil)) {
+		t.Fatal("nil chinese matcher cleared previous matcher")
+	}
+	if !IsNumberStrWithOptions("custom-number", WithNumberMatcher(func(s string) bool {
+		return s == "custom-number"
+	}), WithNumberMatcher(nil)) {
+		t.Fatal("nil number matcher cleared previous matcher")
+	}
+}
+
 func TestValidatorBoundaryInputs(t *testing.T) {
 	if IsChineseWithOptions("", WithChineseMatcher(func(string) bool { return true })) {
 		t.Fatal("empty string should not be treated as Chinese even when matcher accepts it")

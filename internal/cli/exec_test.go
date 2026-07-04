@@ -61,6 +61,30 @@ func TestRunUsesInjectedRunnerAndClonesMutableInputs(t *testing.T) {
 	}
 }
 
+func TestNilStdinOptionDoesNotClearPreviousReader(t *testing.T) {
+	runner := &fakeRunner{result: ExecResult{ExitCode: 0}}
+	result, err := Run(
+		context.Background(),
+		"tool",
+		nil,
+		WithRunner(runner),
+		WithStdin(strings.NewReader("input")),
+		WithStdin(nil),
+	)
+	if err != nil {
+		t.Fatalf("Run returned error: %v", err)
+	}
+	if result.ExitCode != 0 {
+		t.Fatalf("Run result = %+v", result)
+	}
+	if len(runner.requests) != 1 {
+		t.Fatalf("runner requests = %d", len(runner.requests))
+	}
+	if runner.requests[0].Stdin == nil {
+		t.Fatal("nil WithStdin cleared the previously configured reader")
+	}
+}
+
 func TestRunRejectsEmptyCommandName(t *testing.T) {
 	_, err := Run(context.Background(), "", nil)
 	if !errors.Is(err, ErrEmptyCommand) {

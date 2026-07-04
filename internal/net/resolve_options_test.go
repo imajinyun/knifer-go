@@ -1,6 +1,8 @@
 package net
 
 import (
+	"context"
+	stdnet "net"
 	"testing"
 	"time"
 )
@@ -19,5 +21,21 @@ func TestResolveWithOptions(t *testing.T) {
 	}
 	if len(dns) == 0 {
 		t.Fatal("GetDNSInfoWithOptions returned no A records")
+	}
+}
+
+func TestNilResolverOptionDoesNotClearPreviousResolver(t *testing.T) {
+	resolver := &stdnet.Resolver{
+		Dial: func(context.Context, string, string) (stdnet.Conn, error) {
+			return nil, stdnet.ErrClosed
+		},
+	}
+	cfg, cancel := applyResolveOptions([]ResolveOption{
+		WithResolver(resolver),
+		WithResolver(nil),
+	})
+	defer cancel()
+	if cfg.resolver != resolver {
+		t.Fatal("nil WithResolver cleared previous resolver")
 	}
 }

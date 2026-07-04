@@ -44,6 +44,17 @@ func TestZipFilesWithOptionsFiltersSources(t *testing.T) {
 	}
 }
 
+func TestNilFileFilterOptionDoesNotClearPreviousFilter(t *testing.T) {
+	tmp, src, filter := newZipCreateFilterSource(t)
+	archive := filepath.Join(tmp, "filtered.zip")
+	if err := ZipFilesWithOptions(archive, []string{src}, WithSourceDir(true), WithFileFilter(filter), WithFileFilter(nil)); err != nil {
+		t.Fatalf("ZipFilesWithOptions: %v", err)
+	}
+	if _, err := GetBytes(archive, "src/skip.log"); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("skip.log err = %v, want not exist", err)
+	}
+}
+
 func TestZipToWriterWithOptionsFiltersSources(t *testing.T) {
 	_, src, filter := newZipCreateFilterSource(t)
 	var buf bytes.Buffer

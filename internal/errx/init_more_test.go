@@ -168,6 +168,27 @@ func TestApplyInitOptionsNilGuards(t *testing.T) {
 	}
 }
 
+func TestNilInitOptionsDoNotClearPreviousProviders(t *testing.T) {
+	var out discardRecorder
+	formatter := &emptyFormatter{}
+	cfg := applyInitOptions([]InitOption{
+		WithLogOutput(&out),
+		WithLogOutput(nil),
+		WithLogFormatter(formatter),
+		WithLogFormatter(nil),
+	})
+	if cfg.output != &out {
+		t.Fatal("nil WithLogOutput cleared previous writer")
+	}
+	if cfg.formatter != formatter {
+		t.Fatal("nil WithLogFormatter cleared previous formatter")
+	}
+}
+
+type discardRecorder struct{}
+
+func (discardRecorder) Write(p []byte) (int, error) { return len(p), nil }
+
 func TestInitWithOptionsSentryClientFailure(t *testing.T) {
 	silenceLogrus(t)
 

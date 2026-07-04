@@ -25,7 +25,11 @@ type FlagParserOption func(*flagParserConfig)
 
 // WithFlagOutput sets where parser usage text is written.
 func WithFlagOutput(w io.Writer) FlagParserOption {
-	return func(c *flagParserConfig) { c.output = w }
+	return func(c *flagParserConfig) {
+		if w != nil {
+			c.output = w
+		}
+	}
 }
 
 // FlagParser wraps flag.FlagSet with deterministic error handling.

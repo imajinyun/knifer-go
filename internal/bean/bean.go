@@ -134,7 +134,9 @@ func WithFloatParser(parser func(string, int) (float64, error)) Option {
 // WithDecodeHook sets a per-call hook for custom type-to-type conversions.
 func WithDecodeHook(hook DecodeHookFunc) Option {
 	return func(o *Options) {
-		o.DecodeHook = hook
+		if hook != nil {
+			o.DecodeHook = hook
+		}
 	}
 }
 

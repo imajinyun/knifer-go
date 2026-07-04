@@ -121,7 +121,9 @@ func WithBindFloatParser(parser func(string, int) (float64, error)) BindOption {
 // WithBindDecodeHook sets a per-call hook for custom bind type conversions.
 func WithBindDecodeHook(hook DecodeHookFunc) BindOption {
 	return func(c *bindConfig) {
-		c.decodeHook = hook
+		if hook != nil {
+			c.decodeHook = hook
+		}
 	}
 }
 

@@ -186,7 +186,11 @@ func WithResolveNetwork(network string) ResolveOption {
 
 // WithResolver sets the resolver used by DNS lookups.
 func WithResolver(resolver *stdnet.Resolver) ResolveOption {
-	return func(c *resolveConfig) { c.resolver = resolver }
+	return func(c *resolveConfig) {
+		if resolver != nil {
+			c.resolver = resolver
+		}
+	}
 }
 
 // WithDNSTypes sets the DNS record types looked up by GetDNSInfoWithOptions.

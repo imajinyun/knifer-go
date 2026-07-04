@@ -67,6 +67,36 @@ func TestCaptchaOptionsAndWriteOptions(t *testing.T) {
 	}
 }
 
+func TestNilCaptchaOptionsDoNotClearPreviousProviders(t *testing.T) {
+	colorCalls := 0
+	randomCalls := 0
+	c := NewLineCaptchaWithOptions(100, 40,
+		WithGenerator(fixedGenerator{code: "ABCD"}),
+		WithGenerator(nil),
+		WithInterfereCount(0),
+		WithRandomInt(func(max int) int {
+			randomCalls++
+			return 0
+		}),
+		WithRandomInt(nil),
+		WithColorFunc(func() color.Color {
+			colorCalls++
+			return color.RGBA{R: 1, G: 2, B: 3, A: 255}
+		}),
+		WithColorFunc(nil),
+	)
+	c.CreateCode()
+	if c.Code() != "ABCD" {
+		t.Fatalf("nil WithGenerator cleared previous generator: code=%q", c.Code())
+	}
+	if colorCalls != len("ABCD") {
+		t.Fatalf("nil WithColorFunc cleared previous color func: calls=%d", colorCalls)
+	}
+	if randomCalls != 0 {
+		t.Fatalf("random calls = %d, want 0 when interference is disabled and color func is set", randomCalls)
+	}
+}
+
 func TestCaptchaWriteProviderOptions(t *testing.T) {
 	c := NewLineCaptchaWithOptions(100, 40, WithGenerator(fixedGenerator{code: "ABCD"}), WithInterfereCount(0))
 	c.CreateCode()

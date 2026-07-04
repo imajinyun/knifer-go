@@ -39,22 +39,38 @@ type IDCardOption func(*idCardConfig)
 
 // WithDigitsMatcher sets the decimal-digits matcher used by mainland ID card helpers.
 func WithDigitsMatcher(matcher func(string) bool) IDCardOption {
-	return func(c *idCardConfig) { c.digits = matcher }
+	return func(c *idCardConfig) {
+		if matcher != nil {
+			c.digits = matcher
+		}
+	}
 }
 
 // WithTWCardMatcher sets the format matcher used by Taiwan ID card helpers.
 func WithTWCardMatcher(matcher func(string) bool) IDCardOption {
-	return func(c *idCardConfig) { c.tw = matcher }
+	return func(c *idCardConfig) {
+		if matcher != nil {
+			c.tw = matcher
+		}
+	}
 }
 
 // WithMacauCardMatcher sets the format matcher used by Macau ID card helpers.
 func WithMacauCardMatcher(matcher func(string) bool) IDCardOption {
-	return func(c *idCardConfig) { c.macau = matcher }
+	return func(c *idCardConfig) {
+		if matcher != nil {
+			c.macau = matcher
+		}
+	}
 }
 
 // WithHKCardMatcher sets the format matcher used by Hong Kong ID card helpers.
 func WithHKCardMatcher(matcher func(string) bool) IDCardOption {
-	return func(c *idCardConfig) { c.hk = matcher }
+	return func(c *idCardConfig) {
+		if matcher != nil {
+			c.hk = matcher
+		}
+	}
 }
 
 // WithAgeTime sets the time used by AgeWithOptions.

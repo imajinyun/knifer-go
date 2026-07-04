@@ -178,8 +178,10 @@ func WithSourceDir(withSrcDir bool) ArchiveOption {
 // WithFileFilter sets the source path filter used by newly created ZIP archives.
 func WithFileFilter(filter FileFilter) ArchiveOption {
 	return func(c *archiveConfig) {
-		c.filter = filter
-		c.setFilter = true
+		if filter != nil {
+			c.filter = filter
+			c.setFilter = true
+		}
 	}
 }
 

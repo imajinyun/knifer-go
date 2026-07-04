@@ -654,7 +654,7 @@ func doResourceRequest(raw, method string, cfg resourceConfig) (*http.Response, 
 		client = &clone
 	}
 	if cfg.rejectPrivate {
-		client = clientWithSafeTransport(client, cfg)
+		client = clientWithBoundaryTransport(client, cfg)
 	}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -718,7 +718,7 @@ func isPrivateHost(ctx context.Context, lookupIP func(context.Context, string) (
 	return private, nil
 }
 
-func clientWithSafeTransport(client *http.Client, cfg resourceConfig) *http.Client {
+func clientWithBoundaryTransport(client *http.Client, cfg resourceConfig) *http.Client {
 	clone := *client
 	base := client.Transport
 	if base == nil {

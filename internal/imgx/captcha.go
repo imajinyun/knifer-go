@@ -67,7 +67,11 @@ type CaptchaOption func(*captchaConfig)
 
 // WithGenerator sets the captcha code generator.
 func WithGenerator(generator CodeGenerator) CaptchaOption {
-	return func(c *captchaConfig) { c.generator = generator }
+	return func(c *captchaConfig) {
+		if generator != nil {
+			c.generator = generator
+		}
+	}
 }
 
 // WithBackground sets the captcha background color.
@@ -106,12 +110,20 @@ func WithGIFDelay(delay int) CaptchaOption {
 
 // WithRandomInt sets the random integer function used while rendering captcha images.
 func WithRandomInt(randomInt func(max int) int) CaptchaOption {
-	return func(c *captchaConfig) { c.randomInt = randomInt }
+	return func(c *captchaConfig) {
+		if randomInt != nil {
+			c.randomInt = randomInt
+		}
+	}
 }
 
 // WithColorFunc sets the color function used while rendering captcha images.
 func WithColorFunc(colorFunc func() color.Color) CaptchaOption {
-	return func(c *captchaConfig) { c.colorFunc = colorFunc }
+	return func(c *captchaConfig) {
+		if colorFunc != nil {
+			c.colorFunc = colorFunc
+		}
+	}
 }
 
 func applyCaptchaOptions(c *AbstractCaptcha, opts []CaptchaOption) captchaConfig {

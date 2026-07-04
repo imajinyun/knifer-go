@@ -25,12 +25,20 @@ type EmojiOption func(*emojiConfig)
 
 // WithEmojiMatcher sets the matcher used by ContainsEmojiWithOptions.
 func WithEmojiMatcher(matcher func(string) bool) EmojiOption {
-	return func(c *emojiConfig) { c.matcher = matcher }
+	return func(c *emojiConfig) {
+		if matcher != nil {
+			c.matcher = matcher
+		}
+	}
 }
 
 // WithEmojiReplacer sets the replacer used by RemoveEmojiWithOptions.
 func WithEmojiReplacer(replacer func(string) string) EmojiOption {
-	return func(c *emojiConfig) { c.replacer = replacer }
+	return func(c *emojiConfig) {
+		if replacer != nil {
+			c.replacer = replacer
+		}
+	}
 }
 
 func applyEmojiOptions(opts []EmojiOption) emojiConfig {

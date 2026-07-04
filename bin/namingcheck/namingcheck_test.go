@@ -44,6 +44,38 @@ func BadWriteClose() error {
 	return nil
 }
 `)
+	writeFile(t, root, "internal/httpx/http/bad_safe.go", `package http
+
+func SafeButNotBoundary() {}
+`)
+	writeFile(t, root, "internal/provider/bad.go", `package provider
+
+type Option func(*config)
+type Provider interface{ Provide() }
+type config struct {
+	provider Provider
+	lookup func(string) string
+	name string
+}
+
+func WithProvider(provider Provider) Option {
+	return func(c *config) {
+		c.provider = provider
+	}
+}
+
+func WithLookup(lookup func(string) string) Option {
+	return func(c *config) {
+		c.lookup = lookup
+	}
+}
+
+func WithName(name string) Option {
+	return func(c *config) {
+		c.name = name
+	}
+}
+`)
 	writeFile(t, root, "bad/bad_test.go", `package bad
 
 func TestSomething(t any) {}
@@ -61,10 +93,16 @@ func TestSomething(t any) {}
 		"WithBroken: With functions must return an option type",
 		"LooksSafe: Safe names are reserved for trust-boundary APIs",
 		"BadWriteClose: write-path Close errors must be handled",
+		"SafeButNotBoundary: Safe names are reserved for trust-boundary APIs",
+		"WithProvider: nil provider/function option parameters must not overwrite existing providers",
+		"WithLookup: nil provider/function option parameters must not overwrite existing providers",
 	} {
 		if !strings.Contains(got, want) {
 			t.Fatalf("violations =\n%s\nwant %q", got, want)
 		}
+	}
+	if strings.Contains(got, "WithName: nil provider/function option parameters") {
+		t.Fatalf("violations =\n%s\nWithName must not be treated as a provider/function option", got)
 	}
 }
 
@@ -97,6 +135,46 @@ func GoodWriteClose() (err error) {
 		}
 	}()
 	return nil
+}
+`)
+	writeFile(t, root, "internal/httpx/http/ok_safe.go", `package http
+
+func GetSafe(rawURL string) any { return nil }
+func DownloadFileSafeWithOptions(rawURL, dest string) (int64, error) { return 0, nil }
+`)
+	writeFile(t, root, "internal/provider/ok.go", `package provider
+
+type Option func(*config)
+type Provider interface{ Provide() }
+type config struct {
+	provider Provider
+	lookup func(string) string
+	clock func() int
+}
+
+func WithProvider(provider Provider) Option {
+	return func(c *config) {
+		if provider != nil {
+			c.provider = provider
+		}
+	}
+}
+
+func WithLookup(lookup func(string) string) Option {
+	return func(c *config) {
+		if nil != lookup {
+			c.lookup = lookup
+		}
+	}
+}
+
+func WithClock(clock func() int) Option {
+	return func(c *config) {
+		if clock == nil {
+			return
+		}
+		c.clock = clock
+	}
 }
 `)
 	writeFile(t, root, "ok/ok_test.go", `package http

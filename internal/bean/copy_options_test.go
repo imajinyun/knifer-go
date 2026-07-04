@@ -87,6 +87,33 @@ func TestDecodeWithDecodeHook(t *testing.T) {
 	}
 }
 
+func TestNilDecodeHookOptionDoesNotClearPreviousHook(t *testing.T) {
+	type target struct {
+		Created time.Time
+	}
+	var dst target
+	called := 0
+	err := Decode(map[string]any{"created": "2026-06-22"}, &dst,
+		WithDecodeHook(func(from, to reflect.Type, value any) (any, error) {
+			called++
+			if from.Kind() == reflect.String && to == reflect.TypeOf(time.Time{}) {
+				return time.Parse(time.DateOnly, value.(string))
+			}
+			return value, nil
+		}),
+		WithDecodeHook(nil),
+	)
+	if err != nil {
+		t.Fatalf("Decode() with nil hook after custom hook error = %v", err)
+	}
+	if called != 1 {
+		t.Fatalf("hook calls = %d, want 1", called)
+	}
+	if got := dst.Created.Format(time.DateOnly); got != "2026-06-22" {
+		t.Fatalf("Created = %q", got)
+	}
+}
+
 func TestDecodeWithComposedDecodeHooks(t *testing.T) {
 	type target struct {
 		Created time.Time

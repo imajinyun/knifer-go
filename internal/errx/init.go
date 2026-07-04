@@ -46,11 +46,21 @@ func WithSentryDSN(dsn string) InitOption { return func(c *initConfig) { c.dsn =
 func WithSentryEnvKey(key string) InitOption { return func(c *initConfig) { c.envKey = key } }
 
 // WithLogOutput sets the logrus output writer.
-func WithLogOutput(output io.Writer) InitOption { return func(c *initConfig) { c.output = output } }
+func WithLogOutput(output io.Writer) InitOption {
+	return func(c *initConfig) {
+		if output != nil {
+			c.output = output
+		}
+	}
+}
 
 // WithLogFormatter sets the logrus formatter.
 func WithLogFormatter(formatter logrus.Formatter) InitOption {
-	return func(c *initConfig) { c.formatter = formatter }
+	return func(c *initConfig) {
+		if formatter != nil {
+			c.formatter = formatter
+		}
+	}
 }
 
 // WithReportCaller controls whether logrus records caller information.

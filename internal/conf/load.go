@@ -322,7 +322,7 @@ func loadRemote(rawURL string, opts LoadOptions) (*Conf, error) {
 		client = &clone
 	}
 	if opts.RejectPrivateRemoteHosts {
-		client = clientWithSafeTransport(client, opts)
+		client = clientWithBoundaryTransport(client, opts)
 	}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -406,7 +406,7 @@ func isPrivateHost(ctx context.Context, lookupIP func(context.Context, string) (
 	return httpboundary.IsPrivateHost(ctx, lookupIP, host)
 }
 
-func clientWithSafeTransport(client *http.Client, opts LoadOptions) *http.Client {
+func clientWithBoundaryTransport(client *http.Client, opts LoadOptions) *http.Client {
 	clone := *client
 	base := client.Transport
 	if base == nil {

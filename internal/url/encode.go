@@ -65,7 +65,7 @@ func EncodePathSegmentWithOptions(s string, opts ...EncodeOption) string {
 func EncodePath(s string) string { return encodePathKeepSlash(s) }
 
 // EncodeFragment escapes URL fragment text.
-func EncodeFragment(s string) string { return encodeWith(s, isFragmentSafe, false) }
+func EncodeFragment(s string) string { return encodeWith(s, isFragmentUnescaped, false) }
 
 // FormURLEncode escapes text for application/x-www-form-urlencoded usage.
 func FormURLEncode(s string) string { return FormURLEncodeWithOptions(s) }
@@ -99,6 +99,6 @@ func isUnreserved(c byte) bool {
 	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '-' || c == '.' || c == '_' || c == '~'
 }
 
-func isFragmentSafe(c byte) bool {
+func isFragmentUnescaped(c byte) bool {
 	return isUnreserved(c) || strings.ContainsRune("!$&'()*+,;=:@/?", rune(c))
 }

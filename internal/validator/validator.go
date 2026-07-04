@@ -28,26 +28,48 @@ type config struct {
 type Option func(*config)
 
 // WithEmailMatcher sets the matcher used by IsEmailWithOptions.
-func WithEmailMatcher(matcher func(string) bool) Option { return func(c *config) { c.email = matcher } }
+func WithEmailMatcher(matcher func(string) bool) Option {
+	return func(c *config) {
+		if matcher != nil {
+			c.email = matcher
+		}
+	}
+}
 
 // WithMobileMatcher sets the matcher used by IsMobileWithOptions.
 func WithMobileMatcher(matcher func(string) bool) Option {
-	return func(c *config) { c.mobile = matcher }
+	return func(c *config) {
+		if matcher != nil {
+			c.mobile = matcher
+		}
+	}
 }
 
 // WithIDCardMatcher sets the matcher used by IsIDCardWithOptions.
 func WithIDCardMatcher(matcher func(string) bool) Option {
-	return func(c *config) { c.idCard = matcher }
+	return func(c *config) {
+		if matcher != nil {
+			c.idCard = matcher
+		}
+	}
 }
 
 // WithChineseMatcher sets the matcher used by IsChineseWithOptions.
 func WithChineseMatcher(matcher func(string) bool) Option {
-	return func(c *config) { c.chinese = matcher }
+	return func(c *config) {
+		if matcher != nil {
+			c.chinese = matcher
+		}
+	}
 }
 
 // WithNumberMatcher sets the matcher used by IsNumberStrWithOptions.
 func WithNumberMatcher(matcher func(string) bool) Option {
-	return func(c *config) { c.number = matcher }
+	return func(c *config) {
+		if matcher != nil {
+			c.number = matcher
+		}
+	}
 }
 
 func applyOptions(opts []Option) config {

@@ -82,7 +82,11 @@ func WithEnv(env []string) ExecOption {
 
 // WithStdin sets the stdin reader for the command.
 func WithStdin(r io.Reader) ExecOption {
-	return func(c *execConfig) { c.stdin = r }
+	return func(c *execConfig) {
+		if r != nil {
+			c.stdin = r
+		}
+	}
 }
 
 // WithMaxOutputBytes limits captured stdout and stderr bytes. A non-positive value means unlimited.

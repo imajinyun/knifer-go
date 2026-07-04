@@ -95,6 +95,35 @@ func TestBindWithDecodeHook(t *testing.T) {
 	}
 }
 
+func TestNilBindDecodeHookOptionDoesNotClearPreviousHook(t *testing.T) {
+	s := New()
+	s.Set("start", "2026-06-22")
+	type target struct {
+		Start time.Time `conf:"start"`
+	}
+	var cfg target
+	called := 0
+	err := s.BindWithOptions(&cfg,
+		WithBindDecodeHook(func(from, to reflect.Type, value any) (any, error) {
+			called++
+			if from.Kind() == reflect.String && to == reflect.TypeOf(time.Time{}) {
+				return time.Parse(time.DateOnly, value.(string))
+			}
+			return value, nil
+		}),
+		WithBindDecodeHook(nil),
+	)
+	if err != nil {
+		t.Fatalf("BindWithOptions() with nil hook after custom hook error = %v", err)
+	}
+	if called != 1 {
+		t.Fatalf("hook calls = %d, want 1", called)
+	}
+	if got := cfg.Start.Format(time.DateOnly); got != "2026-06-22" {
+		t.Fatalf("Start = %q", got)
+	}
+}
+
 func TestBindDecodeHookRejectsUnsafeReflectNumericConversion(t *testing.T) {
 	s := New()
 	s.Set("count", "ignored")

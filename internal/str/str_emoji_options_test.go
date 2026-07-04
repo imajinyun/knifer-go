@@ -24,6 +24,19 @@ func TestWithEmojiMatcher(t *testing.T) {
 	}
 }
 
+func TestNilEmojiMatcherDoesNotClearPreviousMatcher(t *testing.T) {
+	customMatcherCalled := false
+	if !ContainsEmojiWithOptions("custom", WithEmojiMatcher(func(s string) bool {
+		customMatcherCalled = true
+		return s == "custom"
+	}), WithEmojiMatcher(nil)) {
+		t.Fatal("nil WithEmojiMatcher cleared previous matcher")
+	}
+	if !customMatcherCalled {
+		t.Fatal("custom matcher was not called")
+	}
+}
+
 func TestWithEmojiReplacer(t *testing.T) {
 	customReplacerCalled := false
 	opts := []EmojiOption{WithEmojiReplacer(func(s string) string {
@@ -40,5 +53,19 @@ func TestWithEmojiReplacer(t *testing.T) {
 	opt := WithEmojiReplacer(func(s string) string { return "" })
 	if opt == nil {
 		t.Fatal("WithEmojiReplacer returned nil")
+	}
+}
+
+func TestNilEmojiReplacerDoesNotClearPreviousReplacer(t *testing.T) {
+	customReplacerCalled := false
+	got := RemoveEmojiWithOptions("hi", WithEmojiReplacer(func(string) string {
+		customReplacerCalled = true
+		return "custom"
+	}), WithEmojiReplacer(nil))
+	if got != "custom" {
+		t.Fatalf("nil WithEmojiReplacer cleared previous replacer: got %q", got)
+	}
+	if !customReplacerCalled {
+		t.Fatal("custom replacer was not called")
 	}
 }

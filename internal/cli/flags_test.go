@@ -61,3 +61,13 @@ func TestFlagParserWritesUsageToInjectedWriter(t *testing.T) {
 		t.Fatalf("usage output = %q", out.String())
 	}
 }
+
+func TestNilFlagOutputDoesNotClearPreviousWriter(t *testing.T) {
+	var out bytes.Buffer
+	parser := NewFlagParser("serve", WithFlagOutput(&out), WithFlagOutput(nil))
+	parser.String("host", "127.0.0.1", "host to bind")
+	parser.Usage()
+	if !bytes.Contains(out.Bytes(), []byte("host to bind")) {
+		t.Fatalf("usage output = %q", out.String())
+	}
+}
