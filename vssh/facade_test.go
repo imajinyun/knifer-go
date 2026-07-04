@@ -3,8 +3,10 @@ package vssh_test
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 
+	knifer "github.com/imajinyun/knifer-go"
 	"github.com/imajinyun/knifer-go/vssh"
 )
 
@@ -109,5 +111,24 @@ func TestFacadeExposesErrors(t *testing.T) {
 	_, err = vssh.Upload(context.Background(), providerFunc{}, vssh.UploadRequest{RemotePath: "/pub/file.txt", Content: []byte("hello"), MaxBytes: 4})
 	if !errors.Is(err, vssh.ErrTransferLimitExceeded) {
 		t.Fatalf("Upload error = %v, want ErrTransferLimitExceeded", err)
+	}
+}
+
+func TestFacadeProviderErrorContract(t *testing.T) {
+	cause := errors.New("backend unavailable")
+	secretPath := "/secret/private.txt"
+	_, err := vssh.Download(context.Background(), providerFunc{
+		download: func(context.Context, vssh.DownloadRequest) (vssh.DownloadResponse, error) {
+			return vssh.DownloadResponse{}, cause
+		},
+	}, vssh.DownloadRequest{RemotePath: secretPath})
+	if !errors.Is(err, cause) {
+		t.Fatalf("Download error = %v, want provider cause", err)
+	}
+	if !errors.Is(err, knifer.ErrCodeProviderFailure) {
+		t.Fatalf("Download error = %v, want ErrCodeProviderFailure", err)
+	}
+	if strings.Contains(err.Error(), secretPath) || strings.Contains(err.Error(), "secret") {
+		t.Fatalf("Download error leaked remote path or secret: %v", err)
 	}
 }

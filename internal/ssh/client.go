@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 // ErrMissingProvider reports that an SSH/SFTP call has no configured provider.
@@ -55,7 +57,7 @@ func (c *Client) Run(ctx context.Context, request CommandRequest) (CommandRespon
 	}
 	response, err := c.provider.Run(ctx, request.Clone())
 	if err != nil {
-		return CommandResponse{}, fmt.Errorf("ssh run provider: %w", err)
+		return CommandResponse{}, knifer.WrapError(knifer.ErrCodeProviderFailure, "ssh run provider failed", err)
 	}
 	if request.MaxOutputBytes > 0 {
 		outputBytes := int64(len(response.Stdout)) + int64(len(response.Stderr))
@@ -76,7 +78,7 @@ func (c *Client) List(ctx context.Context, request ListRequest) (ListResponse, e
 	}
 	response, err := c.provider.List(ctx, request.Clone())
 	if err != nil {
-		return ListResponse{}, fmt.Errorf("ssh list provider: %w", err)
+		return ListResponse{}, knifer.WrapError(knifer.ErrCodeProviderFailure, "ssh list provider failed", err)
 	}
 	return response.Clone(), nil
 }
@@ -91,7 +93,7 @@ func (c *Client) Download(ctx context.Context, request DownloadRequest) (Downloa
 	}
 	response, err := c.provider.Download(ctx, request.Clone())
 	if err != nil {
-		return DownloadResponse{}, fmt.Errorf("ssh download provider: %w", err)
+		return DownloadResponse{}, knifer.WrapError(knifer.ErrCodeProviderFailure, "ssh download provider failed", err)
 	}
 	if request.MaxBytes > 0 && int64(len(response.Content)) > request.MaxBytes {
 		return DownloadResponse{}, fmt.Errorf("%w: download content has %d bytes, max %d", ErrTransferLimitExceeded, len(response.Content), request.MaxBytes)
@@ -109,7 +111,7 @@ func (c *Client) Upload(ctx context.Context, request UploadRequest) (UploadRespo
 	}
 	response, err := c.provider.Upload(ctx, request.Clone())
 	if err != nil {
-		return UploadResponse{}, fmt.Errorf("ssh upload provider: %w", err)
+		return UploadResponse{}, knifer.WrapError(knifer.ErrCodeProviderFailure, "ssh upload provider failed", err)
 	}
 	if request.MaxBytes > 0 && response.Size > request.MaxBytes {
 		return UploadResponse{}, fmt.Errorf("%w: uploaded %d bytes, max %d", ErrTransferLimitExceeded, response.Size, request.MaxBytes)

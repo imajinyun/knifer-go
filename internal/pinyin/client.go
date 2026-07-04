@@ -3,7 +3,8 @@ package pinyin
 import (
 	"context"
 	"errors"
-	"fmt"
+
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 // ErrMissingProvider reports that a pinyin call has no configured provider.
@@ -53,7 +54,7 @@ func (c *Client) Convert(ctx context.Context, request ConvertRequest) (ConvertRe
 	}
 	response, err := c.provider.Convert(ctx, request.Clone())
 	if err != nil {
-		return ConvertResponse{}, fmt.Errorf("pinyin convert provider: %w", err)
+		return ConvertResponse{}, knifer.WrapError(knifer.ErrCodeProviderFailure, "pinyin convert provider failed", err)
 	}
 	return response.Clone(), nil
 }
@@ -68,7 +69,7 @@ func (c *Client) Initials(ctx context.Context, request InitialsRequest) (Initial
 	}
 	response, err := c.provider.Initials(ctx, request.Clone())
 	if err != nil {
-		return InitialsResponse{}, fmt.Errorf("pinyin initials provider: %w", err)
+		return InitialsResponse{}, knifer.WrapError(knifer.ErrCodeProviderFailure, "pinyin initials provider failed", err)
 	}
 	return response.Clone(), nil
 }

@@ -3,8 +3,10 @@ package vhan_test
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 
+	knifer "github.com/imajinyun/knifer-go"
 	"github.com/imajinyun/knifer-go/vhan"
 )
 
@@ -67,5 +69,24 @@ func TestFacadeExposesErrors(t *testing.T) {
 	_, err = vhan.Initials(context.Background(), providerFunc{}, vhan.InitialsRequest{Text: "中国", MaxInputRunes: 1})
 	if !errors.Is(err, vhan.ErrInputLimitExceeded) {
 		t.Fatalf("Initials error = %v, want ErrInputLimitExceeded", err)
+	}
+}
+
+func TestFacadeProviderErrorContract(t *testing.T) {
+	cause := errors.New("provider unavailable")
+	secretText := "secret中国"
+	_, err := vhan.Convert(context.Background(), providerFunc{
+		convert: func(context.Context, vhan.ConvertRequest) (vhan.ConvertResponse, error) {
+			return vhan.ConvertResponse{}, cause
+		},
+	}, vhan.ConvertRequest{Text: secretText})
+	if !errors.Is(err, cause) {
+		t.Fatalf("Convert error = %v, want provider cause", err)
+	}
+	if !errors.Is(err, knifer.ErrCodeProviderFailure) {
+		t.Fatalf("Convert error = %v, want ErrCodeProviderFailure", err)
+	}
+	if strings.Contains(err.Error(), secretText) || strings.Contains(err.Error(), "secret") {
+		t.Fatalf("Convert error leaked input text: %v", err)
 	}
 }

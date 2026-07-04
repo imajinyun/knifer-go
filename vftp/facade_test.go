@@ -3,8 +3,10 @@ package vftp_test
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 
+	knifer "github.com/imajinyun/knifer-go"
 	"github.com/imajinyun/knifer-go/vftp"
 )
 
@@ -83,5 +85,24 @@ func TestFacadeExposesErrors(t *testing.T) {
 	_, err = vftp.Upload(context.Background(), providerFunc{}, vftp.UploadRequest{RemotePath: "/pub/file.txt", Content: []byte("hello"), MaxBytes: 4})
 	if !errors.Is(err, vftp.ErrTransferLimitExceeded) {
 		t.Fatalf("Upload error = %v, want ErrTransferLimitExceeded", err)
+	}
+}
+
+func TestFacadeProviderErrorContract(t *testing.T) {
+	cause := errors.New("backend unavailable")
+	secretPath := "/secret/private.txt"
+	_, err := vftp.Download(context.Background(), providerFunc{
+		download: func(context.Context, vftp.DownloadRequest) (vftp.DownloadResponse, error) {
+			return vftp.DownloadResponse{}, cause
+		},
+	}, vftp.DownloadRequest{RemotePath: secretPath})
+	if !errors.Is(err, cause) {
+		t.Fatalf("Download error = %v, want provider cause", err)
+	}
+	if !errors.Is(err, knifer.ErrCodeProviderFailure) {
+		t.Fatalf("Download error = %v, want ErrCodeProviderFailure", err)
+	}
+	if strings.Contains(err.Error(), secretPath) || strings.Contains(err.Error(), "secret") {
+		t.Fatalf("Download error leaked remote path or secret: %v", err)
 	}
 }

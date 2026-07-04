@@ -3,8 +3,9 @@ package ai
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strings"
+
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 var (
@@ -72,7 +73,7 @@ func (c *Client) Chat(ctx context.Context, request ChatRequest) (ChatResponse, e
 	}
 	response, err := c.chatProvider.Chat(ctx, request.Clone())
 	if err != nil {
-		return ChatResponse{}, fmt.Errorf("chat provider: %w", err)
+		return ChatResponse{}, knifer.WrapError(knifer.ErrCodeProviderFailure, "chat provider failed", err)
 	}
 	return response.Clone(), nil
 }
@@ -87,7 +88,7 @@ func (c *Client) Embed(ctx context.Context, request EmbeddingRequest) (Embedding
 	}
 	response, err := c.embeddingProvider.Embed(ctx, request.Clone())
 	if err != nil {
-		return EmbeddingResponse{}, fmt.Errorf("embedding provider: %w", err)
+		return EmbeddingResponse{}, knifer.WrapError(knifer.ErrCodeProviderFailure, "embedding provider failed", err)
 	}
 	return response.Clone(), nil
 }
