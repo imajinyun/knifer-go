@@ -31,6 +31,19 @@ func MustBroken() int { return 1 }
 func WithBroken() int { return 1 }
 func LooksSafe() {}
 `)
+	writeFile(t, root, "internal/file/bad.go", `package file
+
+import "os"
+
+func BadWriteClose() error {
+	f, err := os.OpenFile("out.txt", os.O_CREATE|os.O_WRONLY, 0o644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	return nil
+}
+`)
 	writeFile(t, root, "bad/bad_test.go", `package bad
 
 func TestSomething(t any) {}
@@ -47,6 +60,7 @@ func TestSomething(t any) {}
 		"MustBroken: Must functions must have a test or example referencing the function",
 		"WithBroken: With functions must return an option type",
 		"LooksSafe: Safe names are reserved for trust-boundary APIs",
+		"BadWriteClose: write-path Close errors must be handled",
 	} {
 		if !strings.Contains(got, want) {
 			t.Fatalf("violations =\n%s\nwant %q", got, want)
@@ -67,6 +81,23 @@ func MustParse() int { panic("bad") }
 func WithHeader() RequestOption { return nil }
 func GetSafe() *Request { return nil }
 func (r *Request) WithBuilderStyle() *Request { return r }
+`)
+	writeFile(t, root, "internal/file/ok.go", `package file
+
+import "os"
+
+func GoodWriteClose() (err error) {
+	f, err := os.OpenFile("out.txt", os.O_CREATE|os.O_WRONLY, 0o644)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if closeErr := f.Close(); err == nil {
+			err = closeErr
+		}
+	}()
+	return nil
+}
 `)
 	writeFile(t, root, "ok/ok_test.go", `package http
 
