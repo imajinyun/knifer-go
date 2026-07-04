@@ -97,8 +97,7 @@ func (c *TimedCache[K, V]) CancelPruneSchedule() {
 		return
 	}
 	c.pruneStop = nil
-	c.pruneMu.Unlock()
-
 	close(stopCh)
 	c.pruneWG.Wait()
+	c.pruneMu.Unlock()
 }
