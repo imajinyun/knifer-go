@@ -124,6 +124,7 @@ func providerLikeName(name string) bool {
 		"request",
 		"decoder",
 		"encoder",
+		"exec",
 		"finalizer",
 		"listener",
 		"client",
@@ -176,6 +177,8 @@ func stmtAssignsUnguardedParam(stmt ast.Stmt, params, guarded map[string]bool) b
 	switch s := stmt.(type) {
 	case *ast.AssignStmt:
 		return assignWritesUnguardedProviderParam(s, params, guarded)
+	case *ast.ExprStmt:
+		return exprUsesUnguardedProviderParam(s.X, params, guarded)
 	case *ast.BlockStmt:
 		return blockAssignsUnguardedParam(s, params, guarded)
 	case *ast.IfStmt:
@@ -200,6 +203,20 @@ func stmtAssignsUnguardedParam(stmt ast.Stmt, params, guarded map[string]bool) b
 	default:
 		return false
 	}
+}
+
+func exprUsesUnguardedProviderParam(expr ast.Expr, params, guarded map[string]bool) bool {
+	call, ok := expr.(*ast.CallExpr)
+	if !ok || !selectorCallTarget(call.Fun) {
+		return false
+	}
+	for _, arg := range call.Args {
+		ident, ok := arg.(*ast.Ident)
+		if ok && params[ident.Name] && !guarded[ident.Name] {
+			return true
+		}
+	}
+	return false
 }
 
 func elseAssignsUnguardedParam(stmt ast.Stmt, params, guarded map[string]bool) bool {
@@ -248,6 +265,15 @@ func assignWritesUnguardedProviderParam(assign *ast.AssignStmt, params, guarded 
 }
 
 func selectorAssignTarget(expr ast.Expr) bool {
+	sel, ok := expr.(*ast.SelectorExpr)
+	if !ok || sel.Sel == nil {
+		return false
+	}
+	_, ok = sel.X.(*ast.Ident)
+	return ok
+}
+
+func selectorCallTarget(expr ast.Expr) bool {
 	sel, ok := expr.(*ast.SelectorExpr)
 	if !ok || sel.Sel == nil {
 		return false

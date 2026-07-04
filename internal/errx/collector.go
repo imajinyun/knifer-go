@@ -66,17 +66,29 @@ func WithCollectorLevel(level logrus.Level) CollectorOption {
 
 // WithCollectorTimerFactory sets the default timer factory during Collector construction.
 func WithCollectorTimerFactory(factory TimerFactory) CollectorOption {
-	return func(c *Collector) { c.WithTimerFactory(factory) }
+	return func(c *Collector) {
+		if factory != nil {
+			c.WithTimerFactory(factory)
+		}
+	}
 }
 
 // WithCollectorLogFunc sets the logger during Collector construction.
 func WithCollectorLogFunc(logFunc LogFunc) CollectorOption {
-	return func(c *Collector) { c.WithLogFunc(logFunc) }
+	return func(c *Collector) {
+		if logFunc != nil {
+			c.WithLogFunc(logFunc)
+		}
+	}
 }
 
 // WithCollectorRunner sets the function used to launch Collector asynchronous work.
 func WithCollectorRunner(runner func(func())) CollectorOption {
-	return func(c *Collector) { c.WithRunner(runner) }
+	return func(c *Collector) {
+		if runner != nil {
+			c.WithRunner(runner)
+		}
+	}
 }
 
 // WithCollectorStackCaptureOptions sets stack capture options during Collector construction.

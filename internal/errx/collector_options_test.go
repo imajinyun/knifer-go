@@ -58,6 +58,44 @@ func TestWithCollectorLogFunc(t *testing.T) {
 	}
 }
 
+func TestNilCollectorOptionsDoNotClearPreviousProviders(t *testing.T) {
+	silenceLogrus(t)
+
+	timerFactory := func(time.Duration) (<-chan time.Time, Timer) {
+		ch := make(chan time.Time)
+		return ch, &noopTimer{}
+	}
+	var logged bool
+	var runnerCalls int
+	c := NewCollectorWithOptions(
+		WithCollectorTimerFactory(timerFactory),
+		WithCollectorTimerFactory(nil),
+		WithCollectorLogFunc(func(context.Context, logrus.Level, error, string, string, ...any) {
+			logged = true
+		}),
+		WithCollectorLogFunc(nil),
+		WithCollectorRunner(func(fn func()) {
+			runnerCalls++
+			fn()
+		}),
+		WithCollectorRunner(nil),
+	)
+
+	if cfg := c.waitConfig(); cfg.timerFactory == nil {
+		t.Fatal("nil WithCollectorTimerFactory cleared previous timer factory")
+	}
+	c.GoRun(func() error { return errors.New("boom") }, "job")
+	if err := c.Error(); err == nil {
+		t.Fatal("Collector.Error() = nil, want collected error")
+	}
+	if runnerCalls != 1 {
+		t.Fatalf("nil WithCollectorRunner cleared previous runner: calls=%d", runnerCalls)
+	}
+	if !logged {
+		t.Fatal("nil WithCollectorLogFunc cleared previous log func")
+	}
+}
+
 func TestWithCollectorStackCaptureOptions(t *testing.T) {
 	silenceLogrus(t)
 

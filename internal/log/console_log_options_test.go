@@ -30,3 +30,25 @@ func TestConsoleLogWithOptions(t *testing.T) {
 		t.Fatalf("custom clock/layout/output not applied to stderr: %q", errOut.String())
 	}
 }
+
+func TestNilLogOutputOptionDoesNotClearPreviousWriters(t *testing.T) {
+	prevLevel := GetConsoleLevel()
+	SetConsoleLevel(LevelDebug)
+	defer SetConsoleLevel(prevLevel)
+
+	out := &bytes.Buffer{}
+	errOut := &bytes.Buffer{}
+	c := NewConsoleLogWithOptions("test.nil.output",
+		WithLogOutput(out, errOut),
+		WithLogOutput(nil, nil),
+	)
+	c.Info("hello")
+	c.Warn("careful")
+
+	if !strings.Contains(out.String(), "hello") {
+		t.Fatalf("nil WithLogOutput cleared stdout writer: %q", out.String())
+	}
+	if !strings.Contains(errOut.String(), "careful") {
+		t.Fatalf("nil WithLogOutput cleared stderr writer: %q", errOut.String())
+	}
+}

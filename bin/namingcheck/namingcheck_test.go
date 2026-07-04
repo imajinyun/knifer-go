@@ -58,6 +58,8 @@ type config struct {
 	name string
 }
 
+func (c *config) SetProvider(provider Provider) {}
+
 func WithProvider(provider Provider) Option {
 	return func(c *config) {
 		c.provider = provider
@@ -67,6 +69,12 @@ func WithProvider(provider Provider) Option {
 func WithLookup(lookup func(string) string) Option {
 	return func(c *config) {
 		c.lookup = lookup
+	}
+}
+
+func WithProviderSetter(provider Provider) Option {
+	return func(c *config) {
+		c.SetProvider(provider)
 	}
 }
 
@@ -96,6 +104,7 @@ func TestSomething(t any) {}
 		"SafeButNotBoundary: Safe names are reserved for trust-boundary APIs",
 		"WithProvider: nil provider/function option parameters must not overwrite existing providers",
 		"WithLookup: nil provider/function option parameters must not overwrite existing providers",
+		"WithProviderSetter: nil provider/function option parameters must not overwrite existing providers",
 	} {
 		if !strings.Contains(got, want) {
 			t.Fatalf("violations =\n%s\nwant %q", got, want)
@@ -152,6 +161,8 @@ type config struct {
 	clock func() int
 }
 
+func (c *config) SetProvider(provider Provider) {}
+
 func WithProvider(provider Provider) Option {
 	return func(c *config) {
 		if provider != nil {
@@ -172,8 +183,16 @@ func WithClock(clock func() int) Option {
 	return func(c *config) {
 		if clock == nil {
 			return
-		}
+	}
 		c.clock = clock
+	}
+}
+
+func WithProviderSetter(provider Provider) Option {
+	return func(c *config) {
+		if provider != nil {
+			c.SetProvider(provider)
+		}
 	}
 }
 `)

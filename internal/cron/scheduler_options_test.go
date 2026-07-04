@@ -64,3 +64,29 @@ func TestSchedulerOptions(t *testing.T) {
 	}
 	s.Stop()
 }
+
+func TestNilSchedulerRunnerOptionsDoNotClearPreviousProviders(t *testing.T) {
+	var submitted atomic.Int32
+	var runnerCalls atomic.Int32
+	s := NewSchedulerWithOptions(
+		WithExecutor(func(fn func()) {
+			submitted.Add(1)
+			fn()
+		}),
+		WithExecutor(nil),
+		WithRunner(func(fn func()) {
+			runnerCalls.Add(1)
+			fn()
+		}),
+		WithRunner(nil),
+	)
+
+	s.submit(func() {})
+	if submitted.Load() != 1 {
+		t.Fatalf("nil WithExecutor cleared previous executor")
+	}
+	s.run(func() {})
+	if runnerCalls.Load() != 1 {
+		t.Fatalf("nil WithRunner cleared previous runner")
+	}
+}

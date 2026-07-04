@@ -52,7 +52,12 @@ func WithLogClock(clock func() time.Time) ConsoleLogOption {
 // WithLogOutput sets the output writers used by console log output.
 func WithLogOutput(out, errOut io.Writer) ConsoleLogOption {
 	return func(c *ConsoleLog) {
-		c.SetOutput(out, errOut)
+		if out != nil {
+			c.out = out
+		}
+		if errOut != nil {
+			c.errOut = errOut
+		}
 	}
 }
 

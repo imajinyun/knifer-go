@@ -47,12 +47,20 @@ func WithMatchSecond(matchSecond bool) SchedulerOption {
 
 // WithExecutor sets the function used to execute scheduled tasks.
 func WithExecutor(exec func(func())) SchedulerOption {
-	return func(s *Scheduler) { s.SetExecutor(exec) }
+	return func(s *Scheduler) {
+		if exec != nil {
+			s.SetExecutor(exec)
+		}
+	}
 }
 
 // WithRunner sets the function used to launch the scheduler timer loop.
 func WithRunner(runner func(func())) SchedulerOption {
-	return func(s *Scheduler) { s.SetRunner(runner) }
+	return func(s *Scheduler) {
+		if runner != nil {
+			s.SetRunner(runner)
+		}
+	}
 }
 
 // WithIDGenerator sets the task id generator used by Schedule and ScheduleFunc.
