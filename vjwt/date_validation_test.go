@@ -1,9 +1,12 @@
 package vjwt_test
 
 import (
+	"errors"
+	"strconv"
 	"testing"
 	"time"
 
+	knifer "github.com/imajinyun/knifer-go"
 	"github.com/imajinyun/knifer-go/vjwt"
 )
 
@@ -36,5 +39,27 @@ func TestFacadeDateValidationOptions(t *testing.T) {
 	expired := vjwt.New().SetPayload(vjwt.JWTPayloadExpiresAt, now.Add(-2*time.Second).Unix()).SetKey([]byte("0123456789abcdef0123456789abcdef"))
 	if err := vjwt.ValidateDate(expired, now, 1); err == nil {
 		t.Fatal("ValidateDate(expired) error = nil")
+	}
+}
+
+func TestFacadeValidateDateErrorContract(t *testing.T) {
+	j := vjwt.New().SetPayload(vjwt.JWTPayloadExpiresAt, "not-a-time")
+	err := vjwt.ValidateDate(j, time.Unix(1_700_000_000, 0), 0)
+	if err == nil {
+		t.Fatal("ValidateDate malformed claim error = nil")
+	}
+	if !errors.Is(err, knifer.ErrCodeInvalidInput) {
+		t.Fatalf("ValidateDate error = %v, want ErrCodeInvalidInput", err)
+	}
+	var jwtErr *vjwt.JWTError
+	if !errors.As(err, &jwtErr) {
+		t.Fatalf("errors.As(err, *vjwt.JWTError) = false: %v", err)
+	}
+	var numErr *strconv.NumError
+	if !errors.As(err, &numErr) {
+		t.Fatalf("errors.As(err, *strconv.NumError) = false: %v", err)
+	}
+	if errors.Is(err, knifer.ErrCodeProviderFailure) {
+		t.Fatalf("ValidateDate malformed claim should not be provider failure: %v", err)
 	}
 }

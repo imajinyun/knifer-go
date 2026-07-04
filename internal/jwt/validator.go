@@ -93,21 +93,21 @@ func ValidateDate(j *JWT, now time.Time, leeway int64) error {
 	}
 	nowSec := now.Unix()
 	if v, ok, err := payloadAsUnix(j.Payload(PayloadNotBefore)); err != nil {
-		return NewJWTError("invalid nbf claim: " + err.Error())
+		return wrapJWTError(err, "invalid nbf claim")
 	} else if ok {
 		if nowSec+leeway < v {
 			return NewJWTError("the token is not yet valid (nbf)")
 		}
 	}
 	if v, ok, err := payloadAsUnix(j.Payload(PayloadExpiresAt)); err != nil {
-		return NewJWTError("invalid exp claim: " + err.Error())
+		return wrapJWTError(err, "invalid exp claim")
 	} else if ok {
 		if nowSec-leeway > v {
 			return NewJWTError("the token is expired (exp)")
 		}
 	}
 	if v, ok, err := payloadAsUnix(j.Payload(PayloadIssuedAt)); err != nil {
-		return NewJWTError("invalid iat claim: " + err.Error())
+		return wrapJWTError(err, "invalid iat claim")
 	} else if ok {
 		if nowSec+leeway < v {
 			return NewJWTError("the token issued time is in future (iat)")
