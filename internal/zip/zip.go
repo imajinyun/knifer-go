@@ -16,6 +16,8 @@ const (
 	defaultBufferSize    = 32
 	DefaultUnzipMaxBytes = 1 << 30
 	maxInt64             = int64(1<<63 - 1)
+	maxZipEntries        = 100000
+	maxZipEntryDepth     = 1024
 )
 
 // FileFilter decides whether a source path should be added to an archive.
@@ -684,6 +686,9 @@ func UnzipReaderToWithOptions(r *archivezip.Reader, destDir string, opts ...Arch
 	if r == nil {
 		return invalidInputf("zip reader is nil")
 	}
+	if err := validateArchiveEntries(r.File); err != nil {
+		return err
+	}
 	if err := cfg.mkdirAll(destDir, cfg.dirPerm); err != nil {
 		return err
 	}
@@ -1212,9 +1217,14 @@ func extractFile(f *archivezip.File, destDir string, cfg archiveConfig, remainin
 	written, err := copyLimit(w, r, remainingBytes)
 	if err != nil {
 		_ = w.Close()
+		_ = cfg.remove(target)
 		return written, err
 	}
-	return written, w.Close()
+	if err := w.Close(); err != nil {
+		_ = cfg.remove(target)
+		return written, err
+	}
+	return written, nil
 }
 
 func validateNoSymlinkEscape(cfg archiveConfig, destDir, targetParent string) error {
@@ -1283,6 +1293,66 @@ func validateNoSymlinkAncestorEscape(cfg archiveConfig, destDir, targetPath stri
 		}
 	}
 	return nil
+}
+
+func validateArchiveEntries(files []*archivezip.File) error {
+	if len(files) > maxZipEntries {
+		return invalidInputf("zip archive has too many entries: %d", len(files))
+	}
+	seen := make(map[string]bool, len(files))
+	seenDir := make(map[string]bool, len(files))
+	requiredDirs := map[string]struct{}{}
+	for _, file := range files {
+		if file == nil {
+			return invalidInputf("zip entry is nil")
+		}
+		name, err := cleanEntryName(file.Name)
+		if err != nil {
+			return err
+		}
+		if entryDepth(name) > maxZipEntryDepth {
+			return invalidInputf("zip entry %q is too deep", file.Name)
+		}
+		modeType := file.Mode().Type()
+		if modeType != 0 && modeType != os.ModeDir && modeType != os.ModeSymlink {
+			return invalidInputf("zip entry %q has unsupported file type", file.Name)
+		}
+		isDir := file.FileInfo().IsDir()
+		if seen[name] {
+			return invalidInputf("duplicate zip entry %q", file.Name)
+		}
+		if _, ok := requiredDirs[name]; ok && !isDir {
+			return invalidInputf("zip entry %q conflicts with nested path", file.Name)
+		}
+		for _, parent := range parentEntryNames(name) {
+			if seen[parent] && !seenDir[parent] {
+				return invalidInputf("zip entry %q conflicts with file parent %q", file.Name, parent)
+			}
+			requiredDirs[parent] = struct{}{}
+		}
+		seen[name] = true
+		seenDir[name] = isDir
+	}
+	return nil
+}
+
+func entryDepth(name string) int {
+	if name == "" {
+		return 0
+	}
+	return strings.Count(name, "/") + 1
+}
+
+func parentEntryNames(name string) []string {
+	parts := strings.Split(name, "/")
+	if len(parts) <= 1 {
+		return nil
+	}
+	parents := make([]string, 0, len(parts)-1)
+	for i := 1; i < len(parts); i++ {
+		parents = append(parents, strings.Join(parts[:i], "/"))
+	}
+	return parents
 }
 
 func readAllLimit(r io.Reader, maxBytes int64) ([]byte, error) {

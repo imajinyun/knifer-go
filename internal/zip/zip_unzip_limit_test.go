@@ -3,6 +3,7 @@ package zip
 import (
 	archivezip "archive/zip"
 	"bytes"
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
@@ -49,11 +50,7 @@ func TestUnzipEnforcesActualCopiedBytes(t *testing.T) {
 	if err := UnzipReaderToWithOptions(r, dest, WithMaxBytes(3)); err == nil {
 		t.Fatal("UnzipReaderToWithOptions should reject streams exceeding the actual copy limit")
 	}
-	data, err := os.ReadFile(filepath.Join(dest, "a.txt"))
-	if err != nil {
-		t.Fatalf("read partial extraction: %v", err)
-	}
-	if len(data) > 3 {
-		t.Fatalf("partial extraction wrote %d bytes, want at most 3", len(data))
+	if _, err := os.Stat(filepath.Join(dest, "a.txt")); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("failed extraction should remove partial file, stat err=%v", err)
 	}
 }
