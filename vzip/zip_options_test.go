@@ -77,4 +77,20 @@ func TestFacadeZipErrorContract(t *testing.T) {
 	if !errors.As(err, &zipErr) {
 		t.Fatalf("errors.As(err, *vzip.Error) = false: %v", err)
 	}
+
+	tmp := t.TempDir()
+	archive := filepath.Join(tmp, "missing-entry.zip")
+	if err := vzip.ZipEntries(archive, vzip.EntryData{Name: "keep.txt", Data: []byte("keep")}); err != nil {
+		t.Fatalf("ZipEntries: %v", err)
+	}
+	_, err = vzip.GetBytes(archive, "missing.txt")
+	if !errors.Is(err, knifer.ErrCodeNotFound) {
+		t.Fatalf("GetBytes missing entry error = %v, want ErrCodeNotFound", err)
+	}
+	if !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("GetBytes missing entry error = %v, want os.ErrNotExist cause", err)
+	}
+	if !errors.As(err, &zipErr) {
+		t.Fatalf("errors.As(err, *vzip.Error) for missing entry = false: %v", err)
+	}
 }
