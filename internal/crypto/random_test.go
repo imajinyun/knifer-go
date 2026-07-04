@@ -79,6 +79,8 @@ func TestRandomProviderFallbacksAndErrors(t *testing.T) {
 	sentinel := errors.New("entropy source failed")
 	if _, err := RandomBytesWithOptions(4, WithRandomReader(errorReader{err: sentinel})); !errors.Is(err, sentinel) {
 		t.Fatalf("RandomBytesWithOptions provider error = %v, want sentinel", err)
+	} else if !errors.Is(err, knifer.ErrCodeProviderFailure) {
+		t.Fatalf("RandomBytesWithOptions provider error = %v, want ErrCodeProviderFailure", err)
 	}
 
 	if _, err := RandomBytesWithOptions(-1, WithRandomReader(bytes.NewReader(nil))); !errors.Is(err, ErrInvalidKey) || !errors.Is(err, knifer.ErrCodeInvalidInput) {

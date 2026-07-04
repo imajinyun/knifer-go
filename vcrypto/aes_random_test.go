@@ -7,6 +7,7 @@ import (
 	"io"
 	"testing"
 
+	knifer "github.com/imajinyun/knifer-go"
 	"github.com/imajinyun/knifer-go/vcrypto"
 )
 
@@ -82,11 +83,11 @@ func TestAdditionalAESGCMAndRandomErrors(t *testing.T) {
 	}
 	if _, err := vcrypto.AESEncryptGCMWithOptions(plain, key, nonce, nil, vcrypto.WithGCMBlockFactory(func([]byte) (cipher.Block, error) {
 		return nil, errors.New("block factory failed")
-	})); err == nil {
-		t.Fatal("AESEncryptGCMWithOptions block factory error = nil")
+	})); err == nil || !errors.Is(err, knifer.ErrCodeProviderFailure) {
+		t.Fatalf("AESEncryptGCMWithOptions block factory error = %v, want provider failure", err)
 	}
-	if _, _, err := vcrypto.AESSealGCMWithOptions(plain, key, nil, vcrypto.WithGCMRandomOptions(vcrypto.WithRandomReader(io.LimitReader(bytes.NewReader(nil), 0)))); err == nil {
-		t.Fatal("AESSealGCMWithOptions random reader error = nil")
+	if _, _, err := vcrypto.AESSealGCMWithOptions(plain, key, nil, vcrypto.WithGCMRandomOptions(vcrypto.WithRandomReader(io.LimitReader(bytes.NewReader(nil), 0)))); err == nil || !errors.Is(err, io.EOF) || !errors.Is(err, knifer.ErrCodeProviderFailure) {
+		t.Fatalf("AESSealGCMWithOptions random reader error = %v, want EOF/provider failure", err)
 	}
 	if _, err := vcrypto.AESDecryptGCM(cipherText, key, []byte("bad"), nil); !errors.Is(err, vcrypto.ErrInvalidIV) {
 		t.Fatalf("AESDecryptGCM invalid nonce error = %v", err)
@@ -97,8 +98,8 @@ func TestAdditionalAESGCMAndRandomErrors(t *testing.T) {
 	if _, err := vcrypto.RandomBytes(-1); !errors.Is(err, vcrypto.ErrInvalidKey) {
 		t.Fatalf("RandomBytes negative error = %v", err)
 	}
-	if _, err := vcrypto.RandomBytesWithOptions(2, vcrypto.WithRandomReader(bytes.NewReader([]byte{1}))); err == nil {
-		t.Fatal("RandomBytesWithOptions short reader error = nil")
+	if _, err := vcrypto.RandomBytesWithOptions(2, vcrypto.WithRandomReader(bytes.NewReader([]byte{1}))); err == nil || !errors.Is(err, io.ErrUnexpectedEOF) || !errors.Is(err, knifer.ErrCodeProviderFailure) {
+		t.Fatalf("RandomBytesWithOptions short reader error = %v, want EOF/provider failure", err)
 	}
 }
 

@@ -3,6 +3,8 @@ package crypto
 import (
 	"crypto/rand"
 	"io"
+
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 type randomConfig struct {
@@ -48,7 +50,7 @@ func RandomBytesWithOptions(n int, opts ...RandomOption) ([]byte, error) {
 	b := make([]byte, n)
 	_, err := io.ReadFull(cfg.reader, b)
 	if err != nil {
-		return nil, err
+		return nil, knifer.WrapError(knifer.ErrCodeProviderFailure, "read random bytes", err)
 	}
 	return b, nil
 }

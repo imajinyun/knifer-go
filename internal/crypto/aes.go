@@ -86,7 +86,7 @@ func AESSealGCMWithOptions(plain, key, additionalData []byte, opts ...AESGCMOpti
 	cfg := applyAESGCMOptions(opts)
 	block, err := cfg.blockFunc(key)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, knifer.WrapError(knifer.ErrCodeProviderFailure, "create aes block", err)
 	}
 	gcm, err := newGCM(block, cfg)
 	if err != nil {
@@ -122,7 +122,7 @@ func AESEncryptGCMWithOptions(plain, key, nonce, additionalData []byte, opts ...
 	cfg := applyAESGCMOptions(opts)
 	block, err := cfg.blockFunc(key)
 	if err != nil {
-		return nil, err
+		return nil, knifer.WrapError(knifer.ErrCodeProviderFailure, "create aes block", err)
 	}
 	gcm, err := newGCM(block, cfg)
 	if err != nil {
@@ -147,7 +147,7 @@ func AESDecryptGCMWithOptions(cipherText, key, nonce, additionalData []byte, opt
 	cfg := applyAESGCMOptions(opts)
 	block, err := cfg.blockFunc(key)
 	if err != nil {
-		return nil, err
+		return nil, knifer.WrapError(knifer.ErrCodeProviderFailure, "create aes block", err)
 	}
 	gcm, err := newGCM(block, cfg)
 	if err != nil {
