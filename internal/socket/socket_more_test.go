@@ -215,6 +215,31 @@ func TestAioServerConstructorsAndDeterministicStart(t *testing.T) {
 	closeAndReport(t, syncServer.Close)
 }
 
+func TestAioServerStartContextClosesOnCancel(t *testing.T) {
+	listener := &blockingListener{addr: factoryFakeAddr("aio-context"), done: make(chan struct{})}
+	server, err := NewAioServerWithOptions(0, WithListenerFactory(func(*net.TCPAddr) (net.Listener, error) {
+		return listener, nil
+	}))
+	if err != nil {
+		t.Fatalf("NewAioServerWithOptions = %v", err)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		server.StartContext(ctx, true)
+	}()
+	cancel()
+	select {
+	case <-done:
+	case <-time.After(time.Second):
+		t.Fatal("StartContext did not return after context cancellation")
+	}
+	if !listener.closed.Load() || server.IsOpen() {
+		t.Fatalf("server closed=%v open=%v, want closed", listener.closed.Load(), server.IsOpen())
+	}
+}
+
 func TestNioServerGetters(t *testing.T) {
 	cfg := NewSocketConfig()
 	cfg.ListenerFactory = func(addr *net.TCPAddr) (net.Listener, error) {
@@ -294,6 +319,31 @@ func TestNioServerConstructorsAndStart(t *testing.T) {
 		t.Fatalf("NewNioServer = %v", err)
 	}
 	closeAndReport(t, realServer.Close)
+}
+
+func TestNioServerListenContextClosesOnCancel(t *testing.T) {
+	listener := &blockingListener{addr: factoryFakeAddr("nio-context"), done: make(chan struct{})}
+	server, err := NewNioServerWithOptions(0, WithListenerFactory(func(*net.TCPAddr) (net.Listener, error) {
+		return listener, nil
+	}))
+	if err != nil {
+		t.Fatalf("NewNioServerWithOptions = %v", err)
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		server.ListenContext(ctx)
+	}()
+	cancel()
+	select {
+	case <-done:
+	case <-time.After(time.Second):
+		t.Fatal("ListenContext did not return after context cancellation")
+	}
+	if !listener.closed.Load() || server.IsOpen() {
+		t.Fatalf("server closed=%v open=%v, want closed", listener.closed.Load(), server.IsOpen())
+	}
 }
 
 func TestConnectAddr(t *testing.T) {

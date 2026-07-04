@@ -2,6 +2,7 @@ package socket
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"net"
 	"sync"
@@ -111,6 +112,23 @@ func (s *AioServer) Start(sync bool) {
 	runWithConfig(s.config, s.acceptLoop)
 }
 
+// StartContext starts the server and closes it when ctx is canceled.
+func (s *AioServer) StartContext(ctx context.Context, sync bool) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	run := func() {
+		stop := s.closeOnContext(ctx)
+		defer stop()
+		s.acceptLoop()
+	}
+	if sync {
+		run()
+		return
+	}
+	runWithConfig(s.config, run)
+}
+
 // acceptLoop keeps accepting new connections.
 func (s *AioServer) acceptLoop() {
 	for {
@@ -126,6 +144,19 @@ func (s *AioServer) acceptLoop() {
 		}
 		s.handleAccept(conn)
 	}
+}
+
+func (s *AioServer) closeOnContext(ctx context.Context) func() {
+	done := make(chan struct{})
+	go func() {
+		select {
+		case <-ctx.Done():
+			_ = s.Close()
+		case <-s.done:
+		case <-done:
+		}
+	}()
+	return func() { close(done) }
 }
 
 // handleAccept creates an AioSession for each connection and triggers callbacks.

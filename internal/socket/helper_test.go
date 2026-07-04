@@ -63,6 +63,27 @@ func (l *fakeListener) Close() error {
 }
 func (l *fakeListener) Addr() net.Addr { return l.addr }
 
+type blockingListener struct {
+	addr   net.Addr
+	done   chan struct{}
+	closed atomic.Bool
+}
+
+func (l *blockingListener) Accept() (net.Conn, error) {
+	<-l.done
+	return nil, net.ErrClosed
+}
+
+func (l *blockingListener) Close() error {
+	if l.closed.Swap(true) {
+		return nil
+	}
+	close(l.done)
+	return nil
+}
+
+func (l *blockingListener) Addr() net.Addr { return l.addr }
+
 type queuedListener struct {
 	addr   net.Addr
 	conns  chan net.Conn

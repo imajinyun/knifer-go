@@ -1,6 +1,7 @@
 package socket
 
 import (
+	"context"
 	"errors"
 	"net"
 	"sync"
@@ -109,6 +110,11 @@ func (s *NioServer) Start() {
 	s.Listen()
 }
 
+// StartContext starts the server and closes it when ctx is canceled.
+func (s *NioServer) StartContext(ctx context.Context) {
+	s.ListenContext(ctx)
+}
+
 // Listen starts synchronous blocking listening.
 func (s *NioServer) Listen() {
 	for {
@@ -126,6 +132,16 @@ func (s *NioServer) Listen() {
 	}
 }
 
+// ListenContext starts synchronous listening and closes the server when ctx is canceled.
+func (s *NioServer) ListenContext(ctx context.Context) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	stop := s.closeOnContext(ctx)
+	defer stop()
+	s.Listen()
+}
+
 // ListenAsync starts listening asynchronously and closes the returned channel when done.
 func (s *NioServer) ListenAsync() <-chan struct{} {
 	done := make(chan struct{})
@@ -134,6 +150,29 @@ func (s *NioServer) ListenAsync() <-chan struct{} {
 		s.Listen()
 	})
 	return done
+}
+
+// ListenAsyncContext starts listening asynchronously and closes the server when ctx is canceled.
+func (s *NioServer) ListenAsyncContext(ctx context.Context) <-chan struct{} {
+	done := make(chan struct{})
+	runWithConfig(s.config, func() {
+		defer close(done)
+		s.ListenContext(ctx)
+	})
+	return done
+}
+
+func (s *NioServer) closeOnContext(ctx context.Context) func() {
+	done := make(chan struct{})
+	go func() {
+		select {
+		case <-ctx.Done():
+			_ = s.Close()
+		case <-s.done:
+		case <-done:
+		}
+	}()
+	return func() { close(done) }
 }
 
 // handleAccept handles read events from a connection in a new goroutine.

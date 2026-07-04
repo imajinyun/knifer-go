@@ -1,9 +1,11 @@
 package vskt_test
 
 import (
+	"context"
 	"errors"
 	"net"
 	"testing"
+	"time"
 
 	"github.com/imajinyun/knifer-go/vskt"
 )
@@ -182,6 +184,46 @@ func TestFacadePortServerConstructorsUseListenerFactory(t *testing.T) {
 		t.Fatalf("aio addr listener = %#v", aioAddr.Listener())
 	}
 	_ = aioAddr.Close()
+}
+
+func TestFacadeServerContextStartMethodsReturnOnCancel(t *testing.T) {
+	nio, err := vskt.NewNioServerWithOptions(0, vskt.WithListenerFactory(func(*net.TCPAddr) (net.Listener, error) {
+		return &facadeFakeListener{addr: facadeFakeAddr("nio-context")}, nil
+	}))
+	if err != nil {
+		t.Fatalf("NewNioServerWithOptions: %v", err)
+	}
+	nioCtx, cancelNio := context.WithCancel(context.Background())
+	nioDone := make(chan struct{})
+	go func() {
+		defer close(nioDone)
+		nio.ListenContext(nioCtx)
+	}()
+	cancelNio()
+	select {
+	case <-nioDone:
+	case <-time.After(time.Second):
+		t.Fatal("NioServer.ListenContext did not return after cancel")
+	}
+
+	aio, err := vskt.NewAioServerWithOptions(0, vskt.WithListenerFactory(func(*net.TCPAddr) (net.Listener, error) {
+		return &facadeFakeListener{addr: facadeFakeAddr("aio-context")}, nil
+	}))
+	if err != nil {
+		t.Fatalf("NewAioServerWithOptions: %v", err)
+	}
+	aioCtx, cancelAio := context.WithCancel(context.Background())
+	aioDone := make(chan struct{})
+	go func() {
+		defer close(aioDone)
+		aio.StartContext(aioCtx, true)
+	}()
+	cancelAio()
+	select {
+	case <-aioDone:
+	case <-time.After(time.Second):
+		t.Fatal("AioServer.StartContext did not return after cancel")
+	}
 }
 
 func TestFacadeClientConstructorsWithProviders(t *testing.T) {
