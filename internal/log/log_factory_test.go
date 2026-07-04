@@ -1,9 +1,11 @@
 package log
 
 import (
+	"fmt"
 	"strings"
 	"sync"
 	"testing"
+	"time"
 )
 
 func TestLogFactoryCache(t *testing.T) {
@@ -79,4 +81,46 @@ func TestNewIsolatedLoggerDoesNotReadGlobalFactory(t *testing.T) {
 	if log.GetName() != "isolated" {
 		t.Fatalf("isolated logger leaked global factory: %q", log.GetName())
 	}
+}
+
+func TestGetFactoryCanReenterLoggerCache(t *testing.T) {
+	SetFactory(LogFactoryFunc(func(name string) Log {
+		if name == "outer" {
+			inner := Get("inner")
+			if inner == nil {
+				t.Fatal("inner logger is nil")
+			}
+		}
+		return NewConsoleLog(name)
+	}))
+	defer SetFactory(LogFactoryFunc(func(name string) Log { return NewConsoleLog(name) }))
+
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		_ = Get("outer")
+	}()
+	select {
+	case <-done:
+	case <-time.After(time.Second):
+		t.Fatal("Get deadlocked when factory reentered logger cache")
+	}
+}
+
+func TestGetAndSetFactoryConcurrentAccess(t *testing.T) {
+	defer SetFactory(LogFactoryFunc(func(name string) Log { return NewConsoleLog(name) }))
+
+	var wg sync.WaitGroup
+	for i := 0; i < 32; i++ {
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			SetFactory(LogFactoryFunc(func(name string) Log { return NewConsoleLog("set:" + name) }))
+		}()
+		go func(i int) {
+			defer wg.Done()
+			_ = Get(fmt.Sprintf("concurrent.%d", i%8))
+		}(i)
+	}
+	wg.Wait()
 }

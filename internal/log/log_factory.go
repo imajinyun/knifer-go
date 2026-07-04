@@ -105,15 +105,17 @@ func Get(name string) Log {
 	}
 	logCacheMu.RUnlock()
 
+	factory := GetFactory()
+	created := factory.CreateLog(name)
+
 	logCacheMu.Lock()
 	defer logCacheMu.Unlock()
 	// Double-check.
 	if l, ok := logCache[name]; ok {
 		return l
 	}
-	l := GetFactory().CreateLog(name)
-	logCache[name] = l
-	return l
+	logCache[name] = created
+	return created
 }
 
 // GetWithOptions returns a logger by name with per-call factory/cache options.
