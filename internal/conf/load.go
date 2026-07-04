@@ -2,6 +2,7 @@ package conf
 
 import (
 	"context"
+	"errors"
 	"io"
 	"net"
 	"net/http"
@@ -10,6 +11,8 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/imajinyun/knifer-go/internal/httpboundary"
 )
 
 // DefaultMaxBytes is the default local/remote configuration read limit.
@@ -388,36 +391,7 @@ func containsFold(values []string, target string) bool {
 }
 
 func isPrivateHost(ctx context.Context, lookupIP func(context.Context, string) ([]net.IP, error), host string) (bool, error) {
-	if strings.EqualFold(host, "localhost") {
-		return true, nil
-	}
-	if ip := net.ParseIP(host); ip != nil {
-		return isPrivateIP(ip), nil
-	}
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	if lookupIP == nil {
-		lookupIP = defaultLookupIP
-	}
-	ips, err := lookupIP(ctx, host)
-	if err != nil {
-		return false, err
-	}
-	for _, ip := range ips {
-		if isPrivateIP(ip) {
-			return true, nil
-		}
-	}
-	return false, nil
-}
-
-func isPrivateIP(ip net.IP) bool {
-	return ip == nil || !ip.IsGlobalUnicast() || ip.IsPrivate()
-}
-
-func defaultLookupIP(ctx context.Context, host string) ([]net.IP, error) {
-	return net.DefaultResolver.LookupIP(ctx, "ip", host)
+	return httpboundary.IsPrivateHost(ctx, lookupIP, host)
 }
 
 func clientWithSafeTransport(client *http.Client, opts LoadOptions) *http.Client {
@@ -455,37 +429,17 @@ func safeDialContext(opts LoadOptions) func(context.Context, string, string) (ne
 }
 
 func publicHostIPs(ctx context.Context, opts LoadOptions, host string) ([]net.IP, error) {
-	if strings.EqualFold(host, "localhost") {
-		return nil, invalidInputf("remote config host %q resolves to a private address", host)
-	}
-	if ip := net.ParseIP(host); ip != nil {
-		if isPrivateIP(ip) {
+	ips, err := httpboundary.PublicHostIPs(ctx, opts.LookupIP, host)
+	if err != nil {
+		if errors.Is(err, httpboundary.ErrPrivateHost) {
 			return nil, invalidInputf("remote config host %q resolves to a private address", host)
 		}
-		return []net.IP{ip}, nil
-	}
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	lookupIP := opts.LookupIP
-	if lookupIP == nil {
-		lookupIP = defaultLookupIP
-	}
-	ips, err := lookupIP(ctx, host)
-	if err != nil {
+		if errors.Is(err, httpboundary.ErrNoAddresses) {
+			return nil, invalidInputf("resolve remote config host %q: no addresses", host)
+		}
 		return nil, invalidInputf("resolve remote config host %q: %s", host, err.Error())
 	}
-	if len(ips) == 0 {
-		return nil, invalidInputf("resolve remote config host %q: no addresses", host)
-	}
-	public := make([]net.IP, 0, len(ips))
-	for _, ip := range ips {
-		if isPrivateIP(ip) {
-			return nil, invalidInputf("remote config host %q resolves to a private address", host)
-		}
-		public = append(public, ip)
-	}
-	return public, nil
+	return ips, nil
 }
 
 type safeRemoteTransport struct {

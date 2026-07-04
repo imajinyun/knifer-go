@@ -3,6 +3,7 @@ package resty
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -13,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/imajinyun/knifer-go/internal/httpboundary"
 	grestry "resty.dev/v3"
 )
 
@@ -919,68 +921,27 @@ func containsFold(values []string, target string) bool {
 }
 
 func isPrivateHost(ctx context.Context, lookupIP func(context.Context, string) ([]net.IP, error), host string) (bool, error) {
-	if strings.EqualFold(host, "localhost") {
-		return true, nil
-	}
-	if ip := net.ParseIP(host); ip != nil {
-		return isPrivateIP(ip), nil
-	}
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	if lookupIP == nil {
-		lookupIP = defaultLookupIP
-	}
-	ips, err := lookupIP(ctx, host)
-	if err != nil {
-		return false, err
-	}
-	for _, ip := range ips {
-		if isPrivateIP(ip) {
-			return true, nil
-		}
-	}
-	return false, nil
+	return httpboundary.IsPrivateHost(ctx, lookupIP, host)
 }
 
 func defaultLookupIP(ctx context.Context, host string) ([]net.IP, error) {
-	return net.DefaultResolver.LookupIP(ctx, "ip", host)
+	return httpboundary.DefaultLookupIP(ctx, host)
 }
 
 func publicHostIPs(ctx context.Context, policy *URLPolicy, host string) ([]net.IP, error) {
-	if strings.EqualFold(host, "localhost") {
-		return nil, HTTPErrorf("url host %q resolves to a private address", host)
-	}
-	if ip := net.ParseIP(host); ip != nil {
-		if isPrivateIP(ip) {
-			return nil, HTTPErrorf("url host %q resolves to a private address", host)
-		}
-		return []net.IP{ip}, nil
-	}
-	if ctx == nil {
-		ctx = context.Background()
-	}
 	lookupIP := defaultLookupIP
 	if policy != nil && policy.LookupIP != nil {
 		lookupIP = policy.LookupIP
 	}
-	ips, err := lookupIP(ctx, host)
+	ips, err := httpboundary.PublicHostIPs(ctx, lookupIP, host)
 	if err != nil {
-		return nil, NewHTTPError("resolve url host failed", err)
-	}
-	if len(ips) == 0 {
-		return nil, HTTPErrorf("resolve url host %q: no addresses", host)
-	}
-	public := make([]net.IP, 0, len(ips))
-	for _, ip := range ips {
-		if isPrivateIP(ip) {
+		if errors.Is(err, httpboundary.ErrPrivateHost) {
 			return nil, HTTPErrorf("url host %q resolves to a private address", host)
 		}
-		public = append(public, ip)
+		if errors.Is(err, httpboundary.ErrNoAddresses) {
+			return nil, HTTPErrorf("resolve url host %q: no addresses", host)
+		}
+		return nil, NewHTTPError("resolve url host failed", err)
 	}
-	return public, nil
-}
-
-func isPrivateIP(ip net.IP) bool {
-	return ip == nil || !ip.IsGlobalUnicast() || ip.IsPrivate()
+	return ips, nil
 }

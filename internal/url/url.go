@@ -2,6 +2,7 @@ package url
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -13,6 +14,8 @@ import (
 	"strings"
 	"time"
 	"unicode"
+
+	"github.com/imajinyun/knifer-go/internal/httpboundary"
 )
 
 const (
@@ -230,7 +233,7 @@ func defaultRequestFactory(ctx context.Context, method, raw string) (*http.Reque
 }
 
 func defaultLookupIP(ctx context.Context, host string) ([]net.IP, error) {
-	return net.DefaultResolver.LookupIP(ctx, "ip", host)
+	return httpboundary.DefaultLookupIP(ctx, host)
 }
 
 type normalizeConfig struct {
@@ -707,32 +710,11 @@ func containsFold(values []string, target string) bool {
 }
 
 func isPrivateHost(ctx context.Context, lookupIP func(context.Context, string) ([]net.IP, error), host string) (bool, error) {
-	if strings.EqualFold(host, "localhost") {
-		return true, nil
-	}
-	if ip := net.ParseIP(host); ip != nil {
-		return isPrivateIP(ip), nil
-	}
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	if lookupIP == nil {
-		lookupIP = defaultLookupIP
-	}
-	ips, err := lookupIP(ctx, host)
+	private, err := httpboundary.IsPrivateHost(ctx, lookupIP, host)
 	if err != nil {
 		return false, fmt.Errorf("resolve url host %q: %w", host, err)
 	}
-	for _, ip := range ips {
-		if isPrivateIP(ip) {
-			return true, nil
-		}
-	}
-	return false, nil
-}
-
-func isPrivateIP(ip net.IP) bool {
-	return ip == nil || !ip.IsGlobalUnicast() || ip.IsPrivate()
+	return private, nil
 }
 
 func clientWithSafeTransport(client *http.Client, cfg resourceConfig) *http.Client {
@@ -770,37 +752,17 @@ func safeDialContext(cfg resourceConfig) func(context.Context, string, string) (
 }
 
 func publicHostIPs(ctx context.Context, cfg resourceConfig, host string) ([]net.IP, error) {
-	if strings.EqualFold(host, "localhost") {
-		return nil, fmt.Errorf("url host %q resolves to a private address", host)
-	}
-	if ip := net.ParseIP(host); ip != nil {
-		if isPrivateIP(ip) {
+	ips, err := httpboundary.PublicHostIPs(ctx, cfg.lookupIP, host)
+	if err != nil {
+		if errors.Is(err, httpboundary.ErrPrivateHost) {
 			return nil, fmt.Errorf("url host %q resolves to a private address", host)
 		}
-		return []net.IP{ip}, nil
-	}
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	lookupIP := cfg.lookupIP
-	if lookupIP == nil {
-		lookupIP = defaultLookupIP
-	}
-	ips, err := lookupIP(ctx, host)
-	if err != nil {
+		if errors.Is(err, httpboundary.ErrNoAddresses) {
+			return nil, fmt.Errorf("resolve url host %q: no addresses", host)
+		}
 		return nil, fmt.Errorf("resolve url host %q: %w", host, err)
 	}
-	if len(ips) == 0 {
-		return nil, fmt.Errorf("resolve url host %q: no addresses", host)
-	}
-	public := make([]net.IP, 0, len(ips))
-	for _, ip := range ips {
-		if isPrivateIP(ip) {
-			return nil, fmt.Errorf("url host %q resolves to a private address", host)
-		}
-		public = append(public, ip)
-	}
-	return public, nil
+	return ips, nil
 }
 
 type safeResourceTransport struct {
