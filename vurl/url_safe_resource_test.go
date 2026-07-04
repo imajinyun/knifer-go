@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	knifer "github.com/imajinyun/knifer-go"
 	"github.com/imajinyun/knifer-go/vurl"
 )
 
@@ -34,6 +35,22 @@ func TestFacadeSafeResourceHelpersRejectLocalhost(t *testing.T) {
 	}
 	if _, err := vurl.ContentLengthSafeWithOptions(server.URL); err == nil {
 		t.Fatal("ContentLengthSafeWithOptions(localhost) error = nil, want private host rejection")
+	}
+}
+
+func TestFacadeSafeResourceErrorContract(t *testing.T) {
+	secret := "sk-test-secret"
+	_, err := vurl.OpenSafeWithOptions(
+		"http://private.example/config?token="+secret,
+		vurl.WithLookupIP(func(context.Context, string) ([]net.IP, error) {
+			return []net.IP{net.ParseIP("10.0.0.1")}, nil
+		}),
+	)
+	if !errors.Is(err, knifer.ErrCodeUnsafeResource) {
+		t.Fatalf("OpenSafeWithOptions error = %v, want ErrCodeUnsafeResource", err)
+	}
+	if strings.Contains(err.Error(), secret) || strings.Contains(err.Error(), "token=") {
+		t.Fatalf("OpenSafeWithOptions error leaked query secret: %v", err)
 	}
 }
 

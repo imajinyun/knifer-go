@@ -15,6 +15,7 @@ import (
 	"time"
 	"unicode"
 
+	knifer "github.com/imajinyun/knifer-go"
 	"github.com/imajinyun/knifer-go/internal/httpboundary"
 )
 
@@ -631,7 +632,7 @@ func doResourceRequest(raw, method string, cfg resourceConfig) (*http.Response, 
 		return nil, err
 	}
 	if req == nil {
-		return nil, fmt.Errorf("request factory returned nil for %s %s", method, raw)
+		return nil, knifer.Errorf(knifer.ErrCodeUnsafeResource, "request factory returned nil for %s resource", method)
 	}
 	if req.Context() != ctx {
 		req = req.WithContext(ctx)
@@ -661,26 +662,26 @@ func doResourceRequest(raw, method string, cfg resourceConfig) (*http.Response, 
 	}
 	if cfg.checkStatus && (resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices) {
 		defer func() { _ = resp.Body.Close() }()
-		return nil, fmt.Errorf("unexpected http status %d for %s", resp.StatusCode, raw)
+		return nil, fmt.Errorf("unexpected http status %d", resp.StatusCode)
 	}
 	return resp, nil
 }
 
 func validateResourceURL(u *neturl.URL, cfg resourceConfig) error {
 	if u == nil {
-		return fmt.Errorf("url is nil")
+		return knifer.Errorf(knifer.ErrCodeUnsafeResource, "url is nil")
 	}
 	scheme := strings.ToLower(strings.TrimSpace(u.Scheme))
 	if len(cfg.allowedSchemes) > 0 && !containsFold(cfg.allowedSchemes, scheme) {
-		return fmt.Errorf("url scheme %q is not allowed", scheme)
+		return knifer.Errorf(knifer.ErrCodeUnsafeResource, "url scheme %q is not allowed", scheme)
 	}
 	if scheme == "http" || scheme == "https" {
 		host := strings.ToLower(u.Hostname())
 		if host == "" {
-			return fmt.Errorf("http url host is blank")
+			return knifer.Errorf(knifer.ErrCodeUnsafeResource, "http url host is blank")
 		}
 		if len(cfg.allowedHosts) > 0 && !containsFold(cfg.allowedHosts, host) {
-			return fmt.Errorf("url host %q is not allowed", host)
+			return knifer.Errorf(knifer.ErrCodeUnsafeResource, "url host %q is not allowed", host)
 		}
 		if cfg.rejectPrivate {
 			private, err := isPrivateHost(cfg.ctx, cfg.lookupIP, host)
@@ -688,13 +689,13 @@ func validateResourceURL(u *neturl.URL, cfg resourceConfig) error {
 				return err
 			}
 			if private {
-				return fmt.Errorf("url host %q resolves to a private address", host)
+				return knifer.Errorf(knifer.ErrCodeUnsafeResource, "url host %q resolves to a private address", host)
 			}
 		}
 		return nil
 	}
 	if !cfg.allowLocal && (scheme == "" || IsFileURL(u)) {
-		return fmt.Errorf("local file resources are not allowed")
+		return knifer.Errorf(knifer.ErrCodeUnsafeResource, "local file resources are not allowed")
 	}
 	return nil
 }
@@ -712,7 +713,7 @@ func containsFold(values []string, target string) bool {
 func isPrivateHost(ctx context.Context, lookupIP func(context.Context, string) ([]net.IP, error), host string) (bool, error) {
 	private, err := httpboundary.IsPrivateHost(ctx, lookupIP, host)
 	if err != nil {
-		return false, fmt.Errorf("resolve url host %q: %w", host, err)
+		return false, knifer.WrapError(knifer.ErrCodeUnsafeResource, "resolve url host failed", err)
 	}
 	return private, nil
 }
@@ -741,7 +742,7 @@ func safeDialContext(cfg resourceConfig) func(context.Context, string, string) (
 		}
 		host = strings.ToLower(strings.TrimSpace(host))
 		if host == "" {
-			return nil, fmt.Errorf("dial host is blank")
+			return nil, knifer.Errorf(knifer.ErrCodeUnsafeResource, "dial host is blank")
 		}
 		ips, err := publicHostIPs(ctx, cfg, host)
 		if err != nil {
@@ -755,12 +756,12 @@ func publicHostIPs(ctx context.Context, cfg resourceConfig, host string) ([]net.
 	ips, err := httpboundary.PublicHostIPs(ctx, cfg.lookupIP, host)
 	if err != nil {
 		if errors.Is(err, httpboundary.ErrPrivateHost) {
-			return nil, fmt.Errorf("url host %q resolves to a private address", host)
+			return nil, knifer.Errorf(knifer.ErrCodeUnsafeResource, "url host %q resolves to a private address", host)
 		}
 		if errors.Is(err, httpboundary.ErrNoAddresses) {
-			return nil, fmt.Errorf("resolve url host %q: no addresses", host)
+			return nil, knifer.Errorf(knifer.ErrCodeUnsafeResource, "resolve url host %q: no addresses", host)
 		}
-		return nil, fmt.Errorf("resolve url host %q: %w", host, err)
+		return nil, knifer.WrapError(knifer.ErrCodeUnsafeResource, "resolve url host failed", err)
 	}
 	return ips, nil
 }
@@ -772,7 +773,7 @@ type safeResourceTransport struct {
 
 func (t safeResourceTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	if req == nil || req.URL == nil {
-		return nil, fmt.Errorf("request url is nil")
+		return nil, knifer.Errorf(knifer.ErrCodeUnsafeResource, "request url is nil")
 	}
 	if err := validateResourceURL(req.URL, t.cfg); err != nil {
 		return nil, err
@@ -784,7 +785,7 @@ func (t safeResourceTransport) RoundTrip(req *http.Request) (*http.Response, err
 			return nil, err
 		}
 		if private {
-			return nil, fmt.Errorf("url host %q resolves to a private address", host)
+			return nil, knifer.Errorf(knifer.ErrCodeUnsafeResource, "url host %q resolves to a private address", host)
 		}
 	}
 	return t.base.RoundTrip(req)

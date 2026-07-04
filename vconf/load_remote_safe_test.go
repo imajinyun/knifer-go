@@ -147,4 +147,26 @@ func TestFacadeLoadRemoteSafeRejectsBoundaryFailures(t *testing.T) {
 			t.Fatalf("LoadRemoteSafeWithOptions status error = %v, want invalid input", err)
 		}
 	})
+
+	t.Run("redacts url query in error", func(t *testing.T) {
+		secret := "sk-test-secret"
+		client := &http.Client{Transport: roundTripperFunc(func(req *http.Request) (*http.Response, error) {
+			return &http.Response{
+				StatusCode: http.StatusTeapot,
+				Body:       io.NopCloser(strings.NewReader("nope")),
+				Request:    req,
+			}, nil
+		})}
+		_, err := vconf.LoadRemoteSafeWithOptions("http://config.example/app.setting?token="+secret, vconf.LoadOptions{
+			RemoteClient:       client,
+			RemoteAllowedHosts: []string{"config.example"},
+			LookupIP:           publicLookup,
+		})
+		if !errors.Is(err, knifer.ErrCodeInvalidInput) {
+			t.Fatalf("LoadRemoteSafeWithOptions query error = %v, want invalid input", err)
+		}
+		if strings.Contains(err.Error(), secret) || strings.Contains(err.Error(), "token=") {
+			t.Fatalf("LoadRemoteSafeWithOptions error leaked query secret: %v", err)
+		}
+	})
 }

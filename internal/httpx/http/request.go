@@ -1021,7 +1021,7 @@ func redirectPolicy(followRedir *bool, max int, policy *URLPolicy, next func(*ht
 			return HTTPErrorfWithCode(knifer.ErrCodeUnsupported, "stopped after %d redirects", max)
 		}
 		if req == nil || req.URL == nil {
-			return HTTPErrorf("redirect url is nil")
+			return HTTPErrorfWithCode(knifer.ErrCodeUnsafeResource, "redirect url is nil")
 		}
 		if err := validateRequestURL(req.URL, policy); err != nil {
 			return err
@@ -1054,7 +1054,7 @@ func safeDialContext(policy *URLPolicy) func(context.Context, string, string) (n
 		}
 		host = strings.ToLower(strings.TrimSpace(host))
 		if host == "" {
-			return nil, HTTPErrorf("dial host is blank")
+			return nil, HTTPErrorfWithCode(knifer.ErrCodeUnsafeResource, "dial host is blank")
 		}
 		if policy == nil || !policy.RejectPrivate {
 			return dialer.DialContext(ctx, network, address)
@@ -1074,7 +1074,7 @@ type safeRoundTripper struct {
 
 func (t safeRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 	if req == nil || req.URL == nil {
-		return nil, HTTPErrorf("request url is nil")
+		return nil, HTTPErrorfWithCode(knifer.ErrCodeUnsafeResource, "request url is nil")
 	}
 	if err := validateRequestURL(req.URL, t.policy); err != nil {
 		return nil, err
@@ -1084,10 +1084,10 @@ func (t safeRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
 		if t.policy != nil && t.policy.RejectPrivate {
 			private, err := isPrivateHost(req.Context(), t.policy.LookupIP, host)
 			if err != nil {
-				return nil, NewHTTPError("resolve url host failed", err)
+				return nil, NewHTTPErrorWithCode(knifer.ErrCodeUnsafeResource, "resolve url host failed", err)
 			}
 			if private {
-				return nil, HTTPErrorf("url host %q resolves to a private address", host)
+				return nil, HTTPErrorfWithCode(knifer.ErrCodeUnsafeResource, "url host %q resolves to a private address", host)
 			}
 		}
 	}
@@ -1099,29 +1099,29 @@ func validateRequestURL(u *url.URL, policy *URLPolicy) error {
 		return nil
 	}
 	if u == nil {
-		return HTTPErrorf("url is nil")
+		return HTTPErrorfWithCode(knifer.ErrCodeUnsafeResource, "url is nil")
 	}
 	scheme := strings.ToLower(strings.TrimSpace(u.Scheme))
 	if len(policy.AllowedSchemes) > 0 && !containsFold(policy.AllowedSchemes, scheme) {
-		return HTTPErrorf("url scheme %q is not allowed", scheme)
+		return HTTPErrorfWithCode(knifer.ErrCodeUnsafeResource, "url scheme %q is not allowed", scheme)
 	}
 	if scheme != "http" && scheme != "https" {
 		return nil
 	}
 	host := strings.ToLower(u.Hostname())
 	if host == "" {
-		return HTTPErrorf("http url host is blank")
+		return HTTPErrorfWithCode(knifer.ErrCodeUnsafeResource, "http url host is blank")
 	}
 	if len(policy.AllowedHosts) > 0 && !containsFold(policy.AllowedHosts, host) {
-		return HTTPErrorf("url host %q is not allowed", host)
+		return HTTPErrorfWithCode(knifer.ErrCodeUnsafeResource, "url host %q is not allowed", host)
 	}
 	if policy.RejectPrivate {
 		private, err := isPrivateHost(context.Background(), policy.LookupIP, host)
 		if err != nil {
-			return NewHTTPError("resolve url host failed", err)
+			return NewHTTPErrorWithCode(knifer.ErrCodeUnsafeResource, "resolve url host failed", err)
 		}
 		if private {
-			return HTTPErrorf("url host %q resolves to a private address", host)
+			return HTTPErrorfWithCode(knifer.ErrCodeUnsafeResource, "url host %q resolves to a private address", host)
 		}
 	}
 	return nil
@@ -1153,12 +1153,12 @@ func publicHostIPs(ctx context.Context, policy *URLPolicy, host string) ([]net.I
 	ips, err := httpboundary.PublicHostIPs(ctx, lookupIP, host)
 	if err != nil {
 		if errors.Is(err, httpboundary.ErrPrivateHost) {
-			return nil, HTTPErrorf("url host %q resolves to a private address", host)
+			return nil, HTTPErrorfWithCode(knifer.ErrCodeUnsafeResource, "url host %q resolves to a private address", host)
 		}
 		if errors.Is(err, httpboundary.ErrNoAddresses) {
-			return nil, HTTPErrorf("resolve url host %q: no addresses", host)
+			return nil, HTTPErrorfWithCode(knifer.ErrCodeUnsafeResource, "resolve url host %q: no addresses", host)
 		}
-		return nil, NewHTTPError("resolve url host failed", err)
+		return nil, NewHTTPErrorWithCode(knifer.ErrCodeUnsafeResource, "resolve url host failed", err)
 	}
 	return ips, nil
 }

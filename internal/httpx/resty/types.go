@@ -1,6 +1,7 @@
 package resty
 
 import (
+	knifer "github.com/imajinyun/knifer-go"
 	"github.com/imajinyun/knifer-go/internal/httpx/internal/shared"
 )
 
@@ -98,7 +99,17 @@ func NewHTTPError(msg string, cause error) *HTTPError {
 	return shared.NewHTTPError(msg, cause)
 }
 
+// NewHTTPErrorWithCode creates an HTTP error with an explicit knifer-go code.
+func NewHTTPErrorWithCode(code knifer.ErrCode, msg string, cause error) *HTTPError {
+	return shared.NewHTTPErrorWithCode(code, msg, cause)
+}
+
 // HTTPErrorf creates an HTTP error with a formatted message.
 func HTTPErrorf(format string, args ...any) *HTTPError {
 	return shared.HTTPErrorf(format, args...)
+}
+
+// HTTPErrorfWithCode creates an HTTP error with an explicit code and formatted message.
+func HTTPErrorfWithCode(code knifer.ErrCode, format string, args ...any) *HTTPError {
+	return shared.HTTPErrorfWithCode(code, format, args...)
 }

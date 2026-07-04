@@ -290,17 +290,18 @@ func loadRemote(rawURL string, opts LoadOptions) (*Conf, error) {
 	} else {
 		req, err = http.NewRequestWithContext(ctx, http.MethodGet, rawURL, nil)
 	}
+	safeURL := safeRemoteConfigURL(rawURL)
 	if err != nil {
-		return nil, invalidInputf("invalid remote config url %s: %s", rawURL, err.Error())
+		return nil, invalidInputf("invalid remote config url %s: %s", safeURL, err.Error())
 	}
 	if req == nil {
-		return nil, invalidInputf("invalid remote config url %s: request factory returned nil", rawURL)
+		return nil, invalidInputf("invalid remote config url %s: request factory returned nil", safeURL)
 	}
 	if req.Context() != ctx {
 		req = req.WithContext(ctx)
 	}
 	if req.URL == nil {
-		return nil, invalidInputf("invalid remote config url %s: request url is nil", rawURL)
+		return nil, invalidInputf("invalid remote config url %s: request url is nil", safeURL)
 	}
 	if err := validateRemoteConfigURL(req.URL.String(), opts); err != nil {
 		return nil, err
@@ -325,21 +326,21 @@ func loadRemote(rawURL string, opts LoadOptions) (*Conf, error) {
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, wrapConfigIO("fetch remote config "+rawURL, err)
+		return nil, wrapConfigIO("fetch remote config "+safeURL, err)
 	}
 	if resp == nil {
-		return nil, invalidInputf("fetch remote config %s: response is nil", rawURL)
+		return nil, invalidInputf("fetch remote config %s: response is nil", safeURL)
 	}
 	if resp.Body == nil {
-		return nil, invalidInputf("fetch remote config %s: response body is nil", rawURL)
+		return nil, invalidInputf("fetch remote config %s: response body is nil", safeURL)
 	}
 	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return nil, invalidInputf("fetch remote config %s: unexpected status %d", rawURL, resp.StatusCode)
+		return nil, invalidInputf("fetch remote config %s: unexpected status %d", safeURL, resp.StatusCode)
 	}
 	b, err := readAllLimit(resp.Body, opts.MaxBytes)
 	if err != nil {
-		return nil, wrapConfigIO("read remote config "+rawURL, err)
+		return nil, wrapConfigIO("read remote config "+safeURL, err)
 	}
 	parsePath := rawURL
 	if u, err := url.Parse(rawURL); err == nil && u.Path != "" {
@@ -355,7 +356,7 @@ func loadRemote(rawURL string, opts LoadOptions) (*Conf, error) {
 func validateRemoteConfigURL(rawURL string, opts LoadOptions) error {
 	u, err := url.Parse(rawURL)
 	if err != nil {
-		return invalidInputf("invalid remote config url %s: %s", rawURL, err.Error())
+		return invalidInputf("invalid remote config url %s: %s", safeRemoteConfigURL(rawURL), err.Error())
 	}
 	scheme := strings.ToLower(strings.TrimSpace(u.Scheme))
 	if scheme != "http" && scheme != "https" {
@@ -378,6 +379,17 @@ func validateRemoteConfigURL(rawURL string, opts LoadOptions) error {
 		}
 	}
 	return nil
+}
+
+func safeRemoteConfigURL(rawURL string) string {
+	u, err := url.Parse(rawURL)
+	if err != nil || u == nil {
+		return "<invalid>"
+	}
+	u.User = nil
+	u.RawQuery = ""
+	u.Fragment = ""
+	return u.String()
 }
 
 func containsFold(values []string, target string) bool {

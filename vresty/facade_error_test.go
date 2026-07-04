@@ -3,10 +3,13 @@ package vresty_test
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"net"
+	"strings"
 	"testing"
 	"time"
 
+	knifer "github.com/imajinyun/knifer-go"
 	"github.com/imajinyun/knifer-go/vresty"
 )
 
@@ -81,6 +84,22 @@ func TestFacadeErrorReturningMethods(t *testing.T) {
 	_, err = vresty.PostJSONSafeE("invalid://not-a-url", "{}")
 	if err == nil {
 		t.Fatal("PostJSONSafeE should return error for invalid URL")
+	}
+}
+
+func TestFacadeSafeBoundaryErrorContract(t *testing.T) {
+	secret := "sk-test-secret"
+	_, err := vresty.GetStringSafeE(
+		"http://private.example/config?token="+secret,
+		vresty.WithLookupIP(func(context.Context, string) ([]net.IP, error) {
+			return []net.IP{net.ParseIP("10.0.0.1")}, nil
+		}),
+	)
+	if !errors.Is(err, knifer.ErrCodeUnsafeResource) {
+		t.Fatalf("GetStringSafeE error = %v, want ErrCodeUnsafeResource", err)
+	}
+	if strings.Contains(err.Error(), secret) || strings.Contains(err.Error(), "token=") {
+		t.Fatalf("GetStringSafeE error leaked query secret: %v", err)
 	}
 }
 
