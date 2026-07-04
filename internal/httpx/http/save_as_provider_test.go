@@ -2,6 +2,7 @@ package http
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"io/fs"
 	"net/http"
@@ -45,6 +46,34 @@ func TestSaveAsProviderOptions(t *testing.T) {
 type nopWriteCloser struct{ io.Writer }
 
 func (w nopWriteCloser) Close() error { return nil }
+
+type closeErrorWriteCloser struct {
+	io.Writer
+	err error
+}
+
+func (w closeErrorWriteCloser) Close() error { return w.err }
+
+func TestSaveAsReturnsCloseError(t *testing.T) {
+	closeErr := errors.New("close failed")
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("provider-save"))
+	}))
+	defer srv.Close()
+
+	n, err := Get(srv.URL).Execute().SaveAs("/virtual/out.txt",
+		WithSaveMkdirAll(func(string, fs.FileMode) error { return nil }),
+		WithSaveOpenFile(func(string, int, fs.FileMode) (io.WriteCloser, error) {
+			return closeErrorWriteCloser{Writer: io.Discard, err: closeErr}, nil
+		}),
+	)
+	if n != int64(len("provider-save")) {
+		t.Fatalf("SaveAs close error bytes = %d, want %d", n, len("provider-save"))
+	}
+	if !errors.Is(err, closeErr) {
+		t.Fatalf("SaveAs close error = %v, want close cause", err)
+	}
+}
 
 func TestSaveAsDefaultFilenameOption(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
