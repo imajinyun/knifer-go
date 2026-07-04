@@ -191,4 +191,26 @@ func TestWithSaveAsFunc(t *testing.T) {
 	if cfg.saveAs == nil {
 		t.Fatal("WithSaveAsFunc did not set saveAs")
 	}
+	WithSaveAsFunc(nil)(&cfg)
+	if cfg.saveAs == nil {
+		t.Fatal("nil WithSaveAsFunc should not clear saveAs")
+	}
+}
+
+func TestNilWriteProviderOptionsDoNotOverwriteConfiguredProviders(t *testing.T) {
+	cfg := writeConfig{}
+	mkdirAll := func(string, fs.FileMode) error { return nil }
+	stat := func(string) (os.FileInfo, error) { return nil, os.ErrNotExist }
+	chmod := func(string, fs.FileMode) error { return nil }
+
+	WithMkdirAll(mkdirAll)(&cfg)
+	WithMkdirAll(nil)(&cfg)
+	WithStat(stat)(&cfg)
+	WithStat(nil)(&cfg)
+	WithChmod(chmod)(&cfg)
+	WithChmod(nil)(&cfg)
+
+	if cfg.mkdirAll == nil || cfg.stat == nil || cfg.chmod == nil {
+		t.Fatalf("nil provider option overwrote configured provider: %#v", cfg)
+	}
 }

@@ -61,6 +61,13 @@ func TestRSAPSSSignerWithOptions(t *testing.T) {
 	if sig := failing.Sign("a", "b"); sig != "" {
 		t.Fatalf("signature with failing random reader = %q, want empty", sig)
 	}
+	failing, err = NewRSAPSSSignerWithOptions(AlgPS256, priv, nil, WithSignerRandomReader(errReader{}), WithSignerRandomReader(nil))
+	if err != nil {
+		t.Fatalf("failing signer with nil overwrite: %v", err)
+	}
+	if sig := failing.Sign("a", "b"); sig != "" {
+		t.Fatalf("signature after nil random overwrite = %q, want empty", sig)
+	}
 	if token, err := New().SetPayload("u", 1).SetSigner(failing).Sign(); err == nil || token != "" {
 		t.Fatalf("Sign should reject RSA-PSS empty signature, token=%q err=%v", token, err)
 	}

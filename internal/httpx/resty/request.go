@@ -341,7 +341,11 @@ func WithTLSConfig(cfg *tls.Config) RequestOption { return func(r *HTTPRequest) 
 
 // WithRestyClient sets a per-request resty client.
 func WithRestyClient(c *grestry.Client) RequestOption {
-	return func(r *HTTPRequest) { r.RestyClient(c) }
+	return func(r *HTTPRequest) {
+		if c != nil {
+			r.RestyClient(c)
+		}
+	}
 }
 
 // WithRestyClientFactory sets a per-request resty client factory.

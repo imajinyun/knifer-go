@@ -107,6 +107,14 @@ func TestAESGCMProviderAndSecurityBoundaries(t *testing.T) {
 	})); !errors.Is(err, blockErr) {
 		t.Fatalf("AESSealGCMWithOptions block factory err = %v, want blockErr", err)
 	}
+	if _, _, err := AESSealGCMWithOptions(plain, key, nil,
+		WithGCMBlockFactory(func([]byte) (cipher.Block, error) {
+			return nil, blockErr
+		}),
+		WithGCMBlockFactory(nil),
+	); !errors.Is(err, blockErr) {
+		t.Fatalf("AESSealGCMWithOptions nil factory overwrite err = %v, want blockErr", err)
+	}
 	if _, _, err := AESSealGCMWithOptions(plain, key, nil, WithGCMNonceSize(12), WithGCMTagSize(16)); err == nil {
 		t.Fatal("AESSealGCMWithOptions should reject simultaneous nonce and tag sizes")
 	}

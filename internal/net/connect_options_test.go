@@ -71,3 +71,23 @@ func TestConnectWrapperBoundaries(t *testing.T) {
 		t.Fatalf("connection helpers remote=%q connected=%v", GetRemoteAddress(conn), IsConnected(conn))
 	}
 }
+
+func TestNilDialerOptionsDoNotOverwriteConfiguredDialers(t *testing.T) {
+	connectDialer := &recordingDialer{data: make(chan []byte, 1)}
+	conn, err := ConnectWithOptions("example.com", 80, WithConnectDialer(connectDialer), WithConnectDialer(nil))
+	if err != nil {
+		t.Fatalf("ConnectWithOptions nil overwrite error = %v", err)
+	}
+	_ = conn.Close()
+	if connectDialer.address == "" {
+		t.Fatal("nil connect dialer option overwrote configured dialer")
+	}
+
+	pingDialer := &recordingDialer{data: make(chan []byte, 1)}
+	if !PingWithOptions("example.com", WithPingPorts(80), WithPingDialer(pingDialer), WithPingDialer(nil)) {
+		t.Fatal("PingWithOptions should use configured dialer after nil option")
+	}
+	if pingDialer.address == "" {
+		t.Fatal("nil ping dialer option overwrote configured dialer")
+	}
+}

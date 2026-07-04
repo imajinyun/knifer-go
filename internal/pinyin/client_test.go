@@ -72,6 +72,17 @@ func TestClientInitialsUsesProviderAndClones(t *testing.T) {
 	}
 }
 
+func TestNilProviderOptionDoesNotOverwriteConfiguredProvider(t *testing.T) {
+	provider := &fakeProvider{convertResponse: ConvertResponse{Text: "中国", Output: "zhong guo"}}
+	client := New(WithProvider(provider), WithProvider(nil))
+	if _, err := client.Convert(context.Background(), ConvertRequest{Text: "中国"}); err != nil {
+		t.Fatalf("Convert with nil overwrite option error = %v", err)
+	}
+	if len(provider.convertRequests) != 1 {
+		t.Fatalf("provider calls = %d, want 1", len(provider.convertRequests))
+	}
+}
+
 func TestClientRequiresProvider(t *testing.T) {
 	client := New()
 	if _, err := client.Convert(context.Background(), ConvertRequest{Text: "中国"}); !errors.Is(err, ErrMissingProvider) {

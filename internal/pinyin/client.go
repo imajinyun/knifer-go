@@ -25,7 +25,11 @@ type Option func(*Client)
 
 // WithProvider sets the provider used by conversion and initials calls.
 func WithProvider(provider Provider) Option {
-	return func(c *Client) { c.provider = provider }
+	return func(c *Client) {
+		if provider != nil {
+			c.provider = provider
+		}
+	}
 }
 
 // New returns a provider-neutral pinyin client.

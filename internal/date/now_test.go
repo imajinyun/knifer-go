@@ -33,4 +33,7 @@ func TestNowWithOptionsClock(t *testing.T) {
 	if got := NowWithOptions(WithClock(nil)); got.IsZero() {
 		t.Fatal("NowWithOptions nil clock should fall back to time.Now")
 	}
+	if got := NowWithOptions(WithClock(func() time.Time { return fixed }), WithClock(nil)); !got.Equal(fixed) {
+		t.Fatalf("NowWithOptions nil overwrite clock = %v, want %v", got, fixed)
+	}
 }

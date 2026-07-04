@@ -51,14 +51,22 @@ type RandomOption func(*randomConfig)
 
 // WithRandomReader sets the random source used by ID helpers.
 func WithRandomReader(reader io.Reader) RandomOption {
-	return func(c *randomConfig) { c.reader = reader }
+	return func(c *randomConfig) {
+		if reader != nil {
+			c.reader = reader
+		}
+	}
 }
 
 // WithFallbackRandomSource sets the pseudo-random fallback used when the
 // primary random reader fails. It exists for compatibility and deterministic
 // tests; do not use it for security-sensitive identifiers.
 func WithFallbackRandomSource(source *mathrand.Rand) RandomOption {
-	return func(c *randomConfig) { c.fallbackSource = source }
+	return func(c *randomConfig) {
+		if source != nil {
+			c.fallbackSource = source
+		}
+	}
 }
 
 func applyRandomOptions(opts []RandomOption) randomConfig {
@@ -112,24 +120,40 @@ type ObjectIDOption func(*objectIDConfig)
 
 // WithObjectIDRandomReader sets the random source used by ObjectIdWithOptions.
 func WithObjectIDRandomReader(reader io.Reader) ObjectIDOption {
-	return func(c *objectIDConfig) { c.reader = reader }
+	return func(c *objectIDConfig) {
+		if reader != nil {
+			c.reader = reader
+		}
+	}
 }
 
 // WithObjectIDFallbackRandomSource sets the fallback pseudo-random source used
 // when ObjectId random reads fail. It is intended for compatibility and tests,
 // not for security-sensitive identifiers.
 func WithObjectIDFallbackRandomSource(source *mathrand.Rand) ObjectIDOption {
-	return func(c *objectIDConfig) { c.fallbackSource = source }
+	return func(c *objectIDConfig) {
+		if source != nil {
+			c.fallbackSource = source
+		}
+	}
 }
 
 // WithObjectIDTimeFunc sets the time source used by ObjectIdWithOptions.
 func WithObjectIDTimeFunc(now func() time.Time) ObjectIDOption {
-	return func(c *objectIDConfig) { c.now = now }
+	return func(c *objectIDConfig) {
+		if now != nil {
+			c.now = now
+		}
+	}
 }
 
 // WithObjectIDCounter sets the counter source used by ObjectIdWithOptions.
 func WithObjectIDCounter(counter func() uint32) ObjectIDOption {
-	return func(c *objectIDConfig) { c.counter = counter }
+	return func(c *objectIDConfig) {
+		if counter != nil {
+			c.counter = counter
+		}
+	}
 }
 
 func applyObjectIDOptions(opts []ObjectIDOption) objectIDConfig {
@@ -179,12 +203,20 @@ type SnowflakeOption func(*snowflakeConfig)
 
 // WithNanoIDRandomReader sets the random source used by NanoIdWithOptions.
 func WithNanoIDRandomReader(reader io.Reader) NanoIDOption {
-	return func(c *nanoIDConfig) { c.reader = reader }
+	return func(c *nanoIDConfig) {
+		if reader != nil {
+			c.reader = reader
+		}
+	}
 }
 
 // WithNanoIDFallbackRandomSource sets the fallback random source used when NanoId random reads fail.
 func WithNanoIDFallbackRandomSource(source *mathrand.Rand) NanoIDOption {
-	return func(c *nanoIDConfig) { c.fallbackSource = source }
+	return func(c *nanoIDConfig) {
+		if source != nil {
+			c.fallbackSource = source
+		}
+	}
 }
 
 // WithNanoIDAlphabet sets the alphabet used by NanoIdWithOptions.

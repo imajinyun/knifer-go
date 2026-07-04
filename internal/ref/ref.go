@@ -174,9 +174,9 @@ var contextType = reflect.TypeOf((*context.Context)(nil)).Elem()
 // ImplementsContext reports whether typ implements context.Context.
 func ImplementsContext(typ reflect.Type) bool { return typ != nil && typ.Implements(contextType) }
 
-// SafeConvert converts src to dstType after rejecting numeric conversions that
+// CheckedConvert converts src to dstType after rejecting numeric conversions that
 // would overflow, wrap, or narrow an unsupported float value.
-func SafeConvert(src reflect.Value, dstType reflect.Type) (reflect.Value, error) {
+func CheckedConvert(src reflect.Value, dstType reflect.Type) (reflect.Value, error) {
 	if !src.IsValid() {
 		return reflect.Value{}, errors.New("invalid value")
 	}
@@ -631,7 +631,7 @@ func setValue(dst reflect.Value, value any, cfg fieldAccessConfig) error {
 		return nil
 	}
 	if src.Type().ConvertibleTo(dst.Type()) {
-		converted, err := SafeConvert(src, dst.Type())
+		converted, err := CheckedConvert(src, dst.Type())
 		if err != nil {
 			return err
 		}
@@ -697,7 +697,7 @@ func valuesForCall(fnType reflect.Type, offset int, args []any) []reflect.Value 
 		case v.Type().AssignableTo(expected):
 			values = append(values, v)
 		case v.Type().ConvertibleTo(expected):
-			converted, err := SafeConvert(v, expected)
+			converted, err := CheckedConvert(v, expected)
 			if err != nil {
 				values = append(values, reflect.Zero(expected))
 				continue

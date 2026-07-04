@@ -26,7 +26,11 @@ type Option func(*Client)
 
 // WithProvider sets the provider used by list, download, and upload calls.
 func WithProvider(provider Provider) Option {
-	return func(c *Client) { c.provider = provider }
+	return func(c *Client) {
+		if provider != nil {
+			c.provider = provider
+		}
+	}
 }
 
 // New returns a provider-neutral FTP client.

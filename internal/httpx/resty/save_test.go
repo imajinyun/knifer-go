@@ -97,6 +97,22 @@ func TestSaveAsProviderOptions(t *testing.T) {
 	}
 }
 
+func TestNilSaveProviderOptionsDoNotOverwriteConfiguredProviders(t *testing.T) {
+	stat := func(string) (os.FileInfo, error) { return nil, os.ErrNotExist }
+	mkdirAll := func(string, fs.FileMode) error { return nil }
+	openFile := func(string, int, fs.FileMode) (io.WriteCloser, error) {
+		return nopWriteCloser{Writer: io.Discard}, nil
+	}
+	cfg := applySaveOptions([]SaveOption{
+		WithSaveStat(stat), WithSaveStat(nil),
+		WithSaveMkdirAll(mkdirAll), WithSaveMkdirAll(nil),
+		WithSaveOpenFile(openFile), WithSaveOpenFile(nil),
+	})
+	if cfg.stat == nil || cfg.mkdirAll == nil || cfg.openFile == nil {
+		t.Fatalf("nil save provider option overwrote configured provider: %#v", cfg)
+	}
+}
+
 func TestSaveAsReturnsCloseError(t *testing.T) {
 	closeErr := errors.New("close failed")
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

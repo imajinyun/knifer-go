@@ -35,12 +35,20 @@ type Option func(*Client)
 
 // WithChatProvider sets the provider used by Client.Chat.
 func WithChatProvider(provider ChatProvider) Option {
-	return func(c *Client) { c.chatProvider = provider }
+	return func(c *Client) {
+		if provider != nil {
+			c.chatProvider = provider
+		}
+	}
 }
 
 // WithEmbeddingProvider sets the provider used by Client.Embed.
 func WithEmbeddingProvider(provider EmbeddingProvider) Option {
-	return func(c *Client) { c.embeddingProvider = provider }
+	return func(c *Client) {
+		if provider != nil {
+			c.embeddingProvider = provider
+		}
+	}
 }
 
 // New returns a provider-neutral AI client.

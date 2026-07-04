@@ -183,11 +183,20 @@ func TestRSANilKeyAndProviderErrorContracts(t *testing.T) {
 	if _, err := RSAEncryptOAEPWithOptions(data, &priv.PublicKey, nil, WithRSARandomReader(errorReader{err: entropyErr})); !errors.Is(err, entropyErr) {
 		t.Fatalf("RSAEncryptOAEPWithOptions provider err = %v, want entropyErr", err)
 	}
+	if _, err := RSAEncryptOAEPWithOptions(data, &priv.PublicKey, nil, WithRSARandomReader(errorReader{err: entropyErr}), WithRSARandomReader(nil)); !errors.Is(err, entropyErr) {
+		t.Fatalf("RSAEncryptOAEPWithOptions nil random overwrite err = %v, want entropyErr", err)
+	}
 	if _, err := RSASignPSSWithOptions(priv, stdcrypto.SHA256, digest[:], WithRSARandomReader(errorReader{err: entropyErr})); !errors.Is(err, entropyErr) {
 		t.Fatalf("RSASignPSSWithOptions provider err = %v, want entropyErr", err)
 	}
+	if _, err := RSASignPSSWithOptions(priv, stdcrypto.SHA256, digest[:], WithRSARandomReader(errorReader{err: entropyErr}), WithRSARandomReader(nil)); !errors.Is(err, entropyErr) {
+		t.Fatalf("RSASignPSSWithOptions nil random overwrite err = %v, want entropyErr", err)
+	}
 	if _, err := SignWithRSAOptions(data, priv, WithRSADigestRandomReader(errorReader{err: entropyErr})); !errors.Is(err, entropyErr) {
 		t.Fatalf("SignWithRSAOptions provider err = %v, want entropyErr", err)
+	}
+	if _, err := SignWithRSAOptions(data, priv, WithRSADigestRandomReader(errorReader{err: entropyErr}), WithRSADigestRandomReader(nil)); !errors.Is(err, entropyErr) {
+		t.Fatalf("SignWithRSAOptions nil random overwrite err = %v, want entropyErr", err)
 	}
 }
 

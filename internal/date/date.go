@@ -36,7 +36,13 @@ type ParseOption func(*parseConfig)
 type NowOption func(*nowConfig)
 
 // WithClock sets the time source used by NowWithOptions and TodayWithOptions.
-func WithClock(clock func() time.Time) NowOption { return func(c *nowConfig) { c.clock = clock } }
+func WithClock(clock func() time.Time) NowOption {
+	return func(c *nowConfig) {
+		if clock != nil {
+			c.clock = clock
+		}
+	}
+}
 
 // WithLocation sets the time zone used when parsing layouts without zone information.
 func WithLocation(location *time.Location) ParseOption {

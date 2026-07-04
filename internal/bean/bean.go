@@ -624,7 +624,7 @@ func assignValue(dst, src reflect.Value, cfg Options) error {
 		return nil
 	}
 	if src.Type().ConvertibleTo(dst.Type()) {
-		converted, err := refimpl.SafeConvert(src, dst.Type())
+		converted, err := refimpl.CheckedConvert(src, dst.Type())
 		if err != nil {
 			return err
 		}

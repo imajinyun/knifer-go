@@ -72,6 +72,17 @@ func TestClientKeywordsUsesProviderAndClones(t *testing.T) {
 	}
 }
 
+func TestNilProviderOptionDoesNotOverwriteConfiguredProvider(t *testing.T) {
+	provider := &fakeProvider{tokenizeResponse: TokenizeResponse{Text: "南京", Tokens: []Token{{Text: "南京"}}}}
+	client := New(WithProvider(provider), WithProvider(nil))
+	if _, err := client.Tokenize(context.Background(), TokenizeRequest{Text: "南京"}); err != nil {
+		t.Fatalf("Tokenize with nil overwrite option error = %v", err)
+	}
+	if len(provider.tokenizeRequests) != 1 {
+		t.Fatalf("provider calls = %d, want 1", len(provider.tokenizeRequests))
+	}
+}
+
 func TestClientRequiresProvider(t *testing.T) {
 	client := New()
 	if _, err := client.Tokenize(context.Background(), TokenizeRequest{Text: "南京"}); !errors.Is(err, ErrMissingProvider) {

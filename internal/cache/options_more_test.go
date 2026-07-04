@@ -55,6 +55,26 @@ func TestWithTickerFactoryAndRunner(t *testing.T) {
 	}
 }
 
+func TestNilProviderOptionsDoNotOverwriteConfiguredProviders(t *testing.T) {
+	listener := CacheListenerFunc[string, int](func(string, int) {})
+	clock := func() time.Time { return time.Unix(1, 0) }
+	factory := TickerFactory(func(time.Duration) (<-chan time.Time, Ticker) { return nil, nil })
+	runner := func(fn func()) { fn() }
+	cfg := applyOptions[string, int]([]Option[string, int]{
+		WithListener[string, int](listener),
+		WithListener[string, int](nil),
+		WithClock[string, int](clock),
+		WithClock[string, int](nil),
+		WithTickerFactory[string, int](factory),
+		WithTickerFactory[string, int](nil),
+		WithRunner[string, int](runner),
+		WithRunner[string, int](nil),
+	})
+	if cfg.listener == nil || cfg.clock == nil || cfg.tickerFactory == nil || cfg.runner == nil {
+		t.Fatalf("nil provider option overwrote configured provider: %+v", cfg)
+	}
+}
+
 func TestWithWeakFinalizerFunc(t *testing.T) {
 	type obj struct{}
 	finalizer := func(v *obj, fn func(*obj)) {

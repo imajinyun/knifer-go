@@ -63,7 +63,13 @@ func WithPingPorts(ports ...int) PingOption {
 func WithPingNetwork(network string) PingOption { return func(c *pingConfig) { c.network = network } }
 
 // WithPingDialer sets the dialer used by PingWithOptions.
-func WithPingDialer(d Dialer) PingOption { return func(c *pingConfig) { c.dialer = d } }
+func WithPingDialer(d Dialer) PingOption {
+	return func(c *pingConfig) {
+		if d != nil {
+			c.dialer = d
+		}
+	}
+}
 
 // WithConnectContext sets the context used by connection helpers.
 func WithConnectContext(ctx context.Context) ConnectOption {
@@ -81,7 +87,13 @@ func WithConnectNetwork(network string) ConnectOption {
 }
 
 // WithConnectDialer sets the dialer used by connection helpers.
-func WithConnectDialer(d Dialer) ConnectOption { return func(c *connectConfig) { c.dialer = d } }
+func WithConnectDialer(d Dialer) ConnectOption {
+	return func(c *connectConfig) {
+		if d != nil {
+			c.dialer = d
+		}
+	}
+}
 
 func applyPingOptions(opts []PingOption) pingConfig {
 	cfg := pingConfig{

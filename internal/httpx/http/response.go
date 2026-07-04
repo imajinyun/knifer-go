@@ -189,17 +189,29 @@ func WithSaveDefaultFilename(name string) SaveOption {
 
 // WithSaveStat sets the stat provider used to resolve directory destinations.
 func WithSaveStat(stat func(string) (os.FileInfo, error)) SaveOption {
-	return func(c *saveConfig) { c.stat = stat }
+	return func(c *saveConfig) {
+		if stat != nil {
+			c.stat = stat
+		}
+	}
 }
 
 // WithSaveMkdirAll sets the directory creator used when saving responses.
 func WithSaveMkdirAll(mkdirAll func(string, fs.FileMode) error) SaveOption {
-	return func(c *saveConfig) { c.mkdirAll = mkdirAll }
+	return func(c *saveConfig) {
+		if mkdirAll != nil {
+			c.mkdirAll = mkdirAll
+		}
+	}
 }
 
 // WithSaveOpenFile sets the file opener used when saving responses.
 func WithSaveOpenFile(openFile func(string, int, fs.FileMode) (io.WriteCloser, error)) SaveOption {
-	return func(c *saveConfig) { c.openFile = openFile }
+	return func(c *saveConfig) {
+		if openFile != nil {
+			c.openFile = openFile
+		}
+	}
 }
 
 func applySaveOptions(opts []SaveOption) saveConfig {

@@ -66,6 +66,17 @@ func TestClientListUsesProviderAndClones(t *testing.T) {
 	}
 }
 
+func TestNilProviderOptionDoesNotOverwriteConfiguredProvider(t *testing.T) {
+	provider := &fakeProvider{listResponse: ListResponse{Entries: []Entry{{Name: "file.txt", Path: "/file.txt", Type: EntryTypeFile}}}}
+	client := New(WithProvider(provider), WithProvider(nil))
+	if _, err := client.List(context.Background(), ListRequest{RemoteDir: "/pub"}); err != nil {
+		t.Fatalf("List with nil overwrite option error = %v", err)
+	}
+	if len(provider.listRequests) != 1 {
+		t.Fatalf("provider calls = %d, want 1", len(provider.listRequests))
+	}
+}
+
 func TestClientRequiresProvider(t *testing.T) {
 	client := New()
 	if _, err := client.List(context.Background(), ListRequest{RemoteDir: "/"}); !errors.Is(err, ErrMissingProvider) {

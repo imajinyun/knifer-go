@@ -55,6 +55,39 @@ def command_attestation(result, source):
     }
 
 
+def external_command_attestation(command, command_spec):
+    env_name = "AGENT_ATTEST_" + command.upper()
+    status = os.environ.get(env_name, "").strip()
+    if not status:
+        return None
+    if status not in {"passed", "failed", "skipped", "covered_by_ci"}:
+        return None
+    attestation = {
+        "status": status,
+        "source": os.environ.get(env_name + "_SOURCE", "agent_run").strip() or "agent_run",
+        "cmd": os.environ.get(env_name + "_CMD", command_spec.get("cmd", command)).strip() or command_spec.get("cmd", command),
+    }
+    exit_code = os.environ.get(env_name + "_EXIT_CODE", "").strip()
+    if exit_code:
+        try:
+            attestation["exit_code"] = int(exit_code)
+        except ValueError:
+            pass
+    elif status == "passed":
+        attestation["exit_code"] = 0
+    elif status == "failed":
+        attestation["exit_code"] = 1
+    if status in {"skipped", "covered_by_ci"}:
+        reason = os.environ.get(env_name + "_REASON", "").strip()
+        if reason:
+            attestation["reason"] = reason
+    if status == "covered_by_ci":
+        ci_job = os.environ.get(env_name + "_CI_JOB", "").strip()
+        if ci_job:
+            attestation["ci_job"] = ci_job
+    return attestation
+
+
 def change_base_ref():
     base_ref = os.environ.get("AGENT_CHANGE_BASE_REF")
     if not base_ref and os.environ.get("GITHUB_BASE_REF"):
@@ -164,12 +197,41 @@ command_attestations = {
     },
 }
 for command in required_commands:
+    command_spec = data["commands"].get(command, {})
+    external = external_command_attestation(command, command_spec)
+    if external is not None:
+        command_attestations[command] = external
+        continue
     command_attestations.setdefault(command, {
         "status": "not_recorded",
         "source": "required_by_policy",
-        "cmd": data["commands"].get(command, {}).get("cmd", command),
+        "cmd": command_spec.get("cmd", command),
         "reason": "required command has not been attested in this evidence",
     })
+
+
+def attestation_satisfies_command(command):
+    if command in {"security_sensitive_diff"}:
+        return True
+    attestation = command_attestations.get(command, {})
+    if command == "agent_evidence_check":
+        return attestation.get("status") == "pending"
+    return attestation.get("status") in {"passed", "covered_by_ci"}
+
+
+merge_blockers = []
+for command in required_commands:
+    if not attestation_satisfies_command(command):
+        merge_blockers.append(command)
+if checks["ai_context_check"]["status"] != "passed":
+    merge_blockers.append("ai_context_check")
+if checks["change_policy_check"]["status"] != "passed":
+    merge_blockers.append("change_policy_check")
+if "security_sensitive" in detected_policies:
+    if command_attestations.get("agent_security_check", {}).get("status") not in {"passed", "covered_by_ci"}:
+        merge_blockers.append("agent_security_check")
+    if command_attestations.get("agent_full_check", {}).get("status") not in {"passed", "covered_by_ci"}:
+        merge_blockers.append("agent_full_check")
 
 report = {
     "schema_version": "1.0",
@@ -187,6 +249,8 @@ report = {
     "highest_required_command_risk": highest_risk,
     "security_sensitive_paths": sorted(set(security_sensitive_paths)),
     "checks": checks,
+    "merge_ready": len(merge_blockers) == 0,
+    "merge_blockers": sorted(set(merge_blockers)),
     "worktree_status": git(["status", "--short"]),
 }
 
@@ -201,4 +265,7 @@ print(f"agent validation evidence written to {output_file}")
 print("detected policies: " + (", ".join(report["detected_change_policies"]) or "none"))
 print("required commands: " + (", ".join(required_commands) or "none"))
 print("highest required command risk: " + highest_risk)
+print("merge ready: " + ("true" if report["merge_ready"] else "false"))
+if report["merge_blockers"]:
+    print("merge blockers: " + ", ".join(report["merge_blockers"]))
 PY

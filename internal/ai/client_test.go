@@ -66,6 +66,24 @@ func TestClientChatUsesProviderAndClonesRequest(t *testing.T) {
 	}
 }
 
+func TestNilProviderOptionsDoNotOverwriteConfiguredProviders(t *testing.T) {
+	chatProvider := &fakeChatProvider{response: ChatResponse{Message: Message{Role: RoleAssistant, Content: "hi"}}}
+	embeddingProvider := &fakeEmbeddingProvider{response: EmbeddingResponse{Vectors: [][]float32{{1}}}}
+	client := New(
+		WithChatProvider(chatProvider),
+		WithChatProvider(nil),
+		WithEmbeddingProvider(embeddingProvider),
+		WithEmbeddingProvider(nil),
+	)
+
+	if _, err := client.Chat(context.Background(), ChatRequest{Model: "model-a", Messages: []Message{{Role: RoleUser, Content: "hello"}}}); err != nil {
+		t.Fatalf("Chat with nil overwrite option error = %v", err)
+	}
+	if _, err := client.Embed(context.Background(), EmbeddingRequest{Model: "embed-a", Input: []string{"hello"}}); err != nil {
+		t.Fatalf("Embed with nil overwrite option error = %v", err)
+	}
+}
+
 func TestClientChatRequiresProvider(t *testing.T) {
 	client := New()
 	_, err := client.Chat(context.Background(), ChatRequest{Model: "model-a", Messages: []Message{{Role: RoleUser, Content: "hello"}}})

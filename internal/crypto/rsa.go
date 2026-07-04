@@ -30,12 +30,20 @@ type RSADigestOption func(*rsaDigestConfig)
 
 // WithRSARandomReader sets the entropy source used by RSA helpers.
 func WithRSARandomReader(reader io.Reader) RSAOption {
-	return func(c *rsaConfig) { c.random = reader }
+	return func(c *rsaConfig) {
+		if reader != nil {
+			c.random = reader
+		}
+	}
 }
 
 // WithRSAOAEPHash sets the hash function used by RSA-OAEP helpers.
 func WithRSAOAEPHash(newHash func() hash.Hash) RSAOption {
-	return func(c *rsaConfig) { c.oaepHash = newHash }
+	return func(c *rsaConfig) {
+		if newHash != nil {
+			c.oaepHash = newHash
+		}
+	}
 }
 
 // WithRSAPSSOptions sets the PSS options used by RSA-PSS sign and verify helpers.
@@ -80,13 +88,19 @@ func applyRSADigestOptions(opts ...RSADigestOption) rsaDigestConfig {
 func WithRSADigestHash(hashID stdcrypto.Hash, newHash func() hash.Hash) RSADigestOption {
 	return func(c *rsaDigestConfig) {
 		c.hashID = hashID
-		c.newHash = newHash
+		if newHash != nil {
+			c.newHash = newHash
+		}
 	}
 }
 
 // WithRSADigestRandomReader sets the entropy source used by RSA data-signing helpers.
 func WithRSADigestRandomReader(reader io.Reader) RSADigestOption {
-	return func(c *rsaDigestConfig) { c.random = reader }
+	return func(c *rsaDigestConfig) {
+		if reader != nil {
+			c.random = reader
+		}
+	}
 }
 
 // WithRSADigestPSS signs and verifies using RSA-PSS instead of PKCS#1 v1.5.

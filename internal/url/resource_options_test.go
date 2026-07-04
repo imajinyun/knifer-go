@@ -101,6 +101,24 @@ func TestResourceOptionFallbacksAndSafeDialValidation(t *testing.T) {
 		t.Fatalf("applyResourceOptions did not restore defaults: %#v", cfg)
 	}
 
+	client := &http.Client{}
+	openFile := func(string) (io.ReadCloser, error) { return io.NopCloser(strings.NewReader("")), nil }
+	stat := func(string) (os.FileInfo, error) { return nil, os.ErrNotExist }
+	requestFactory := func(ctx context.Context, method, raw string) (*http.Request, error) {
+		return http.NewRequestWithContext(ctx, method, raw, nil)
+	}
+	lookupIP := func(context.Context, string) ([]net.IP, error) { return []net.IP{net.ParseIP("93.184.216.34")}, nil }
+	cfg = applyResourceOptions([]ResourceOption{
+		WithHTTPClient(client), WithHTTPClient(nil),
+		WithOpenFile(openFile), WithOpenFile(nil),
+		WithStat(stat), WithStat(nil),
+		WithRequestFactory(requestFactory), WithRequestFactory(nil),
+		WithLookupIP(lookupIP), WithLookupIP(nil),
+	})
+	if cfg.client != client || cfg.openFile == nil || cfg.stat == nil || cfg.requestFactory == nil || cfg.lookupIP == nil {
+		t.Fatalf("nil provider option overwrote configured provider: %#v", cfg)
+	}
+
 	dial := safeDialContext(resourceConfig{})
 	if _, err := dial(context.Background(), "tcp", "missing-port"); err == nil {
 		t.Fatal("safeDialContext missing port error = nil")

@@ -31,7 +31,11 @@ func WithGCMTagSize(size int) AESGCMOption {
 
 // WithGCMBlockFactory sets the cipher block factory used by AES-GCM helpers.
 func WithGCMBlockFactory(factory func([]byte) (cipher.Block, error)) AESGCMOption {
-	return func(c *aesGCMConfig) { c.blockFunc = factory }
+	return func(c *aesGCMConfig) {
+		if factory != nil {
+			c.blockFunc = factory
+		}
+	}
 }
 
 // WithGCMRandomOptions sets the entropy source options used when AESSealGCM generates a nonce.

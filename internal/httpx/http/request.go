@@ -421,7 +421,13 @@ func WithMaxRedirects(n int) RequestOption { return func(r *HTTPRequest) { r.Max
 func WithTLSConfig(cfg *tls.Config) RequestOption { return func(r *HTTPRequest) { r.TLSConfig(cfg) } }
 
 // WithTransport sets a per-request RoundTripper.
-func WithTransport(t http.RoundTripper) RequestOption { return func(r *HTTPRequest) { r.Transport(t) } }
+func WithTransport(t http.RoundTripper) RequestOption {
+	return func(r *HTTPRequest) {
+		if t != nil {
+			r.Transport(t)
+		}
+	}
+}
 
 // WithTransportProvider sets a per-request RoundTripper provider evaluated when the request is built.
 func WithTransportProvider(provider func() http.RoundTripper) RequestOption {
@@ -433,7 +439,13 @@ func WithTransportProvider(provider func() http.RoundTripper) RequestOption {
 }
 
 // WithClient sets a per-request HTTP client.
-func WithClient(c *http.Client) RequestOption { return func(r *HTTPRequest) { r.Client(c) } }
+func WithClient(c *http.Client) RequestOption {
+	return func(r *HTTPRequest) {
+		if c != nil {
+			r.Client(c)
+		}
+	}
+}
 
 // WithCookieJar sets a per-request CookieJar. nil disables cookie management for this request.
 func WithCookieJar(jar http.CookieJar) RequestOption {

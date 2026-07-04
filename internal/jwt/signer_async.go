@@ -45,7 +45,11 @@ type SignerOption func(*signerConfig)
 
 // WithSignerRandomReader sets the random source used by RSA-PSS and ECDSA signing.
 func WithSignerRandomReader(reader io.Reader) SignerOption {
-	return func(c *signerConfig) { c.random = reader }
+	return func(c *signerConfig) {
+		if reader != nil {
+			c.random = reader
+		}
+	}
 }
 
 // WithRSAPSSOptions sets RSA-PSS options used by RSA-PSS signing and verification.

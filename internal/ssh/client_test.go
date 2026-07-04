@@ -98,6 +98,17 @@ func TestClientListUsesProviderAndClones(t *testing.T) {
 	}
 }
 
+func TestNilProviderOptionDoesNotOverwriteConfiguredProvider(t *testing.T) {
+	provider := &fakeProvider{runResponse: CommandResponse{ExitCode: 0}}
+	client := New(WithProvider(provider), WithProvider(nil))
+	if _, err := client.Run(context.Background(), CommandRequest{Command: "true"}); err != nil {
+		t.Fatalf("Run with nil overwrite option error = %v", err)
+	}
+	if len(provider.runRequests) != 1 {
+		t.Fatalf("provider calls = %d, want 1", len(provider.runRequests))
+	}
+}
+
 func TestClientRequiresProvider(t *testing.T) {
 	client := New()
 	if _, err := client.Run(context.Background(), CommandRequest{Command: "true"}); !errors.Is(err, ErrMissingProvider) {

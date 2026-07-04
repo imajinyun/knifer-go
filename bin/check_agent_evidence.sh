@@ -322,6 +322,40 @@ else:
         if isinstance(security_sensitive_exit_code, int) and security_sensitive_exit_code == 0:
             add_error("checks.security_sensitive_diff.exit_code must be non-zero when security-sensitive non-example paths changed")
 
+def attestation_ready(command: str) -> bool:
+    if command == "security_sensitive_diff":
+        return True
+    attestation = command_attestations.get(command, {})
+    if command == "agent_evidence_check":
+        return attestation.get("status") == "pending"
+    return attestation.get("status") in {"passed", "covered_by_ci"}
+
+
+expected_merge_blockers = []
+for command in required_commands:
+    if not attestation_ready(command):
+        expected_merge_blockers.append(command)
+if require_mapping(checks.get("ai_context_check"), "checks.ai_context_check").get("status") != "passed":
+    expected_merge_blockers.append("ai_context_check")
+if require_mapping(checks.get("change_policy_check"), "checks.change_policy_check").get("status") != "passed":
+    expected_merge_blockers.append("change_policy_check")
+if "security_sensitive" in detected_policies:
+    if command_attestations.get("agent_security_check", {}).get("status") not in {"passed", "covered_by_ci"}:
+        expected_merge_blockers.append("agent_security_check")
+    if command_attestations.get("agent_full_check", {}).get("status") not in {"passed", "covered_by_ci"}:
+        expected_merge_blockers.append("agent_full_check")
+expected_merge_blockers = sorted(set(expected_merge_blockers))
+
+merge_ready = evidence.get("merge_ready")
+if not isinstance(merge_ready, bool):
+    add_error("merge_ready must be a boolean")
+elif merge_ready != (len(expected_merge_blockers) == 0):
+    add_error(f"merge_ready must be {str(len(expected_merge_blockers) == 0).lower()}")
+
+merge_blockers = require_string_list(evidence.get("merge_blockers"), "merge_blockers")
+if sorted(merge_blockers) != expected_merge_blockers:
+    add_error(f"merge_blockers must be {expected_merge_blockers}, got {sorted(merge_blockers)}")
+
 if not isinstance(evidence.get("worktree_status"), str):
     add_error("worktree_status must be a string")
 
@@ -333,6 +367,7 @@ if errors:
 display_path = os.path.relpath(evidence_file, root_dir) if evidence_file.startswith(root_dir + os.sep) else evidence_file
 print(
     f"agent evidence is valid ({display_path}; "
-    f"{len(detected_policies)} policies, {len(required_commands)} required commands)"
+    f"{len(detected_policies)} policies, {len(required_commands)} required commands, "
+    f"merge_ready={str(evidence.get('merge_ready')).lower()})"
 )
 PY

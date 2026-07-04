@@ -36,22 +36,38 @@ func WithTimeout[K comparable, V any](timeout time.Duration) Option[K, V] {
 
 // WithListener sets the removal listener during cache construction.
 func WithListener[K comparable, V any](listener CacheListener[K, V]) Option[K, V] {
-	return func(c *cacheConfig[K, V]) { c.listener = listener }
+	return func(c *cacheConfig[K, V]) {
+		if listener != nil {
+			c.listener = listener
+		}
+	}
 }
 
 // WithClock sets the time source used for cache expiration checks.
 func WithClock[K comparable, V any](clock func() time.Time) Option[K, V] {
-	return func(c *cacheConfig[K, V]) { c.clock = clock }
+	return func(c *cacheConfig[K, V]) {
+		if clock != nil {
+			c.clock = clock
+		}
+	}
 }
 
 // WithTickerFactory sets the ticker factory used by scheduled pruning.
 func WithTickerFactory[K comparable, V any](factory TickerFactory) Option[K, V] {
-	return func(c *cacheConfig[K, V]) { c.tickerFactory = factory }
+	return func(c *cacheConfig[K, V]) {
+		if factory != nil {
+			c.tickerFactory = factory
+		}
+	}
 }
 
 // WithRunner sets the runner used by scheduled pruning tasks.
 func WithRunner[K comparable, V any](runner func(func())) Option[K, V] {
-	return func(c *cacheConfig[K, V]) { c.runner = runner }
+	return func(c *cacheConfig[K, V]) {
+		if runner != nil {
+			c.runner = runner
+		}
+	}
 }
 
 // WithWeakFinalizerFunc sets the finalizer provider used by WeakCache.

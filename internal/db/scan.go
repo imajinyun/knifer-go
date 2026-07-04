@@ -162,7 +162,7 @@ func setValue(dst reflect.Value, value any) error {
 		if err := rejectFractionalNumericAssignment(src, dst.Type()); err != nil {
 			return err
 		}
-		converted, err := refimpl.SafeConvert(src, dst.Type())
+		converted, err := refimpl.CheckedConvert(src, dst.Type())
 		if err != nil {
 			return fmt.Errorf("cannot assign %T value %v to %s without overflow: %w", value, value, dst.Type(), err)
 		}

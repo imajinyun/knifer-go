@@ -75,7 +75,11 @@ func WithContext(ctx context.Context) ResourceOption { return func(c *resourceCo
 
 // WithHTTPClient sets the HTTP client used by HTTP resource requests.
 func WithHTTPClient(client *http.Client) ResourceOption {
-	return func(c *resourceConfig) { c.client = client }
+	return func(c *resourceConfig) {
+		if client != nil {
+			c.client = client
+		}
+	}
 }
 
 // WithHeader adds an HTTP header to HTTP resource requests.
@@ -114,22 +118,38 @@ func WithCheckStatus(check bool) ResourceOption {
 
 // WithOpenFile sets the file opener used by local file resource helpers.
 func WithOpenFile(openFile func(string) (io.ReadCloser, error)) ResourceOption {
-	return func(c *resourceConfig) { c.openFile = openFile }
+	return func(c *resourceConfig) {
+		if openFile != nil {
+			c.openFile = openFile
+		}
+	}
 }
 
 // WithStat sets the stat provider used by local file resource helpers.
 func WithStat(stat func(string) (os.FileInfo, error)) ResourceOption {
-	return func(c *resourceConfig) { c.stat = stat }
+	return func(c *resourceConfig) {
+		if stat != nil {
+			c.stat = stat
+		}
+	}
 }
 
 // WithRequestFactory sets the HTTP request factory used by resource helpers.
 func WithRequestFactory(factory func(context.Context, string, string) (*http.Request, error)) ResourceOption {
-	return func(c *resourceConfig) { c.requestFactory = factory }
+	return func(c *resourceConfig) {
+		if factory != nil {
+			c.requestFactory = factory
+		}
+	}
 }
 
 // WithLookupIP sets the host resolver used by SSRF-oriented URL validation and safe dialing.
 func WithLookupIP(lookupIP func(context.Context, string) ([]net.IP, error)) ResourceOption {
-	return func(c *resourceConfig) { c.lookupIP = lookupIP }
+	return func(c *resourceConfig) {
+		if lookupIP != nil {
+			c.lookupIP = lookupIP
+		}
+	}
 }
 
 // WithMaxBytes limits how many response body bytes OpenWithOptions may read.

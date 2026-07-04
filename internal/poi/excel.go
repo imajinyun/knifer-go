@@ -229,17 +229,29 @@ func WithSaveOptions(opts ...excelize.Options) WriteOption {
 
 // WithMkdirAll sets the directory creator used when saving workbooks.
 func WithMkdirAll(mkdirAll func(string, fs.FileMode) error) WriteOption {
-	return func(c *writeConfig) { c.mkdirAll = mkdirAll }
+	return func(c *writeConfig) {
+		if mkdirAll != nil {
+			c.mkdirAll = mkdirAll
+		}
+	}
 }
 
 // WithStat sets the stat provider used when checking workbook overwrite behavior.
 func WithStat(stat func(string) (os.FileInfo, error)) WriteOption {
-	return func(c *writeConfig) { c.stat = stat }
+	return func(c *writeConfig) {
+		if stat != nil {
+			c.stat = stat
+		}
+	}
 }
 
 // WithChmod sets the chmod provider used after saving workbooks.
 func WithChmod(chmod func(string, fs.FileMode) error) WriteOption {
-	return func(c *writeConfig) { c.chmod = chmod }
+	return func(c *writeConfig) {
+		if chmod != nil {
+			c.chmod = chmod
+		}
+	}
 }
 
 // WithNewFileFunc sets the workbook factory used by write helpers.

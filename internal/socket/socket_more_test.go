@@ -2,6 +2,7 @@ package socket
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"net"
 	"testing"
@@ -44,6 +45,21 @@ func TestAioClientNilSession(t *testing.T) {
 	}
 	if err := c.Close(); err != nil {
 		t.Fatalf("Close with nil session err = %v", err)
+	}
+}
+
+func TestNilConnectDialerOptionDoesNotOverwriteConfiguredDialer(t *testing.T) {
+	dialer := socketRecordingDialer{conn: pipeConn(t), called: make(chan string, 1)}
+	conn, err := ConnectWithOptions("example.com", 80, WithConnectDialer(dialer), WithConnectDialer(nil))
+	if err != nil {
+		t.Fatalf("ConnectWithOptions nil overwrite error = %v", err)
+	}
+	_ = conn.Close()
+	if dialer.called == nil {
+		t.Fatal("test dialer did not record calls")
+	}
+	if got := <-dialer.called; got != "tcp/example.com:80" {
+		t.Fatalf("dial target = %q", got)
 	}
 }
 
@@ -347,4 +363,23 @@ func TestConfigSettersNilGuard(t *testing.T) {
 	if cfg.IPParser == nil {
 		t.Fatal("IPParser should be set after SetSocketIPParser with non-nil")
 	}
+}
+
+type socketRecordingDialer struct {
+	conn   net.Conn
+	called chan string
+}
+
+func (d socketRecordingDialer) DialContext(_ context.Context, network, address string) (net.Conn, error) {
+	if d.called != nil {
+		d.called <- network + "/" + address
+	}
+	return d.conn, nil
+}
+
+func pipeConn(t *testing.T) net.Conn {
+	t.Helper()
+	client, server := net.Pipe()
+	t.Cleanup(func() { _ = server.Close() })
+	return client
 }

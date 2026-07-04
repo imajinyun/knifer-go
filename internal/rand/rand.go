@@ -39,12 +39,20 @@ type RandomOption func(*randomConfig)
 // sources for secrets, tokens, keys, or nonces; use SecureRandomBytes with a
 // cryptographic reader for security-sensitive bytes.
 func WithRandomSource(source *mathrand.Rand) RandomOption {
-	return func(c *randomConfig) { c.source = source }
+	return func(c *randomConfig) {
+		if source != nil {
+			c.source = source
+		}
+	}
 }
 
 // WithRandomReader sets the byte source used by RandomBytesWithOptions and SecureRandomBytesWithOptions.
 func WithRandomReader(reader io.Reader) RandomOption {
-	return func(c *randomConfig) { c.reader = reader }
+	return func(c *randomConfig) {
+		if reader != nil {
+			c.reader = reader
+		}
+	}
 }
 
 // WithStrictCryptoRandom makes RandomBytesWithOptions return reader errors instead of falling back to pseudo-random bytes.

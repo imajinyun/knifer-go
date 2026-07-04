@@ -17,7 +17,11 @@ type WeightedOption func(*weightedConfig)
 
 // WithWeightedRandSource sets the pseudo-random source used by weighted helpers.
 func WithWeightedRandSource(source *mathrand.Rand) WeightedOption {
-	return func(c *weightedConfig) { c.source = source }
+	return func(c *weightedConfig) {
+		if source != nil {
+			c.source = source
+		}
+	}
 }
 
 // WithWeightedPrecision sets the minimum positive total-weight tolerance.

@@ -2,9 +2,13 @@ package resty
 
 import (
 	"crypto/tls"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
+
+	grestry "resty.dev/v3"
 )
 
 func TestRequestOptionContentTypeAndCharset(t *testing.T) {
@@ -28,6 +32,25 @@ func TestRequestOptionTLSConfig(t *testing.T) {
 	c := Get("https://example.com", WithTLSConfig(&tls.Config{ServerName: "example.com"})).buildClient()
 	if c == nil {
 		t.Fatal("client is nil")
+	}
+}
+
+func TestNilRestyClientOptionDoesNotOverwriteConfiguredClient(t *testing.T) {
+	client := grestry.New()
+	client.SetTransport(restyRoundTripperFunc(func(req *http.Request) (*http.Response, error) {
+		return &http.Response{
+			StatusCode: http.StatusOK,
+			Header:     make(http.Header),
+			Body:       io.NopCloser(strings.NewReader("resty-client")),
+			Request:    req,
+		}, nil
+	}))
+	resp := Get("https://example.com", WithRestyClient(client), WithRestyClient(nil)).Execute()
+	if resp.Err() != nil {
+		t.Fatalf("Execute error = %v", resp.Err())
+	}
+	if got := resp.Body(); got != "resty-client" {
+		t.Fatalf("Body = %q, want resty-client", got)
 	}
 }
 

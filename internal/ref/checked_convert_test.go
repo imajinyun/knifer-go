@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestSafeConvertNumericBoundaries(t *testing.T) {
+func TestCheckedConvertNumericBoundaries(t *testing.T) {
 	tests := []struct {
 		name    string
 		src     any
@@ -26,37 +26,37 @@ func TestSafeConvertNumericBoundaries(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := SafeConvert(reflect.ValueOf(tt.src), reflect.TypeOf(tt.dst))
+			got, err := CheckedConvert(reflect.ValueOf(tt.src), reflect.TypeOf(tt.dst))
 			if tt.wantErr != "" {
 				if err == nil || !strings.Contains(err.Error(), tt.wantErr) {
-					t.Fatalf("SafeConvert() error = %v, want substring %q", err, tt.wantErr)
+					t.Fatalf("CheckedConvert() error = %v, want substring %q", err, tt.wantErr)
 				}
 				return
 			}
 			if err != nil {
-				t.Fatalf("SafeConvert() error = %v", err)
+				t.Fatalf("CheckedConvert() error = %v", err)
 			}
 			if f, ok := tt.want.(float32); ok && math.IsNaN(float64(f)) {
 				if got.Kind() != reflect.Float32 || !math.IsNaN(float64(got.Interface().(float32))) {
-					t.Fatalf("SafeConvert() = %#v, want float32 NaN", got.Interface())
+					t.Fatalf("CheckedConvert() = %#v, want float32 NaN", got.Interface())
 				}
 				return
 			}
 			if got.Interface() != tt.want {
-				t.Fatalf("SafeConvert() = %#v, want %#v", got.Interface(), tt.want)
+				t.Fatalf("CheckedConvert() = %#v, want %#v", got.Interface(), tt.want)
 			}
 		})
 	}
 }
 
-func TestSafeConvertRejectsInvalidInput(t *testing.T) {
-	if _, err := SafeConvert(reflect.Value{}, reflect.TypeOf(int(0))); err == nil || !strings.Contains(err.Error(), "invalid value") {
-		t.Fatalf("SafeConvert(invalid) error = %v, want invalid value", err)
+func TestCheckedConvertRejectsInvalidInput(t *testing.T) {
+	if _, err := CheckedConvert(reflect.Value{}, reflect.TypeOf(int(0))); err == nil || !strings.Contains(err.Error(), "invalid value") {
+		t.Fatalf("CheckedConvert(invalid) error = %v, want invalid value", err)
 	}
-	if _, err := SafeConvert(reflect.ValueOf(1), nil); err == nil || !strings.Contains(err.Error(), "nil target type") {
-		t.Fatalf("SafeConvert(nil target) error = %v, want nil target type", err)
+	if _, err := CheckedConvert(reflect.ValueOf(1), nil); err == nil || !strings.Contains(err.Error(), "nil target type") {
+		t.Fatalf("CheckedConvert(nil target) error = %v, want nil target type", err)
 	}
-	if _, err := SafeConvert(reflect.ValueOf("x"), reflect.TypeOf(0)); err == nil || !strings.Contains(err.Error(), "cannot convert") {
-		t.Fatalf("SafeConvert(incompatible) error = %v, want cannot convert", err)
+	if _, err := CheckedConvert(reflect.ValueOf("x"), reflect.TypeOf(0)); err == nil || !strings.Contains(err.Error(), "cannot convert") {
+		t.Fatalf("CheckedConvert(incompatible) error = %v, want cannot convert", err)
 	}
 }

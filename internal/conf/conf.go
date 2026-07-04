@@ -708,11 +708,11 @@ func setReflectValue(v reflect.Value, text string, cfg bindConfig) error {
 				return nil
 			}
 			if converted.Type().ConvertibleTo(v.Type()) {
-				safeValue, err := refimpl.SafeConvert(converted, v.Type())
+				convertedValue, err := refimpl.CheckedConvert(converted, v.Type())
 				if err != nil {
 					return err
 				}
-				v.Set(safeValue)
+				v.Set(convertedValue)
 				return nil
 			}
 			textValue, ok := value.(string)

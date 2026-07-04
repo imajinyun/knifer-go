@@ -36,7 +36,11 @@ func WithConnectNetwork(network string) ConnectOption {
 
 // WithConnectDialer sets the dialer used by connection helpers.
 func WithConnectDialer(dialer netimpl.Dialer) ConnectOption {
-	return func(c *connectConfig) { c.dialer = dialer }
+	return func(c *connectConfig) {
+		if dialer != nil {
+			c.dialer = dialer
+		}
+	}
 }
 
 func applyConnectOptions(timeout time.Duration, opts []ConnectOption) connectConfig {
