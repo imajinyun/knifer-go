@@ -65,6 +65,20 @@ func TestSetJSONWithOptions(t *testing.T) {
 	}
 }
 
+func TestNilJSONProviderOptionsDoNotOverwriteConfiguredProviders(t *testing.T) {
+	marshal := func(any) ([]byte, error) { return []byte("[]"), nil }
+	unmarshal := func([]byte, any) error { return nil }
+	cfg := applyJSONOptions([]JSONOption{
+		WithSetMarshalFunc(marshal),
+		WithSetMarshalFunc(nil),
+		WithSetUnmarshalFunc(unmarshal),
+		WithSetUnmarshalFunc(nil),
+	})
+	if cfg.marshal == nil || cfg.unmarshal == nil {
+		t.Fatalf("nil json provider option overwrote configured provider: %#v", cfg)
+	}
+}
+
 func FuzzSetJSONRoundTrip(f *testing.F) {
 	for _, seed := range []string{"", "go", "go,knifer", "重复,重复,value"} {
 		f.Add(seed)

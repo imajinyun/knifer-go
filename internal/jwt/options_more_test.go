@@ -37,6 +37,20 @@ func TestApplyJSONOptions(t *testing.T) {
 	}
 }
 
+func TestNilJSONProviderOptionsDoNotOverwriteConfiguredProviders(t *testing.T) {
+	marshal := func(any) ([]byte, error) { return []byte("{}"), nil }
+	unmarshal := func([]byte, any) error { return nil }
+	cfg := applyJSONOptions([]JSONOption{
+		WithJSONMarshalFunc(marshal),
+		WithJSONMarshalFunc(nil),
+		WithJSONUnmarshalFunc(unmarshal),
+		WithJSONUnmarshalFunc(nil),
+	})
+	if cfg.marshal == nil || cfg.unmarshal == nil {
+		t.Fatalf("nil JSON provider option overwrote configured provider: %#v", cfg)
+	}
+}
+
 func TestWithTokenJSONOptions(t *testing.T) {
 	opt := WithTokenJSONOptions(WithJSONMarshalFunc(func(any) ([]byte, error) { return nil, nil }))
 	cfg := tokenConfig{}

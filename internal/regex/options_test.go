@@ -119,6 +119,25 @@ func TestRegexOptionFallbacksAndNumberBoundaries(t *testing.T) {
 	}
 }
 
+func TestNilRegexProviderOptionsDoNotOverwriteConfiguredProviders(t *testing.T) {
+	compile := func(pattern string) (*regexp.Regexp, error) {
+		return regexp.Compile(regexp.QuoteMeta(pattern))
+	}
+	groupRe := regexp.MustCompile(`\$\{(\d+)\}`)
+	numberRe := regexp.MustCompile(`[4-9]\d`)
+	cfg := applyOptions([]Option{
+		WithCompileFunc(compile),
+		WithCompileFunc(nil),
+		WithGroupVarRegexp(groupRe),
+		WithGroupVarRegexp(nil),
+		WithNumbersRegexp(numberRe),
+		WithNumbersRegexp(nil),
+	})
+	if cfg.compile == nil || cfg.groupVarRegexp != groupRe || cfg.numbersRegexp != numberRe {
+		t.Fatalf("nil regex provider option overwrote configured provider: %#v", cfg)
+	}
+}
+
 func TestIsMatchEmptyPatternContract(t *testing.T) {
 	if IsMatch("", "") {
 		t.Fatal("empty pattern should not match empty content")

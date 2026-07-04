@@ -172,12 +172,20 @@ func WithCreateParents(create bool) WriteOption {
 
 // WithMkdirAll sets the directory creator used by WriteToFileWithOptions.
 func WithMkdirAll(mkdirAll func(string, fs.FileMode) error) WriteOption {
-	return func(c *writeConfig) { c.mkdirAll = mkdirAll }
+	return func(c *writeConfig) {
+		if mkdirAll != nil {
+			c.mkdirAll = mkdirAll
+		}
+	}
 }
 
 // WithOpenFile sets the file opener used by WriteToFileWithOptions.
 func WithOpenFile(openFile func(string, int, fs.FileMode) (io.WriteCloser, error)) WriteOption {
-	return func(c *writeConfig) { c.openFile = openFile }
+	return func(c *writeConfig) {
+		if openFile != nil {
+			c.openFile = openFile
+		}
+	}
 }
 
 func applyWriteOptions(opts []WriteOption) writeConfig {
@@ -248,7 +256,7 @@ func (a *AbstractCaptcha) WriteToFile(path string) error {
 }
 
 // WriteToFileWithOptions writes the image to a file with custom filesystem options.
-func (a *AbstractCaptcha) WriteToFileWithOptions(path string, opts ...WriteOption) error {
+func (a *AbstractCaptcha) WriteToFileWithOptions(path string, opts ...WriteOption) (err error) {
 	b := a.getImageBytes()
 	if len(b) == 0 {
 		return &knifer.Error{Code: knifer.ErrCodeInvalidInput, Message: "gkcaptcha: empty image, call CreateCode first"}
@@ -270,7 +278,11 @@ func (a *AbstractCaptcha) WriteToFileWithOptions(path string, opts ...WriteOptio
 		}
 		return err
 	}
-	defer func() { _ = f.Close() }()
+	defer func() {
+		if closeErr := f.Close(); err == nil {
+			err = closeErr
+		}
+	}()
 	_, err = f.Write(b)
 	return err
 }

@@ -15,12 +15,20 @@ type JSONOption func(*jsonConfig)
 
 // WithSetMarshalFunc sets the marshal provider used by MarshalJSONWithOptions.
 func WithSetMarshalFunc(marshal func(any) ([]byte, error)) JSONOption {
-	return func(c *jsonConfig) { c.marshal = marshal }
+	return func(c *jsonConfig) {
+		if marshal != nil {
+			c.marshal = marshal
+		}
+	}
 }
 
 // WithSetUnmarshalFunc sets the unmarshal provider used by UnmarshalJSONWithOptions.
 func WithSetUnmarshalFunc(unmarshal func([]byte, any) error) JSONOption {
-	return func(c *jsonConfig) { c.unmarshal = unmarshal }
+	return func(c *jsonConfig) {
+		if unmarshal != nil {
+			c.unmarshal = unmarshal
+		}
+	}
 }
 
 func applyJSONOptions(opts []JSONOption) jsonConfig {

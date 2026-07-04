@@ -488,7 +488,7 @@ func WriteSheetAnyRows(path, sheet string, rows [][]any, opts ...WriteOption) er
 	return writeAnyRows(path, rows, applyWriteOptions(allOpts))
 }
 
-func writeRows(path string, rows [][]string, cfg writeConfig) error {
+func writeRows(path string, rows [][]string, cfg writeConfig) (err error) {
 	sheet := cfg.sheet
 	if err := ValidateSheetName(sheet); err != nil {
 		return err
@@ -497,7 +497,11 @@ func writeRows(path string, rows [][]string, cfg writeConfig) error {
 	if f == nil {
 		return invalidWorkbookError()
 	}
-	defer func() { _ = f.Close() }()
+	defer func() {
+		if closeErr := f.Close(); err == nil {
+			err = closeErr
+		}
+	}()
 	if err := replaceDefaultSheet(f, sheet); err != nil {
 		return err
 	}
@@ -512,7 +516,7 @@ func writeRows(path string, rows [][]string, cfg writeConfig) error {
 	return saveWorkbook(f, path, cfg)
 }
 
-func writeAnyRows(path string, rows [][]any, cfg writeConfig) error {
+func writeAnyRows(path string, rows [][]any, cfg writeConfig) (err error) {
 	sheet := cfg.sheet
 	if err := ValidateSheetName(sheet); err != nil {
 		return err
@@ -521,7 +525,11 @@ func writeAnyRows(path string, rows [][]any, cfg writeConfig) error {
 	if f == nil {
 		return invalidWorkbookError()
 	}
-	defer func() { _ = f.Close() }()
+	defer func() {
+		if closeErr := f.Close(); err == nil {
+			err = closeErr
+		}
+	}()
 	if err := replaceDefaultSheet(f, sheet); err != nil {
 		return err
 	}
@@ -537,13 +545,17 @@ func writeAnyRows(path string, rows [][]any, cfg writeConfig) error {
 }
 
 // WriteSheets writes multiple worksheets into path.
-func WriteSheets(path string, sheets map[string][][]string, opts ...WriteOption) error {
+func WriteSheets(path string, sheets map[string][][]string, opts ...WriteOption) (err error) {
 	cfg := applyWriteOptions(opts)
 	f := cfg.newFile()
 	if f == nil {
 		return invalidWorkbookError()
 	}
-	defer func() { _ = f.Close() }()
+	defer func() {
+		if closeErr := f.Close(); err == nil {
+			err = closeErr
+		}
+	}()
 
 	if len(sheets) == 0 {
 		if cfg.createParents {
@@ -587,7 +599,7 @@ func WriteSheets(path string, sheets map[string][][]string, opts ...WriteOption)
 }
 
 // WriteRowsToBuffer writes rows into an in-memory XLSX workbook.
-func WriteRowsToBuffer(sheet string, rows [][]string, opts ...WriteOption) (*bytes.Buffer, error) {
+func WriteRowsToBuffer(sheet string, rows [][]string, opts ...WriteOption) (buf *bytes.Buffer, err error) {
 	allOpts := append([]WriteOption{WithWriteSheet(sheet)}, opts...)
 	cfg := applyWriteOptions(allOpts)
 	sheet = cfg.sheet
@@ -598,7 +610,11 @@ func WriteRowsToBuffer(sheet string, rows [][]string, opts ...WriteOption) (*byt
 	if f == nil {
 		return nil, invalidWorkbookError()
 	}
-	defer func() { _ = f.Close() }()
+	defer func() {
+		if closeErr := f.Close(); err == nil {
+			err = closeErr
+		}
+	}()
 	if err := replaceDefaultSheet(f, sheet); err != nil {
 		return nil, err
 	}
@@ -609,7 +625,7 @@ func WriteRowsToBuffer(sheet string, rows [][]string, opts ...WriteOption) (*byt
 }
 
 // WriteAnyRowsToBuffer writes typed cell values into an in-memory XLSX workbook.
-func WriteAnyRowsToBuffer(sheet string, rows [][]any, opts ...WriteOption) (*bytes.Buffer, error) {
+func WriteAnyRowsToBuffer(sheet string, rows [][]any, opts ...WriteOption) (buf *bytes.Buffer, err error) {
 	allOpts := append([]WriteOption{WithWriteSheet(sheet)}, opts...)
 	cfg := applyWriteOptions(allOpts)
 	sheet = cfg.sheet
@@ -620,7 +636,11 @@ func WriteAnyRowsToBuffer(sheet string, rows [][]any, opts ...WriteOption) (*byt
 	if f == nil {
 		return nil, invalidWorkbookError()
 	}
-	defer func() { _ = f.Close() }()
+	defer func() {
+		if closeErr := f.Close(); err == nil {
+			err = closeErr
+		}
+	}()
 	if err := replaceDefaultSheet(f, sheet); err != nil {
 		return nil, err
 	}

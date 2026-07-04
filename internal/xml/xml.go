@@ -53,12 +53,20 @@ type CleanOption func(*cleanConfig)
 
 // WithInvalidRegexp sets the regexp used by CleanInvalidWithOptions.
 func WithInvalidRegexp(re *regexp.Regexp) CleanOption {
-	return func(c *cleanConfig) { c.invalidRe = re }
+	return func(c *cleanConfig) {
+		if re != nil {
+			c.invalidRe = re
+		}
+	}
 }
 
 // WithCommentRegexp sets the regexp used by CleanCommentWithOptions.
 func WithCommentRegexp(re *regexp.Regexp) CleanOption {
-	return func(c *cleanConfig) { c.commentRe = re }
+	return func(c *cleanConfig) {
+		if re != nil {
+			c.commentRe = re
+		}
+	}
 }
 
 func applyCleanOptions(opts []CleanOption) cleanConfig {
@@ -167,7 +175,11 @@ func WithStrict(b bool) ParseOption {
 
 // WithCharsetReader sets the charset reader used by the XML decoder.
 func WithCharsetReader(reader func(charset string, input io.Reader) (io.Reader, error)) ParseOption {
-	return func(c *parseConfig) { c.charsetReader = reader }
+	return func(c *parseConfig) {
+		if reader != nil {
+			c.charsetReader = reader
+		}
+	}
 }
 
 // WithEntity sets custom XML decoder entity replacements.
@@ -182,22 +194,38 @@ func WithMaxBytes(maxBytes int64) ParseOption {
 
 // WithOpenFile sets the file opener used by XML file read helpers.
 func WithOpenFile(openFile func(string) (io.ReadCloser, error)) ParseOption {
-	return func(c *parseConfig) { c.openFile = openFile }
+	return func(c *parseConfig) {
+		if openFile != nil {
+			c.openFile = openFile
+		}
+	}
 }
 
 // WithDecoderFactory sets the XML decoder factory used by DOM and SAX readers.
 func WithDecoderFactory(factory func(io.Reader) *stdxml.Decoder) ParseOption {
-	return func(c *parseConfig) { c.decoderFactory = factory }
+	return func(c *parseConfig) {
+		if factory != nil {
+			c.decoderFactory = factory
+		}
+	}
 }
 
 // WithScalarIntParser sets the integer parser used by XML-to-map scalar conversion.
 func WithScalarIntParser(parse func(string, int, int) (int64, error)) ParseOption {
-	return func(c *parseConfig) { c.parseInt = parse }
+	return func(c *parseConfig) {
+		if parse != nil {
+			c.parseInt = parse
+		}
+	}
 }
 
 // WithScalarFloatParser sets the float parser used by XML-to-map scalar conversion.
 func WithScalarFloatParser(parse func(string, int) (float64, error)) ParseOption {
-	return func(c *parseConfig) { c.parseFloat = parse }
+	return func(c *parseConfig) {
+		if parse != nil {
+			c.parseFloat = parse
+		}
+	}
 }
 
 // ---------------------------------------------------------------------------
@@ -248,12 +276,20 @@ func applyBean(opts []BeanOption) beanConfig {
 
 // WithBeanMarshalFunc sets the marshal provider used by XML bean conversion helpers.
 func WithBeanMarshalFunc(marshal func(any) ([]byte, error)) BeanOption {
-	return func(c *beanConfig) { c.marshal = marshal }
+	return func(c *beanConfig) {
+		if marshal != nil {
+			c.marshal = marshal
+		}
+	}
 }
 
 // WithBeanUnmarshalFunc sets the unmarshal provider used by XML bean conversion helpers.
 func WithBeanUnmarshalFunc(unmarshal func([]byte, any) error) BeanOption {
-	return func(c *beanConfig) { c.unmarshal = unmarshal }
+	return func(c *beanConfig) {
+		if unmarshal != nil {
+			c.unmarshal = unmarshal
+		}
+	}
 }
 
 // TransformOption customizes XML transform helpers per call.
@@ -361,12 +397,20 @@ func WithCreateParents(create bool) WriteOption {
 
 // WithMkdirAll sets the directory creator used by WriteFile.
 func WithMkdirAll(mkdirAll func(string, fs.FileMode) error) WriteOption {
-	return func(c *writeConfig) { c.mkdirAll = mkdirAll }
+	return func(c *writeConfig) {
+		if mkdirAll != nil {
+			c.mkdirAll = mkdirAll
+		}
+	}
 }
 
 // WithOpenWriteFile sets the file opener used by WriteFile.
 func WithOpenWriteFile(openFile func(string, int, fs.FileMode) (io.WriteCloser, error)) WriteOption {
-	return func(c *writeConfig) { c.openFile = openFile }
+	return func(c *writeConfig) {
+		if openFile != nil {
+			c.openFile = openFile
+		}
+	}
 }
 
 // ---------------------------------------------------------------------------

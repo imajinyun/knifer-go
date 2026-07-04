@@ -85,6 +85,17 @@ func TestWithWaitTimerFactory(t *testing.T) {
 	}
 }
 
+func TestNilWaitTimerFactoryDoesNotOverwriteConfiguredProvider(t *testing.T) {
+	factory := func(time.Duration) (<-chan time.Time, Timer) {
+		ch := make(chan time.Time)
+		return ch, &noopTimer{}
+	}
+	cfg := NewCollector().waitConfig(WithWaitTimerFactory(factory), WithWaitTimerFactory(nil))
+	if cfg.timerFactory == nil {
+		t.Fatal("nil WithWaitTimerFactory should not overwrite configured timer factory")
+	}
+}
+
 func TestWithWaitContext(t *testing.T) {
 	silenceLogrus(t)
 

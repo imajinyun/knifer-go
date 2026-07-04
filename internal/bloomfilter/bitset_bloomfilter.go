@@ -34,7 +34,11 @@ type FileOption func(*bloomFileConfig)
 
 // WithOpenFile sets the file opener used by bloom filter file helpers.
 func WithOpenFile(openFile func(string) (io.ReadCloser, error)) FileOption {
-	return func(c *bloomFileConfig) { c.openFile = openFile }
+	return func(c *bloomFileConfig) {
+		if openFile != nil {
+			c.openFile = openFile
+		}
+	}
 }
 
 func applyFileOptions(opts []FileOption) bloomFileConfig {

@@ -51,7 +51,11 @@ func WithStaticFS(fileSystem fs.FS) StaticOption {
 
 // WithFileServerFactory sets the handler factory used by SetRootWithOptions.
 func WithFileServerFactory(factory func(http.FileSystem) http.Handler) StaticOption {
-	return func(c *staticConfig) { c.fileServer = factory }
+	return func(c *staticConfig) {
+		if factory != nil {
+			c.fileServer = factory
+		}
+	}
 }
 
 // WithStaticHandler sets the static handler directly and takes precedence over file-system options.

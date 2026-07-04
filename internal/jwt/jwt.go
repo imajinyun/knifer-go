@@ -35,12 +35,20 @@ type JSONOption func(*jsonConfig)
 
 // WithJSONMarshalFunc sets the JSON marshal provider used by JWT signing helpers.
 func WithJSONMarshalFunc(marshal func(any) ([]byte, error)) JSONOption {
-	return func(c *jsonConfig) { c.marshal = marshal }
+	return func(c *jsonConfig) {
+		if marshal != nil {
+			c.marshal = marshal
+		}
+	}
 }
 
 // WithJSONUnmarshalFunc sets the JSON unmarshal provider used by JWT parsing helpers.
 func WithJSONUnmarshalFunc(unmarshal func([]byte, any) error) JSONOption {
-	return func(c *jsonConfig) { c.unmarshal = unmarshal }
+	return func(c *jsonConfig) {
+		if unmarshal != nil {
+			c.unmarshal = unmarshal
+		}
+	}
 }
 
 func applyJSONOptions(opts []JSONOption) jsonConfig {

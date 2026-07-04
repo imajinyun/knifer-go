@@ -31,32 +31,56 @@ type IPOption func(*ipConfig)
 
 // WithWildcardCompileFunc sets the compiler used by MatchesWildcardWithOptions.
 func WithWildcardCompileFunc(compile func(string) (*regexp.Regexp, error)) WildcardOption {
-	return func(c *wildcardConfig) { c.compile = compile }
+	return func(c *wildcardConfig) {
+		if compile != nil {
+			c.compile = compile
+		}
+	}
 }
 
 // WithWildcardIPParser sets the IP parser used by MatchesWildcardWithOptions.
 func WithWildcardIPParser(parse func(string) stdnet.IP) WildcardOption {
-	return func(c *wildcardConfig) { c.parseIP = parse }
+	return func(c *wildcardConfig) {
+		if parse != nil {
+			c.parseIP = parse
+		}
+	}
 }
 
 // WithWildcardIntParser sets the integer parser used by MatchesWildcardWithOptions.
 func WithWildcardIntParser(parse func(string) (int, error)) WildcardOption {
-	return func(c *wildcardConfig) { c.parseInt = parse }
+	return func(c *wildcardConfig) {
+		if parse != nil {
+			c.parseInt = parse
+		}
+	}
 }
 
 // WithIPParser sets the IP parser used by IP helpers.
 func WithIPParser(parse func(string) stdnet.IP) IPOption {
-	return func(c *ipConfig) { c.parseIP = parse }
+	return func(c *ipConfig) {
+		if parse != nil {
+			c.parseIP = parse
+		}
+	}
 }
 
 // WithCIDRParser sets the CIDR parser used by IP range helpers.
 func WithCIDRParser(parse func(string) (stdnet.IP, *stdnet.IPNet, error)) IPOption {
-	return func(c *ipConfig) { c.parseCIDR = parse }
+	return func(c *ipConfig) {
+		if parse != nil {
+			c.parseCIDR = parse
+		}
+	}
 }
 
 // WithIPIntParser sets the integer parser used by IP helpers.
 func WithIPIntParser(parse func(string) (int, error)) IPOption {
-	return func(c *ipConfig) { c.parseInt = parse }
+	return func(c *ipConfig) {
+		if parse != nil {
+			c.parseInt = parse
+		}
+	}
 }
 
 func applyWildcardOptions(opts []WildcardOption) wildcardConfig {

@@ -72,6 +72,22 @@ func TestSaveUploadedFileProviderOptions(t *testing.T) {
 	}
 }
 
+func TestNilUploadProviderOptionsDoNotOverwriteConfiguredProviders(t *testing.T) {
+	mkdirAll := func(string, fs.FileMode) error { return nil }
+	openFile := func(string, int, fs.FileMode) (io.WriteCloser, error) {
+		return nopWriteCloser{Writer: io.Discard}, nil
+	}
+	cfg := applyUploadSaveOptions([]UploadSaveOption{
+		WithUploadMkdirAll(mkdirAll),
+		WithUploadMkdirAll(nil),
+		WithUploadOpenFile(openFile),
+		WithUploadOpenFile(nil),
+	})
+	if cfg.mkdirAll == nil || cfg.openFile == nil {
+		t.Fatalf("nil upload provider option overwrote configured provider: %#v", cfg)
+	}
+}
+
 func TestMultipartFormAccessors(t *testing.T) {
 	req := multipartAvatarRequest(t, "avatar.txt")
 	form, err := ParseMultipartForm(req, NewUploadSetting())
@@ -184,6 +200,35 @@ func TestSaveUploadedFileOptionBoundaries(t *testing.T) {
 type nopWriteCloser struct{ io.Writer }
 
 func (w nopWriteCloser) Close() error { return nil }
+
+type closeErrorWriteCloser struct {
+	io.Writer
+	err error
+}
+
+func (w closeErrorWriteCloser) Close() error { return w.err }
+
+func TestSaveUploadedFileReturnsCloseError(t *testing.T) {
+	req := multipartAvatarRequest(t, "a.txt")
+	form, err := ParseMultipartForm(req, NewUploadSetting())
+	if err != nil {
+		t.Fatalf("ParseMultipartForm: %v", err)
+	}
+	file := form.GetFile("avatar")
+	if file == nil {
+		t.Fatal("uploaded file is nil")
+	}
+	closeErr := errors.New("close failed")
+	err = SaveUploadedFile(file, "/virtual/upload/a.txt",
+		WithUploadMkdirAll(func(string, fs.FileMode) error { return nil }),
+		WithUploadOpenFile(func(string, int, fs.FileMode) (io.WriteCloser, error) {
+			return closeErrorWriteCloser{Writer: io.Discard, err: closeErr}, nil
+		}),
+	)
+	if !errors.Is(err, closeErr) {
+		t.Fatalf("SaveUploadedFile close error = %v, want close cause", err)
+	}
+}
 
 func multipartAvatarRequest(t *testing.T, filename string) *http.Request {
 	t.Helper()

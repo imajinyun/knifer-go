@@ -270,7 +270,7 @@ func WithSenderProvider(provider SenderProvider) ClientOption {
 
 type smtpSender struct{ config Config }
 
-func (s smtpSender) Send(ctx context.Context, message *Message) error {
+func (s smtpSender) Send(ctx context.Context, message *Message) (err error) {
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -280,7 +280,11 @@ func (s smtpSender) Send(ctx context.Context, message *Message) error {
 	if err != nil {
 		return err
 	}
-	defer func() { _ = sendCloser.Close() }()
+	defer func() {
+		if closeErr := sendCloser.Close(); err == nil {
+			err = closeErr
+		}
+	}()
 	return sendCloser.Send(ctx, message)
 }
 

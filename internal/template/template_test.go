@@ -102,6 +102,26 @@ func TestRenderWithOptionsExecutorAndFallbacks(t *testing.T) {
 	}
 }
 
+func TestNilRenderProviderOptionsDoNotOverwriteConfiguredProviders(t *testing.T) {
+	parser := func(tpl *template.Template, source string) (*template.Template, error) {
+		return tpl.Parse(source)
+	}
+	executor := func(tpl *template.Template, w io.Writer, data any) error {
+		return tpl.Execute(w, data)
+	}
+	cfg := applyRenderOptions([]RenderOption{
+		WithTemplateFactory(template.New),
+		WithTemplateFactory(nil),
+		WithTemplateParser(parser),
+		WithTemplateParser(nil),
+		WithTemplateExecutor(executor),
+		WithTemplateExecutor(nil),
+	})
+	if cfg.factory == nil || cfg.parser == nil || cfg.executor == nil {
+		t.Fatalf("nil render provider option overwrote configured provider: %#v", cfg)
+	}
+}
+
 func TestRenderWithOptionsReturnsParserAndExecutorErrors(t *testing.T) {
 	parserErr := errors.New("parse failed")
 	if _, err := RenderWithOptions("ignored", nil, WithTemplateParser(func(*template.Template, string) (*template.Template, error) {

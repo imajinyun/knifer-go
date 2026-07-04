@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"net"
+	"strings"
 	"testing"
 	"time"
 )
@@ -89,6 +90,27 @@ func TestClientDialReusesConnectionWithReset(t *testing.T) {
 	}
 	if err := server.Wait(); err != nil {
 		t.Fatalf("fake SMTP server error = %v", err)
+	}
+}
+
+func TestSMTPSendReturnsCloseError(t *testing.T) {
+	server, err := newFakeSMTPServer(t, withFakeSMTPQuitResponse("451 close failed"))
+	if err != nil {
+		t.Fatalf("newFakeSMTPServer() error = %v", err)
+	}
+	defer server.Close()
+
+	msg, err := NewMessage(WithFrom("from@example.com"), WithTo("to@example.com"), WithText("body"))
+	if err != nil {
+		t.Fatalf("NewMessage() error = %v", err)
+	}
+	client, err := NewClient(server.Host(), server.Port(), WithTLSPolicy(TLSNone), WithTimeout(time.Second))
+	if err != nil {
+		t.Fatalf("NewClient() error = %v", err)
+	}
+	err = client.Send(context.Background(), msg)
+	if err == nil || !strings.Contains(err.Error(), "smtp quit") {
+		t.Fatalf("Send() close error = %v, want smtp quit", err)
 	}
 }
 

@@ -5,6 +5,7 @@ import (
 	"math/big"
 	stdnet "net"
 	"reflect"
+	"regexp"
 	"strconv"
 	"testing"
 )
@@ -92,5 +93,39 @@ func TestIPRangeOptionsUseCustomParsers(t *testing.T) {
 	}
 	if wildcardParseIntCalls == 0 {
 		t.Fatal("custom wildcard int parser was not called")
+	}
+}
+
+func TestNilIPProviderOptionsDoNotOverwriteConfiguredProviders(t *testing.T) {
+	_, network, err := stdnet.ParseCIDR("192.0.2.0/24")
+	if err != nil {
+		t.Fatal(err)
+	}
+	parseCIDR := func(string) (stdnet.IP, *stdnet.IPNet, error) {
+		return stdnet.ParseIP("192.0.2.1"), network, nil
+	}
+
+	wildcardCfg := applyWildcardOptions([]WildcardOption{
+		WithWildcardCompileFunc(regexp.Compile),
+		WithWildcardCompileFunc(nil),
+		WithWildcardIPParser(stdnet.ParseIP),
+		WithWildcardIPParser(nil),
+		WithWildcardIntParser(strconv.Atoi),
+		WithWildcardIntParser(nil),
+	})
+	if wildcardCfg.compile == nil || wildcardCfg.parseIP == nil || wildcardCfg.parseInt == nil {
+		t.Fatalf("nil wildcard provider option overwrote configured provider: %#v", wildcardCfg)
+	}
+
+	ipCfg := applyIPOptions([]IPOption{
+		WithIPParser(stdnet.ParseIP),
+		WithIPParser(nil),
+		WithCIDRParser(parseCIDR),
+		WithCIDRParser(nil),
+		WithIPIntParser(strconv.Atoi),
+		WithIPIntParser(nil),
+	})
+	if ipCfg.parseIP == nil || ipCfg.parseCIDR == nil || ipCfg.parseInt == nil {
+		t.Fatalf("nil IP provider option overwrote configured provider: %#v", ipCfg)
 	}
 }

@@ -194,17 +194,29 @@ func WithDelims(left, right string) RenderOption {
 
 // WithTemplateFactory sets the template constructor used before parsing.
 func WithTemplateFactory(factory func(string) *template.Template) RenderOption {
-	return func(c *renderConfig) { c.factory = factory }
+	return func(c *renderConfig) {
+		if factory != nil {
+			c.factory = factory
+		}
+	}
 }
 
 // WithTemplateParser sets the parser used after template construction.
 func WithTemplateParser(parser func(*template.Template, string) (*template.Template, error)) RenderOption {
-	return func(c *renderConfig) { c.parser = parser }
+	return func(c *renderConfig) {
+		if parser != nil {
+			c.parser = parser
+		}
+	}
 }
 
 // WithTemplateExecutor sets the executor used after parsing.
 func WithTemplateExecutor(executor func(*template.Template, io.Writer, any) error) RenderOption {
-	return func(c *renderConfig) { c.executor = executor }
+	return func(c *renderConfig) {
+		if executor != nil {
+			c.executor = executor
+		}
+	}
 }
 
 func applyRenderOptions(opts []RenderOption) renderConfig {

@@ -17,12 +17,20 @@ type TLSFileOption func(*tlsFileConfig)
 
 // WithTLSReadFile sets the file reader used by TLS file helpers.
 func WithTLSReadFile(readFile func(string) ([]byte, error)) TLSFileOption {
-	return func(c *tlsFileConfig) { c.readFile = readFile }
+	return func(c *tlsFileConfig) {
+		if readFile != nil {
+			c.readFile = readFile
+		}
+	}
 }
 
 // WithTLSReadAll sets the reader drain function used by TLS reader helpers.
 func WithTLSReadAll(readAll func(io.Reader) ([]byte, error)) TLSFileOption {
-	return func(c *tlsFileConfig) { c.readAll = readAll }
+	return func(c *tlsFileConfig) {
+		if readAll != nil {
+			c.readAll = readAll
+		}
+	}
 }
 
 func applyTLSFileOptions(opts []TLSFileOption) tlsFileConfig {

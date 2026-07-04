@@ -37,7 +37,11 @@ type Option func(*regexConfig)
 
 // WithCompileFunc sets the compiler used by pattern-string regex helpers.
 func WithCompileFunc(compile func(string) (*regexp.Regexp, error)) Option {
-	return func(c *regexConfig) { c.compile = compile }
+	return func(c *regexConfig) {
+		if compile != nil {
+			c.compile = compile
+		}
+	}
 }
 
 // WithDotAll controls whether pattern-string helpers wrap patterns with (?s:...).
@@ -45,12 +49,20 @@ func WithDotAll(dotAll bool) Option { return func(c *regexConfig) { c.dotAll = d
 
 // WithGroupVarRegexp sets the regexp used by TemplateVarsWithOptions.
 func WithGroupVarRegexp(re *regexp.Regexp) Option {
-	return func(c *regexConfig) { c.groupVarRegexp = re }
+	return func(c *regexConfig) {
+		if re != nil {
+			c.groupVarRegexp = re
+		}
+	}
 }
 
 // WithNumbersRegexp sets the regexp used by GetFirstNumberWithOptions.
 func WithNumbersRegexp(re *regexp.Regexp) Option {
-	return func(c *regexConfig) { c.numbersRegexp = re }
+	return func(c *regexConfig) {
+		if re != nil {
+			c.numbersRegexp = re
+		}
+	}
 }
 
 // WithNamedGroupRegexp sets the regexp used to normalize (?<name>...) groups before compiling.

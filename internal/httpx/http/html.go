@@ -60,7 +60,11 @@ type HTMLFilterOption func(*htmlFilterConfig)
 
 // WithHTMLFilterCompileFunc sets the compiler used by FilterHTMLTagWithOptions.
 func WithHTMLFilterCompileFunc(compile func(string) (*regexp.Regexp, error)) HTMLFilterOption {
-	return func(c *htmlFilterConfig) { c.compile = compile }
+	return func(c *htmlFilterConfig) {
+		if compile != nil {
+			c.compile = compile
+		}
+	}
 }
 
 func applyHTMLFilterOptions(opts []HTMLFilterOption) htmlFilterConfig {

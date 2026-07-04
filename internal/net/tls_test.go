@@ -104,3 +104,16 @@ LA6wKo8yoCnW36b+nvxlhHvzrIxwWCgwCWM=
 		t.Fatalf("AddRootCAFileWithOptions nil reader should use default and fail missing file")
 	}
 }
+
+func TestNilTLSProviderOptionsDoNotOverwriteConfiguredProviders(t *testing.T) {
+	wantErr := errors.New("provider failed")
+	readFile := func(string) ([]byte, error) { return nil, wantErr }
+	readAll := func(io.Reader) ([]byte, error) { return nil, wantErr }
+
+	if err := NewTLSConfigBuilder().AddRootCAFileWithOptions("ca.pem", WithTLSReadFile(readFile), WithTLSReadFile(nil)); !errors.Is(err, wantErr) {
+		t.Fatalf("AddRootCAFileWithOptions nil overwrite err = %v, want provider error", err)
+	}
+	if err := NewTLSConfigBuilder().AddRootCAReaderWithOptions(strings.NewReader("ignored"), WithTLSReadAll(readAll), WithTLSReadAll(nil)); !errors.Is(err, wantErr) {
+		t.Fatalf("AddRootCAReaderWithOptions nil overwrite err = %v, want provider error", err)
+	}
+}

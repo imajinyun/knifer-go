@@ -27,6 +27,24 @@ func TestSimpleServerSetRootWithOptions(t *testing.T) {
 	}
 }
 
+func TestNilFileServerFactoryDoesNotOverwriteConfiguredProvider(t *testing.T) {
+	called := false
+	cfg := applyStaticOptions("ignored", []StaticOption{
+		WithFileServerFactory(func(http.FileSystem) http.Handler {
+			called = true
+			return http.HandlerFunc(func(http.ResponseWriter, *http.Request) {})
+		}),
+		WithFileServerFactory(nil),
+	})
+	if cfg.fileServer == nil {
+		t.Fatal("nil WithFileServerFactory should not overwrite configured provider")
+	}
+	cfg.fileServer(nil)
+	if !called {
+		t.Fatal("configured file server factory was not retained")
+	}
+}
+
 func TestSimpleServerSetRootWithStaticHandler(t *testing.T) {
 	srv := NewSimpleServer(0)
 	called := false

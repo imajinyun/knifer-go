@@ -1,6 +1,7 @@
 package xml
 
 import (
+	stdxml "encoding/xml"
 	"io"
 	"io/fs"
 	"strings"
@@ -31,6 +32,52 @@ func TestWithBeanMarshalFunc(t *testing.T) {
 	WithBeanMarshalFunc(fn)(&cfg)
 	if cfg.marshal == nil {
 		t.Fatal("WithBeanMarshalFunc did not set marshal")
+	}
+}
+
+func TestNilProviderOptionsDoNotOverwriteConfiguredProviders(t *testing.T) {
+	parseCfg := parseConfig{}
+	charsetReader := func(_ string, input io.Reader) (io.Reader, error) { return input, nil }
+	openFile := func(string) (io.ReadCloser, error) { return io.NopCloser(strings.NewReader("")), nil }
+	decoderFactory := stdxml.NewDecoder
+	parseInt := func(string, int, int) (int64, error) { return 1, nil }
+	parseFloat := func(string, int) (float64, error) { return 1, nil }
+	WithCharsetReader(charsetReader)(&parseCfg)
+	WithCharsetReader(nil)(&parseCfg)
+	WithOpenFile(openFile)(&parseCfg)
+	WithOpenFile(nil)(&parseCfg)
+	WithDecoderFactory(decoderFactory)(&parseCfg)
+	WithDecoderFactory(nil)(&parseCfg)
+	WithScalarIntParser(parseInt)(&parseCfg)
+	WithScalarIntParser(nil)(&parseCfg)
+	WithScalarFloatParser(parseFloat)(&parseCfg)
+	WithScalarFloatParser(nil)(&parseCfg)
+	if parseCfg.charsetReader == nil || parseCfg.openFile == nil || parseCfg.decoderFactory == nil || parseCfg.parseInt == nil || parseCfg.parseFloat == nil {
+		t.Fatalf("nil parse provider option overwrote configured provider: %#v", parseCfg)
+	}
+
+	beanCfg := beanConfig{}
+	marshal := func(any) ([]byte, error) { return []byte("{}"), nil }
+	unmarshal := func([]byte, any) error { return nil }
+	WithBeanMarshalFunc(marshal)(&beanCfg)
+	WithBeanMarshalFunc(nil)(&beanCfg)
+	WithBeanUnmarshalFunc(unmarshal)(&beanCfg)
+	WithBeanUnmarshalFunc(nil)(&beanCfg)
+	if beanCfg.marshal == nil || beanCfg.unmarshal == nil {
+		t.Fatalf("nil bean provider option overwrote configured provider: %#v", beanCfg)
+	}
+
+	writeCfg := writeConfig{}
+	mkdirAll := func(string, fs.FileMode) error { return nil }
+	openWriteFile := func(string, int, fs.FileMode) (io.WriteCloser, error) {
+		return nopWriteCloser{}, nil
+	}
+	WithMkdirAll(mkdirAll)(&writeCfg)
+	WithMkdirAll(nil)(&writeCfg)
+	WithOpenWriteFile(openWriteFile)(&writeCfg)
+	WithOpenWriteFile(nil)(&writeCfg)
+	if writeCfg.mkdirAll == nil || writeCfg.openFile == nil {
+		t.Fatalf("nil write provider option overwrote configured provider: %#v", writeCfg)
 	}
 }
 

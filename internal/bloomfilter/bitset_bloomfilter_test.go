@@ -67,6 +67,16 @@ func TestBitSetBloomFilterFileOptions(t *testing.T) {
 	}
 }
 
+func TestNilFileOptionDoesNotOverwriteConfiguredOpenFile(t *testing.T) {
+	openFile := func(string) (io.ReadCloser, error) {
+		return io.NopCloser(strings.NewReader("alpha\n")), nil
+	}
+	cfg := applyFileOptions([]FileOption{WithOpenFile(openFile), WithOpenFile(nil)})
+	if cfg.openFile == nil {
+		t.Fatal("nil file option overwrote configured openFile")
+	}
+}
+
 func TestBitSetBloomFilter_InvalidParamsReturnError(t *testing.T) {
 	cases := []struct {
 		name string

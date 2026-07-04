@@ -1,6 +1,7 @@
 package http
 
 import (
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -58,6 +59,16 @@ func TestFilterHTMLTag(t *testing.T) {
 	got := FilterHTMLTag(`<html><img src='x'><i>测试</i></html>`, "i", "br")
 	if got != `<html><img src='x'></html>` {
 		t.Fatalf("FilterHTMLTag multi: %q", got)
+	}
+}
+
+func TestNilHTMLFilterCompileFuncDoesNotOverwriteConfiguredProvider(t *testing.T) {
+	cfg := applyHTMLFilterOptions([]HTMLFilterOption{
+		WithHTMLFilterCompileFunc(regexp.Compile),
+		WithHTMLFilterCompileFunc(nil),
+	})
+	if cfg.compile == nil {
+		t.Fatal("nil WithHTMLFilterCompileFunc should not overwrite configured compiler")
 	}
 }
 

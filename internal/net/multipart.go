@@ -69,7 +69,11 @@ func WithUploadCreateParents(create bool) UploadSaveOption {
 
 // WithUploadMkdirAll sets the directory creator used when saving uploaded files.
 func WithUploadMkdirAll(mkdirAll func(string, fs.FileMode) error) UploadSaveOption {
-	return func(c *uploadSaveConfig) { c.mkdirAll = mkdirAll }
+	return func(c *uploadSaveConfig) {
+		if mkdirAll != nil {
+			c.mkdirAll = mkdirAll
+		}
+	}
 }
 
 // WithUploadOpenSource sets the source opener used when reading uploaded files.
@@ -83,7 +87,11 @@ func WithUploadOpenSource(openSource OpenUploadedFileFunc) UploadSaveOption {
 
 // WithUploadOpenFile sets the file opener used when saving uploaded files.
 func WithUploadOpenFile(openFile func(string, int, fs.FileMode) (io.WriteCloser, error)) UploadSaveOption {
-	return func(c *uploadSaveConfig) { c.openFile = openFile }
+	return func(c *uploadSaveConfig) {
+		if openFile != nil {
+			c.openFile = openFile
+		}
+	}
 }
 
 func applyUploadSaveOptions(opts []UploadSaveOption) uploadSaveConfig {
@@ -286,7 +294,7 @@ func (m *MultipartFormData) GetFileListValueMap() map[string][]*multipart.FileHe
 }
 
 // SaveUploadedFile saves file to destPath.
-func SaveUploadedFile(file *multipart.FileHeader, destPath string, opts ...UploadSaveOption) error {
+func SaveUploadedFile(file *multipart.FileHeader, destPath string, opts ...UploadSaveOption) (err error) {
 	if file == nil {
 		return nil
 	}
@@ -309,7 +317,11 @@ func SaveUploadedFile(file *multipart.FileHeader, destPath string, opts ...Uploa
 	if err != nil {
 		return err
 	}
-	defer func() { _ = dst.Close() }()
+	defer func() {
+		if closeErr := dst.Close(); err == nil {
+			err = closeErr
+		}
+	}()
 	_, err = io.Copy(dst, src)
 	return err
 }

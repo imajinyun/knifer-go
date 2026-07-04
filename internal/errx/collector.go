@@ -107,7 +107,11 @@ func WithWaitContext(ctx context.Context) WaitOption {
 
 // WithWaitTimerFactory sets the timer factory for a single WaitUntilWithOptions call.
 func WithWaitTimerFactory(factory TimerFactory) WaitOption {
-	return func(c *waitConfig) { c.timerFactory = factory }
+	return func(c *waitConfig) {
+		if factory != nil {
+			c.timerFactory = factory
+		}
+	}
 }
 
 // WithContext sets the context attached to log entries.

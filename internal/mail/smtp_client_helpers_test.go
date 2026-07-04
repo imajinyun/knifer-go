@@ -40,6 +40,7 @@ type fakeSMTPServer struct {
 	authOK        bool
 	authenticated bool
 	hangOnData    bool
+	quitResponse  string
 	once          sync.Once
 }
 
@@ -52,10 +53,11 @@ func newFakeSMTPServer(t *testing.T, opts ...fakeSMTPOption) (*fakeSMTPServer, e
 		return nil, err
 	}
 	server := &fakeSMTPServer{
-		listener:    listener,
-		done:        make(chan error, 1),
-		dataStarted: make(chan struct{}),
-		authOK:      true,
+		listener:     listener,
+		done:         make(chan error, 1),
+		dataStarted:  make(chan struct{}),
+		authOK:       true,
+		quitResponse: "221 Bye",
 	}
 	for _, opt := range opts {
 		opt(server)
@@ -88,6 +90,10 @@ func withFakeSMTPAuth(mechanism, initial string, ok bool) fakeSMTPOption {
 
 func withFakeSMTPHangOnData() fakeSMTPOption {
 	return func(s *fakeSMTPServer) { s.hangOnData = true }
+}
+
+func withFakeSMTPQuitResponse(response string) fakeSMTPOption {
+	return func(s *fakeSMTPServer) { s.quitResponse = response }
 }
 
 func (s *fakeSMTPServer) Host() string {
@@ -275,7 +281,7 @@ func (s *fakeSMTPServer) serve() {
 				return
 			}
 		case line == "QUIT":
-			_, err := io.WriteString(conn, "221 Bye\r\n")
+			_, err := io.WriteString(conn, s.quitResponse+"\r\n")
 			s.done <- err
 			return
 		default:

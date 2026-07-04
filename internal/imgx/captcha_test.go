@@ -96,9 +96,48 @@ func TestCaptchaWriteProviderOptions(t *testing.T) {
 	}
 }
 
+func TestNilCaptchaWriteProviderOptionsDoNotOverwriteConfiguredProviders(t *testing.T) {
+	mkdirAll := func(string, fs.FileMode) error { return nil }
+	openFile := func(string, int, fs.FileMode) (io.WriteCloser, error) {
+		return nopWriteCloser{Writer: io.Discard}, nil
+	}
+	cfg := applyWriteOptions([]WriteOption{
+		WithMkdirAll(mkdirAll),
+		WithMkdirAll(nil),
+		WithOpenFile(openFile),
+		WithOpenFile(nil),
+	})
+	if cfg.mkdirAll == nil || cfg.openFile == nil {
+		t.Fatalf("nil write provider option overwrote configured provider: %#v", cfg)
+	}
+}
+
 type nopWriteCloser struct{ io.Writer }
 
 func (w nopWriteCloser) Close() error { return nil }
+
+type closeErrorWriteCloser struct {
+	io.Writer
+	err error
+}
+
+func (w closeErrorWriteCloser) Close() error { return w.err }
+
+func TestCaptchaWriteToFileReturnsCloseError(t *testing.T) {
+	closeErr := errors.New("close failed")
+	c := NewLineCaptchaWithOptions(100, 40, WithGenerator(fixedGenerator{code: "ABCD"}), WithInterfereCount(0))
+	c.CreateCode()
+
+	err := c.WriteToFileWithOptions("/virtual/captcha.png",
+		WithMkdirAll(func(string, fs.FileMode) error { return nil }),
+		WithOpenFile(func(string, int, fs.FileMode) (io.WriteCloser, error) {
+			return closeErrorWriteCloser{Writer: io.Discard, err: closeErr}, nil
+		}),
+	)
+	if !errors.Is(err, closeErr) {
+		t.Fatalf("WriteToFileWithOptions close error = %v, want close cause", err)
+	}
+}
 
 func TestICaptchaInterface(t *testing.T) {
 	var _ ICaptcha = NewLineCaptcha(100, 40)
