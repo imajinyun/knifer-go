@@ -18,26 +18,26 @@ func TestDefaultSchedulerConcurrentConfigureAndOperations(t *testing.T) {
 	var wg sync.WaitGroup
 	for i := 0; i < 64; i++ {
 		wg.Add(4)
-		go func(i int) {
+		go func() {
 			defer wg.Done()
 			ConfigureDefaultScheduler(WithIDGenerator(func() string { return "default-concurrent" }))
-		}(i)
-		go func(i int) {
+		}()
+		go func() {
 			defer wg.Done()
 			_, _ = ScheduleFuncWithOptions("* * * * *", func() {}, WithDefaultSchedulerOptions(
 				WithIDGenerator(func() string { return "isolated-concurrent" }),
 			))
-		}(i)
-		go func(i int) {
+		}()
+		go func() {
 			defer wg.Done()
 			_ = StartWithOptions(WithDefaultSchedulerOptions(
 				WithRunner(func(fn func()) {}),
 			))
-		}(i)
-		go func(i int) {
+		}()
+		go func() {
 			defer wg.Done()
 			StopWithOptions(WithDefaultSchedulerOptions())
-		}(i)
+		}()
 	}
 	wg.Wait()
 }
@@ -69,8 +69,7 @@ func TestListenerCallbacksCanReenterManager(t *testing.T) {
 	defer s.Stop()
 
 	var starts atomic.Int32
-	var reentrant TaskListener
-	reentrant = &testListener{started: &starts}
+	reentrant := &testListener{started: &starts}
 	s.AddListener(testTaskListenerFunc{
 		onStart: func(e *TaskExecutor) {
 			s.RemoveListener(reentrant)
