@@ -1,4 +1,4 @@
-.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check docs-gen docs-check facade-tiering-gen utility-comparison-refresh generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
+.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check go-module-cache-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check docs-gen docs-check facade-tiering-gen utility-comparison-refresh generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -45,6 +45,7 @@ help:
 	@echo "  change-policy-check Detect change policies from local diff"
 	@echo "  security-sensitive-diff Detect changes to security-sensitive packages"
 	@echo "  aiflow-layout-check Verify root aiflow.yaml and ignored .aiflow/ runtime state"
+	@echo "  go-module-cache-check Verify module cache package resolution"
 	@echo "  agent-evidence  Emit machine-readable Agent validation evidence"
 	@echo "  agent-evidence-check Validate machine-readable Agent validation evidence"
 	@echo "  quick-check     Run fast local governance gates"
@@ -84,6 +85,8 @@ doctor:
 	@git status --short --branch
 	@echo "== module =="
 	@$(GO) list -m | grep 'knifer-go' || $(GO) list -m
+	@echo "== module cache =="
+	@bash bin/check_go_module_cache.sh
 	@echo "== package list =="
 	@$(GO) list ./... >/dev/null
 	@echo "go list ./... OK"
@@ -119,6 +122,9 @@ security-sensitive-diff:
 
 aiflow-layout-check:
 	bash bin/check_aiflow_layout.sh
+
+go-module-cache-check:
+	bash bin/check_go_module_cache.sh
 
 agent-evidence:
 	bash bin/agent_validation_report.sh
@@ -226,7 +232,7 @@ lint:
 govulncheck:
 	$(GO) tool govulncheck $(PKGS)
 
-quick-check: worktree-check aiflow-layout-check mod-verify vet arch test api-check docs-check bench-regression-check diff-whitespace
+quick-check: worktree-check aiflow-layout-check mod-verify go-module-cache-check vet arch test api-check docs-check bench-regression-check diff-whitespace
 
 security-check: lint govulncheck
 
