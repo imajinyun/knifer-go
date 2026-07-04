@@ -11,6 +11,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	refimpl "github.com/imajinyun/knifer-go/internal/ref"
 )
 
 const defaultGroup = ""
@@ -706,7 +708,11 @@ func setReflectValue(v reflect.Value, text string, cfg bindConfig) error {
 				return nil
 			}
 			if converted.Type().ConvertibleTo(v.Type()) {
-				v.Set(converted.Convert(v.Type()))
+				safeValue, err := refimpl.SafeConvert(converted, v.Type())
+				if err != nil {
+					return err
+				}
+				v.Set(safeValue)
 				return nil
 			}
 			textValue, ok := value.(string)

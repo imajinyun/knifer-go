@@ -165,3 +165,15 @@ func TestZeroAndDefaultConversionsKeepLegacyOverflowBehavior(t *testing.T) {
 		t.Fatalf("ToInt64Default overflow legacy value = %d, want %d", got, int64(math.MinInt64))
 	}
 }
+
+func TestToFloat64UsesUnsignedReflectValueWithoutIntWrapping(t *testing.T) {
+	type namedUint64 uint64
+
+	input := uint64(math.MaxInt64) + 1
+	if got := ToFloat64(input); got != float64(input) {
+		t.Fatalf("ToFloat64(uint64 overflow boundary) = %v, want %v", got, float64(input))
+	}
+	if got := ToFloat64(namedUint64(input)); got != float64(input) {
+		t.Fatalf("ToFloat64(named uint64 overflow boundary) = %v, want %v", got, float64(input))
+	}
+}

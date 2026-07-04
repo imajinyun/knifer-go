@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	refimpl "github.com/imajinyun/knifer-go/internal/ref"
 )
 
 // Option customizes bean mapping behavior.
@@ -622,7 +624,11 @@ func assignValue(dst, src reflect.Value, cfg Options) error {
 		return nil
 	}
 	if src.Type().ConvertibleTo(dst.Type()) {
-		dst.Set(src.Convert(dst.Type()))
+		converted, err := refimpl.SafeConvert(src, dst.Type())
+		if err != nil {
+			return err
+		}
+		dst.Set(converted)
 		return nil
 	}
 	if !cfg.WeaklyTyped {

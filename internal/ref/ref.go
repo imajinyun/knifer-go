@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 	"reflect"
 	"slices"
 	"strings"
@@ -172,6 +173,24 @@ var contextType = reflect.TypeOf((*context.Context)(nil)).Elem()
 
 // ImplementsContext reports whether typ implements context.Context.
 func ImplementsContext(typ reflect.Type) bool { return typ != nil && typ.Implements(contextType) }
+
+// SafeConvert converts src to dstType after rejecting numeric conversions that
+// would overflow, wrap, or narrow an unsupported float value.
+func SafeConvert(src reflect.Value, dstType reflect.Type) (reflect.Value, error) {
+	if !src.IsValid() {
+		return reflect.Value{}, errors.New("invalid value")
+	}
+	if dstType == nil {
+		return reflect.Value{}, errors.New("nil target type")
+	}
+	if !src.Type().ConvertibleTo(dstType) {
+		return reflect.Value{}, fmt.Errorf("cannot convert %s to %s", src.Type(), dstType)
+	}
+	if err := validateNumericConversion(src, dstType); err != nil {
+		return reflect.Value{}, err
+	}
+	return src.Convert(dstType), nil
+}
 
 // GetConstructor returns a constructor function when target itself is a function.
 func GetConstructor(target any) reflect.Value {
@@ -612,7 +631,11 @@ func setValue(dst reflect.Value, value any, cfg fieldAccessConfig) error {
 		return nil
 	}
 	if src.Type().ConvertibleTo(dst.Type()) {
-		dst.Set(src.Convert(dst.Type()))
+		converted, err := SafeConvert(src, dst.Type())
+		if err != nil {
+			return err
+		}
+		dst.Set(converted)
 		return nil
 	}
 	return fmt.Errorf("cannot assign %s to %s", src.Type(), dst.Type())
@@ -674,12 +697,171 @@ func valuesForCall(fnType reflect.Type, offset int, args []any) []reflect.Value 
 		case v.Type().AssignableTo(expected):
 			values = append(values, v)
 		case v.Type().ConvertibleTo(expected):
-			values = append(values, v.Convert(expected))
+			converted, err := SafeConvert(v, expected)
+			if err != nil {
+				values = append(values, reflect.Zero(expected))
+				continue
+			}
+			values = append(values, converted)
 		default:
 			values = append(values, reflect.Zero(expected))
 		}
 	}
 	return values
+}
+
+func validateNumericConversion(src reflect.Value, dstType reflect.Type) error {
+	srcKind := src.Kind()
+	dstKind := dstType.Kind()
+	if !isNumericKind(srcKind) || !isNumericKind(dstKind) {
+		return nil
+	}
+
+	switch {
+	case isSignedIntKind(dstKind):
+		if !numericFitsSigned(src, dstType.Bits()) {
+			return fmt.Errorf("integer overflow")
+		}
+	case isUnsignedIntKind(dstKind):
+		if err := validateUnsignedConversion(src, dstType.Bits()); err != nil {
+			return err
+		}
+	case isFloatKind(dstKind):
+		if !numericFitsFloat(src, dstType.Bits()) {
+			return fmt.Errorf("float overflow")
+		}
+	}
+	return nil
+}
+
+func validateUnsignedConversion(src reflect.Value, bits int) error {
+	switch src.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		i := src.Int()
+		if i < 0 {
+			return fmt.Errorf("negative value %d", i)
+		}
+		if !uintFitsUintBits(uint64(i), bits) {
+			return fmt.Errorf("unsigned integer overflow")
+		}
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		if !uintFitsUintBits(src.Uint(), bits) {
+			return fmt.Errorf("unsigned integer overflow")
+		}
+	case reflect.Float32, reflect.Float64:
+		f := src.Float()
+		if f < 0 {
+			return fmt.Errorf("negative value %v", f)
+		}
+		if !floatFitsUintBits(f, bits) {
+			return fmt.Errorf("unsigned integer overflow")
+		}
+	}
+	return nil
+}
+
+func numericFitsSigned(src reflect.Value, bits int) bool {
+	switch src.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return intFitsSignedBits(src.Int(), bits)
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		return uintFitsSignedBits(src.Uint(), bits)
+	case reflect.Float32, reflect.Float64:
+		return floatFitsIntBits(src.Float(), bits)
+	default:
+		return true
+	}
+}
+
+func numericFitsFloat(src reflect.Value, bits int) bool {
+	if bits != 32 {
+		return true
+	}
+	switch src.Kind() {
+	case reflect.Float32, reflect.Float64:
+		f := src.Float()
+		return math.IsNaN(f) || math.IsInf(f, 0) || math.Abs(f) <= math.MaxFloat32
+	default:
+		return true
+	}
+}
+
+func floatFitsIntBits(f float64, bits int) bool {
+	if math.IsNaN(f) || math.IsInf(f, 0) {
+		return false
+	}
+	if bits <= 0 || bits > 64 {
+		bits = 64
+	}
+	min := -math.Ldexp(1, bits-1)
+	maxExclusive := math.Ldexp(1, bits-1)
+	return f >= min && f < maxExclusive
+}
+
+func floatFitsUintBits(f float64, bits int) bool {
+	if math.IsNaN(f) || math.IsInf(f, 0) || f < 0 {
+		return false
+	}
+	if bits <= 0 || bits > 64 {
+		bits = 64
+	}
+	return f < math.Ldexp(1, bits)
+}
+
+func intFitsSignedBits(i int64, bits int) bool {
+	if bits <= 0 || bits >= 64 {
+		return true
+	}
+	min := -(int64(1) << (bits - 1))
+	max := int64(1)<<(bits-1) - 1
+	return i >= min && i <= max
+}
+
+func uintFitsSignedBits(u uint64, bits int) bool {
+	if bits <= 0 || bits >= 64 {
+		return u <= math.MaxInt64
+	}
+	max := uint64(1)<<(bits-1) - 1
+	return u <= max
+}
+
+func uintFitsUintBits(u uint64, bits int) bool {
+	if bits <= 0 || bits >= 64 {
+		return true
+	}
+	max := uint64(1)<<bits - 1
+	return u <= max
+}
+
+func isNumericKind(kind reflect.Kind) bool {
+	return isSignedIntKind(kind) || isUnsignedIntKind(kind) || isFloatKind(kind)
+}
+
+func isSignedIntKind(kind reflect.Kind) bool {
+	switch kind {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return true
+	default:
+		return false
+	}
+}
+
+func isUnsignedIntKind(kind reflect.Kind) bool {
+	switch kind {
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		return true
+	default:
+		return false
+	}
+}
+
+func isFloatKind(kind reflect.Kind) bool {
+	switch kind {
+	case reflect.Float32, reflect.Float64:
+		return true
+	default:
+		return false
+	}
 }
 
 func call(fn reflect.Value, args []reflect.Value) (result any, err error) {

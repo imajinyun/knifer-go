@@ -49,3 +49,19 @@ func TestFieldHelpers(t *testing.T) {
 		t.Fatal("static/outer helpers failed")
 	}
 }
+
+func TestSetFieldValueRejectsUnsafeNumericConversion(t *testing.T) {
+	type target struct {
+		Count int8
+	}
+	dst := &target{}
+	if err := SetFieldValue(dst, "Count", int16(128)); err == nil {
+		t.Fatal("SetFieldValue overflow error = nil")
+	}
+	if err := SetFieldValue(dst, "Count", int16(127)); err != nil {
+		t.Fatalf("SetFieldValue safe conversion error = %v", err)
+	}
+	if dst.Count != 127 {
+		t.Fatalf("Count = %d, want 127", dst.Count)
+	}
+}

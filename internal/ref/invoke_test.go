@@ -24,3 +24,21 @@ func TestInvokeHelpers(t *testing.T) {
 		t.Fatal("InvokeRaw non-func should fail")
 	}
 }
+
+func TestInvokeFuncRejectsUnsafeNumericConversion(t *testing.T) {
+	got, err := InvokeFunc(func(v int8) int8 { return v }, int16(128))
+	if err != nil {
+		t.Fatalf("InvokeFunc overflow argument error = %v", err)
+	}
+	if got != int8(0) {
+		t.Fatalf("InvokeFunc overflow argument = %v, want zero fallback", got)
+	}
+
+	got, err = InvokeFunc(func(v int8) int8 { return v }, int16(127))
+	if err != nil {
+		t.Fatalf("InvokeFunc safe argument error = %v", err)
+	}
+	if got != int8(127) {
+		t.Fatalf("InvokeFunc safe argument = %v, want 127", got)
+	}
+}

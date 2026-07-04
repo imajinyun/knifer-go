@@ -546,6 +546,15 @@ func toFloat64(v any, cfg config) (float64, bool) {
 			return f, true
 		}
 		return 0, false
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return float64(rv.Int()), true
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return float64(rv.Uint()), true
+	case reflect.Bool:
+		if rv.Bool() {
+			return 1, true
+		}
+		return 0, true
 	}
 	if i, ok := toInt64(v, cfg); ok {
 		return float64(i), true

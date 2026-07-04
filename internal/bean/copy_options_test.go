@@ -110,6 +110,49 @@ func TestDecodeWithComposedDecodeHooks(t *testing.T) {
 	}
 }
 
+func TestDecodeRejectsUnsafeReflectNumericConversion(t *testing.T) {
+	type source struct {
+		Count int16
+	}
+	type target struct {
+		Count int8
+	}
+
+	var dst target
+	err := CopyProperties(source{Count: 128}, &dst, WithWeaklyTyped(false))
+	if err == nil || !strings.Contains(err.Error(), "integer overflow") {
+		t.Fatalf("CopyProperties() error = %v, want integer overflow", err)
+	}
+	assertBeanInvalidInput(t, err)
+
+	err = CopyProperties(source{Count: 127}, &dst, WithWeaklyTyped(false))
+	if err != nil {
+		t.Fatalf("CopyProperties() safe conversion error = %v", err)
+	}
+	if dst.Count != 127 {
+		t.Fatalf("Count = %d, want 127", dst.Count)
+	}
+}
+
+func TestDecodeHookRejectsUnsafeReflectNumericConversion(t *testing.T) {
+	type target struct {
+		Count uint8
+	}
+	var dst target
+	err := Decode(map[string]any{"count": "ignored"}, &dst,
+		WithDecodeHook(func(from, to reflect.Type, value any) (any, error) {
+			if to.Kind() == reflect.Uint8 {
+				return int8(-1), nil
+			}
+			return value, nil
+		}),
+	)
+	if err == nil || !strings.Contains(err.Error(), "negative value") {
+		t.Fatalf("Decode() error = %v, want negative value", err)
+	}
+	assertBeanInvalidInput(t, err)
+}
+
 func TestDecodeReportsNestedFieldPath(t *testing.T) {
 	type item struct {
 		Count int

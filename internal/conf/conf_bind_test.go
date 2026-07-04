@@ -6,6 +6,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	knifer "github.com/imajinyun/knifer-go"
 )
 
 func TestBindWithOptionsUsesParsers(t *testing.T) {
@@ -90,6 +92,42 @@ func TestBindWithDecodeHook(t *testing.T) {
 	}
 	if got := cfg.Start.Format(time.DateOnly); got != "2026-06-22" {
 		t.Fatalf("Start = %q", got)
+	}
+}
+
+func TestBindDecodeHookRejectsUnsafeReflectNumericConversion(t *testing.T) {
+	s := New()
+	s.Set("count", "ignored")
+	type target struct {
+		Count int8 `conf:"count"`
+	}
+	var cfg target
+	err := s.BindWithOptions(&cfg,
+		WithBindDecodeHook(func(from, to reflect.Type, value any) (any, error) {
+			if to.Kind() == reflect.Int8 {
+				return int16(128), nil
+			}
+			return value, nil
+		}),
+	)
+	if err == nil || !strings.Contains(err.Error(), "integer overflow") {
+		t.Fatalf("BindWithOptions() error = %v, want integer overflow", err)
+	}
+	assertConfCode(t, err, knifer.ErrCodeInvalidInput)
+
+	err = s.BindWithOptions(&cfg,
+		WithBindDecodeHook(func(from, to reflect.Type, value any) (any, error) {
+			if to.Kind() == reflect.Int8 {
+				return int16(127), nil
+			}
+			return value, nil
+		}),
+	)
+	if err != nil {
+		t.Fatalf("BindWithOptions() safe conversion error = %v", err)
+	}
+	if cfg.Count != 127 {
+		t.Fatalf("Count = %d, want 127", cfg.Count)
 	}
 }
 
