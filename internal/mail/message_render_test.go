@@ -2,6 +2,7 @@ package mail
 
 import (
 	"bytes"
+	"encoding/base64"
 	"errors"
 	"strings"
 	"testing"
@@ -141,4 +142,44 @@ func TestMessageEncodingAndBoundaryErrors(t *testing.T) {
 	if _, err := badBoundary.Bytes(); err == nil {
 		t.Fatal("Bytes(bad boundary) error = nil, want error")
 	}
+}
+
+func TestMessageWriteToPropagatesWriterErrors(t *testing.T) {
+	msg, err := NewMessage(
+		WithFrom("from@example.com"),
+		WithTo("to@example.com"),
+		WithText("plain"),
+	)
+	if err != nil {
+		t.Fatalf("NewMessage() error = %v", err)
+	}
+	errWriter := failAfterWriter{limit: 8, err: errors.New("write failed")}
+	if _, err := msg.WriteTo(&errWriter); !errors.Is(err, errWriter.err) {
+		t.Fatalf("WriteTo() error = %v, want write cause", err)
+	}
+}
+
+func TestBase64EncoderCloseErrorIsReturned(t *testing.T) {
+	errWriter := failAfterWriter{limit: 0, err: errors.New("close padding failed")}
+	encoder := base64.NewEncoder(base64.StdEncoding, newBase64LineWriter(&errWriter))
+	if _, err := encoder.Write([]byte{0xff}); err != nil {
+		t.Fatalf("encoder.Write() error = %v", err)
+	}
+	if err := encoder.Close(); !errors.Is(err, errWriter.err) {
+		t.Fatalf("encoder.Close() error = %v, want close cause", err)
+	}
+}
+
+type failAfterWriter struct {
+	limit int
+	err   error
+	n     int
+}
+
+func (w *failAfterWriter) Write(p []byte) (int, error) {
+	if w.n+len(p) > w.limit {
+		return 0, w.err
+	}
+	w.n += len(p)
+	return len(p), nil
 }
