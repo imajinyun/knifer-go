@@ -197,6 +197,31 @@ func TestWithSaveAsFunc(t *testing.T) {
 	}
 }
 
+func TestWriteRowsPropagatesSaveFinalizationErrors(t *testing.T) {
+	saveErr := errors.New("save failed")
+	if err := WriteRows("virtual.xlsx", [][]string{{"x"}},
+		WithCreateParents(false),
+		WithSaveAsFunc(func(*excelize.File, string, ...excelize.Options) error {
+			return saveErr
+		}),
+	); !errors.Is(err, saveErr) {
+		t.Fatalf("WriteRows save error = %v, want save cause", err)
+	}
+
+	chmodErr := errors.New("chmod failed")
+	if err := WriteRows("virtual.xlsx", [][]string{{"x"}},
+		WithCreateParents(false),
+		WithSaveAsFunc(func(*excelize.File, string, ...excelize.Options) error {
+			return nil
+		}),
+		WithChmod(func(string, fs.FileMode) error {
+			return chmodErr
+		}),
+	); !errors.Is(err, chmodErr) {
+		t.Fatalf("WriteRows chmod error = %v, want chmod cause", err)
+	}
+}
+
 func TestNilWriteProviderOptionsDoNotOverwriteConfiguredProviders(t *testing.T) {
 	cfg := writeConfig{}
 	mkdirAll := func(string, fs.FileMode) error { return nil }
