@@ -270,6 +270,15 @@
       "risk_level": "low",
       "notes": "Validates GitHub Actions workflow governance invariants declared in ai-context.json."
     },
+    "provider_contract_check": {
+      "cmd": "make provider-contract-check",
+      "safe_for_agent_auto_run": true,
+      "writes_workspace": false,
+      "writes_git_config": false,
+      "network_required": false,
+      "risk_level": "low",
+      "notes": "Validates provider contract facades expose provider interfaces without concrete provider SDKs, direct credential reads, local file reads, or default network calls."
+    },
     "generate": {
       "cmd": "make generate",
       "safe_for_agent_auto_run": false,

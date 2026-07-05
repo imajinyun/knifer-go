@@ -105,6 +105,7 @@
 | `make worktree-check` | Fail when unrelated untracked Go files may pollute tests or commits |
 | `make change-policy-check` | Detect change policies from staged, unstaged, and untracked local diff |
 | `make security-sensitive-diff` | Detect changes under security-sensitive public facades and their internal implementations |
+| `make provider-contract-check` | Verify provider contract facades do not embed concrete providers, credentials, or default network/file access |
 | `make agent-evidence` | Emit `/tmp/knifer-go-agent-validation.json` with detected policies, required commands, command attestations, and structured security review evidence |
 | `make agent-evidence-check` | Validate Agent evidence schema, policy references, command references, command attestations, security review evidence, risk, and embedded check status |
 | `make quick-check` | Fast local: mod-verify → vet → arch → test → api-check → tools-check → ai-context-check → diff-whitespace |
@@ -155,6 +156,7 @@
 - **CI Agent governance**: GitHub Actions runs `make ci-agent-governance` with `AGENT_CHANGE_BASE_REF` so policy detection is based on the PR or push diff, then uploads the Agent evidence JSON artifact.
 - **CI workflow invariants**: `ai-context.json.ci_workflows` declares required GitHub Actions jobs, Agent governance commands, environment variables, and artifacts; `make ci-workflow-check` validates them.
 - **Security-sensitive diff**: `make security-sensitive-diff` checks staged, unstaged, and untracked paths against `ai-context.json.security_sensitive_packages` and their mapped `internal/*` implementations.
+- **Provider contracts**: `make provider-contract-check` validates `vai`, `vftp`, `vhan`, `vssh`, and `vtok` provider-contract boundaries independently from the broader architecture gate.
 - **API freeze decisions**: `make api-freeze-check` validates that every generated API status is covered by `api_freeze.api_status_decision_cards`, and each mapped decision card has the same status and covers the package.
 - **aiflow layout**: `aiflow.yaml` is committed at the repository root. `.aiflow/` is ignored and reserved for generated runtime evidence, traces, reports, scratch files, and temporary state. `make aiflow-layout-check` enforces this boundary.
 - **Panic**: Production code must not introduce new `panic()` calls unless in a `MustXxx`/`PanicXxx` function.

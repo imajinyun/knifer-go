@@ -28,6 +28,7 @@ Choose ID helpers by the property you need: randomness, compactness, sortability
 ## ID safety checklist
 
 - Do not treat ordinary IDs as authentication secrets. Use `vrand.SecureBytes` for bearer tokens, reset tokens, API keys, and session secrets.
+- Follow `ai-context.json` `random_source_policy`: `vid` fallback random sources are compatibility and test hooks, not a security-token generation path.
 - Choose ID length and alphabet based on collision risk, storage limits, and whether users will type or copy the value.
 - Avoid fast pseudo-random ID helpers when IDs must be unpredictable to attackers.
 - Configure Snowflake worker and datacenter IDs uniquely per generator instance to avoid collisions.

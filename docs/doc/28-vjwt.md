@@ -29,6 +29,7 @@ Choose helpers by the trust boundary: token creation, signature verification, cl
 
 - Verify signatures before trusting any header or payload claim for authorization decisions.
 - Keep accepted algorithms explicit. Do not let untrusted token headers silently choose an unexpected signing method.
+- Follow `ai-context.json` `random_source_policy`: strict signer and key helpers reject weak keys or unsafe algorithms, and injected signer random readers must propagate errors.
 - Validate `exp`, `nbf`, and `iat` where applicable, and keep clock-skew leeway small and documented.
 - Validate application claims such as `iss`, `aud`, `sub`, tenant, scope, and key id against your own policy.
 - Treat JWT payloads as readable metadata, not encrypted secrets. Do not store credentials or sensitive personal data in plain JWT claims.

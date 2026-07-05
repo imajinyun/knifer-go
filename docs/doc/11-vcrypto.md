@@ -33,6 +33,7 @@ The first-choice API set for this facade is kept in sync with `ai-context.json` 
 - Do not use MD5 or SHA-1 for new security-sensitive designs.
 - Do not reuse AES-GCM nonces with the same key.
 - Do not reuse SM4-GCM nonces with the same key.
+- Follow `ai-context.json` `random_source_policy`: key, salt, nonce, and token bytes must fail closed on entropy errors rather than falling back to pseudo-random sources.
 - Avoid SM4-ECB for new designs; it is provided only for interoperability with legacy systems.
 - Keep SM2 signing UID policy explicit when interoperating with external systems.
 - Do not generate keys, tokens, nonces, or salts with `math/rand` or deterministic test sources.
