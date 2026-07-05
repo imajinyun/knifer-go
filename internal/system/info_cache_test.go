@@ -1,6 +1,9 @@
 package system
 
-import "testing"
+import (
+	"sync"
+	"testing"
+)
 
 func TestResetInfoCacheClearsSingletons(t *testing.T) {
 	ResetInfoCache()
@@ -25,4 +28,31 @@ func TestResetInfoCacheClearsSingletons(t *testing.T) {
 	if got := GetRuntimeInfo(); got == nil || got == firstRuntime {
 		t.Fatalf("GetRuntimeInfo after reset = %p, first %p", got, firstRuntime)
 	}
+}
+
+func TestInfoCacheConcurrentResetAndRead(t *testing.T) {
+	ResetInfoCache()
+
+	var wg sync.WaitGroup
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				ResetInfoCache()
+			}
+		}()
+	}
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				if GetHostInfo() == nil || GetOsInfo() == nil || GetUserInfo() == nil || GetGoInfo() == nil || GetRuntimeInfo() == nil {
+					t.Error("cached system info should not be nil")
+				}
+			}
+		}()
+	}
+	wg.Wait()
 }
