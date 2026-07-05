@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"runtime"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -64,6 +65,36 @@ func TestStackFrameCacheResetAndDisable(t *testing.T) {
 	if got := fmt.Sprintf("%s:%d:%n", stack[0], stack[0], stack[0]); got == "custom.go:123:Custom" {
 		t.Fatalf("WithStackFrameCache(false) should not store custom metadata, got %q", got)
 	}
+}
+
+func TestStackFrameCacheConcurrentResetAndCapture(t *testing.T) {
+	ResetStackFrameCache()
+
+	var wg sync.WaitGroup
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				ResetStackFrameCache()
+			}
+		}()
+	}
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				if stack := GetStackTrace(0); len(stack) == 0 {
+					t.Error("GetStackTrace returned empty stack")
+				}
+				if stack := GetStackTraceWithOptions(WithStackFrameCache(false)); len(stack) == 0 {
+					t.Error("GetStackTraceWithOptions returned empty stack")
+				}
+			}
+		}()
+	}
+	wg.Wait()
 }
 
 func TestFrameFormatting(t *testing.T) {

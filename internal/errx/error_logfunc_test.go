@@ -3,6 +3,7 @@ package errx
 import (
 	"context"
 	"errors"
+	"sync"
 	"testing"
 
 	"github.com/sirupsen/logrus"
@@ -44,4 +45,32 @@ func TestDefaultLogFuncCanBeConfiguredAndReset(t *testing.T) {
 	if called != 0 {
 		t.Fatalf("configured logger called after reset %d times, want 0", called)
 	}
+}
+
+func TestDefaultLogFuncConcurrentConfigureAndRecover(t *testing.T) {
+	ResetDefaultLogFunc()
+	t.Cleanup(ResetDefaultLogFunc)
+
+	var wg sync.WaitGroup
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				ConfigureDefaultLogFunc(func(context.Context, logrus.Level, error, string, string, ...any) {})
+				_ = getDefaultLogFunc()
+			}
+		}()
+	}
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				ResetDefaultLogFunc()
+				_ = getDefaultLogFunc()
+			}
+		}()
+	}
+	wg.Wait()
 }
