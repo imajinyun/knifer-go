@@ -2,6 +2,7 @@ package rand
 
 import (
 	mathrand "math/rand"
+	"sync"
 	"testing"
 )
 
@@ -48,4 +49,38 @@ func TestDefaultRandomSourceProviderCanBeConfiguredAndReset(t *testing.T) {
 	if got := RandomInt(10); got < 0 || got >= 10 {
 		t.Fatalf("RandomInt after reset = %d, want [0,10)", got)
 	}
+}
+
+func TestDefaultRandomSourceConcurrentConfigureAndUse(t *testing.T) {
+	ResetDefaultRandomSource()
+	t.Cleanup(ResetDefaultRandomSource)
+
+	var wg sync.WaitGroup
+	for i := 0; i < 8; i++ {
+		seed := int64(i + 1)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				ConfigureDefaultRandomSourceProvider(func() *mathrand.Rand {
+					return mathrand.New(mathrand.NewSource(seed))
+				})
+				if got := RandomInt(32); got < 0 || got >= 32 {
+					t.Errorf("RandomInt = %d, want [0,32)", got)
+				}
+			}
+		}()
+	}
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				ResetDefaultRandomSource()
+				_ = RandomLong()
+				_ = RandomFloat()
+			}
+		}()
+	}
+	wg.Wait()
 }
