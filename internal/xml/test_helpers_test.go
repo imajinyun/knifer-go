@@ -38,6 +38,13 @@ type nopWriteCloser struct{ io.Writer }
 
 func (w nopWriteCloser) Close() error { return nil }
 
+type closeErrorWriteCloser struct {
+	io.Writer
+	err error
+}
+
+func (w closeErrorWriteCloser) Close() error { return w.err }
+
 func gotOK(got map[string]any, key string, want any) bool {
 	return got != nil && got[key] == want
 }
