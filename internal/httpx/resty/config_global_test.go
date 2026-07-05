@@ -1,6 +1,7 @@
 package resty
 
 import (
+	"sync"
 	"testing"
 	"time"
 )
@@ -72,4 +73,54 @@ func TestWithScopedGlobalConfigRestoresPreviousDefaults(t *testing.T) {
 	if cfg.Timeout != time.Second || cfg.MaxRedirects != 4 || cfg.MaxResponseBytes != 64 || !cfg.FollowRedirects || cfg.DefaultUserAgent != "outer-agent" || cfg.Headers["X-Scope"][0] != "outer" || cfg.CookieDisabled {
 		t.Fatalf("scoped restored config = %#v", cfg)
 	}
+}
+
+func TestGlobalConfigConcurrentMutationAndSnapshot(t *testing.T) {
+	previous := SnapshotGlobalConfig()
+	t.Cleanup(func() { ConfigureGlobalConfig(previous) })
+
+	var wg sync.WaitGroup
+	for i := 0; i < 8; i++ {
+		idx := i
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				ConfigureGlobalConfig(GlobalConfig{
+					Timeout:          time.Duration(idx+1) * time.Second,
+					MaxRedirects:     idx + 1,
+					MaxResponseBytes: int64(idx + 1),
+					FollowRedirects:  idx%2 == 0,
+					DefaultUserAgent: "resty-agent",
+					Headers:          HeaderValues{"X-Concurrent": []string{"configured"}},
+					CookieDisabled:   idx%2 == 1,
+				})
+				SetGlobalHeader("X-Concurrent", "set")
+				AddGlobalHeader("X-Concurrent", "add")
+				RemoveGlobalHeader("X-Removed")
+				if idx%3 == 0 {
+					CloseCookie()
+				}
+			}
+		}()
+	}
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				cfg := SnapshotGlobalConfig()
+				if cfg.Headers == nil {
+					t.Error("snapshot headers should not be nil")
+				}
+				_ = GetGlobalTimeout()
+				_ = GetGlobalMaxRedirects()
+				_ = GetGlobalMaxResponseBytes()
+				_ = GetGlobalFollowRedirects()
+				_ = GetGlobalUserAgent()
+				_ = CloneGlobalHeaders()
+			}
+		}()
+	}
+	wg.Wait()
 }

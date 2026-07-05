@@ -1,6 +1,7 @@
 package resty
 
 import (
+	"sync"
 	"testing"
 
 	grestry "resty.dev/v3"
@@ -39,4 +40,36 @@ func TestRestyClientFactoryProviderLifecycle(t *testing.T) {
 	if client == nil {
 		t.Fatal("reset default provider should create a client")
 	}
+}
+
+func TestRestyClientFactoryProviderConcurrentConfigureAndUse(t *testing.T) {
+	ResetDefaultRestyClientProvider()
+	t.Cleanup(ResetDefaultRestyClientProvider)
+
+	var wg sync.WaitGroup
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				ConfigureDefaultRestyClientProvider(func() *grestry.Client { return grestry.New() })
+				if client := NewIsolatedRequest(MethodGet, "http://example.com").buildClient(); client == nil {
+					t.Error("configured resty client provider returned nil client")
+				}
+			}
+		}()
+	}
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				ResetDefaultRestyClientProvider()
+				if client := NewIsolatedRequest(MethodGet, "http://example.com").buildClient(); client == nil {
+					t.Error("reset resty client provider returned nil client")
+				}
+			}
+		}()
+	}
+	wg.Wait()
 }
