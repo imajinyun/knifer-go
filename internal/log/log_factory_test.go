@@ -112,7 +112,7 @@ func TestGetAndSetFactoryConcurrentAccess(t *testing.T) {
 
 	var wg sync.WaitGroup
 	for i := 0; i < 32; i++ {
-		wg.Add(2)
+		wg.Add(5)
 		go func() {
 			defer wg.Done()
 			SetFactory(LogFactoryFunc(func(name string) Log { return NewConsoleLog("set:" + name) }))
@@ -121,6 +121,23 @@ func TestGetAndSetFactoryConcurrentAccess(t *testing.T) {
 			defer wg.Done()
 			_ = Get(fmt.Sprintf("concurrent.%d", i%8))
 		}(i)
+		go func(i int) {
+			defer wg.Done()
+			_ = GetWithOptions(fmt.Sprintf("concurrent.option.%d", i%8), WithLoggerFactory(LogFactoryFunc(func(name string) Log {
+				return NewConsoleLog("local:" + name)
+			})))
+		}(i)
+		go func(i int) {
+			defer wg.Done()
+			_ = NewIsolatedLogger(fmt.Sprintf("isolated.%d", i%8))
+		}(i)
+		go func() {
+			defer wg.Done()
+			_ = GetDefault()
+			_ = GetDefaultWithOptions(WithLoggerFactory(LogFactoryFunc(func(name string) Log {
+				return NewConsoleLog("default-local:" + name)
+			})))
+		}()
 	}
 	wg.Wait()
 }
