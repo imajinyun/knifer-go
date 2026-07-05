@@ -2,6 +2,16 @@
 
 `vdfa` provides word-tree based sensitive-word matching and filtering, with support for package-level dictionaries, local matchers, JSON object filtering, and custom character filters.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `FilterAny`
+- `ContainsAnyWithOptions`
+- `Contains`
+- `ConfigureAsyncRunner`
+- `ContainsAny`
+
 ## Which helper should I use?
 
 Choose the helper by matcher ownership, input shape, and whether you need detection only or replacement.

@@ -8,6 +8,15 @@ Use `vtok` when application code needs a stable internal contract for text token
 
 Use a dedicated NLP or tokenizer library directly when you need built-in dictionaries, language detection, model loading, synonym expansion, stop-word management, or streaming text processing that is not part of the `vtok` MVP.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `Keywords`
+- `New`
+- `WithProvider`
+- `Tokenize`
+
 ## Which helper should I use?
 
 Choose helpers by whether you want a reusable client, a one-off provider call, tokenization, keyword extraction, or request validation.

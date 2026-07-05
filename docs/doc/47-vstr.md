@@ -2,6 +2,16 @@
 
 `vstr` provides string helpers for blank checks, trimming, substring extraction, splitting, naming-style conversion, emoji/HTML handling, BOM handling, charset conversion, and text similarity calculation.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `FromUTF8`
+- `ContainsEmojiWithOptions`
+- `AddPrefixIfNot`
+- `AddSuffixIfNot`
+- `AntPathMatch`
+
 ## Which helper should I use?
 
 Start with the smallest helper that matches the text task: normalization, extraction, naming conversion, safe rendering, or similarity.

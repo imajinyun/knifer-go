@@ -268,6 +268,76 @@ if sorted(security_sensitive_paths) != expected_security_sensitive_paths:
         f"got {sorted(security_sensitive_paths)}, want {expected_security_sensitive_paths}"
     )
 
+security_review = require_mapping(evidence.get("security_review"), "security_review")
+security_review_required = security_review.get("security_review_required")
+if not isinstance(security_review_required, bool):
+    add_error("security_review.security_review_required must be a boolean")
+review_required = security_review.get("required")
+if not isinstance(review_required, bool):
+    add_error("security_review.required must be a boolean")
+expected_review_required = "security_sensitive" in detected_policies
+if isinstance(review_required, bool) and review_required != expected_review_required:
+    add_error(f"security_review.required must be {str(expected_review_required).lower()}")
+if isinstance(security_review_required, bool) and security_review_required != expected_review_required:
+    add_error(f"security_review.security_review_required must be {str(expected_review_required).lower()}")
+if expected_review_required and not policies.get("security_sensitive", {}).get("security_review_required"):
+    add_error("security_sensitive policy must require security review when security_review is required")
+
+review_paths = require_string_list(security_review.get("paths"), "security_review.paths")
+if sorted(review_paths) != expected_security_sensitive_paths:
+    add_error(
+        "security_review.paths must match changed security-sensitive paths; "
+        f"got {sorted(review_paths)}, want {expected_security_sensitive_paths}"
+    )
+
+expected_review_commands = []
+if expected_review_required:
+    for command in ("agent_full_check", "agent_security_check"):
+        if command in required_commands:
+            expected_review_commands.append(command)
+review_commands = require_string_list(security_review.get("required_commands"), "security_review.required_commands")
+if review_commands != expected_review_commands:
+    add_error(
+        "security_review.required_commands must match security validation commands; "
+        f"got {review_commands}, want {expected_review_commands}"
+    )
+
+review_attestations = require_mapping(security_review.get("command_attestations"), "security_review.command_attestations")
+for command in review_commands:
+    review_attestation = require_mapping(
+        review_attestations.get(command),
+        f"security_review.command_attestations.{command}",
+    )
+    top_attestation = require_mapping(command_attestations.get(command), f"command_attestations.{command}")
+    for key in ("status", "source", "cmd"):
+        if review_attestation.get(key) != top_attestation.get(key):
+            add_error(f"security_review.command_attestations.{command}.{key} must match command_attestations.{command}.{key}")
+    if "exit_code" in top_attestation and review_attestation.get("exit_code") != top_attestation.get("exit_code"):
+        add_error(f"security_review.command_attestations.{command}.exit_code must match command_attestations.{command}.exit_code")
+    if top_attestation.get("status") in {"skipped", "not_recorded"}:
+        require_string(review_attestation.get("reason"), f"security_review.command_attestations.{command}.reason")
+    if top_attestation.get("status") == "covered_by_ci":
+        require_string(review_attestation.get("ci_job"), f"security_review.command_attestations.{command}.ci_job")
+
+review_status = require_string(security_review.get("status"), "security_review.status")
+if review_status and review_status not in {"not_required", "blocked", "ready"}:
+    add_error("security_review.status must be one of: blocked, not_required, ready")
+review_ready = expected_review_required and bool(expected_security_sensitive_paths) and all(
+    command_attestations.get(command, {}).get("status") in {"passed", "covered_by_ci"}
+    for command in expected_review_commands
+)
+expected_review_status = "not_required"
+if expected_review_required:
+    expected_review_status = "ready" if review_ready else "blocked"
+if review_status and review_status != expected_review_status:
+    add_error(f"security_review.status must be {expected_review_status}")
+audit_conclusion = require_string(security_review.get("audit_conclusion"), "security_review.audit_conclusion")
+if audit_conclusion:
+    if expected_review_status == "ready" and "validation attestations" not in audit_conclusion:
+        add_error("security_review.audit_conclusion must describe validation attestations when ready")
+    if expected_review_status == "blocked" and "blocked" not in audit_conclusion.lower():
+        add_error("security_review.audit_conclusion must explain the blocked security review")
+
 security_sensitive_check = require_mapping(checks.get("security_sensitive_diff"), "checks.security_sensitive_diff")
 security_sensitive_attestation = require_mapping(
     command_attestations.get("security_sensitive_diff"),

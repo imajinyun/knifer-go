@@ -2,6 +2,16 @@
 
 `vnum` provides number parsing, formatting, exact string arithmetic, rounding, expression evaluation, ranges/random numbers, binary helpers, and common numeric predicates.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `AbsIntegerE`
+- `DecimalFormatMoneyWithOptions`
+- `AbsFloat64`
+- `AbsFloat32`
+- `AbsInteger`
+
 ## Which helper should I use?
 
 | Goal | Start with | Notes |

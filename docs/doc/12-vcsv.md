@@ -2,6 +2,16 @@
 
 `vcsv` provides CSV reading, writing, and structured conversion helpers, with support for readers, strings, maps, structs, BOM handling, delimiters, and CRLF options.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `ForEach`
+- `MapsToRecords`
+- `Read`
+- `ReadMaps`
+- `ReadString`
+
 ## Which helper should I use?
 
 | Goal | Start with | Notes |

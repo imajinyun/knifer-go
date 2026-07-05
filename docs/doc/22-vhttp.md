@@ -11,6 +11,16 @@
 | Untrusted URL | `vhttp`/`vresty` plus safe APIs | `Safe`/`E` variants | Applies validation and explicit errors before network access. |
 | File download | `vhttp`/`vresty` safe download helpers | `DownloadFileSafe` family | Keeps path and transfer risks visible. |
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `DeleteSafe`
+- `Download`
+- `CleanHTMLWithOptions`
+- `AddGlobalHeader`
+- `BuildBasicAuth`
+
 ## Which helper should I use?
 
 Start with the smallest helper that expresses the trust boundary. Prefer `E` or chained response APIs when the caller must inspect errors, and prefer `Safe` APIs whenever the URL comes from configuration, user input, a webhook, or another service.

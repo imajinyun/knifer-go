@@ -219,6 +219,46 @@ def attestation_satisfies_command(command):
     return attestation.get("status") in {"passed", "covered_by_ci"}
 
 
+def build_security_review():
+    required = "security_sensitive" in detected_policies
+    required_commands_for_review = []
+    if required:
+        for command in ("agent_full_check", "agent_security_check"):
+            if command in required_commands:
+                required_commands_for_review.append(command)
+    review_attestations = {
+        command: command_attestations.get(command, {
+            "status": "not_recorded",
+            "source": "required_by_policy",
+            "cmd": data["commands"].get(command, {}).get("cmd", command),
+            "reason": "required security review command has not been attested in this evidence",
+        })
+        for command in required_commands_for_review
+    }
+    ready = bool(required) and bool(security_sensitive_paths) and all(
+        review_attestations.get(command, {}).get("status") in {"passed", "covered_by_ci"}
+        for command in required_commands_for_review
+    )
+    if not required:
+        status = "not_required"
+        audit_conclusion = "No security-sensitive paths changed."
+    elif ready:
+        status = "ready"
+        audit_conclusion = "Security-sensitive change has full and security validation attestations."
+    else:
+        status = "blocked"
+        audit_conclusion = "Security-sensitive change is blocked until agent_full_check and agent_security_check are attested."
+    return {
+        "required": required,
+        "security_review_required": required,
+        "status": status,
+        "paths": sorted(set(security_sensitive_paths)),
+        "required_commands": required_commands_for_review,
+        "command_attestations": review_attestations,
+        "audit_conclusion": audit_conclusion,
+    }
+
+
 merge_blockers = []
 for command in required_commands:
     if not attestation_satisfies_command(command):
@@ -248,6 +288,7 @@ report = {
     "command_attestations": command_attestations,
     "highest_required_command_risk": highest_risk,
     "security_sensitive_paths": sorted(set(security_sensitive_paths)),
+    "security_review": build_security_review(),
     "checks": checks,
     "merge_ready": len(merge_blockers) == 0,
     "merge_blockers": sorted(set(merge_blockers)),

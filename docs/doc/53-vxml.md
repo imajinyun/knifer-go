@@ -2,6 +2,16 @@
 
 `vxml` provides lightweight XML reads/writes, node construction, XPath queries, map/struct conversion, cleanup, formatting, and SAX reading helpers.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `Format`
+- `CleanCommentWithOptions`
+- `Append`
+- `AppendChild`
+- `AppendText`
+
 ## Which helper should I use?
 
 | Goal | Start with | Notes |

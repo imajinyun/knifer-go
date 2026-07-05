@@ -4,6 +4,16 @@
 
 Use `encoding/json` directly when you need full control over streaming, tokenization, or decoder settings. Use `vjson` when the common object, array, formatting, path lookup, or XML bridge helpers reduce boilerplate for your workflow.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `Parse`
+- `FormatWithOptions`
+- `CreateConfig`
+- `Format`
+- `GetByPath`
+
 ## Which helper should I use?
 
 Start with `encoding/json` when you need decoder-level control. Use `vjson` when the operation is a common encode/decode, object lookup, path update, formatting, or XML bridge.

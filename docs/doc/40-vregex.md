@@ -2,6 +2,16 @@
 
 `vregex` provides regex matching, finding, capture-group extraction, replacement, deletion, template-variable extraction, and special-character escaping helpers.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `ContainsWithOptions`
+- `Contains`
+- `ContainsRe`
+- `Count`
+- `CountRe`
+
 ## Which helper should I use?
 
 Choose helpers based on whether you need a boolean, a match list, captured data, replacement, or escaped literal text.

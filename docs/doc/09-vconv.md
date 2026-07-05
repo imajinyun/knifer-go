@@ -2,6 +2,16 @@
 
 `vconv` provides loose type conversion helpers that convert common inputs to string, int, int64, float64, bool, and []byte. Each scalar family has zero-value helpers, default-value helpers, and explicit-error `E` helpers for code that must distinguish invalid input from a valid zero value.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `ToBoolE`
+- `ToBoolDefaultWithOptions`
+- `ToBool`
+- `ToBoolDefault`
+- `ToBoolEWithOptions`
+
 ## Which helper should I use?
 
 Choose the conversion family by how much ambiguity the caller can tolerate.

@@ -6,6 +6,16 @@
 
 Use `SecureBytes` or `SecureBytesWithOptions` for tokens, keys, salts, and nonces. Encode those bytes with `hex`, `base64`, or an application-specific alphabet when a string representation is required. The string and number helpers are pseudo-random convenience APIs and must not be used for secrets.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `BytesWithOptions`
+- `BoolWithOptions`
+- `Bool`
+- `WithRandomSource`
+- `ConfigureDefaultRandomSourceProvider`
+
 ## Which helper should I use?
 
 Choose helpers by whether the value is security-sensitive or only needs pseudo-random convenience behavior.

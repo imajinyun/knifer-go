@@ -2,6 +2,16 @@
 
 `vgeo` provides coordinate conversion helpers for WGS-84, GCJ-02, and BD-09 longitude/latitude coordinates, plus Haversine distance.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `Convert`
+- `BD09ToGCJ02`
+- `BD09MCToBD09`
+- `BD09MCToGCJ02`
+- `BD09MCToWGS84`
+
 ## Which helper should I use?
 
 Choose explicit conversions when the source and target systems are known. Use `Convert` when the coordinate system is a runtime value.

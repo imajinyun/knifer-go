@@ -2,6 +2,16 @@
 
 `vjwt` provides JWT creation, parsing, signature verification, date-claim validation, and multiple signers including HMAC, RSA-PSS, and ECDSA.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `CreateJWTToken`
+- `ES256WithOptions`
+- `AlgorithmName`
+- `MustHMACSigner`
+- `CreateJWTTokenWithSigner`
+
 ## Which helper should I use?
 
 Choose helpers by the trust boundary: token creation, signature verification, claim validation, or key/algorithm selection.
@@ -31,6 +41,10 @@ Choose helpers by the trust boundary: token creation, signature verification, cl
 - Use `CreateSignerStrict` or key-management code outside this facade when HMAC key length, rotation, and policy enforcement need to be centralized.
 - Do not use JWT payloads as encrypted storage. Add encryption separately or keep sensitive state server-side.
 - Do not accept tokens from unknown issuers just because the signature verifies; application claim policy still belongs at the boundary.
+
+## Must API compatibility
+
+`MustHMACSigner` is a compatibility helper for trusted startup constants and tests where an invalid algorithm should fail fast. New code should prefer `vjwt.NewHMACSigner` when it needs ordinary algorithm validation errors, or `vjwt.NewHMACSignerStrict` when HMAC key-length policy must be enforced at construction time.
 
 ## Related packages
 

@@ -4,6 +4,16 @@
 
 Prefer temporary directories in tests. Keep user-controlled paths separate from trusted base directories. Use safe extraction or safe path helpers when dealing with archives or untrusted filenames. Do not ignore file I/O errors.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `SafeJoin`
+- `AppendFileString`
+- `ExistsWithOptions`
+- `CloseQuietly`
+- `AppendFileStringWithOptions`
+
 ## Which helper should I use?
 
 Choose the helper that makes the filesystem side effect explicit. Use temporary directories in tests and keep trusted base directories separate from user-controlled relative names.

@@ -2,6 +2,16 @@
 
 `vid` provides UUID, ObjectId, NanoId, and Snowflake ID generators, with support for injecting random sources, clocks, and Snowflake worker/datacenter configuration.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `ConfigureDefaultSnowflake`
+- `GetSnowflakeNextID`
+- `FastSimpleUUID`
+- `ConfigureDefaultFallbackRandomSourceProvider`
+- `CreateSnowflake`
+
 ## Which helper should I use?
 
 Choose ID helpers by the property you need: randomness, compactness, sortability, or distributed sequence generation.

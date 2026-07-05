@@ -96,6 +96,53 @@ def extract_markdown_rows(path: Path, heading: str) -> list[dict[str, str]]:
 	return rows
 
 
+def extract_markdown_section(text: str, heading: str, level: int = 2) -> str:
+	prefix = "#" * level
+	next_prefix = "#" * level
+	match = re.search(
+		rf"^{re.escape(prefix + ' ' + heading)}\n(?P<body>.*?)(?=^{re.escape(next_prefix)} |\Z)",
+		text,
+		flags=re.MULTILINE | re.DOTALL,
+	)
+	if not match:
+		return ""
+	return match.group("body")
+
+
+def extract_tools_markdown_golden_path(tools_md: str, package_name: str) -> list[str]:
+	package_body = extract_markdown_section(tools_md, package_name, level=3)
+	if not package_body:
+		add_error(f"docs/api/tools.md must contain ### {package_name}")
+		return []
+	match = re.search(
+		r"^Golden path API set:\n\n(?P<table>(?:\|.*\n)+)",
+		package_body,
+		flags=re.MULTILINE,
+	)
+	if not match:
+		add_error(f"docs/api/tools.md {package_name} must contain Golden path API set table")
+		return []
+	rows: list[str] = []
+	for line in match.group("table").splitlines()[2:]:
+		columns = [column.strip() for column in line.strip().strip("|").split("|")]
+		if columns and re.fullmatch(r"`[^`]+`", columns[0]):
+			rows.append(columns[0].strip("`"))
+	return rows
+
+
+def extract_quickstart_golden_path(package_name: str) -> list[str]:
+	matches = sorted((root / "docs/doc").glob(f"*-{package_name}.md"))
+	if not matches:
+		add_error(f"docs/doc must contain quickstart for {package_name}")
+		return []
+	text = matches[0].read_text(encoding="utf-8")
+	body = extract_markdown_section(text, "Golden path APIs")
+	if not body:
+		add_error(f"{matches[0].relative_to(root).as_posix()} must contain ## Golden path APIs")
+		return []
+	return re.findall(r"^- `([^`]+)`\s*$", body, flags=re.MULTILINE)
+
+
 def extract_backticked_facades(value: str) -> list[str]:
 	return re.findall(r"`(v[A-Za-z0-9_]*)`", value)
 
@@ -4025,6 +4072,7 @@ def validate_local_governance_gates() -> None:
 
 def validate_api_convergence() -> None:
 	api_convergence = require_mapping(ai_context.get("api_convergence"), "api_convergence")
+	tools_md = (root / "docs/api/tools.md").read_text(encoding="utf-8")
 	max_golden = api_convergence.get("max_golden_path_per_facade")
 	if not isinstance(max_golden, (int, float)) or isinstance(max_golden, bool) or int(max_golden) != 5:
 		add_error("api_convergence.max_golden_path_per_facade must be 5")
@@ -4056,8 +4104,14 @@ def validate_api_convergence() -> None:
 		primary = require_string_list(entry.get("primary"), f"api_convergence.facades.{package_name}.primary")
 		if not primary or len(primary) > max_golden:
 			add_error(f"api_convergence.facades.{package_name}.primary must contain 1-{max_golden} APIs")
-		if set(primary) != set(golden):
-			add_error(f"api_convergence.facades.{package_name}.primary must match docs/api/tools.json golden_path")
+		if primary != golden:
+			add_error(f"api_convergence.facades.{package_name}.primary must match docs/api/tools.json golden_path order")
+		tools_md_golden = extract_tools_markdown_golden_path(tools_md, package_name)
+		if tools_md_golden and tools_md_golden != primary:
+			add_error(f"docs/api/tools.md {package_name} Golden path API set must match api_convergence primary order")
+		quickstart_golden = extract_quickstart_golden_path(package_name)
+		if quickstart_golden and quickstart_golden != primary:
+			add_error(f"docs/doc quickstart {package_name} Golden path APIs must match api_convergence primary order")
 		bucket_values: dict[str, set[str]] = {}
 		for bucket in ("primary", "advanced", "compatibility", "avoid"):
 			values = require_string_list(entry.get(bucket), f"api_convergence.facades.{package_name}.{bucket}")
@@ -4239,7 +4293,7 @@ def validate_error_model() -> None:
 def validate_dynamic_semantic_contracts() -> None:
 	contracts = require_mapping(ai_context.get("dynamic_semantic_contracts"), "dynamic_semantic_contracts")
 	required_domains = set(require_string_list(contracts.get("required_domains"), "dynamic_semantic_contracts.required_domains"))
-	expected_domains = {"vbean_decode_copy_merge", "vjson_dynamic", "vobj_dynamic", "vconf_dynamic"}
+	expected_domains = {"vbean_decode_copy_merge", "vjson_dynamic", "vobj_dynamic", "vconf_dynamic", "vconv_conversion_matrix", "vref_reflection_boundaries"}
 	if required_domains != expected_domains:
 		add_error("dynamic_semantic_contracts.required_domains must cover exactly: " + ", ".join(sorted(expected_domains)))
 	domains = require_mapping(contracts.get("domains"), "dynamic_semantic_contracts.domains")
@@ -4268,7 +4322,7 @@ def validate_dynamic_semantic_contracts() -> None:
 					add_error(f"dynamic_semantic_contracts.domains.{domain_name}.{field} must reference explicit test functions, got {reference}")
 				if not reference_exists(reference):
 					add_error(f"dynamic_semantic_contracts.domains.{domain_name}.{field} references missing file or function {reference}")
-	expected_packages = {"internal/bean", "vjson", "vobj", "vconf"}
+	expected_packages = {"internal/bean", "internal/conv", "internal/ref", "vjson", "vobj", "vconf", "vconv", "vref"}
 	if covered_packages != expected_packages:
 		add_error("dynamic_semantic_contracts must cover exactly package directories: " + ", ".join(sorted(expected_packages)))
 

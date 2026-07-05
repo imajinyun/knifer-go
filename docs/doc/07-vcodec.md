@@ -2,6 +2,16 @@
 
 `vcodec` provides common encoding and decoding helpers for Base64, URL-safe Base64, raw URL Base64, Hex, Base32, Base58, Base62, Morse code, and ROT transforms.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `Base32Decode`
+- `Base32Encode`
+- `Base32DecodeWithEncoding`
+- `Base32EncodeWithEncoding`
+- `Base58Decode`
+
 ## Which helper should I use?
 
 Choose the codec based on the transport or representation requirement, not just convenience.

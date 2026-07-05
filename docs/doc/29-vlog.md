@@ -2,6 +2,16 @@
 
 `vlog` provides console logging facades with package-level static logs, named logger lookup, colored output, log levels, and custom output targets.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `LogAtE`
+- `DebugWithOptions`
+- `GetDefault`
+- `Debug`
+- `Debugf`
+
 ## Which helper should I use?
 
 | Goal | Start with | Notes |

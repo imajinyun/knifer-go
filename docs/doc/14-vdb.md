@@ -2,6 +2,16 @@
 
 `vdb` provides lightweight SQL builders, condition composition, pagination, entity mapping, and `database/sql` session wrappers, with emphasis on parameterized SQL and dialect placeholders.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `IsSafeIdentifier`
+- `AssignEntity`
+- `NewBuilder`
+- `BuildLikeValue`
+- `AndGroup`
+
 ## Which helper should I use?
 
 | Need | Use | Notes |

@@ -4,6 +4,16 @@
 
 Captcha image bytes are returned as defensive copies, so callers can inspect or transform the returned slice without mutating the captcha's cached image. File overwrite failures from captcha writers preserve `fs.ErrExist` and carry the knifer-go invalid-input error code for consistent error inspection.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `AddTextWatermark`
+- `GenMathGeneratorWithOptions`
+- `CanDecodeBarcodeFormat`
+- `AddWatermark`
+- `BarcodeASCII`
+
 ## Which helper should I use?
 
 | Goal | Start with | Notes |

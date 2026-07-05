@@ -2,6 +2,16 @@
 
 `vset` provides generic sets and common numeric/string set aliases, with support for add/remove/contains, set operations, member export, and JSON/YAML encoding.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `New`
+- `NewInt`
+- `NewInt32`
+- `NewInt64`
+- `NewString`
+
 ## Which helper should I use?
 
 | Need | Use | Notes |

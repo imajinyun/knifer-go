@@ -10,6 +10,16 @@
 | Extract archives from another system | You want explicit overwrite, permission, and size-limit options at the call site. | The input is untrusted and you still need deeper validation or quarantine logic beyond path and size controls. |
 | Compress or decompress string/byte payloads | You need convenience wrappers for gzip/zlib round trips in tests, fixtures, or transport helpers. | You need streaming compression control, custom dictionaries, or direct interoperability tuning. |
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `Append`
+- `NewWriter`
+- `AppendWithOptions`
+- `Get`
+- `GetBytes`
+
 ## Which helper should I use?
 
 Choose the helper that matches the archive operation you are performing: create, inspect, extract, or compress payloads.

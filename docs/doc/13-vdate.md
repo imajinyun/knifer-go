@@ -2,6 +2,16 @@
 
 `vdate` provides common date/time formatting, parsing, boundary calculation, offset, and comparison helpers for concise `time.Time` business logic.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `LunarToSolar`
+- `NowWithOptions`
+- `BeginOfDay`
+- `BeginOfMonth`
+- `BeginOfYear`
+
 ## Which helper should I use?
 
 Choose helpers by the business rule you are expressing: formatting/parsing, calendar boundary, offset, or comparison.

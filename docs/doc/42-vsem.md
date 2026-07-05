@@ -2,6 +2,13 @@
 
 `vsem` provides counting semaphores with support for weights, context cancellation, non-blocking acquire attempts, and close semantics.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `NewE`
+- `New`
+
 ## Which helper should I use?
 
 | Goal | Start with | Notes |

@@ -2,6 +2,16 @@
 
 `vai` provides provider-neutral chat and embedding helpers. It defines small interfaces for callers to inject their own AI providers while keeping `knifer-go` free of provider SDK dependencies.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `Chat`
+- `New`
+- `Redact`
+- `Embed`
+- `WithChatProvider`
+
 ## Which helper should I use?
 
 | Goal | Start with | Notes |

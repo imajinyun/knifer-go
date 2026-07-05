@@ -2,6 +2,16 @@
 
 `vcrypto` provides common cryptographic helpers, including digests, HMAC, AES-GCM, random bytes, PBKDF2, RSA encryption/decryption/signing, SM2/SM3/SM4 national-crypto helpers, and PEM conversion.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `AESDecryptGCM`
+- `WithGCMRandomOptions`
+- `ConstantTimeEqual`
+- `AESDecryptGCMWithOptions`
+- `AESEncryptGCM`
+
 ## Which helper should I use?
 
 | Need | Use | Notes |

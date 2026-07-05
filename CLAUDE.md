@@ -105,8 +105,8 @@
 | `make worktree-check` | Fail when unrelated untracked Go files may pollute tests or commits |
 | `make change-policy-check` | Detect change policies from staged, unstaged, and untracked local diff |
 | `make security-sensitive-diff` | Detect changes under security-sensitive public facades and their internal implementations |
-| `make agent-evidence` | Emit `/tmp/knifer-go-agent-validation.json` with detected policies, required commands, and command attestations |
-| `make agent-evidence-check` | Validate Agent evidence schema, policy references, command references, command attestations, risk, and embedded check status |
+| `make agent-evidence` | Emit `/tmp/knifer-go-agent-validation.json` with detected policies, required commands, command attestations, and structured security review evidence |
+| `make agent-evidence-check` | Validate Agent evidence schema, policy references, command references, command attestations, security review evidence, risk, and embedded check status |
 | `make quick-check` | Fast local: mod-verify → vet → arch → test → api-check → tools-check → ai-context-check → diff-whitespace |
 | `make security-check` | Lint + govulncheck |
 | `make full-check COVERAGE_FILE=/tmp/coverage.out` | Full pre-push: quick-check + race coverage + coverage gate + lint + vuln |
@@ -150,11 +150,12 @@
 - **Generated docs**: `make docs-check` guards generated documentation artifacts. Run `make docs-gen` after intentional generated-doc changes, then re-run `make docs-check`.
 - **AI metadata**: `ai-context.json` is CI-enforced by `make ai-context-check`; update command side-effect metadata, `risk_level`, facades, security-sensitive package lists, or coverage gates when governance inputs change.
 - **Change policies**: `ai-context.json.change_type_policies` maps PR change types to required Agent validation commands; keep PR template change types aligned with those policy keys.
-- **Agent evidence**: `make agent-evidence` writes `/tmp/knifer-go-agent-validation.json`; use it to summarize detected policies, required commands, command attestations, security-sensitive paths, and governance check results.
-- **Agent evidence validation**: `make agent-evidence-check` validates the generated evidence JSON against `ai-context.json`; all change policies must require both evidence generation and evidence validation, and every required command must have an attestation entry.
+- **Agent evidence**: `make agent-evidence` writes `/tmp/knifer-go-agent-validation.json`; use it to summarize detected policies, required commands, command attestations, security-sensitive paths, structured `security_review`, and governance check results.
+- **Agent evidence validation**: `make agent-evidence-check` validates the generated evidence JSON against `ai-context.json`; all change policies must require both evidence generation and evidence validation, every required command must have an attestation entry, and security-sensitive changes must carry a validated `security_review` conclusion.
 - **CI Agent governance**: GitHub Actions runs `make ci-agent-governance` with `AGENT_CHANGE_BASE_REF` so policy detection is based on the PR or push diff, then uploads the Agent evidence JSON artifact.
 - **CI workflow invariants**: `ai-context.json.ci_workflows` declares required GitHub Actions jobs, Agent governance commands, environment variables, and artifacts; `make ci-workflow-check` validates them.
 - **Security-sensitive diff**: `make security-sensitive-diff` checks staged, unstaged, and untracked paths against `ai-context.json.security_sensitive_packages` and their mapped `internal/*` implementations.
+- **API freeze decisions**: `make api-freeze-check` validates that every generated API status is covered by `api_freeze.api_status_decision_cards`, and each mapped decision card has the same status and covers the package.
 - **aiflow layout**: `aiflow.yaml` is committed at the repository root. `.aiflow/` is ignored and reserved for generated runtime evidence, traces, reports, scratch files, and temporary state. `make aiflow-layout-check` enforces this boundary.
 - **Panic**: Production code must not introduce new `panic()` calls unless in a `MustXxx`/`PanicXxx` function.
 

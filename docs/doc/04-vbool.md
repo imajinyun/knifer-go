@@ -2,6 +2,15 @@
 
 `vbool` provides lightweight boolean helpers for negation, integer conversion, and batch AND/OR checks.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `And`
+- `Negate`
+- `Or`
+- `ToInt`
+
 ## Which helper should I use?
 
 Choose `vbool` when a named helper makes a boolean operation easier to pass, test, or reuse than inline operators.

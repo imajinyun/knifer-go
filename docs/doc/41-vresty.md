@@ -2,6 +2,16 @@
 
 `vresty` is a resty-based HTTP client facade that provides chained requests, shortcut GET/POST helpers, response reads, downloads, safe URL validation, and global configuration.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `DeleteSafe`
+- `Download`
+- `Delete`
+- `AddGlobalHeader`
+- `BuildBasicAuth`
+
 ## Which helper should I use?
 
 | Scenario | Start with | Why |

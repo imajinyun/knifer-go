@@ -4,6 +4,16 @@
 
 Worksheet names are validated before opening or saving workbooks. Use `vpoi.ValidateSheetName` or `vpoi.IsValidSheetName` when sheet names come from user input, and rely on deterministic alphabetical sheet ordering when `WriteSheets` materializes multi-sheet workbooks.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `ReadCells`
+- `WithOpenOptions`
+- `WithReadSheet`
+- `IsValidSheetName`
+- `ReadCellsFromReader`
+
 ## Which helper should I use?
 
 Choose helpers by where the workbook lives and whether you need one sheet, multiple sheets, or early worksheet validation.

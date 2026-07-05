@@ -2,6 +2,16 @@
 
 `vconf` reads, parses, and manages grouped configuration, with support for setting/properties, YAML, TOML, profile overrides, environment expansion, schema validation, and file watching.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `LoadRemoteSafe`
+- `Base64Decrypt`
+- `Merge`
+- `Load`
+- `LoadFiles`
+
 ## Which helper should I use?
 
 Choose the helper by source format, layering needs, and how strictly configuration must be validated before use.

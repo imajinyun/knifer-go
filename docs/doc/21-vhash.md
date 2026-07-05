@@ -2,6 +2,16 @@
 
 `vhash` provides multiple non-cryptographic string hash algorithms and a consistent hash ring for bucketing, cache routing, legacy compatibility, or hash behavior tests.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `NewConsistentHash`
+- `AdditiveHash`
+- `ApHash`
+- `BkdrHash`
+- `DjbHash`
+
 ## Which helper should I use?
 
 Choose a hash by compatibility requirements first, then by output width and collision tolerance.

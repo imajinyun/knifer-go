@@ -2,6 +2,16 @@
 
 `vver` provides version comparison and version-expression matching helpers for checking whether a current version satisfies single, multiple, or custom-delimiter expressions.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `MatchElWithDelimiterErr`
+- `AnyMatch`
+- `AnyMatchSlice`
+- `CompareVersion`
+- `IsGreaterThan`
+
 ## Which helper should I use?
 
 Choose the helper by whether you need ordering, a single expression, or a set of acceptable expressions.

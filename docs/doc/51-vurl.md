@@ -2,6 +2,16 @@
 
 `vurl` provides URL building, parsing, encoding/decoding, query handling, normalization, resource opening, and safe HTTP(S) resource access helpers.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `ContentLengthSafe`
+- `Complete`
+- `EncodePathSegmentWithOptions`
+- `AppendQuery`
+- `BuildQuery`
+
 ## Which helper should I use?
 
 Use `vurl` when the task is about URL shape or safe resource access rather than a full HTTP request workflow. Use `vhttp` or `vresty` when you need request headers, methods, response status handling, downloads, or client configuration.

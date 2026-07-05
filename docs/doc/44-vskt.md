@@ -2,6 +2,16 @@
 
 `vskt` provides TCP socket facades for connections, NIO/AIO clients and servers, socket configuration, session reads/writes, and socket error wrapping.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `ChannelDial`
+- `NewSocketConfigWithOptions`
+- `GetRemoteAddress`
+- `ChannelDialWithOptions`
+- `ChannelUtilDial`
+
 ## Which helper should I use?
 
 | Need | Use | Notes |

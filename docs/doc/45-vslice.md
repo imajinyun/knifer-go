@@ -2,6 +2,16 @@
 
 `vslice` provides generic slice helpers for emptiness checks, lookup, deduplication, mapping/filtering, set operations, pagination, and string joining.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `FilterErr`
+- `Associate`
+- `SliceToMap`
+- `Chunk`
+- `Compact`
+
 ## Which helper should I use?
 
 | Need | Use | Notes |

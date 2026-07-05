@@ -10,6 +10,16 @@
 | Tests need compact reflection assertions | You are checking generic behavior across multiple struct shapes. | A table-driven test over typed functions is clearer. |
 | Dynamic invocation is part of the API | Plugin, binding, or mapping code receives arbitrary functions or methods. | The call target is fixed; reflection would hide compile-time type errors. |
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `Invoke`
+- `GetFieldValueWithOptions`
+- `GetFieldValue`
+- `GetConstructorsDirectly`
+- `GetConstructor`
+
 ## Which helper should I use?
 
 Start with type/value inspection helpers, then move to field, method, construction, or invocation helpers only when dynamic behavior is required.

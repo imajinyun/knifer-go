@@ -2,6 +2,16 @@
 
 `vsys` provides system information, Go runtime information, process metrics, environment reads, and system-info dump helpers, with option-based data provider injection.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `CurrentPIDWithOptions`
+- `DumpSystemInfoTo`
+- `CurrentPID`
+- `DumpSystemInfo`
+- `DumpSystemInfoWithOptions`
+
 ## Which helper should I use?
 
 | Goal | Start with | Notes |

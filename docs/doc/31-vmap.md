@@ -2,6 +2,16 @@
 
 `vmap` provides generic map construction, lookup, conversion, filtering, aggregation, merge, set-operation, and comparison helpers.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `FilterErr`
+- `Assign`
+- `Clear`
+- `Clone`
+- `ContainsKey`
+
 ## Which helper should I use?
 
 | Need | Use | Notes |

@@ -2,6 +2,16 @@
 
 `vftp` provides provider-neutral list, download, and upload helpers for FTP-style remote file transfer workflows. It defines small interfaces for callers to inject their own FTP providers while keeping `knifer-go` free of network-client and credential dependencies.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `Download`
+- `New`
+- `WithProvider`
+- `List`
+- `Upload`
+
 ## Which helper should I use?
 
 | Goal | Start with | Notes |

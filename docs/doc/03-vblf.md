@@ -2,6 +2,16 @@
 
 `vblf` provides Bloom filter facade APIs, including function-hash filters, bitmap/bitset filters, hash functions, and initialization from files or readers.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `InitFromFileWithOptions`
+- `NewBitMapBloomFilterWithOptions`
+- `BloomFNVHash`
+- `ApHash`
+- `BkdrHash`
+
 ## Which helper should I use?
 
 Choose the filter by how you size the set, how many hash functions you need, and whether false positives are acceptable for the caller.

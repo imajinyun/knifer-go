@@ -2,6 +2,16 @@
 
 `vmail` builds RFC 5322 email messages, renders MIME text/HTML/inline/attachment bodies, and sends them through context-aware SMTP clients with secure TLS defaults. It also provides account-based quick send helpers for applications that keep SMTP defaults in configuration.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `NewAddress`
+- `WithQuickClientOptions`
+- `WithAttachment`
+- `NewAttachment`
+- `NewAttachmentFile`
+
 ## Which helper should I use?
 
 | Goal | Start with | Notes |

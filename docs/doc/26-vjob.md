@@ -2,6 +2,16 @@
 
 `vjob` provides sliceable task scheduling helpers that split slices, ranges, or map keys into batches and run merge callbacks in order after shards succeed.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `NewMapE`
+- `NewBatch`
+- `NewBatchSingle`
+- `NewMap`
+- `NewMapKeys`
+
 ## Which helper should I use?
 
 | Need | Use | Notes |

@@ -2,6 +2,16 @@
 
 `vnet` provides helpers for network addresses, IP/CIDR handling, DNS, connection probes, ports, multipart upload saving, and TLS-related operations.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `AddRootCABytes`
+- `GetHardwareAddressWithOptions`
+- `CreateAddress`
+- `AddRootCAFileWithOptions`
+- `AddRootCAReader`
+
 ## Which helper should I use?
 
 | Need | Use | Notes |

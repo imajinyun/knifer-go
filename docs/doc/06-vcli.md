@@ -11,6 +11,16 @@
 | Route subcommands | A library example or small binary needs predictable subcommand dispatch and captured stdout/stderr. | The command surface is user-facing and large enough to require rich help, aliases, completion, or plugin support. |
 | Render help or color text | Tests need stable help text and explicit color policy. | Terminal styling is a core feature; use a dedicated color/table library. |
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `Output`
+- `Colorize`
+- `WithColorMode`
+- `NewFlagParser`
+- `RenderHelp`
+
 ## Which helper should I use?
 
 Start with the helper that matches the boundary you are crossing: process execution, flag parsing, command routing, or presentation.

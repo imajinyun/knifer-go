@@ -2,6 +2,16 @@
 
 `vssh` provides provider-neutral SSH command and SFTP-style transfer helpers. It defines a small interface for callers to inject their own SSH/SFTP providers while keeping `knifer-go` free of network-client, key-parsing, and credential dependencies.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `Download`
+- `New`
+- `WithProvider`
+- `List`
+- `Run`
+
 ## Which helper should I use?
 
 | Goal | Start with | Notes |

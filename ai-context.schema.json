@@ -1090,7 +1090,7 @@
     },
     "api_freeze": {
       "type": "object",
-      "required": ["v1_candidate", "decision_card_required", "replacement_required_for_deprecation", "allowed_statuses", "decision_cards", "freeze_checks", "deprecations"],
+      "required": ["v1_candidate", "decision_card_required", "replacement_required_for_deprecation", "allowed_statuses", "decision_cards", "api_status_decision_cards", "freeze_checks", "deprecations", "must_api_inventory"],
       "properties": {
         "v1_candidate": { "type": "boolean" },
         "decision_card_required": { "type": "boolean" },
@@ -1100,10 +1100,18 @@
           "type": "array",
           "items": { "$ref": "#/$defs/api_decision_card" }
         },
+        "api_status_decision_cards": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/string_array" }
+        },
         "freeze_checks": { "$ref": "#/$defs/string_array" },
         "deprecations": {
           "type": "array",
           "items": { "$ref": "#/$defs/deprecation_entry" }
+        },
+        "must_api_inventory": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/must_api_entry" }
         }
       },
       "additionalProperties": false
@@ -1278,6 +1286,17 @@
         "decision": { "type": "string", "minLength": 1 },
         "rationale": { "type": "string", "minLength": 1 },
         "validation": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "must_api_entry": {
+      "type": "object",
+      "required": ["name", "replacement", "rationale", "doc_path"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "replacement": { "type": "string", "minLength": 1 },
+        "rationale": { "type": "string", "minLength": 1 },
+        "doc_path": { "type": "string", "minLength": 1 }
       },
       "additionalProperties": false
     },

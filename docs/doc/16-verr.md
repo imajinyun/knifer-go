@@ -2,6 +2,16 @@
 
 `verr` provides error aggregation, panic recovery, stack capture, and logrus/Sentry initialization helpers for centralized handling of errors from synchronous or asynchronous tasks.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `Recover`
+- `GetStackTraceWithOptions`
+- `ErrorIs`
+- `MustExit`
+- `ConfigureDefaultLogFunc`
+
 ## Which helper should I use?
 
 | Goal | Start with | Notes |

@@ -2,6 +2,16 @@
 
 `vobj` provides object emptiness checks, comparisons, defaults, collection membership checks, type information, and serialization-based deep copy helpers.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `Clone`
+- `CloneIfPossibleWithOptions`
+- `Accept`
+- `Equals`
+- `Apply`
+
 ## Which helper should I use?
 
 Choose helpers by whether you need nil/empty checks, generic pointer handling, collection inspection, or serialization-based copying.
@@ -31,6 +41,10 @@ Choose helpers by whether you need nil/empty checks, generic pointer handling, c
 - Use `slices`, `maps`, or hand-written loops when collection element types are known and performance matters.
 - Use domain-specific copy constructors for values with locks, file handles, network clients, contexts, or other non-serializable resources.
 - Avoid generic emptiness checks in validation rules where each field's zero value has different meaning.
+
+## Must API compatibility
+
+`MustDeserialize` is a compatibility helper for trusted fixtures and startup data where malformed bytes should fail fast. New code should prefer `DeserializeTo` or `DeserializeToWithOptions` so malformed or untrusted bytes return errors that callers can classify, log, or recover from.
 
 ## Related packages
 

@@ -2,6 +2,16 @@
 
 `vcron` provides cron expression parsing and task scheduling facades, with support for the default scheduler, local schedulers, second-level matching, custom IDs, clocks, and executors.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `CronRestart`
+- `ConfigureDefaultScheduler`
+- `NewConfig`
+- `MustNewPattern`
+- `CronLaunchingCount`
+
 ## Which helper should I use?
 
 | Need | Use | Notes |

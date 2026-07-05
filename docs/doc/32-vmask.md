@@ -2,6 +2,16 @@
 
 `vmask` provides masking helpers for common sensitive data, including names, ID numbers, phones, addresses, email, passwords, bank cards, IPs, license plates, and custom ranges.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `BankCard`
+- `Address`
+- `CarLicense`
+- `ChineseName`
+- `Clear`
+
 ## Which helper should I use?
 
 | Goal | Start with | Notes |

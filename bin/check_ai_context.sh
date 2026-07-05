@@ -782,6 +782,43 @@ for index, deprecation in enumerate(deprecations):
     require_string(deprecation.get("name"), f"api_freeze.deprecations[{index}].name")
     require_string(deprecation.get("replacement"), f"api_freeze.deprecations[{index}].replacement")
     require_string(deprecation.get("rationale"), f"api_freeze.deprecations[{index}].rationale")
+must_api_inventory = api_freeze.get("must_api_inventory")
+if not isinstance(must_api_inventory, list):
+    add_error("api_freeze.must_api_inventory must be a list")
+    must_api_inventory = []
+for index, entry in enumerate(must_api_inventory):
+    entry = require_mapping(entry, f"api_freeze.must_api_inventory[{index}]")
+    require_string(entry.get("name"), f"api_freeze.must_api_inventory[{index}].name")
+    require_string(entry.get("replacement"), f"api_freeze.must_api_inventory[{index}].replacement")
+    require_string(entry.get("rationale"), f"api_freeze.must_api_inventory[{index}].rationale")
+    require_string(entry.get("doc_path"), f"api_freeze.must_api_inventory[{index}].doc_path")
+decision_cards = api_freeze.get("decision_cards")
+if not isinstance(decision_cards, list):
+    add_error("api_freeze.decision_cards must be a list")
+    decision_cards = []
+decision_card_statuses = {}
+for index, card in enumerate(decision_cards):
+    card = require_mapping(card, f"api_freeze.decision_cards[{index}]")
+    card_id = require_string(card.get("id"), f"api_freeze.decision_cards[{index}].id")
+    card_status = require_string(card.get("status"), f"api_freeze.decision_cards[{index}].status")
+    if card_id:
+        decision_card_statuses[card_id] = card_status
+api_status_decision_cards = api_freeze.get("api_status_decision_cards")
+if not isinstance(api_status_decision_cards, dict):
+    add_error("api_freeze.api_status_decision_cards must be an object")
+    api_status_decision_cards = {}
+if set(api_status_decision_cards) != allowed_statuses:
+    add_error("api_freeze.api_status_decision_cards must map every allowed API status")
+for status, card_ids in api_status_decision_cards.items():
+    card_ids = require_string_list(card_ids, f"api_freeze.api_status_decision_cards.{status}")
+    if not card_ids:
+        add_error(f"api_freeze.api_status_decision_cards.{status} must not be empty")
+    for card_id in card_ids:
+        card_status = decision_card_statuses.get(card_id)
+        if card_status is None:
+            add_error(f"api_freeze.api_status_decision_cards.{status} references unknown decision card {card_id!r}")
+        elif card_status != status:
+            add_error(f"api_freeze.api_status_decision_cards.{status} references {card_id!r} with status {card_status!r}")
 
 if errors:
     for error in errors:

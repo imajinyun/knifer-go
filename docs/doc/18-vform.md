@@ -2,6 +2,16 @@
 
 `vform` validates common form fields such as email, mobile numbers, URLs, IPs, ID cards, Chinese text, and numeric strings, and also supports injecting matchers for selected rules.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `IsChineseWithOptions`
+- `IsEmail`
+- `IsChinese`
+- `IsEmailWithOptions`
+- `IsIDCard`
+
 ## Which helper should I use?
 
 | Goal | Start with | Notes |

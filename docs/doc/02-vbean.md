@@ -2,6 +2,16 @@
 
 `vbean` maps fields between structs and maps. Use `Copy` / `CopyProperties` for trusted Go-to-Go property copy, `Decode` / `DecodeResult` for weak string/numeric/bool input conversion with metadata, and `Merge` / `MergeResult` when multiple sources should update an existing destination from left to right.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `CopyProperties`
+- `ComposeDecodeHook`
+- `Copy`
+- `Decode`
+- `DecodeResult`
+
 ## Which helper should I use?
 
 Choose the helper by the mapping direction and how much conversion metadata the caller needs.

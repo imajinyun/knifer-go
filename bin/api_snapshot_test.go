@@ -309,6 +309,7 @@ func TestAgentEvidenceCheckAcceptsSecurityMergeReadyEvidence(t *testing.T) {
 		"source":    "agent_run",
 		"status":    "passed",
 	}
+	evidence["security_review"] = readySecurityReviewEvidence()
 	evidence["merge_ready"] = true
 	evidence["merge_blockers"] = []string{}
 
@@ -318,6 +319,19 @@ func TestAgentEvidenceCheckAcceptsSecurityMergeReadyEvidence(t *testing.T) {
 	}
 	if !strings.Contains(output, "merge_ready=true") {
 		t.Fatalf("agent evidence output missing merge_ready=true:\n%s", output)
+	}
+}
+
+func TestAgentEvidenceCheckRejectsMissingSecurityReviewEvidence(t *testing.T) {
+	evidence := baseAgentEvidence()
+	delete(evidence, "security_review")
+
+	output, err := runAgentEvidenceCheck(t, evidence)
+	if err == nil {
+		t.Fatalf("agent evidence check unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "security_review must be an object") {
+		t.Fatalf("agent evidence output missing security_review error:\n%s", output)
 	}
 }
 
@@ -332,6 +346,57 @@ func TestAgentEvidenceCheckRejectsIncorrectSecurityMergeReadyEvidence(t *testing
 	}
 	if !strings.Contains(output, "merge_ready must be false") {
 		t.Fatalf("agent evidence output missing merge_ready error:\n%s", output)
+	}
+}
+
+func TestAPIFreezeCheckRequiresStatusDecisionCards(t *testing.T) {
+	root := t.TempDir()
+	toolsPath := filepath.Join(root, "tools.json")
+	writeJSONFile(t, toolsPath, map[string]any{
+		"packages": []any{
+			map[string]any{
+				"name": "vcompat",
+				"functions": []any{
+					map[string]any{
+						"name":     "Copy",
+						"status":   "compatibility",
+						"synopsis": "Copy is a compatibility alias.",
+					},
+				},
+			},
+		},
+	})
+	context := minimalAPIFreezeContext()
+	context["api_freeze"].(map[string]any)["api_status_decision_cards"] = map[string]any{
+		"recommended":   []string{"recommended-card"},
+		"compatibility": []string{"recommended-card"},
+		"experimental":  []string{"experimental-card"},
+		"deprecated":    []string{"deprecated-card"},
+	}
+	contextPath := filepath.Join(root, "ai-context.json")
+	writeJSONFile(t, contextPath, context)
+
+	output, err := runAPIFreezeCheck(t, contextPath, toolsPath)
+	if err == nil {
+		t.Fatalf("api freeze check unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "api_freeze.api_status_decision_cards.compatibility references recommended-card with status 'recommended'") {
+		t.Fatalf("api freeze output missing decision-card status error:\n%s", output)
+	}
+
+	context["api_freeze"].(map[string]any)["api_status_decision_cards"] = map[string]any{
+		"recommended":   []string{"recommended-card"},
+		"compatibility": []string{"compatibility-card"},
+		"experimental":  []string{"experimental-card"},
+		"deprecated":    []string{"deprecated-card"},
+	}
+	writeJSONFile(t, contextPath, context)
+	output, err = runAPIFreezeCheck(t, contextPath, toolsPath)
+	if err != nil {
+		t.Fatalf("api freeze check failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "api freeze metadata is valid") {
+		t.Fatalf("api freeze output missing success message:\n%s", output)
 	}
 }
 
@@ -419,8 +484,120 @@ func baseAgentEvidence() map[string]any {
 		"repository":                    "knifer-go",
 		"required_commands":             []string{"change_policy_check", "security_sensitive_diff", "agent_full_check", "agent_security_check", "agent_evidence", "agent_evidence_check"},
 		"schema_version":                "1.0",
-		"security_sensitive_paths":      []string{"internal/db/scan.go"},
-		"worktree_status":               " M internal/db/scan.go",
+		"security_review": map[string]any{
+			"audit_conclusion": "Security-sensitive change is blocked until agent_full_check and agent_security_check are attested.",
+			"command_attestations": map[string]any{
+				"agent_full_check":     attestations["agent_full_check"],
+				"agent_security_check": attestations["agent_security_check"],
+			},
+			"paths":                    []string{"internal/db/scan.go"},
+			"required":                 true,
+			"required_commands":        []string{"agent_full_check", "agent_security_check"},
+			"security_review_required": true,
+			"status":                   "blocked",
+		},
+		"security_sensitive_paths": []string{"internal/db/scan.go"},
+		"worktree_status":          " M internal/db/scan.go",
+	}
+}
+
+func readySecurityReviewEvidence() map[string]any {
+	return map[string]any{
+		"audit_conclusion": "Security-sensitive change has full and security validation attestations.",
+		"command_attestations": map[string]any{
+			"agent_full_check": map[string]any{
+				"cmd":       "make agent-full-check COVERAGE_FILE=/tmp/knifer-go-coverage.out",
+				"exit_code": 0,
+				"source":    "agent_run",
+				"status":    "passed",
+			},
+			"agent_security_check": map[string]any{
+				"cmd":       "make agent-security-check",
+				"exit_code": 0,
+				"source":    "agent_run",
+				"status":    "passed",
+			},
+		},
+		"paths":                    []string{"internal/db/scan.go"},
+		"required":                 true,
+		"required_commands":        []string{"agent_full_check", "agent_security_check"},
+		"security_review_required": true,
+		"status":                   "ready",
+	}
+}
+
+func minimalAPIFreezeContext() map[string]any {
+	return map[string]any{
+		"public_facades": []any{
+			map[string]any{"package": "vcompat"},
+		},
+		"api_freeze": map[string]any{
+			"v1_candidate":                         true,
+			"decision_card_required":               true,
+			"replacement_required_for_deprecation": true,
+			"allowed_statuses":                     []string{"recommended", "compatibility", "experimental", "deprecated"},
+			"decision_cards": []any{
+				apiDecisionCard("recommended-card", "vcompat", "recommended"),
+				apiDecisionCard("compatibility-card", "vcompat", "compatibility"),
+				apiDecisionCard("experimental-card", "vcompat", "experimental"),
+				apiDecisionCard("deprecated-card", "vcompat", "deprecated"),
+				apiDecisionCard("v1-public-api-entry-budget", "all", "recommended"),
+				apiDecisionCard("v1-dynamic-contract-matrix", "vcompat", "recommended"),
+				apiDecisionCard("v1-heavy-dependency-isolation", "vcompat", "recommended"),
+				apiDecisionCard("v1-error-taxonomy", "all", "recommended"),
+				apiDecisionCard("v1-security-threat-model", "vcompat", "recommended"),
+			},
+			"api_status_decision_cards": map[string]any{
+				"recommended":   []string{"recommended-card"},
+				"compatibility": []string{"compatibility-card"},
+				"experimental":  []string{"experimental-card"},
+				"deprecated":    []string{"deprecated-card"},
+			},
+			"freeze_checks": []string{
+				"Every public API requires a decision card.",
+				"Every deprecated API requires a replacement.",
+				"Snapshot files must stay current.",
+				"The tools catalog must classify API status.",
+			},
+			"deprecations": []any{},
+		},
+	}
+}
+
+func apiDecisionCard(id, pkg, status string) map[string]any {
+	return map[string]any{
+		"id":         id,
+		"packages":   []string{pkg},
+		"status":     status,
+		"decision":   id + " decision",
+		"rationale":  id + " rationale",
+		"validation": []string{"make api-freeze-check", "make tools-check"},
+	}
+}
+
+func runAPIFreezeCheck(t *testing.T, contextPath, toolsPath string) (string, error) {
+	t.Helper()
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Getwd() error = %v", err)
+	}
+	root := filepath.Dir(wd)
+	cmd := exec.Command("bash", filepath.Join(root, "bin/check_api_freeze.sh"))
+	cmd.Dir = root
+	cmd.Env = append(os.Environ(), "AI_CONTEXT_FILE="+contextPath, "TOOLS_JSON_FILE="+toolsPath)
+	combined, err := cmd.CombinedOutput()
+	return string(combined), err
+}
+
+func writeJSONFile(t *testing.T, path string, value any) {
+	t.Helper()
+	data, err := json.MarshalIndent(value, "", "  ")
+	if err != nil {
+		t.Fatalf("MarshalIndent() error = %v", err)
+	}
+	data = append(data, '\n')
+	if err := os.WriteFile(path, data, 0o600); err != nil {
+		t.Fatalf("WriteFile(%q) error = %v", path, err)
 	}
 }
 

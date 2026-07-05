@@ -2,6 +2,16 @@
 
 `vident` provides validation, conversion, birthdate/age/gender/region parsing, and masking helpers for mainland China resident ID cards, Hong Kong/Macau/Taiwan documents, and unified social credit codes.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `ParseCreditCode`
+- `AgeWithOptions`
+- `Age`
+- `AgeAt`
+- `BirthDate`
+
 ## Which helper should I use?
 
 Choose helpers by document type and by whether you need validation, derived fields, or redaction.

@@ -2,6 +2,16 @@
 
 `vtpl` provides Go `html/template` based string rendering facades, with support for template names, function maps, custom delimiters, and parse/execute provider injection. It also exposes an engine-neutral adapter contract so callers can select the standard HTML engine, the standard text engine, or a custom template engine without adding optional dependencies to knifer-go.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `Render`
+- `NewHTMLEngine`
+- `WithFuncMap`
+- `NewTextEngine`
+- `RenderTemplate`
+
 ## Which helper should I use?
 
 | Goal | Start with | Notes |

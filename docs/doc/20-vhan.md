@@ -8,6 +8,15 @@ Use `vhan` when application code needs a stable internal contract for pinyin con
 
 Use a dedicated NLP or pinyin library directly when you need built-in dictionaries, word segmentation, polyphone disambiguation, locale-specific romanization, or streaming text processing that is not part of the `vhan` MVP.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `Convert`
+- `New`
+- `WithProvider`
+- `Initials`
+
 ## Which helper should I use?
 
 Choose helpers by whether you want a reusable client, a one-off provider call, or request validation.

@@ -89,7 +89,7 @@
       "network_required": false,
       "risk_level": "low",
       "creates_artifacts": ["/tmp/knifer-go-agent-validation.json"],
-      "notes": "Writes machine-readable Agent validation evidence outside the repository root, including base ref, deleted-file-aware diff metadata, detected policies, required commands, and command attestations."
+      "notes": "Writes machine-readable Agent validation evidence outside the repository root, including base ref, deleted-file-aware diff metadata, detected policies, required commands, command attestations, and structured security_review evidence for security-sensitive changes."
     },
     "agent_evidence_check": {
       "cmd": "make agent-evidence-check",
@@ -99,7 +99,7 @@
       "network_required": false,
       "risk_level": "low",
       "reads_artifacts": ["/tmp/knifer-go-agent-validation.json"],
-      "notes": "Validates Agent evidence JSON schema, diff metadata, policy references, command references, command attestation coverage, risk calculation, and embedded check consistency."
+      "notes": "Validates Agent evidence JSON schema, diff metadata, policy references, command references, command attestation coverage, security_review evidence, risk calculation, and embedded check consistency."
     },
     "agent_full_check": {
       "cmd": "make agent-full-check COVERAGE_FILE=/tmp/knifer-go-coverage.out",
@@ -439,7 +439,7 @@
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "low",
-      "notes": "Validates v1 API freeze and deprecation governance metadata against the generated API catalog."
+      "notes": "Validates v1 API freeze, API status to decision-card bindings, and deprecation governance metadata against the generated API catalog."
     }
   },
   "change_type_policies": {
@@ -712,7 +712,7 @@
       "vhash": { "primary": ["NewConsistentHash", "AdditiveHash", "ApHash", "BkdrHash", "DjbHash"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vhttp": { "primary": ["DeleteSafe", "Download", "CleanHTMLWithOptions", "AddGlobalHeader", "BuildBasicAuth"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vid": { "primary": ["ConfigureDefaultSnowflake", "GetSnowflakeNextID", "FastSimpleUUID", "ConfigureDefaultFallbackRandomSourceProvider", "CreateSnowflake"], "advanced": [], "compatibility": ["FastSimpleUUID", "FastSimpleUUIDWithOptions", "FastUUID", "FastUUIDWithOptions", "UUID"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
-      "vident": { "primary": ["ParseCreditCode", "AgeWithOptions", "AgeAt", "Age", "BirthDate"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
+      "vident": { "primary": ["ParseCreditCode", "AgeWithOptions", "Age", "AgeAt", "BirthDate"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vimg": { "primary": ["AddTextWatermark", "GenMathGeneratorWithOptions", "CanDecodeBarcodeFormat", "AddWatermark", "BarcodeASCII"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vjob": { "primary": ["NewMapE", "NewBatch", "NewBatchSingle", "NewMap", "NewMapKeys"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vjson": { "primary": ["Parse", "FormatWithOptions", "CreateConfig", "Format", "GetByPath"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
@@ -1695,7 +1695,7 @@
     "contract_tests": ["errors_test.go:TestUnifiedErrorTaxonomyCodes", "internal/bean/error_contract_test.go", "internal/db/error_contract_test.go", "vdb/error_contract_test.go"]
   },
   "dynamic_semantic_contracts": {
-    "required_domains": ["vbean_decode_copy_merge", "vjson_dynamic", "vobj_dynamic", "vconf_dynamic"],
+    "required_domains": ["vbean_decode_copy_merge", "vjson_dynamic", "vobj_dynamic", "vconf_dynamic", "vconv_conversion_matrix", "vref_reflection_boundaries"],
     "domains": {
       "vbean_decode_copy_merge": {
         "packages": ["internal/bean"],
@@ -1720,6 +1720,18 @@
         "guarantees": ["profile/group lookup", "scalar conversion", "missing key defaults", "scalar fuzz parsing"],
         "contract_tests": ["vconf/config_bind_options_test.go:TestDynamicConfigContractMatrix"],
         "fuzz_tests": ["vconf/config_bind_options_test.go:FuzzDynamicConfigScalarContract"]
+      },
+      "vconv_conversion_matrix": {
+        "packages": ["internal/conv", "vconv"],
+        "guarantees": ["nil/default conversion behavior", "string scalar parsing", "numeric overflow rejection", "string scalar fuzzing"],
+        "contract_tests": ["internal/conv/conversion_matrix_test.go:TestConversionMatrixPropertyContract", "internal/conv/conversion_matrix_test.go:TestConversionMatrixFailureContract", "vconv/conv_test.go:TestConvFacadeConversionMatrix", "vconv/conv_test.go:TestConvFacadeExplicitErrorsRejectMatrixFailures"],
+        "fuzz_tests": ["internal/conv/conversion_matrix_test.go:FuzzConversionMatrixStringScalars"]
+      },
+      "vref_reflection_boundaries": {
+        "packages": ["internal/ref", "vref"],
+        "guarantees": ["unsafe field access requires opt-in", "numeric conversion boundaries", "method invocation argument conversion", "invalid reflection input errors"],
+        "contract_tests": ["internal/ref/checked_convert_test.go:TestCheckedConvertNumericBoundaries", "internal/ref/field_test.go:TestSetFieldValueRejectsUnsafeNumericConversion", "internal/ref/invoke_test.go:TestInvokeFuncRejectsUnsafeNumericConversion", "vref/ref_field_test.go:TestFacadeReflectionHelpers", "vref/ref_invocation_test.go:TestFacadeInstantiationAndInvocationHelpers"],
+        "fuzz_tests": []
       }
     }
   },
@@ -1761,7 +1773,7 @@
         "status": "recommended",
         "decision": "Dynamic Decode/Copy/Merge/JSON/object/config semantics are frozen as executable contract tests and fuzz targets.",
         "rationale": "Dynamic helpers are high-risk because callers depend on edge-case behavior for nils, unused fields, conversions, map replacement, and round trips.",
-        "validation": ["make governance-maturity-check", "go test ./internal/bean ./vjson ./vobj ./vconf", "dynamic_semantic_contracts references explicit Test/Fuzz functions"]
+        "validation": ["make governance-maturity-check", "go test ./internal/bean ./internal/conv ./internal/ref ./vjson ./vobj ./vconf ./vconv ./vref", "dynamic_semantic_contracts references explicit Test/Fuzz functions"]
       },
       {
         "id": "v1-heavy-dependency-isolation",
@@ -1786,14 +1798,51 @@
         "decision": "Security-sensitive facades require STRIDE/DREAD threat coverage tied to misuse and contract tests.",
         "rationale": "Trust-boundary helpers must remain security-auditable through explicit tests for SSRF, traversal, weak randomness, SQL/argument injection, and transfer limits.",
         "validation": ["make governance-maturity-check", "make agent-security-check", "threat_model.contract_tests references explicit Test functions"]
+      },
+      {
+        "id": "v1-compatibility-api-budget",
+        "packages": ["all"],
+        "status": "compatibility",
+        "decision": "Compatibility APIs remain available only to preserve existing call-site behavior during migration.",
+        "rationale": "Must-style, alias, and legacy-shaped helpers are useful for compatibility but should not become the default discovery path for new code.",
+        "validation": ["make api-freeze-check", "make tools-check", "docs/api/tools.json compatibility APIs are covered by api_convergence compatibility entries or compatibility status rules"]
+      },
+      {
+        "id": "v1-deprecation-replacement-policy",
+        "packages": ["all"],
+        "status": "deprecated",
+        "decision": "Deprecated APIs require a named replacement and rationale before release.",
+        "rationale": "A v1 candidate must make migrations explicit so callers do not need to infer replacements from changelog prose or source comments.",
+        "validation": ["make api-freeze-check", "api_freeze.deprecations entries match deprecated tools catalog functions", "deprecated synopses include Deprecated: and Use replacement guidance"]
+      },
+      {
+        "id": "v1-experimental-api-denylist",
+        "packages": ["all"],
+        "status": "experimental",
+        "decision": "Experimental APIs are blocked while the module is a v1 candidate.",
+        "rationale": "A v1 candidate should not publish unstable discovery surfaces; future experiments need explicit opt-in governance before they enter the public catalog.",
+        "validation": ["make api-freeze-check", "docs/api/tools.json contains zero experimental APIs while api_freeze.v1_candidate is true"]
       }
     ],
+    "api_status_decision_cards": {
+      "recommended": ["v1-public-api-entry-budget", "v1-dynamic-contract-matrix", "v1-heavy-dependency-isolation", "v1-error-taxonomy", "v1-security-threat-model"],
+      "compatibility": ["v1-compatibility-api-budget"],
+      "experimental": ["v1-experimental-api-denylist"],
+      "deprecated": ["v1-deprecation-replacement-policy"]
+    },
     "freeze_checks": [
       "Every intentional public API addition or signature change must have an API decision card.",
       "Every deprecated API must include a replacement and rationale before v1 freeze.",
       "docs/api/exports.txt snapshot must stay current through api_check.",
       "docs/api/tools.json tools catalog must classify every API status and expose golden_path guidance.",
       "Experimental APIs are not allowed while v1_candidate is true."
+    ],
+    "must_api_inventory": [
+      { "name": "vcron.MustNewPattern", "replacement": "vcron.NewPattern", "rationale": "Use only for constants that should fail during tests or startup; dynamic expressions should return errors.", "doc_path": "docs/doc/10-vcron.md" },
+      { "name": "verr.MustExit", "replacement": "return error or use verr.Recover at process boundaries", "rationale": "MustExit panics on non-nil errors and is appropriate only for fail-fast process boundaries.", "doc_path": "docs/doc/16-verr.md" },
+      { "name": "verr.MustExitWithOptions", "replacement": "return error or inject WithExitPanicFunc in tests", "rationale": "MustExitWithOptions is compatibility fail-fast behavior; libraries should return errors and let callers decide.", "doc_path": "docs/doc/16-verr.md" },
+      { "name": "vjwt.MustHMACSigner", "replacement": "vjwt.NewHMACSigner or vjwt.NewHMACSignerStrict", "rationale": "HMAC signer construction can fail for unsupported algorithms or weak keys; new code should use error-returning constructors.", "doc_path": "docs/doc/28-vjwt.md" },
+      { "name": "vobj.MustDeserialize", "replacement": "vobj.DeserializeTo or vobj.DeserializeToWithOptions", "rationale": "Deserialization can fail on malformed or untrusted bytes; new code should use error-returning helpers.", "doc_path": "docs/doc/35-vobj.md" }
     ],
     "deprecations": []
   },

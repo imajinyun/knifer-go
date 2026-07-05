@@ -2,6 +2,16 @@
 
 `vcache` provides generic cache facades for FIFO, LFU, LRU, timed, weak, and no-cache implementations, with options for capacity, TTL, listeners, and custom clocks.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `NewFIFOWithOptions`
+- `NewFIFO`
+- `NewFIFOWithTimeout`
+- `NewLFU`
+- `NewLFUWithOptions`
+
 ## Which helper should I use?
 
 | Need | Use | Notes |

@@ -2,6 +2,16 @@
 
 `vpass` provides password strength analysis, scoring, strength levels, and shortcut checks for strong or weak passwords.
 
+## Golden path APIs
+
+The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
+
+- `Analyze`
+- `IsStrong`
+- `IsWeak`
+- `Score`
+- `StrengthOf`
+
 ## Which helper should I use?
 
 | Goal | Start with | Notes |

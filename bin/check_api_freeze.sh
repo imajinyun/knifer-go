@@ -6,12 +6,16 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-python3 - <<'PY'
+AI_CONTEXT_FILE="${AI_CONTEXT_FILE:-ai-context.json}"
+TOOLS_JSON_FILE="${TOOLS_JSON_FILE:-docs/api/tools.json}"
+
+python3 - "${AI_CONTEXT_FILE}" "${TOOLS_JSON_FILE}" <<'PY'
 from __future__ import annotations
 
 import json
 import sys
 
+ai_context_path, tools_path = sys.argv[1], sys.argv[2]
 errors: list[str] = []
 
 
@@ -19,10 +23,10 @@ def add_error(message: str) -> None:
     errors.append(message)
 
 
-with open("docs/api/tools.json", "r", encoding="utf-8") as f:
+with open(tools_path, "r", encoding="utf-8") as f:
     tools = json.load(f)
 
-with open("ai-context.json", "r", encoding="utf-8") as f:
+with open(ai_context_path, "r", encoding="utf-8") as f:
     ai_context = json.load(f)
 
 api_freeze = ai_context.get("api_freeze", {})
@@ -87,6 +91,38 @@ missing_card_ids = sorted(expected_card_ids - seen_card_ids)
 if missing_card_ids:
     add_error("api_freeze.decision_cards missing required v1 decision card(s): " + ", ".join(missing_card_ids))
 
+cards_by_id = {
+    item.get("id"): item
+    for item in decision_cards
+    if isinstance(item, dict) and isinstance(item.get("id"), str) and item.get("id")
+}
+api_status_decision_cards = api_freeze.get("api_status_decision_cards")
+if not isinstance(api_status_decision_cards, dict):
+    add_error("api_freeze.api_status_decision_cards must be an object")
+    api_status_decision_cards = {}
+mapping_statuses = set(api_status_decision_cards)
+if mapping_statuses != expected_statuses:
+    add_error("api_freeze.api_status_decision_cards must map recommended, compatibility, experimental, deprecated")
+for status in sorted(expected_statuses):
+    card_ids = api_status_decision_cards.get(status)
+    if not isinstance(card_ids, list) or not card_ids:
+        add_error(f"api_freeze.api_status_decision_cards.{status} must contain at least one decision card id")
+        continue
+    seen_status_card_ids: set[str] = set()
+    for index, card_id in enumerate(card_ids):
+        if not isinstance(card_id, str) or not card_id:
+            add_error(f"api_freeze.api_status_decision_cards.{status}[{index}] must be a non-empty string")
+            continue
+        if card_id in seen_status_card_ids:
+            add_error(f"api_freeze.api_status_decision_cards.{status} duplicates decision card {card_id}")
+        seen_status_card_ids.add(card_id)
+        card = cards_by_id.get(card_id)
+        if card is None:
+            add_error(f"api_freeze.api_status_decision_cards.{status} references unknown decision card {card_id}")
+            continue
+        if card.get("status") != status:
+            add_error(f"api_freeze.api_status_decision_cards.{status} references {card_id} with status {card.get('status')!r}")
+
 freeze_checks = api_freeze.get("freeze_checks", [])
 if not isinstance(freeze_checks, list) or len(freeze_checks) < 4:
     add_error("api_freeze.freeze_checks must document at least four freeze checks")
@@ -98,6 +134,7 @@ else:
 
 deprecated_functions: list[str] = []
 experimental_functions: list[str] = []
+must_functions: list[str] = []
 for package in tools.get("packages", []):
     package_name = package.get("name", "")
     for fn in package.get("functions", []):
@@ -105,6 +142,17 @@ for package in tools.get("packages", []):
         name = f"{package_name}.{fn.get('name')}"
         if status not in expected_statuses:
             add_error(f"{name} has unknown API status {status!r}")
+            continue
+        covering_cards = []
+        for card_id in api_status_decision_cards.get(status, []):
+            card = cards_by_id.get(card_id)
+            if not card:
+                continue
+            packages = card.get("packages", [])
+            if "all" in packages or package_name in packages:
+                covering_cards.append(card_id)
+        if not covering_cards:
+            add_error(f"{name} status {status!r} is not covered by api_freeze.api_status_decision_cards")
         if status == "deprecated":
             deprecated_functions.append(name)
             synopsis = fn.get("synopsis", "")
@@ -112,6 +160,8 @@ for package in tools.get("packages", []):
                 add_error(f"{name} is deprecated but synopsis must include 'Deprecated:' and a replacement using 'Use '")
         if status == "experimental":
             experimental_functions.append(name)
+        if isinstance(fn.get("name"), str) and fn["name"].startswith("Must"):
+            must_functions.append(name)
 
 if api_freeze.get("v1_candidate", False) and experimental_functions:
     add_error("api_freeze.v1_candidate forbids experimental APIs: " + ", ".join(experimental_functions))
@@ -140,6 +190,47 @@ for index, item in enumerate(declared_deprecations):
 missing_deprecation_entries = sorted(set(deprecated_functions) - declared_deprecated_names)
 if missing_deprecation_entries:
     add_error("api_freeze.deprecations missing deprecated function(s): " + ", ".join(missing_deprecation_entries))
+
+must_api_inventory = api_freeze.get("must_api_inventory", [])
+if not isinstance(must_api_inventory, list):
+    add_error("api_freeze.must_api_inventory must be a list")
+    must_api_inventory = []
+must_inventory_names: set[str] = set()
+for index, item in enumerate(must_api_inventory):
+    if not isinstance(item, dict):
+        add_error(f"api_freeze.must_api_inventory[{index}] must be an object")
+        continue
+    name = item.get("name")
+    replacement = item.get("replacement")
+    rationale = item.get("rationale")
+    doc_path = item.get("doc_path")
+    if not isinstance(name, str) or not name:
+        add_error(f"api_freeze.must_api_inventory[{index}].name must be a non-empty string")
+        continue
+    must_inventory_names.add(name)
+    for field, value in (("replacement", replacement), ("rationale", rationale), ("doc_path", doc_path)):
+        if not isinstance(value, str) or not value.strip():
+            add_error(f"api_freeze.must_api_inventory[{index}].{field} must be a non-empty string")
+    if isinstance(doc_path, str) and doc_path:
+        try:
+            doc_text = open(doc_path, "r", encoding="utf-8").read()
+        except FileNotFoundError:
+            add_error(f"api_freeze.must_api_inventory[{index}].doc_path does not exist: {doc_path}")
+        else:
+            function_name = name.rsplit(".", 1)[-1]
+            if function_name not in doc_text:
+                add_error(f"{doc_path} must document {name}")
+            if isinstance(replacement, str) and replacement:
+                replacement_tokens = [token.strip("` ,.") for token in replacement.replace(" or ", " ").replace(",", " ").split()]
+                if not any(token and token in doc_text for token in replacement_tokens):
+                    add_error(f"{doc_path} must mention replacement guidance for {name}: {replacement}")
+
+missing_must_entries = sorted(set(must_functions) - must_inventory_names)
+if missing_must_entries:
+    add_error("api_freeze.must_api_inventory missing Must API(s): " + ", ".join(missing_must_entries))
+stale_must_entries = sorted(must_inventory_names - set(must_functions))
+if stale_must_entries:
+    add_error("api_freeze.must_api_inventory includes non-Must or missing API(s): " + ", ".join(stale_must_entries))
 
 if errors:
     for error in errors:
