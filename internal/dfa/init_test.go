@@ -2,6 +2,7 @@ package dfa
 
 import (
 	"reflect"
+	"sync"
 	"testing"
 )
 
@@ -94,4 +95,49 @@ func TestPackageSetCharFilterAndAsyncRunnerFallback(t *testing.T) {
 	if !Contains("async fallback") {
 		t.Fatal("InitAsync should use configured deterministic runner")
 	}
+}
+
+func TestPackageMatcherConcurrentInitAndQuery(t *testing.T) {
+	ResetAsyncRunner()
+	t.Cleanup(ResetAsyncRunner)
+
+	var wg sync.WaitGroup
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				Init([]string{"alpha", "beta", "secret"})
+				SetCharFilter(func(r rune) bool { return r != '-' })
+				InitStringWithOptions("a-b,runner", DefaultSeparator, WithCharFilter(func(r rune) bool { return r != '-' }))
+			}
+		}()
+	}
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				ConfigureAsyncRunner(func(fn func()) { fn() })
+				InitAsync([]string{"async"})
+				InitStringAsync("runner", DefaultSeparator)
+				ResetAsyncRunner()
+			}
+		}()
+	}
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				_ = IsInited()
+				_ = Contains("alpha secret")
+				_, _ = GetFoundFirst("alpha secret")
+				_ = GetFoundAll("alpha beta")
+				_ = GetFoundAllMode("alphabet", true, true)
+				_ = Filter("alpha beta")
+			}
+		}()
+	}
+	wg.Wait()
 }
