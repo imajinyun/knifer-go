@@ -67,6 +67,7 @@
     "dynamic_semantic_contracts",
     "v1_readiness",
     "api_freeze",
+    "random_source_policy",
     "coverage_gates",
     "public_facades",
     "security_sensitive_packages",
@@ -224,13 +225,18 @@
     },
     "benchmark_regression": {
       "type": "object",
-      "required": ["baseline_command", "compare_command", "benchstat_required", "thresholds", "tracked_packages"],
+      "required": ["baseline_command", "compare_command", "benchstat_required", "thresholds", "tracked_packages", "hot_path_packages"],
       "properties": {
         "baseline_command": { "type": "string", "minLength": 1 },
         "compare_command": { "type": "string", "minLength": 1 },
         "benchstat_required": { "type": "boolean" },
         "thresholds": { "$ref": "#/$defs/benchmark_thresholds" },
-        "tracked_packages": { "$ref": "#/$defs/string_array" }
+        "tracked_packages": { "$ref": "#/$defs/string_array" },
+        "hot_path_packages": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/benchmark_hot_path" }
+        }
       },
       "additionalProperties": false
     },
@@ -1116,6 +1122,19 @@
       },
       "additionalProperties": false
     },
+    "random_source_policy": {
+      "type": "object",
+      "required": ["packages", "policies"],
+      "properties": {
+        "packages": { "$ref": "#/$defs/string_array" },
+        "policies": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/random_source_policy_entry" }
+        }
+      },
+      "additionalProperties": false
+    },
     "public_facades": {
       "type": "array",
       "items": { "$ref": "#/$defs/public_facade" }
@@ -1131,7 +1150,7 @@
     },
     "threat_model": {
       "type": "object",
-      "required": ["methodology", "misuse_tests", "domains"],
+      "required": ["methodology", "misuse_tests", "domains", "boundary_contracts"],
       "properties": {
         "methodology": { "type": "string", "minLength": 1 },
         "misuse_tests": { "$ref": "#/$defs/string_array" },
@@ -1139,6 +1158,11 @@
           "type": "object",
           "minProperties": 1,
           "additionalProperties": { "$ref": "#/$defs/threat_model_domain" }
+        },
+        "boundary_contracts": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/boundary_contract" }
         }
       },
       "additionalProperties": false
@@ -1300,6 +1324,19 @@
       },
       "additionalProperties": false
     },
+    "random_source_policy_entry": {
+      "type": "object",
+      "required": ["name", "packages", "behavior", "allowed_sources", "forbidden_uses", "contract_tests"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "packages": { "$ref": "#/$defs/string_array" },
+        "behavior": { "type": "string", "minLength": 1 },
+        "allowed_sources": { "$ref": "#/$defs/string_array" },
+        "forbidden_uses": { "$ref": "#/$defs/string_array" },
+        "contract_tests": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
     "api_convergence_facade": {
       "type": "object",
       "required": ["primary", "advanced", "compatibility", "avoid", "decision"],
@@ -1346,6 +1383,17 @@
         "bytes_per_op_regression_percent": { "type": "number", "exclusiveMinimum": 0 },
         "allocs_per_op_regression_percent": { "type": "number", "exclusiveMinimum": 0 },
         "minimum_count": { "type": "number", "exclusiveMinimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "benchmark_hot_path": {
+      "type": "object",
+      "required": ["package", "owner", "benchmarks", "threshold_profile"],
+      "properties": {
+        "package": { "type": "string", "minLength": 1 },
+        "owner": { "type": "string", "minLength": 1 },
+        "benchmarks": { "$ref": "#/$defs/string_array" },
+        "threshold_profile": { "type": "string", "minLength": 1 }
       },
       "additionalProperties": false
     },
@@ -1411,6 +1459,17 @@
           "additionalProperties": { "$ref": "#/$defs/string_array" }
         },
         "misuse_tests": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "boundary_contract": {
+      "type": "object",
+      "required": ["name", "packages", "required_controls", "contract_tests"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "packages": { "$ref": "#/$defs/string_array" },
+        "required_controls": { "$ref": "#/$defs/string_array" },
+        "contract_tests": { "$ref": "#/$defs/string_array" }
       },
       "additionalProperties": false
     },

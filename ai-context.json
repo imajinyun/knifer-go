@@ -680,7 +680,7 @@
       "resty.dev/v3": ["internal/httpx/resty", "vresty"]
     },
     "notes": [
-      "Core facades should avoid third-party runtime dependencies unless explicitly allowlisted by bin/check_arch.sh.",
+      "Core facades should avoid third-party runtime dependencies unless explicitly allowlisted by dependency_tiers.heavy_dependency_allowlist.",
       "Heavy extension facades isolate optional integrations such as Sentry, Logrus, Excelize, Resty, and barcode/image adapters.",
       "Provider contract facades expose interfaces and adapters while keeping concrete clients, credentials, dictionaries, or NLP engines outside core."
     ]
@@ -860,7 +860,16 @@
       "allocs_per_op_regression_percent": 5.0,
       "minimum_count": 10
     },
-    "tracked_packages": ["./internal/slice", "./internal/maps", "./internal/str", "./internal/num", "./internal/bean", "./internal/json", "./vbean", "./vjson", "./vmap", "./vslice", "./vstr"]
+    "tracked_packages": ["./internal/slice", "./internal/maps", "./internal/str", "./internal/num", "./internal/bean", "./internal/json", "./internal/db", "./internal/httpx/http", "./internal/codec", "./vbean", "./vjson", "./vmap", "./vslice", "./vstr", "./vdb", "./vhttp", "./vcodec"],
+    "hot_path_packages": [
+      { "package": "./vjson", "owner": "data_transform", "benchmarks": ["vjson/json_benchmark_test.go:BenchmarkParseObj", "vjson/json_benchmark_test.go:BenchmarkToStr", "vjson/json_benchmark_test.go:BenchmarkGetByPath"], "threshold_profile": "default" },
+      { "package": "./vstr", "owner": "text_parsing", "benchmarks": ["vstr/str_benchmark_test.go:BenchmarkReverse", "vstr/str_benchmark_test.go:BenchmarkToCamelCase", "vstr/str_benchmark_test.go:BenchmarkContains"], "threshold_profile": "default" },
+      { "package": "./vslice", "owner": "collections", "benchmarks": ["vslice/slice_benchmark_test.go:BenchmarkFilter", "vslice/slice_benchmark_test.go:BenchmarkMap", "vslice/slice_benchmark_test.go:BenchmarkUniq"], "threshold_profile": "default" },
+      { "package": "./vmap", "owner": "collections", "benchmarks": ["vmap/maps_benchmark_test.go:BenchmarkFilter", "vmap/maps_benchmark_test.go:BenchmarkSortedKeys", "vmap/maps_benchmark_test.go:BenchmarkMerge"], "threshold_profile": "default" },
+      { "package": "./vdb", "owner": "data_and_cli_boundaries", "benchmarks": ["vdb/builder_test.go:BenchmarkFacadePageOrders", "internal/db/builder_select_test.go:BenchmarkSQLBuilderPageOrders"], "threshold_profile": "default" },
+      { "package": "./vhttp", "owner": "network_clients", "benchmarks": ["vhttp/http_benchmark_test.go:BenchmarkGetStringE", "vhttp/http_benchmark_test.go:BenchmarkDownloadBytesEWithOptionsBounded", "vhttp/http_benchmark_test.go:BenchmarkGetStringSafeE"], "threshold_profile": "default" },
+      { "package": "./vcodec", "owner": "data_transform", "benchmarks": ["vcodec/codec_benchmark_test.go:BenchmarkBase64Encode", "vcodec/codec_benchmark_test.go:BenchmarkBase64Decode", "vcodec/codec_benchmark_test.go:BenchmarkHexEncode"], "threshold_profile": "default" }
+    ]
   },
   "example_depth_governance": {
     "roadmap_path": "docs/superpowers/plans/49-roadmap.md",
@@ -1846,6 +1855,43 @@
     ],
     "deprecations": []
   },
+  "random_source_policy": {
+    "packages": ["vrand", "vid", "vcrypto", "vjwt"],
+    "policies": [
+      {
+        "name": "secure_bytes_fail_closed",
+        "packages": ["vrand", "vcrypto"],
+        "behavior": "Security-sensitive byte helpers must use crypto/rand-compatible readers and return entropy errors instead of falling back to pseudo-random bytes.",
+        "allowed_sources": ["crypto/rand.Reader", "explicit io.Reader test fixture"],
+        "forbidden_uses": ["tokens from math/rand", "keys from pseudo-random fallback", "nonces from fallback readers"],
+        "contract_tests": ["internal/rand/random_bytes_test.go:TestSecureRandomBytesFailClosed", "internal/crypto/random_test.go:TestRandomProviderFallbacksAndErrors"]
+      },
+      {
+        "name": "compatibility_byte_fallback",
+        "packages": ["vrand"],
+        "behavior": "Compatibility byte helpers may fall back to pseudo-random bytes only when strict crypto mode is not requested.",
+        "allowed_sources": ["crypto/rand.Reader", "WithRandomReader", "WithRandomSource fallback"],
+        "forbidden_uses": ["secrets", "tokens", "keys", "nonces"],
+        "contract_tests": ["internal/rand/random_bytes_test.go:TestRandomBytesWithOptionsReaderAndStrictMode", "internal/rand/random_bytes_test.go:TestFillRandomBytesFallbackKeepsLength", "vrand/rand_test.go:TestRandFacadeBytesFailureBoundaries"]
+      },
+      {
+        "name": "identifier_fallback_compatibility",
+        "packages": ["vid"],
+        "behavior": "Identifier helpers may use deterministic pseudo-random fallback only for compatibility and reproducible tests when the primary reader fails.",
+        "allowed_sources": ["crypto/rand.Reader", "WithFallbackRandomSource", "ConfigureDefaultFallbackRandomSourceProvider"],
+        "forbidden_uses": ["security-sensitive bearer tokens", "session secrets", "cryptographic keys"],
+        "contract_tests": ["internal/id/uuid_test.go:TestDefaultFallbackRandomSourceProviderCanBeConfiguredAndReset", "vid/random_source_test.go:TestIDFacadeFallbackRandomSourceProvider", "vid/random_source_test.go:TestIDFacadeRandomFallbackBoundaries"]
+      },
+      {
+        "name": "jwt_key_and_signer_policy",
+        "packages": ["vjwt", "vcrypto"],
+        "behavior": "JWT and crypto key/signature helpers must reject unsafe algorithms or weak keys and propagate injected random-reader errors.",
+        "allowed_sources": ["crypto/rand.Reader", "WithSignerRandomReader", "WithRSARandomReader", "WithRSADigestRandomReader"],
+        "forbidden_uses": ["alg=none signer fallback", "weak HMAC keys in strict mode", "ignored random-reader errors"],
+        "contract_tests": ["internal/jwt/jwt_key_set_test.go:TestSetKeyRejectsNone", "internal/jwt/signer_test.go:TestHMACSignerStrictRejectsWeakKeys", "vjwt/signer_hmac_test.go:TestStrictHMACSignerRejectsWeakKey", "internal/crypto/rsa_test.go:TestRSANilKeyAndProviderErrorContracts"]
+      }
+    ]
+  },
   "coverage_gates": {
     "repository_threshold": 75.2,
     "security_sensitive_min_threshold": 80.0,
@@ -2062,6 +2108,44 @@
         },
         "misuse_tests": ["internal/ftp/client_test.go", "internal/ssh/client_test.go"]
       }
-    }
+    },
+    "boundary_contracts": [
+      {
+        "name": "default_timeout",
+        "packages": ["vhttp", "vresty"],
+        "required_controls": ["positive default timeout", "timeout errors classified as GK_TIMEOUT", "per-request timeout override"],
+        "contract_tests": ["internal/httpx/contract_request_test.go:TestHTTPContractDefaultTimeout", "internal/httpx/http/request_timeout_redirect_test.go:TestRequestTimeout", "internal/httpx/resty/request_timeout_test.go:TestTimeoutReturnsError"]
+      },
+      {
+        "name": "redirect_revalidation",
+        "packages": ["vhttp", "vresty", "vurl", "vconf"],
+        "required_controls": ["redirect target URL policy", "round-trip host revalidation", "private redirect rejection"],
+        "contract_tests": ["internal/httpx/http/safe_request_test.go:TestSafeRequestRejectsPrivateAndUnsafeRedirects", "internal/httpx/resty/safe_request_test.go:TestSafeRequestRejectsPrivateAndUnsafeRedirects", "internal/url/safe_resource_redirect_test.go:TestOpenSafeValidatesRedirects", "internal/conf/load_remote_safe_hosts_test.go:TestLoadRemoteSafeRejectsUnsafeRedirectTarget"]
+      },
+      {
+        "name": "private_host_rejection",
+        "packages": ["vhttp", "vresty", "vurl", "vconf"],
+        "required_controls": ["loopback rejection", "multicast rejection", "unspecified host rejection", "allowlist does not bypass private rejection"],
+        "contract_tests": ["internal/httpx/http/safe_request_test.go:TestSafeRequestAllowedHostsDoesNotBypassPrivateRejection", "internal/httpx/resty/safe_request_test.go:TestSafeRequestAllowedHostsDoesNotBypassPrivateRejection", "internal/url/safe_resource_allowlist_test.go:TestOpenSafeAllowedHostsDoesNotBypassPrivateRejection", "internal/conf/load_remote_safe_allowed_hosts_test.go:TestLoadRemoteSafeAllowedHostsDoesNotBypassPrivateRejection"]
+      },
+      {
+        "name": "bounded_response_reads",
+        "packages": ["vhttp", "vresty", "vurl", "vconf"],
+        "required_controls": ["max response bytes", "ContentLength precheck", "streaming overflow detection", "remote config max bytes"],
+        "contract_tests": ["internal/httpx/contract_response_limits_test.go:TestHTTPContractMaxResponseBytes", "internal/httpx/http/response_read_options_test.go:TestResponseReadLimitFollowsGlobalConfigSnapshot", "internal/httpx/resty/response_test.go:TestResponseReadLimitOptions", "internal/url/safe_resource_limit_test.go:TestOpenSafeMaxBytes", "vconf/load_remote_safe_test.go:TestFacadeLoadRemoteSafeRejectsBoundaryFailures"]
+      },
+      {
+        "name": "safe_download_paths",
+        "packages": ["vhttp", "vresty", "vurl"],
+        "required_controls": ["safe filename normalization", "download path scoping", "unsafe content-disposition rejection"],
+        "contract_tests": ["internal/httpx/internal/shared/util_test.go:TestSafeDownloadedFilenameAndJoin", "internal/httpx/http/save_as_content_disposition_test.go:TestSaveAsRejectsUnsafeContentDispositionFilename", "internal/httpx/resty/save_test.go:TestSaveAsRejectsUnsafeContentDispositionFilename"]
+      },
+      {
+        "name": "remote_config_boundary",
+        "packages": ["vconf"],
+        "required_controls": ["safe remote loader", "allowed host policy", "status code validation", "query secret redaction"],
+        "contract_tests": ["vconf/load_remote_safe_test.go:TestFacadeRemoteSafeWrappers", "vconf/load_remote_safe_test.go:TestFacadeLoadRemoteSafeRejectsBoundaryFailures", "internal/conf/load_remote_safe_roundtrip_test.go:TestLoadRemoteSafeRevalidatesHostAtRoundTrip"]
+      }
+    ]
   }
 }

@@ -62,6 +62,7 @@ package_thresholds = " ".join(
     f"{package_path}={threshold:.1f}"
     for package_path, threshold in coverage_gates["package_thresholds"].items()
 )
+changed_package_thresholds = set()
 module = data["project"]["module"]
 facade_to_internal = {
     entry["package"]: entry["internal"].rstrip("/")
@@ -83,20 +84,25 @@ security_sensitive_paths = " ".join(sorted(security_sensitive_paths))
 for path in changed_files:
     if not path.endswith(".go") or path.endswith("/doc.go"):
         continue
+    package_path = f"{module}/{os.path.dirname(path)}"
+    if package_path in coverage_gates["package_thresholds"]:
+        changed_package_thresholds.add(f"{package_path}={coverage_gates['package_thresholds'][package_path]:.1f}")
     for prefix, package_dir in security_prefix_to_package_dir.items():
         if path.startswith(prefix) and has_statement_source(package_dir):
             changed_security_sensitive_paths.add(f"{module}/{package_dir}")
 changed_security_sensitive_paths = " ".join(sorted(changed_security_sensitive_paths))
-print(f"{repository_threshold:.1f}|{package_thresholds}|{security_sensitive_paths}|{security_sensitive_min_threshold:.1f}|{changed_security_sensitive_paths}")
+print(f"{repository_threshold:.1f}|{package_thresholds}|{security_sensitive_paths}|{security_sensitive_min_threshold:.1f}|{changed_security_sensitive_paths}|{' '.join(sorted(changed_package_thresholds))}")
 PY
 )"
 
-IFS='|' read -r metadata_threshold metadata_package_thresholds metadata_security_sensitive_paths metadata_security_sensitive_min_threshold metadata_changed_security_sensitive_paths <<<"${coverage_config}"
+IFS='|' read -r metadata_threshold metadata_package_thresholds metadata_security_sensitive_paths metadata_security_sensitive_min_threshold metadata_changed_security_sensitive_paths metadata_changed_package_thresholds <<<"${coverage_config}"
 threshold="${COVERAGE_THRESHOLD:-${metadata_threshold}}"
 package_thresholds="${PACKAGE_COVERAGE_THRESHOLDS:-${metadata_package_thresholds}}"
+changed_package_thresholds="${CHANGED_PACKAGE_COVERAGE_THRESHOLDS:-${metadata_changed_package_thresholds}}"
 security_sensitive_paths="${SECURITY_SENSITIVE_COVERAGE_PATHS:-${metadata_security_sensitive_paths}}"
 security_sensitive_min_threshold="${SECURITY_SENSITIVE_MIN_COVERAGE_THRESHOLD:-${metadata_security_sensitive_min_threshold}}"
 changed_security_sensitive_paths="${CHANGED_SECURITY_SENSITIVE_COVERAGE_PATHS:-${metadata_changed_security_sensitive_paths}}"
+coverage_check_all_packages="${COVERAGE_CHECK_ALL_PACKAGES:-0}"
 
 if [ ! -f "${coverage_file}" ]; then
 	echo "COVERAGE CHECK ERROR: ${coverage_file} does not exist" >&2
@@ -123,7 +129,9 @@ BEGIN {
 }
 '
 
-if [ -z "${package_thresholds}" ]; then
+if [ "${coverage_check_all_packages}" != "1" ]; then
+	echo "package coverage thresholds skipped for unchanged packages; set COVERAGE_CHECK_ALL_PACKAGES=1 to enforce all package thresholds"
+elif [ -z "${package_thresholds}" ]; then
 	:
 else
 	for gate in ${package_thresholds}; do
@@ -160,6 +168,46 @@ else
 				exit 1
 			}
 			printf "%s coverage %.1f%% meets required %.1f%%\n", package_path, total, threshold
+		}
+		'
+	done
+fi
+
+if [ -n "${changed_package_thresholds}" ]; then
+	for gate in ${changed_package_thresholds}; do
+		package_path="${gate%%=*}"
+		package_threshold="${gate#*=}"
+		package_total="$(
+			awk -v pkg="${package_path}" '
+			NR == 1 { next }
+			{
+				file = $1
+				sub(/:.*/, "", file)
+				if (file ~ "^" pkg "/[^/]+\\.go$") {
+					statements += $2
+					if ($3 > 0) {
+						covered += $2
+					}
+				}
+			}
+			END {
+				if (statements > 0) {
+					printf "%.1f", covered * 100 / statements
+				}
+			}
+			' "${coverage_file}"
+		)"
+		if [ -z "${package_total}" ]; then
+			echo "COVERAGE CHECK ERROR: changed package ${package_path} has no coverage data" >&2
+			exit 2
+		fi
+		awk -v package_path="${package_path}" -v total="${package_total}" -v threshold="${package_threshold}" '
+		BEGIN {
+			if (total + 0 < threshold + 0) {
+				printf "changed package %s coverage %.1f%% is below required %.1f%%\n", package_path, total, threshold > "/dev/stderr"
+				exit 1
+			}
+			printf "changed package %s coverage %.1f%% meets required %.1f%%\n", package_path, total, threshold
 		}
 		'
 	done

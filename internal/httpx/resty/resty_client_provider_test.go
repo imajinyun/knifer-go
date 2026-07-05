@@ -52,7 +52,7 @@ func TestRestyClientFactoryProviderConcurrentConfigureAndUse(t *testing.T) {
 		go func() {
 			defer wg.Done()
 			for j := 0; j < 100; j++ {
-				ConfigureDefaultRestyClientProvider(func() *grestry.Client { return grestry.New() })
+				ConfigureDefaultRestyClientProvider(grestry.New)
 				if client := NewIsolatedRequest(MethodGet, "http://example.com").buildClient(); client == nil {
 					t.Error("configured resty client provider returned nil client")
 				}

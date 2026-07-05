@@ -118,6 +118,10 @@ Call `Analyze` when you need both score and strength or want to show feedback. C
 
 No. Use a password hashing library such as bcrypt, scrypt, or Argon2 through your authentication layer.
 
+### Do vpass helpers return errors?
+
+No. `vpass` analyzes a provided string and returns deterministic scores or strength buckets. Handle input errors, password policy failures, and storage errors in the authentication layer.
+
 ### Does a very strong password remove the need for MFA?
 
 No. Password strength and MFA defend against different failure modes and should be considered separately.

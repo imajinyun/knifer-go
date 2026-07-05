@@ -244,6 +244,20 @@ def test_function_exists(reference: str) -> bool:
 	return re.search(rf"^func\s+{re.escape(symbol)}\s*\(\s*t\s+\*testing\.T\s*\)", text, flags=re.MULTILINE) is not None
 
 
+def benchmark_function_exists(reference: str) -> bool:
+	path, separator, symbol = reference.partition(":")
+	if not separator or not re.match(r"^Benchmark[A-Za-z_]\w*$", symbol):
+		return False
+	file_path = root / path
+	if not file_path.exists():
+		return False
+	try:
+		text = file_path.read_text(encoding="utf-8")
+	except UnicodeDecodeError:
+		return False
+	return re.search(rf"^func\s+{re.escape(symbol)}\s*\(\s*b\s+\*testing\.B\s*\)", text, flags=re.MULTILINE) is not None
+
+
 def example_function_exists(package_name: str, example_name: str) -> bool:
 	package_dir = root / package_name
 	if not package_dir.is_dir():
@@ -328,6 +342,37 @@ def validate_benchmark_regression() -> None:
 	for pkg in tracked:
 		if pkg.startswith("./") and not (root / pkg[2:]).is_dir():
 			add_error(f"benchmark_regression.tracked_packages references missing package directory {pkg}")
+	tracked_set = set(tracked)
+	hot_paths = bench.get("hot_path_packages")
+	if not isinstance(hot_paths, list) or len(hot_paths) < 7:
+		add_error("benchmark_regression.hot_path_packages must include at least 7 hot-path package entries")
+		hot_paths = []
+	expected_hot_packages = {"./vjson", "./vstr", "./vslice", "./vmap", "./vdb", "./vhttp", "./vcodec"}
+	seen_hot_packages: set[str] = set()
+	for index, item in enumerate(hot_paths):
+		entry = require_mapping(item, f"benchmark_regression.hot_path_packages[{index}]")
+		package = entry.get("package")
+		if not isinstance(package, str) or not package:
+			add_error(f"benchmark_regression.hot_path_packages[{index}].package must be non-empty")
+			continue
+		seen_hot_packages.add(package)
+		if package not in tracked_set:
+			add_error(f"benchmark_regression.hot_path_packages.{package} must also be listed in tracked_packages")
+		if package.startswith("./") and not (root / package[2:]).is_dir():
+			add_error(f"benchmark_regression.hot_path_packages.{package} references missing package directory")
+		if not isinstance(entry.get("owner"), str) or not entry["owner"].strip():
+			add_error(f"benchmark_regression.hot_path_packages.{package}.owner must be non-empty")
+		if entry.get("threshold_profile") != "default":
+			add_error(f"benchmark_regression.hot_path_packages.{package}.threshold_profile must be default")
+		benchmarks = require_string_list(entry.get("benchmarks"), f"benchmark_regression.hot_path_packages.{package}.benchmarks")
+		if len(benchmarks) < 1:
+			add_error(f"benchmark_regression.hot_path_packages.{package}.benchmarks must not be empty")
+		for reference in benchmarks:
+			if not benchmark_function_exists(reference):
+				add_error(f"benchmark_regression.hot_path_packages.{package}.benchmarks references missing benchmark {reference}")
+	missing_hot_packages = sorted(expected_hot_packages - seen_hot_packages)
+	if missing_hot_packages:
+		add_error("benchmark_regression.hot_path_packages missing package(s): " + ", ".join(missing_hot_packages))
 	for target in ("bench-baseline", "bench-compare", "bench-regression-check", "benchstat"):
 		if not re.search(rf"^{re.escape(target)}:(?:\s|$)", makefile, flags=re.MULTILINE):
 			add_error(f"Makefile must define benchmark target {target}")
@@ -4377,6 +4422,100 @@ def validate_threat_model() -> None:
 	unexpected = sorted(covered_packages - security_sensitive)
 	if unexpected:
 		add_error("threat_model.domains cover non-security-sensitive package(s): " + ", ".join(unexpected))
+	boundary_contracts = threat_model.get("boundary_contracts")
+	if not isinstance(boundary_contracts, list) or not boundary_contracts:
+		add_error("threat_model.boundary_contracts must be a non-empty list")
+		return
+	expected_boundary_names = {
+		"default_timeout",
+		"redirect_revalidation",
+		"private_host_rejection",
+		"bounded_response_reads",
+		"safe_download_paths",
+		"remote_config_boundary",
+	}
+	seen_boundary_names: set[str] = set()
+	for index, value in enumerate(boundary_contracts):
+		contract = require_mapping(value, f"threat_model.boundary_contracts[{index}]")
+		name = contract.get("name")
+		if not isinstance(name, str) or not name:
+			add_error(f"threat_model.boundary_contracts[{index}].name must be non-empty")
+			continue
+		seen_boundary_names.add(name)
+		packages = set(require_string_list(contract.get("packages"), f"threat_model.boundary_contracts.{name}.packages"))
+		unknown = sorted(packages - public_facades)
+		if unknown:
+			add_error(f"threat_model.boundary_contracts.{name}.packages contains non-public facade(s): " + ", ".join(unknown))
+		if len(require_string_list(contract.get("required_controls"), f"threat_model.boundary_contracts.{name}.required_controls")) < 2:
+			add_error(f"threat_model.boundary_contracts.{name}.required_controls must contain at least two controls")
+		references = require_string_list(contract.get("contract_tests"), f"threat_model.boundary_contracts.{name}.contract_tests")
+		if len(references) < 2:
+			add_error(f"threat_model.boundary_contracts.{name}.contract_tests must reference at least two tests")
+		for reference in references:
+			if not references_function(reference):
+				add_error(f"threat_model.boundary_contracts.{name}.contract_tests must reference explicit test functions, got {reference}")
+			if not reference_exists(reference):
+				add_error(f"threat_model.boundary_contracts.{name}.contract_tests references missing file or function {reference}")
+	missing_boundary_names = sorted(expected_boundary_names - seen_boundary_names)
+	if missing_boundary_names:
+		add_error("threat_model.boundary_contracts missing boundary/boundaries: " + ", ".join(missing_boundary_names))
+	extra_boundary_names = sorted(seen_boundary_names - expected_boundary_names)
+	if extra_boundary_names:
+		add_error("threat_model.boundary_contracts includes unknown boundary/boundaries: " + ", ".join(extra_boundary_names))
+
+
+def validate_random_source_policy() -> None:
+	policy = require_mapping(ai_context.get("random_source_policy"), "random_source_policy")
+	packages = set(require_string_list(policy.get("packages"), "random_source_policy.packages"))
+	expected_packages = {"vrand", "vid", "vcrypto", "vjwt"}
+	if packages != expected_packages:
+		add_error("random_source_policy.packages must cover exactly: " + ", ".join(sorted(expected_packages)))
+	policies_value = policy.get("policies")
+	if not isinstance(policies_value, list) or not policies_value:
+		add_error("random_source_policy.policies must be a non-empty list")
+		return
+	expected_policy_names = {
+		"secure_bytes_fail_closed",
+		"compatibility_byte_fallback",
+		"identifier_fallback_compatibility",
+		"jwt_key_and_signer_policy",
+	}
+	seen_names: set[str] = set()
+	covered_packages: set[str] = set()
+	for index, policy_value in enumerate(policies_value):
+		entry = require_mapping(policy_value, f"random_source_policy.policies[{index}]")
+		name = entry.get("name")
+		if not isinstance(name, str) or not name:
+			add_error(f"random_source_policy.policies[{index}].name must be non-empty")
+			continue
+		seen_names.add(name)
+		entry_packages = set(require_string_list(entry.get("packages"), f"random_source_policy.policies.{name}.packages"))
+		covered_packages.update(entry_packages)
+		unknown = sorted(entry_packages - expected_packages)
+		if unknown:
+			add_error(f"random_source_policy.policies.{name}.packages contains unknown package(s): " + ", ".join(unknown))
+		for field in ("behavior", "allowed_sources", "forbidden_uses", "contract_tests"):
+			values = entry.get(field)
+			if field == "behavior":
+				if not isinstance(values, str) or not values.strip():
+					add_error(f"random_source_policy.policies.{name}.behavior must be non-empty")
+				continue
+			items = require_string_list(values, f"random_source_policy.policies.{name}.{field}")
+			if not items:
+				add_error(f"random_source_policy.policies.{name}.{field} must be non-empty")
+		for reference in require_string_list(entry.get("contract_tests"), f"random_source_policy.policies.{name}.contract_tests"):
+			if not references_function(reference):
+				add_error(f"random_source_policy.policies.{name}.contract_tests must reference explicit test functions, got {reference}")
+			if not reference_exists(reference):
+				add_error(f"random_source_policy.policies.{name}.contract_tests references missing file or function {reference}")
+	missing_policy_names = sorted(expected_policy_names - seen_names)
+	if missing_policy_names:
+		add_error("random_source_policy.policies missing policy/policies: " + ", ".join(missing_policy_names))
+	extra_policy_names = sorted(seen_names - expected_policy_names)
+	if extra_policy_names:
+		add_error("random_source_policy.policies includes unknown policy/policies: " + ", ".join(extra_policy_names))
+	if covered_packages != expected_packages:
+		add_error("random_source_policy policies must cover package(s): " + ", ".join(sorted(expected_packages)))
 
 
 validate_benchmark_regression()
@@ -4436,6 +4575,7 @@ if not bench_only:
 	validate_error_model()
 	validate_dynamic_semantic_contracts()
 	validate_threat_model()
+	validate_random_source_policy()
 
 if errors:
 	for error in errors:

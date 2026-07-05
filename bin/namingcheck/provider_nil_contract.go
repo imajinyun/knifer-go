@@ -284,23 +284,24 @@ func selectorCallTarget(expr ast.Expr) bool {
 
 func nonNilGuardParams(expr ast.Expr, params map[string]bool) map[string]bool {
 	out := map[string]bool{}
-	switch e := expr.(type) {
-	case *ast.BinaryExpr:
-		if e.Op == token.LAND {
-			for param := range nonNilGuardParams(e.X, params) {
-				out[param] = true
-			}
-			for param := range nonNilGuardParams(e.Y, params) {
-				out[param] = true
-			}
-			return out
-		}
-		if e.Op != token.NEQ {
-			return out
-		}
-		if param, ok := nilComparisonParam(e.X, e.Y, params); ok {
+	e, ok := expr.(*ast.BinaryExpr)
+	if !ok {
+		return out
+	}
+	if e.Op == token.LAND {
+		for param := range nonNilGuardParams(e.X, params) {
 			out[param] = true
 		}
+		for param := range nonNilGuardParams(e.Y, params) {
+			out[param] = true
+		}
+		return out
+	}
+	if e.Op != token.NEQ {
+		return out
+	}
+	if param, ok := nilComparisonParam(e.X, e.Y, params); ok {
+		out[param] = true
 	}
 	return out
 }

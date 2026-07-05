@@ -60,6 +60,24 @@ def workflow_job_names(workflow_text):
     return names
 
 
+def make_targets(makefile_text):
+    return set(re.findall(r"^([A-Za-z0-9_.-]+):(?:\s|$)", makefile_text, flags=re.MULTILINE))
+
+
+def make_target_from_command(command):
+    match = re.match(r"make\s+([A-Za-z0-9_.-]+)", command.strip())
+    if not match:
+        return ""
+    return match.group(1)
+
+
+def workflow_make_targets(workflow_text):
+    targets = set()
+    for match in re.finditer(r"(?:^|[\s;&|])make\s+([A-Za-z0-9_.-]+)", workflow_text):
+        targets.add(match.group(1))
+    return targets
+
+
 try:
     with open(ai_context, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -71,12 +89,23 @@ except json.JSONDecodeError as exc:
     sys.exit(1)
 
 ci_workflows = require_mapping(data.get("ci_workflows"), "ci_workflows")
+commands = require_mapping(data.get("commands"), "commands")
+command_make_targets = {}
+for command_name, command_spec in commands.items():
+    if not isinstance(command_spec, dict):
+        continue
+    target = make_target_from_command(command_spec.get("cmd", ""))
+    if target:
+        command_make_targets.setdefault(target, set()).add(command_name)
 tool_versions = require_mapping(ci_workflows.get("tool_versions"), "ci_workflows.tool_versions")
 go_1_25_patch = require_string(tool_versions.get("go_1_25_patch"), "ci_workflows.tool_versions.go_1_25_patch")
 golangci_lint_version = require_string(tool_versions.get("golangci_lint"), "ci_workflows.tool_versions.golangci_lint")
 github_actions = require_mapping(ci_workflows.get("github_actions"), "ci_workflows.github_actions")
 
 workflow_dir = os.path.join(root_dir, ".github", "workflows")
+with open(os.path.join(root_dir, "Makefile"), "r", encoding="utf-8") as f:
+    makefile_text = f.read()
+defined_make_targets = make_targets(makefile_text)
 declared_paths = set()
 actual_paths = set()
 if os.path.isdir(workflow_dir):
@@ -119,6 +148,10 @@ for name, workflow in sorted(github_actions.items()):
     with open(absolute_workflow_path, "r", encoding="utf-8") as f:
         workflow_text = f.read()
 
+    for target in sorted(workflow_make_targets(workflow_text)):
+        if target not in defined_make_targets:
+            add_error(f"{workflow_path} references unknown Makefile target {target!r}")
+
     jobs = workflow_job_names(workflow_text)
     for job in required_jobs:
         if job not in jobs:
@@ -127,6 +160,12 @@ for name, workflow in sorted(github_actions.items()):
     for required_text in required_commands:
         if required_text not in workflow_text:
             add_error(f"{workflow_path} must contain required command {required_text!r}")
+        target = make_target_from_command(required_text)
+        if target:
+            if target not in defined_make_targets:
+                add_error(f"ci_workflows.github_actions.{name} required command {required_text!r} references unknown Makefile target")
+            if target not in command_make_targets:
+                add_error(f"ci_workflows.github_actions.{name} required command {required_text!r} has no ai-context.commands entry")
     for env_name in required_env:
         if env_name not in workflow_text:
             add_error(f"{workflow_path} must contain required env {env_name!r}")

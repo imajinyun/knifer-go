@@ -43,49 +43,72 @@ err() {
 	fail=1
 }
 
+HEAVY_ALLOWLIST_TSV="$(mktemp)"
+trap 'rm -f "${HEAVY_ALLOWLIST_TSV}"' EXIT
+python3 - "${HEAVY_ALLOWLIST_TSV}" <<'PY'
+import json
+import sys
+
+out_path = sys.argv[1]
+with open("ai-context.json", "r", encoding="utf-8") as f:
+    data = json.load(f)
+
+allowlist = data.get("dependency_tiers", {}).get("heavy_dependency_allowlist", {})
+with open(out_path, "w", encoding="utf-8") as f:
+    for import_path, prefixes in sorted(allowlist.items()):
+        if not isinstance(import_path, str) or not isinstance(prefixes, list):
+            continue
+        for prefix in prefixes:
+            if isinstance(prefix, str):
+                f.write(import_path + "\t" + prefix + "\n")
+PY
+
 allowed_facade_external_import() {
-	case "$1:$2" in
-		verr:github.com/getsentry/sentry-go | \
-	verr:github.com/sirupsen/logrus | \
-	vpoi:github.com/xuri/excelize/v2 | \
-	vresty:resty.dev/v3)
-		return 0
+	allowed_heavy_external_import "$1" "$2"
+}
+
+import_pattern_matches() {
+	pattern="$1"
+	import_path="$2"
+	case "${pattern}" in
+	*"*"*)
+		case "${import_path}" in
+		${pattern})
+			return 0
+			;;
+		esac
+		;;
+	*)
+		[ "${pattern}" = "${import_path}" ] && return 0
 		;;
 	esac
 	return 1
 }
 
 allowed_heavy_external_import() {
-	case "$1:$2" in
-		internal/errx:github.com/getsentry/sentry-go | \
-		internal/errx:github.com/sirupsen/logrus | \
-		verr:github.com/getsentry/sentry-go | \
-		verr:github.com/sirupsen/logrus | \
-		internal/httpx/resty:resty.dev/v3 | \
-		vresty:resty.dev/v3 | \
-		internal/poi:github.com/xuri/excelize/v2 | \
-		vpoi:github.com/xuri/excelize/v2)
-			return 0
-			;;
-	esac
-	case "$1:$2" in
-		internal/imgx:github.com/makiuchi-d/gozxing*)
-			return 0
-			;;
-	esac
+	rel="$1"
+	import_path="$2"
+	while IFS="$(printf '\t')" read -r pattern prefix; do
+		[ -z "${pattern}" ] && continue
+		if import_pattern_matches "${pattern}" "${import_path}"; then
+			case "${rel}" in
+			"${prefix}" | "${prefix}"/*)
+				return 0
+				;;
+			esac
+		fi
+	done <"${HEAVY_ALLOWLIST_TSV}"
 	return 1
 }
 
 is_heavy_external_import() {
-	case "$1" in
-		github.com/getsentry/sentry-go | \
-		github.com/sirupsen/logrus | \
-		github.com/xuri/excelize/v2 | \
-		resty.dev/v3 | \
-		github.com/makiuchi-d/gozxing*)
+	import_path="$1"
+	while IFS="$(printf '\t')" read -r pattern _prefix; do
+		[ -z "${pattern}" ] && continue
+		if import_pattern_matches "${pattern}" "${import_path}"; then
 			return 0
-			;;
-	esac
+		fi
+	done <"${HEAVY_ALLOWLIST_TSV}"
 	return 1
 }
 
@@ -210,11 +233,15 @@ from __future__ import annotations
 import pathlib
 import re
 import sys
+import json
 
 root = pathlib.Path.cwd()
 violations: list[str] = []
 
 package_comment = re.compile(r"(?m)^//\s+Package\s+\w+")
+
+with (root / "ai-context.json").open(encoding="utf-8") as f:
+	ai_context = json.load(f)
 
 
 def check_package_docs() -> None:
@@ -317,10 +344,46 @@ def check_facade_boundary_policy() -> None:
 				)
 
 
+def check_provider_contract_facades() -> None:
+	facade_to_internal = {
+		entry["package"]: entry["internal"].rstrip("/")
+		for entry in ai_context.get("public_facades", [])
+		if isinstance(entry, dict) and "package" in entry and "internal" in entry
+	}
+	providers = ai_context.get("dependency_tiers", {}).get("provider_contract_facades", [])
+	if not isinstance(providers, list):
+		violations.append("ai-context.json dependency_tiers.provider_contract_facades must be a list")
+		return
+	for facade in providers:
+		internal = facade_to_internal.get(facade)
+		if not internal:
+			violations.append(f"provider contract facade {facade}: missing public_facades internal mapping")
+			continue
+		paths = []
+		for directory in (root / facade, root / internal):
+			if not directory.is_dir():
+				violations.append(f"provider contract facade {facade}: missing directory {directory.relative_to(root)}")
+				continue
+			paths.extend(path for path in directory.glob("*.go") if not path.name.endswith("_test.go"))
+		combined = "\n".join(path.read_text() for path in paths)
+		if not re.search(r"type\s+\w*Provider\s+interface\s*{", combined):
+			violations.append(f"provider contract facade {facade}: must define a Provider interface contract")
+		for path in paths:
+			rel = path.relative_to(root).as_posix()
+			text = path.read_text()
+			for forbidden_import in ('"net/http"', '"resty.dev/', '"google.golang.org/grpc', '"golang.org/x/oauth2'):
+				if forbidden_import in text:
+					violations.append(f"{rel}: provider contract packages must not import concrete provider/network SDK dependency {forbidden_import}")
+			for forbidden_call in ("os.Getenv", "os.ReadFile", "http.NewRequest", "http.Client", "net.Dial", "grpc.Dial"):
+				if forbidden_call in text:
+					violations.append(f"{rel}: provider contract packages must not read credentials, touch local files, or open network connections directly ({forbidden_call})")
+
+
 check_package_docs()
 check_panic_policy()
 check_ref_unsafe_opt_in()
 check_facade_boundary_policy()
+check_provider_contract_facades()
 
 for violation in violations:
 	print(f"ARCH VIOLATION: {violation}", file=sys.stderr)

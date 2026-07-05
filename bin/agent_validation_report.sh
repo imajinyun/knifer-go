@@ -143,8 +143,11 @@ for path in files:
         detected_policies.add("dependency_change")
     if path == "ai-context.json" or path == "Makefile" or path.startswith(".github/") or path.startswith("bin/check_") or path.startswith("bin/agent_"):
         detected_policies.add("ci_governance")
-    if path == "docs/api/exports.txt" or any(path.startswith(package + "/") for package in facades):
+    facade_path = next((package for package in facades if path.startswith(package + "/")), "")
+    if path == "docs/api/exports.txt" or (facade_path and path.endswith(".go") and not path.endswith("_test.go")):
         detected_policies.add("public_api")
+    elif facade_path and path.endswith("_test.go"):
+        detected_policies.add("bug_fix")
     if path.endswith(".md") or path in {"CLAUDE.md", "llms.txt"} or path.startswith("docs/"):
         detected_policies.add("documentation")
     if any(path.startswith(prefix) for prefix in security_prefixes):

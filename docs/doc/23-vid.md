@@ -74,6 +74,10 @@ Use Snowflake IDs when you need compact sortable numeric IDs generated across mu
 
 No. They can reveal ordering or time-derived metadata. Use random opaque IDs when creation-time disclosure is undesirable.
 
+### Which vid helpers return errors?
+
+Most convenience ID helpers return strings and use compatibility fallback behavior. Use option-based constructors and validate configuration errors at setup boundaries when worker IDs, alphabets, clocks, or random readers come from configuration.
+
 ## Generate UUIDs
 
 ```go

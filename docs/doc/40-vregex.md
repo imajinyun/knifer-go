@@ -74,6 +74,10 @@ Compile patterns yourself with `regexp` when the same pattern is used repeatedly
 
 Usually no. Regex can check simple shapes, but structured formats should use dedicated parsers or validators after any lightweight regex precheck.
 
+### How should I handle regex errors?
+
+Helpers that compile patterns internally return the package's documented error behavior. For hot paths or user-supplied patterns, compile and validate patterns at the boundary so errors are handled before repeated matching.
+
 ## Match, find, and count
 
 ```go

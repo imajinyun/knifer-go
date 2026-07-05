@@ -792,6 +792,30 @@ for index, entry in enumerate(must_api_inventory):
     require_string(entry.get("replacement"), f"api_freeze.must_api_inventory[{index}].replacement")
     require_string(entry.get("rationale"), f"api_freeze.must_api_inventory[{index}].rationale")
     require_string(entry.get("doc_path"), f"api_freeze.must_api_inventory[{index}].doc_path")
+
+random_source_policy = require_mapping(data.get("random_source_policy"), "random_source_policy")
+random_policy_packages = set(require_string_list(random_source_policy.get("packages"), "random_source_policy.packages"))
+expected_random_policy_packages = {"vrand", "vid", "vcrypto", "vjwt"}
+if random_policy_packages != expected_random_policy_packages:
+    add_error("random_source_policy.packages must cover exactly: " + ", ".join(sorted(expected_random_policy_packages)))
+random_policies = random_source_policy.get("policies")
+if not isinstance(random_policies, list) or not random_policies:
+    add_error("random_source_policy.policies must be a non-empty list")
+    random_policies = []
+for index, policy in enumerate(random_policies):
+    policy = require_mapping(policy, f"random_source_policy.policies[{index}]")
+    require_string(policy.get("name"), f"random_source_policy.policies[{index}].name")
+    packages = set(require_string_list(policy.get("packages"), f"random_source_policy.policies[{index}].packages"))
+    unknown_packages = sorted(packages - expected_random_policy_packages)
+    if unknown_packages:
+        add_error(f"random_source_policy.policies[{index}].packages contains unknown package(s): " + ", ".join(unknown_packages))
+    require_string(policy.get("behavior"), f"random_source_policy.policies[{index}].behavior")
+    if not require_string_list(policy.get("allowed_sources"), f"random_source_policy.policies[{index}].allowed_sources"):
+        add_error(f"random_source_policy.policies[{index}].allowed_sources must not be empty")
+    if not require_string_list(policy.get("forbidden_uses"), f"random_source_policy.policies[{index}].forbidden_uses"):
+        add_error(f"random_source_policy.policies[{index}].forbidden_uses must not be empty")
+    if not require_string_list(policy.get("contract_tests"), f"random_source_policy.policies[{index}].contract_tests"):
+        add_error(f"random_source_policy.policies[{index}].contract_tests must not be empty")
 decision_cards = api_freeze.get("decision_cards")
 if not isinstance(decision_cards, list):
     add_error("api_freeze.decision_cards must be a list")

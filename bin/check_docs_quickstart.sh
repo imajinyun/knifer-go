@@ -50,6 +50,7 @@ for name in doc_files:
     docs_by_package.setdefault(package, []).append(name)
 
 required_literal_sections = [
+    "## Golden path APIs",
     "## Which helper should I use?",
     "## Related packages",
     "## Benchmarks and trade-offs",
@@ -109,6 +110,10 @@ for entry in public_facades:
 
     if "Prefer" not in text and "Use" not in text:
         add_error(f"{filename} helper guidance must include explicit use/prefer wording")
+
+    lower_text = text.lower()
+    if not any(term in lower_text for term in ("error", "errors.is", "panic(err)", "err != nil")):
+        add_error(f"{filename} must document error behavior or explicitly show error handling")
 
     if not re.search(r"^## When not to use", text, flags=re.MULTILINE):
         add_error(f"{filename} is missing required section '## When not to use ...'")

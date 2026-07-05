@@ -269,6 +269,7 @@ func TestCoverageCheckRequiresChangedSecuritySensitivePackageData(t *testing.T) 
 		cmd.Env = append(os.Environ(),
 			"COVERAGE_THRESHOLD=0",
 			"PACKAGE_COVERAGE_THRESHOLDS= ",
+			"CHANGED_PACKAGE_COVERAGE_THRESHOLDS= ",
 			"SECURITY_SENSITIVE_COVERAGE_PATHS= ",
 			"CHANGED_SECURITY_SENSITIVE_COVERAGE_PATHS="+module+"/vhttp",
 			"SECURITY_SENSITIVE_MIN_COVERAGE_THRESHOLD=0",
@@ -292,6 +293,32 @@ func TestCoverageCheckRequiresChangedSecuritySensitivePackageData(t *testing.T) 
 	}
 	if !strings.Contains(string(output), "changed security-sensitive coverage data present for 1 package path") {
 		t.Fatalf("coverage check output missing changed package success:\n%s", output)
+	}
+}
+
+func TestChangePolicyClassifiesFacadeTestAndBenchmarkSeparatelyFromPublicAPI(t *testing.T) {
+	output, err := runChangePolicyCheck(t, "vcodec/codec_benchmark_test.go\nvhttp/request_safe_constructors_test.go")
+	if err != nil {
+		t.Fatalf("check_change_policy.sh failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "detected policies: bug_fix") {
+		t.Fatalf("change policy output missing bug_fix-only policy:\n%s", output)
+	}
+	if strings.Contains(output, "public_api") {
+		t.Fatalf("facade test/benchmark files must not be classified as public_api:\n%s", output)
+	}
+}
+
+func TestChangePolicyClassifiesFacadeProductionAndSnapshotAsPublicAPI(t *testing.T) {
+	output, err := runChangePolicyCheck(t, "vcodec/codec.go\ndocs/api/exports.txt")
+	if err != nil {
+		t.Fatalf("check_change_policy.sh failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "public_api") {
+		t.Fatalf("change policy output missing public_api policy:\n%s", output)
+	}
+	if !strings.Contains(output, "public_api paths:") || !strings.Contains(output, "vcodec/codec.go") || !strings.Contains(output, "docs/api/exports.txt") {
+		t.Fatalf("change policy output missing public_api paths:\n%s", output)
 	}
 }
 
@@ -585,6 +612,16 @@ func runAPIFreezeCheck(t *testing.T, contextPath, toolsPath string) (string, err
 	cmd := exec.Command("bash", filepath.Join(root, "bin/check_api_freeze.sh"))
 	cmd.Dir = root
 	cmd.Env = append(os.Environ(), "AI_CONTEXT_FILE="+contextPath, "TOOLS_JSON_FILE="+toolsPath)
+	combined, err := cmd.CombinedOutput()
+	return string(combined), err
+}
+
+func runChangePolicyCheck(t *testing.T, changedFiles string) (string, error) {
+	t.Helper()
+	root := repoRoot(t)
+	cmd := exec.Command("bash", filepath.Join(root, "bin/check_change_policy.sh"))
+	cmd.Dir = root
+	cmd.Env = append(os.Environ(), "CHANGE_POLICY_CHANGED_FILES="+changedFiles)
 	combined, err := cmd.CombinedOutput()
 	return string(combined), err
 }

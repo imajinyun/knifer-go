@@ -67,6 +67,10 @@ No. Function arguments are evaluated before the call. If later conditions are ex
 
 `ToInt(true)` returns `1`; `ToInt(false)` returns `0`.
 
+### Do vbool helpers return errors?
+
+No. `vbool` helpers are deterministic value helpers. If a boolean value comes from user input, parse and handle errors with a package such as `vconv` before calling `vbool`.
+
 ## Negate a bool
 
 ```go

@@ -22,8 +22,12 @@ changed_files_from_worktree() {
 }
 
 changed_files="$({
-	changed_files_from_base
-	changed_files_from_worktree
+	if [ -n "${CHANGE_POLICY_CHANGED_FILES:-}" ]; then
+		printf '%s\n' "${CHANGE_POLICY_CHANGED_FILES}"
+	else
+		changed_files_from_base
+		changed_files_from_worktree
+	fi
 } | sort -u)"
 
 python3 - "${AI_CONTEXT}" "${changed_files}" <<'PY'
@@ -70,9 +74,13 @@ for path in changed_files:
         detected.add("security_sensitive")
         matched["security_sensitive"].append(path)
 
-    if any(path.startswith(package + "/") for package in facades):
+    facade_path = next((package for package in facades if path.startswith(package + "/")), "")
+    if facade_path and path.endswith(".go") and not path.endswith("_test.go"):
         detected.add("public_api")
         matched["public_api"].append(path)
+    elif facade_path and path.endswith("_test.go"):
+        detected.add("bug_fix")
+        matched["bug_fix"].append(path)
 
     if path.startswith("internal/") and not any(path.startswith(prefix) for prefix in security_prefixes):
         if path.endswith("_test.go"):
