@@ -5,6 +5,7 @@ import (
 	"errors"
 	mathrand "math/rand"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -71,6 +72,40 @@ func TestDefaultFallbackRandomSourceProviderCanBeConfiguredAndReset(t *testing.T
 	if got := SimpleUUIDWithOptions(WithRandomReader(errReader{})); len(got) != 32 || got[12] != '4' {
 		t.Fatalf("nil provider fallback UUID = %s", got)
 	}
+}
+
+func TestDefaultFallbackRandomSourceConcurrentConfigureAndUse(t *testing.T) {
+	ResetDefaultFallbackRandomSource()
+	t.Cleanup(ResetDefaultFallbackRandomSource)
+
+	var wg sync.WaitGroup
+	for i := 0; i < 8; i++ {
+		seed := int64(i + 1)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				ConfigureDefaultFallbackRandomSourceProvider(func() *mathrand.Rand {
+					return mathrand.New(mathrand.NewSource(seed))
+				})
+				if got := SimpleUUIDWithOptions(WithRandomReader(errReader{})); len(got) != 32 || got[12] != '4' {
+					t.Errorf("fallback UUID = %q, want v4 simple UUID", got)
+				}
+			}
+		}()
+	}
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				ResetDefaultFallbackRandomSource()
+				_ = ObjectIdWithOptions(WithObjectIDRandomReader(errReader{}))
+				_ = NanoIdWithOptions(WithNanoIDRandomReader(errReader{}))
+			}
+		}()
+	}
+	wg.Wait()
 }
 
 func TestUUIDOptions(t *testing.T) {

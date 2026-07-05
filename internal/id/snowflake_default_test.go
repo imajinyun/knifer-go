@@ -1,6 +1,9 @@
 package id
 
-import "testing"
+import (
+	"sync"
+	"testing"
+)
 
 func TestDefaultSnowflakeOptions(t *testing.T) {
 	t.Cleanup(func() { ConfigureDefaultSnowflake() })
@@ -76,4 +79,39 @@ func TestNewIsolatedSnowflake(t *testing.T) {
 	if isolated == configured || isolated.WorkerID() != 4 || isolated.DatacenterID() != 5 {
 		t.Fatalf("isolated snowflake = %p worker %d datacenter %d", isolated, isolated.WorkerID(), isolated.DatacenterID())
 	}
+}
+
+func TestSnowflakeGlobalStateConcurrentConfigureAndUse(t *testing.T) {
+	t.Cleanup(func() { ConfigureDefaultSnowflake() })
+
+	var wg sync.WaitGroup
+	for i := 0; i < 8; i++ {
+		workerID := int64(i)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				ConfigureDefaultSnowflake(WithSnowflakeWorkerID(workerID), WithSnowflakeDatacenterID(workerID))
+				if id := GetSnowflakeNextID(); id <= 0 {
+					t.Errorf("GetSnowflakeNextID() = %d, want positive", id)
+				}
+			}
+		}()
+	}
+	for i := 0; i < 8; i++ {
+		workerID := int64(i)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				if id := GetSnowflakeWithWorkerDataCenter(workerID, workerID).NextID(); id <= 0 {
+					t.Errorf("cached snowflake id = %d, want positive", id)
+				}
+				if id := NewIsolatedSnowflake(WithSnowflakeWorkerID(workerID), WithSnowflakeDatacenterID(workerID)).NextID(); id <= 0 {
+					t.Errorf("isolated snowflake id = %d, want positive", id)
+				}
+			}
+		}()
+	}
+	wg.Wait()
 }
