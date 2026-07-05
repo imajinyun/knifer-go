@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
@@ -97,4 +98,38 @@ func TestDefaultTransportProviderCanBeConfiguredAndReset(t *testing.T) {
 	if _, ok := client.Transport.(*http.Transport); !ok {
 		t.Fatalf("reset default transport type = %T, want *http.Transport", client.Transport)
 	}
+}
+
+func TestDefaultTransportProviderConcurrentConfigureAndUse(t *testing.T) {
+	ResetDefaultTransport()
+	t.Cleanup(ResetDefaultTransport)
+
+	var wg sync.WaitGroup
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				ConfigureDefaultTransportProvider(func() *http.Transport {
+					return &http.Transport{MaxIdleConnsPerHost: 7}
+				})
+				if client := Get("https://example.com").buildClient(); client.Transport == nil {
+					t.Error("configured default transport produced nil transport")
+				}
+			}
+		}()
+	}
+	for i := 0; i < 8; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 100; j++ {
+				ResetDefaultTransport()
+				if client := Post("https://example.com").Timeout(time.Second).buildClient(); client.Transport == nil {
+					t.Error("reset default transport produced nil transport")
+				}
+			}
+		}()
+	}
+	wg.Wait()
 }
