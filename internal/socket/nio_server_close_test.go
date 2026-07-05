@@ -1,6 +1,7 @@
 package socket
 
 import (
+	"context"
 	"net"
 	"testing"
 	"time"
@@ -43,5 +44,27 @@ func TestNioServerCloseClosesActiveConnections(t *testing.T) {
 		}
 	case <-time.After(time.Second):
 		t.Fatal("NioServer.Close blocked with active connection")
+	}
+}
+
+func TestNioServerListenAsyncContextWithCanceledContextExits(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	listener := &blockingListener{addr: factoryFakeAddr("nio-canceled"), done: make(chan struct{})}
+	nio, err := NewNioServerAddrWithOptions(&net.TCPAddr{Port: 1}, nil, WithListenerFactory(func(*net.TCPAddr) (net.Listener, error) {
+		return listener, nil
+	}))
+	if err != nil {
+		t.Fatalf("NewNioServerAddrWithOptions: %v", err)
+	}
+
+	done := nio.ListenAsyncContext(ctx)
+	select {
+	case <-done:
+	case <-time.After(time.Second):
+		t.Fatal("NioServer.ListenAsyncContext did not exit after canceled context")
+	}
+	if !listener.closed.Load() || nio.IsOpen() {
+		t.Fatalf("NioServer canceled start closed=%v open=%v", listener.closed.Load(), nio.IsOpen())
 	}
 }

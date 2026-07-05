@@ -1,6 +1,7 @@
 package socket
 
 import (
+	"context"
 	"net"
 	"testing"
 	"time"
@@ -34,5 +35,32 @@ func TestAioServerCloseClosesActiveConnections(t *testing.T) {
 		}
 	case <-time.After(time.Second):
 		t.Fatal("AioServer.Close blocked with active connection")
+	}
+}
+
+func TestAioServerStartContextWithCanceledContextExits(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	listener := &blockingListener{addr: factoryFakeAddr("aio-canceled"), done: make(chan struct{})}
+	aio, err := NewAioServerAddrWithOptions(&net.TCPAddr{Port: 1}, nil, WithListenerFactory(func(*net.TCPAddr) (net.Listener, error) {
+		return listener, nil
+	}))
+	if err != nil {
+		t.Fatalf("NewAioServerAddrWithOptions: %v", err)
+	}
+
+	done := make(chan struct{})
+	go func() {
+		aio.StartContext(ctx, true)
+		close(done)
+	}()
+
+	select {
+	case <-done:
+	case <-time.After(time.Second):
+		t.Fatal("AioServer.StartContext did not exit after canceled context")
+	}
+	if !listener.closed.Load() || aio.IsOpen() {
+		t.Fatalf("AioServer canceled start closed=%v open=%v", listener.closed.Load(), aio.IsOpen())
 	}
 }
