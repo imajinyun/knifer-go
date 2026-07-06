@@ -503,13 +503,13 @@ func TestAPIFreezeCheckRequiresStatusDecisionCards(t *testing.T) {
 
 func TestProviderContractCheckRejectsConcreteNetworkAndMissingProvider(t *testing.T) {
 	fixture := providerContractFixture(t)
-	writeTestFile(t, fixture, "vbad/bad.go", `package vbad
+	fixture.WriteFile("vbad/bad.go", `package vbad
 
 import "github.com/imajinyun/knifer-go/internal/bad"
 
 type Client = bad.Client
 `)
-	writeTestFile(t, fixture, "internal/bad/client.go", `package bad
+	fixture.WriteFile("internal/bad/client.go", `package bad
 
 import (
 	"net/http"
@@ -525,7 +525,7 @@ func New() *Client {
 }
 `)
 
-	output, err := runProviderContractCheck(t, fixture)
+	output, err := fixture.RunProviderContractCheck()
 	if err == nil {
 		t.Fatalf("check_provider_contracts.sh unexpectedly passed:\n%s", output)
 	}
@@ -542,7 +542,7 @@ func New() *Client {
 
 func TestProviderContractCheckAcceptsProviderOnlyContract(t *testing.T) {
 	fixture := providerContractFixture(t)
-	writeTestFile(t, fixture, "vbad/bad.go", `package vbad
+	fixture.WriteFile("vbad/bad.go", `package vbad
 
 import "github.com/imajinyun/knifer-go/internal/bad"
 
@@ -553,7 +553,7 @@ type Option = bad.Option
 func WithProvider(provider Provider) Option { return bad.WithProvider(provider) }
 func New(opts ...Option) *Client { return bad.New(opts...) }
 `)
-	writeTestFile(t, fixture, "internal/bad/client.go", `package bad
+	fixture.WriteFile("internal/bad/client.go", `package bad
 
 import "context"
 
@@ -583,7 +583,7 @@ func New(opts ...Option) *Client {
 }
 `)
 
-	output, err := runProviderContractCheck(t, fixture)
+	output, err := fixture.RunProviderContractCheck()
 	if err != nil {
 		t.Fatalf("check_provider_contracts.sh failed: %v\n%s", err, output)
 	}
@@ -594,7 +594,7 @@ func New(opts ...Option) *Client {
 
 func TestCIWorkflowCheckRejectsUnknownMakeTarget(t *testing.T) {
 	fixture := ciWorkflowFixture(t, "make missing-target")
-	output, err := runCIWorkflowCheck(t, fixture)
+	output, err := fixture.RunCIWorkflowCheck()
 	if err == nil {
 		t.Fatalf("check_ci_workflows.sh unexpectedly passed:\n%s", output)
 	}
@@ -605,7 +605,7 @@ func TestCIWorkflowCheckRejectsUnknownMakeTarget(t *testing.T) {
 
 func TestCIWorkflowCheckAcceptsDeclaredMakeTarget(t *testing.T) {
 	fixture := ciWorkflowFixture(t, "make ci-agent-governance")
-	output, err := runCIWorkflowCheck(t, fixture)
+	output, err := fixture.RunCIWorkflowCheck()
 	if err != nil {
 		t.Fatalf("check_ci_workflows.sh failed: %v\n%s", err, output)
 	}
@@ -621,7 +621,7 @@ func TestDocsQuickstartCheckRejectsMissingQualitySections(t *testing.T) {
 			"## Which helper should I use?\n\n"+
 			"Use `vbad` when testing fixture failures.\n",
 	)
-	output, err := runDocsQuickstartCheck(t, fixture)
+	output, err := fixture.RunDocsQuickstartCheck()
 	if err == nil {
 		t.Fatalf("check_docs_quickstart.sh unexpectedly passed:\n%s", output)
 	}
@@ -667,7 +667,7 @@ func TestDocsQuickstartCheckAcceptsCompleteFixture(t *testing.T) {
 			"}\n"+
 			"```\n",
 	)
-	output, err := runDocsQuickstartCheck(t, fixture)
+	output, err := fixture.RunDocsQuickstartCheck()
 	if err != nil {
 		t.Fatalf("check_docs_quickstart.sh failed: %v\n%s", err, output)
 	}
@@ -707,7 +707,7 @@ func TestDocsQuickstartCheckAcceptsNoErrorProfile(t *testing.T) {
 			"}\n"+
 			"```\n",
 	)
-	output, err := runDocsQuickstartCheck(t, fixture)
+	output, err := fixture.RunDocsQuickstartCheck()
 	if err != nil {
 		t.Fatalf("check_docs_quickstart.sh failed: %v\n%s", err, output)
 	}
@@ -747,7 +747,7 @@ func TestDocsQuickstartCheckRejectsProviderProfileWithoutBoundary(t *testing.T) 
 			"}\n"+
 			"```\n",
 	)
-	output, err := runDocsQuickstartCheck(t, fixture)
+	output, err := fixture.RunDocsQuickstartCheck()
 	if err == nil {
 		t.Fatalf("check_docs_quickstart.sh unexpectedly passed:\n%s", output)
 	}
@@ -955,10 +955,10 @@ func runChangePolicyCheck(t *testing.T, changedFiles string) (string, error) {
 	return string(combined), err
 }
 
-func providerContractFixture(t *testing.T) string {
+func providerContractFixture(t *testing.T) *governanceFixture {
 	t.Helper()
-	root := t.TempDir()
-	writeJSONFile(t, filepath.Join(root, "ai-context.json"), map[string]any{
+	fixture := newGovernanceFixture(t)
+	fixture.WriteJSON("ai-context.json", map[string]any{
 		"public_facades": []any{
 			map[string]any{"package": "vbad", "internal": "internal/bad"},
 		},
@@ -966,24 +966,14 @@ func providerContractFixture(t *testing.T) string {
 			"provider_contract_facades": []string{"vbad"},
 		},
 	})
-	return root
+	return fixture
 }
 
-func runProviderContractCheck(t *testing.T, fixtureRoot string) (string, error) {
+func ciWorkflowFixture(t *testing.T, workflowCommand string) *governanceFixture {
 	t.Helper()
-	root := repoRoot(t)
-	cmd := exec.Command("bash", filepath.Join(root, "bin/check_provider_contracts.sh"))
-	cmd.Dir = root
-	cmd.Env = append(os.Environ(), "PROVIDER_CONTRACT_ROOT="+fixtureRoot)
-	combined, err := cmd.CombinedOutput()
-	return string(combined), err
-}
-
-func ciWorkflowFixture(t *testing.T, workflowCommand string) string {
-	t.Helper()
-	root := t.TempDir()
-	writeTestFile(t, root, "Makefile", "ci-agent-governance:\n\t@true\n")
-	writeJSONFile(t, filepath.Join(root, "ai-context.json"), map[string]any{
+	fixture := newGovernanceFixture(t)
+	fixture.WriteFile("Makefile", "ci-agent-governance:\n\t@true\n")
+	fixture.WriteJSON("ai-context.json", map[string]any{
 		"commands": map[string]any{
 			"ci_agent_governance": map[string]any{"cmd": "make ci-agent-governance"},
 		},
@@ -1005,7 +995,7 @@ func ciWorkflowFixture(t *testing.T, workflowCommand string) string {
 			},
 		},
 	})
-	writeTestFile(t, root, ".github/workflows/go.yml", `name: fixture
+	fixture.WriteFile(".github/workflows/go.yml", `name: fixture
 
 env:
   GOLANGCI_LINT_VERSION: v2.12.2
@@ -1023,28 +1013,18 @@ jobs:
       matrix:
         go-version: ["1.25.11", "1.26"]
 `)
-	return root
+	return fixture
 }
 
-func runCIWorkflowCheck(t *testing.T, fixtureRoot string) (string, error) {
-	t.Helper()
-	root := repoRoot(t)
-	cmd := exec.Command("bash", filepath.Join(root, "bin/check_ci_workflows.sh"))
-	cmd.Dir = root
-	cmd.Env = append(os.Environ(), "CI_WORKFLOW_ROOT="+fixtureRoot)
-	combined, err := cmd.CombinedOutput()
-	return string(combined), err
-}
-
-func docsQuickstartFixture(t *testing.T, quickstart string) string {
+func docsQuickstartFixture(t *testing.T, quickstart string) *governanceFixture {
 	t.Helper()
 	return docsQuickstartFixtureWithProfiles(t, []string{"error_returning"}, quickstart)
 }
 
-func docsQuickstartFixtureWithProfiles(t *testing.T, profiles []string, quickstart string) string {
+func docsQuickstartFixtureWithProfiles(t *testing.T, profiles []string, quickstart string) *governanceFixture {
 	t.Helper()
-	root := t.TempDir()
-	writeJSONFile(t, filepath.Join(root, "ai-context.json"), map[string]any{
+	fixture := newGovernanceFixture(t)
+	fixture.WriteJSON("ai-context.json", map[string]any{
 		"public_facades": []any{
 			map[string]any{"package": "vbad"},
 		},
@@ -1055,19 +1035,9 @@ func docsQuickstartFixtureWithProfiles(t *testing.T, profiles []string, quicksta
 			},
 		},
 	})
-	writeTestFile(t, root, "docs/doc/README.md", "- [vbad](01-vbad.md)\n")
-	writeTestFile(t, root, "docs/doc/01-vbad.md", quickstart)
-	return root
-}
-
-func runDocsQuickstartCheck(t *testing.T, fixtureRoot string) (string, error) {
-	t.Helper()
-	root := repoRoot(t)
-	cmd := exec.Command("bash", filepath.Join(root, "bin/check_docs_quickstart.sh"))
-	cmd.Dir = root
-	cmd.Env = append(os.Environ(), "DOCS_QUICKSTART_ROOT="+fixtureRoot)
-	combined, err := cmd.CombinedOutput()
-	return string(combined), err
+	fixture.WriteFile("docs/doc/README.md", "- [vbad](01-vbad.md)\n")
+	fixture.WriteFile("docs/doc/01-vbad.md", quickstart)
+	return fixture
 }
 
 func writeJSONFile(t *testing.T, path string, value any) {
