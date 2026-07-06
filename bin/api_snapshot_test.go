@@ -676,6 +676,86 @@ func TestDocsQuickstartCheckAcceptsCompleteFixture(t *testing.T) {
 	}
 }
 
+func TestDocsQuickstartCheckAcceptsNoErrorProfile(t *testing.T) {
+	fixture := docsQuickstartFixtureWithProfiles(t,
+		[]string{"no_error_returning"},
+		"# vbad Quickstart\n\n"+
+			"`vbad` has deterministic value helpers.\n\n"+
+			"## Golden path APIs\n\n"+
+			"- `Run`\n\n"+
+			"## Which helper should I use?\n\n"+
+			"Use `Run` for fixture examples.\n\n"+
+			"## Fixture correctness checklist\n\n"+
+			"- Keep calls side-effect free.\n\n"+
+			"## When not to use vbad\n\n"+
+			"- Use direct code outside fixture tests.\n\n"+
+			"## Related packages\n\n"+
+			"- Use `vjson` when fixture data needs JSON.\n\n"+
+			"## Benchmarks and trade-offs\n\n"+
+			"Benchmark only if fixture code becomes hot.\n\n"+
+			"## FAQ\n\n"+
+			"### Do vbad helpers return errors?\n\n"+
+			"No. Fixture helpers do not return errors.\n\n"+
+			"```go\n"+
+			"package main\n\n"+
+			"import (\n"+
+			"\t\"fmt\"\n\n"+
+			"\t\"github.com/imajinyun/knifer-go/vbad\"\n"+
+			")\n\n"+
+			"func main() {\n"+
+			"\tfmt.Println(vbad.Run())\n"+
+			"}\n"+
+			"```\n",
+	)
+	output, err := runDocsQuickstartCheck(t, fixture)
+	if err != nil {
+		t.Fatalf("check_docs_quickstart.sh failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "quickstart docs are valid") {
+		t.Fatalf("docs quickstart output missing success:\n%s", output)
+	}
+}
+
+func TestDocsQuickstartCheckRejectsProviderProfileWithoutBoundary(t *testing.T) {
+	fixture := docsQuickstartFixtureWithProfiles(t,
+		[]string{"error_returning", "provider_contract"},
+		"# vbad Quickstart\n\n"+
+			"`vbad` has an incomplete provider fixture.\n\n"+
+			"## Golden path APIs\n\n"+
+			"- `Run`\n\n"+
+			"## Which helper should I use?\n\n"+
+			"Use `Run` for fixture examples.\n\n"+
+			"## Fixture correctness checklist\n\n"+
+			"- Handle errors returned by `Run`.\n\n"+
+			"## When not to use vbad\n\n"+
+			"- Use direct code outside fixture tests.\n\n"+
+			"## Related packages\n\n"+
+			"- Use `vjson` when fixture data needs JSON.\n\n"+
+			"## Benchmarks and trade-offs\n\n"+
+			"Benchmark only if fixture code becomes hot.\n\n"+
+			"## FAQ\n\n"+
+			"### How do I handle errors?\n\n"+
+			"Check `err != nil` and return the error to the caller.\n\n"+
+			"```go\n"+
+			"package main\n\n"+
+			"import (\n"+
+			"\t\"fmt\"\n\n"+
+			"\t\"github.com/imajinyun/knifer-go/vbad\"\n"+
+			")\n\n"+
+			"func main() {\n"+
+			"\tfmt.Println(vbad.Run())\n"+
+			"}\n"+
+			"```\n",
+	)
+	output, err := runDocsQuickstartCheck(t, fixture)
+	if err == nil {
+		t.Fatalf("check_docs_quickstart.sh unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "profile provider_contract") {
+		t.Fatalf("docs quickstart output missing provider profile error:\n%s", output)
+	}
+}
+
 func baseAgentEvidence() map[string]any {
 	checks := map[string]any{
 		"ai_context_check": map[string]any{
@@ -958,10 +1038,21 @@ func runCIWorkflowCheck(t *testing.T, fixtureRoot string) (string, error) {
 
 func docsQuickstartFixture(t *testing.T, quickstart string) string {
 	t.Helper()
+	return docsQuickstartFixtureWithProfiles(t, []string{"error_returning"}, quickstart)
+}
+
+func docsQuickstartFixtureWithProfiles(t *testing.T, profiles []string, quickstart string) string {
+	t.Helper()
 	root := t.TempDir()
 	writeJSONFile(t, filepath.Join(root, "ai-context.json"), map[string]any{
 		"public_facades": []any{
 			map[string]any{"package": "vbad"},
+		},
+		"docs_quality_profiles": map[string]any{
+			"allowed_profiles": []string{"error_returning", "no_error_returning", "security_sensitive", "provider_contract", "heavy_extension"},
+			"packages": map[string]any{
+				"vbad": profiles,
+			},
 		},
 	})
 	writeTestFile(t, root, "docs/doc/README.md", "- [vbad](01-vbad.md)\n")

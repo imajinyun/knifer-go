@@ -36,6 +36,10 @@ if not isinstance(public_facades, list):
     add_error("ai-context.json public_facades must be a list")
     public_facades = []
 
+docs_quality_profiles = data.get("docs_quality_profiles", {})
+profile_packages = docs_quality_profiles.get("packages", {}) if isinstance(docs_quality_profiles, dict) else {}
+allowed_profiles = set(docs_quality_profiles.get("allowed_profiles", [])) if isinstance(docs_quality_profiles, dict) else set()
+
 try:
     with open(doc_index, "r", encoding="utf-8") as f:
         index_text = f.read()
@@ -79,11 +83,45 @@ def collect_imports(block):
                 imports.add(match.group(1))
     return imports
 
+
+def require_phrase(filename, text, phrases, profile, purpose):
+    lower_text = text.lower()
+    if not any(phrase in lower_text for phrase in phrases):
+        add_error(f"{filename} profile {profile} must document {purpose}")
+
+
+known_packages = {entry.get("package") for entry in public_facades if isinstance(entry.get("package"), str)}
+if not isinstance(docs_quality_profiles, dict):
+    add_error("ai-context.json docs_quality_profiles must be an object")
+if not allowed_profiles:
+    add_error("ai-context.json docs_quality_profiles.allowed_profiles must be non-empty")
+if not isinstance(profile_packages, dict):
+    add_error("ai-context.json docs_quality_profiles.packages must be an object")
+    profile_packages = {}
+
+profile_package_names = set(profile_packages)
+missing_profile_packages = sorted(known_packages - profile_package_names)
+extra_profile_packages = sorted(profile_package_names - known_packages)
+if missing_profile_packages:
+    add_error("docs_quality_profiles.packages missing facade package(s): " + ", ".join(missing_profile_packages))
+if extra_profile_packages:
+    add_error("docs_quality_profiles.packages contains unknown facade package(s): " + ", ".join(extra_profile_packages))
+
 for entry in public_facades:
     package = entry.get("package")
     if not isinstance(package, str) or not package:
         add_error(f"invalid public_facades entry: {entry!r}")
         continue
+    profiles = profile_packages.get(package, [])
+    if not isinstance(profiles, list) or not profiles:
+        add_error(f"docs_quality_profiles.packages.{package} must contain at least one profile")
+        profiles = ["error_returning"]
+    profiles = [profile for profile in profiles if isinstance(profile, str)]
+    unknown_profiles = sorted(set(profiles) - allowed_profiles)
+    if unknown_profiles:
+        add_error(f"docs_quality_profiles.packages.{package} contains unknown profile(s): " + ", ".join(unknown_profiles))
+    if "error_returning" in profiles and "no_error_returning" in profiles:
+        add_error(f"docs_quality_profiles.packages.{package} cannot combine error_returning and no_error_returning")
 
     matches = docs_by_package.get(package, [])
     if not matches:
@@ -116,8 +154,34 @@ for entry in public_facades:
         add_error(f"{filename} helper guidance must include explicit use/prefer wording")
 
     lower_text = text.lower()
-    if not any(term in lower_text for term in ("error", "errors.is", "panic(err)", "err != nil")):
+    if "error_returning" in profiles and not any(term in lower_text for term in ("error", "errors.is", "panic(err)", "err != nil")):
         add_error(f"{filename} must document error behavior or explicitly show error handling")
+    if "no_error_returning" in profiles and not any(term in lower_text for term in ("no error", "do not return errors", "does not return errors", "return errors?")):
+        add_error(f"{filename} profile no_error_returning must explicitly state that facade helpers do not return errors")
+    if "security_sensitive" in profiles:
+        require_phrase(
+            filename,
+            text,
+            ("untrusted", "trust boundary", "safety checklist", "safe ", "security", "credential", "secret"),
+            "security_sensitive",
+            "trust-boundary or safe-input guidance",
+        )
+    if "provider_contract" in profiles:
+        require_phrase(
+            filename,
+            text,
+            ("provider injection", "injected provider", "no built-in", "does not read", "does not open", "credential"),
+            "provider_contract",
+            "provider injection and no-default-provider boundaries",
+        )
+    if "heavy_extension" in profiles:
+        require_phrase(
+            filename,
+            text,
+            ("dependency", "trade-off", "optional", "directly", "benchmark"),
+            "heavy_extension",
+            "dependency or trade-off guidance",
+        )
 
     if not re.search(r"^## When not to use", text, flags=re.MULTILINE):
         add_error(f"{filename} is missing required section '## When not to use ...'")
@@ -153,7 +217,6 @@ for entry in public_facades:
     if index_text and f"]({filename})" not in index_text:
         add_error(f"docs/doc/README.md does not link to {filename}")
 
-known_packages = {entry.get("package") for entry in public_facades if isinstance(entry.get("package"), str)}
 extra_docs = sorted(set(docs_by_package) - known_packages)
 if extra_docs:
     add_error("quickstart docs exist for unknown facade package(s): " + ", ".join(extra_docs))

@@ -14,6 +14,7 @@
     "generated_artifacts",
     "ai_tooling",
     "dependency_tiers",
+    "docs_quality_profiles",
     "api_convergence",
     "package_lifecycle",
     "capability_domains",
@@ -188,6 +189,28 @@
           "additionalProperties": { "$ref": "#/$defs/string_array" }
         },
         "notes": { "$ref": "#/$defs/string_array" }
+      },
+      "additionalProperties": false
+    },
+    "docs_quality_profiles": {
+      "type": "object",
+      "required": ["allowed_profiles", "packages"],
+      "properties": {
+        "allowed_profiles": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/docs_quality_profile" },
+          "uniqueItems": true
+        },
+        "packages": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "#/$defs/docs_quality_profile" },
+            "uniqueItems": true
+          }
+        }
       },
       "additionalProperties": false
     },
@@ -1504,6 +1527,15 @@
         "heavy",
         "candidate-for-split",
         "candidate-for-deprecation"
+      ]
+    },
+    "docs_quality_profile": {
+      "enum": [
+        "error_returning",
+        "no_error_returning",
+        "security_sensitive",
+        "provider_contract",
+        "heavy_extension"
       ]
     },
     "string_array": {
