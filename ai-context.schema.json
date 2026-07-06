@@ -209,7 +209,11 @@
       "type": "object",
       "required": ["allowed_grades", "packages"],
       "properties": {
-        "allowed_grades": { "$ref": "#/$defs/string_array" },
+        "allowed_grades": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/package_lifecycle_grade" },
+          "uniqueItems": true
+        },
         "packages": {
           "type": "object",
           "minProperties": 1,
@@ -1328,7 +1332,7 @@
       "type": "object",
       "required": ["name", "packages", "behavior", "allowed_sources", "forbidden_uses", "contract_tests"],
       "properties": {
-        "name": { "type": "string", "minLength": 1 },
+        "name": { "$ref": "#/$defs/random_source_policy_name" },
         "packages": { "$ref": "#/$defs/string_array" },
         "behavior": { "type": "string", "minLength": 1 },
         "allowed_sources": { "$ref": "#/$defs/string_array" },
@@ -1353,7 +1357,7 @@
       "type": "object",
       "required": ["grade", "rationale"],
       "properties": {
-        "grade": { "type": "string", "minLength": 1 },
+        "grade": { "$ref": "#/$defs/package_lifecycle_grade" },
         "rationale": { "type": "string", "minLength": 1 }
       },
       "additionalProperties": false
@@ -1393,7 +1397,7 @@
         "package": { "type": "string", "minLength": 1 },
         "owner": { "type": "string", "minLength": 1 },
         "benchmarks": { "$ref": "#/$defs/string_array" },
-        "threshold_profile": { "type": "string", "minLength": 1 }
+        "threshold_profile": { "enum": ["default"] }
       },
       "additionalProperties": false
     },
@@ -1466,12 +1470,41 @@
       "type": "object",
       "required": ["name", "packages", "required_controls", "contract_tests"],
       "properties": {
-        "name": { "type": "string", "minLength": 1 },
+        "name": { "$ref": "#/$defs/boundary_contract_name" },
         "packages": { "$ref": "#/$defs/string_array" },
         "required_controls": { "$ref": "#/$defs/string_array" },
         "contract_tests": { "$ref": "#/$defs/string_array" }
       },
       "additionalProperties": false
+    },
+    "random_source_policy_name": {
+      "enum": [
+        "secure_bytes_fail_closed",
+        "compatibility_byte_fallback",
+        "identifier_fallback_compatibility",
+        "jwt_key_and_signer_policy"
+      ]
+    },
+    "boundary_contract_name": {
+      "enum": [
+        "default_timeout",
+        "redirect_revalidation",
+        "private_host_rejection",
+        "bounded_response_reads",
+        "safe_download_paths",
+        "remote_config_boundary"
+      ]
+    },
+    "package_lifecycle_grade": {
+      "enum": [
+        "core",
+        "stable",
+        "maintenance",
+        "adapter",
+        "heavy",
+        "candidate-for-split",
+        "candidate-for-deprecation"
+      ]
     },
     "string_array": {
       "type": "array",

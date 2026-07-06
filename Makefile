@@ -239,8 +239,8 @@ diff-check: diff-whitespace diff-clean
 vet:
 	$(GO) vet $(PKGS)
 
-arch: provider-contract-check arch-imports-check panic-policy-check facade-boundary-check
-	@echo "Architecture check passed."
+arch:
+	bash bin/check_arch.sh
 
 lint:
 	$(GOLANGCI_LINT) run $(PKGS)

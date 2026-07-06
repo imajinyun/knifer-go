@@ -7,14 +7,15 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CHANGELOG_FILE="${CHANGELOG_FILE:-${ROOT_DIR}/CHANGELOG.md}"
+GOVERNANCE_RELEASE_TEMPLATE_FILE="${GOVERNANCE_RELEASE_TEMPLATE_FILE:-${ROOT_DIR}/docs/doc/adoption-trust.md}"
 RELEASE_VERSION="${RELEASE_VERSION:-${1:-}}"
 
-python3 - "${CHANGELOG_FILE}" "${RELEASE_VERSION}" <<'PY'
+python3 - "${CHANGELOG_FILE}" "${GOVERNANCE_RELEASE_TEMPLATE_FILE}" "${RELEASE_VERSION}" <<'PY'
 import os
 import re
 import sys
 
-changelog_file, release_version = sys.argv[1], sys.argv[2].strip()
+changelog_file, governance_template_file, release_version = sys.argv[1], sys.argv[2], sys.argv[3].strip()
 errors = []
 
 
@@ -29,8 +30,26 @@ except FileNotFoundError:
     print(f"release notes check error: {changelog_file} does not exist", file=sys.stderr)
     sys.exit(1)
 
+try:
+    with open(governance_template_file, "r", encoding="utf-8") as f:
+        governance_template = f.read()
+except FileNotFoundError:
+    add_error(f"governance release summary template file {governance_template_file} does not exist")
+    governance_template = ""
+
 if not re.search(r"^## Unreleased\s*$", text, flags=re.MULTILINE):
     add_error("CHANGELOG.md must contain a '## Unreleased' section")
+
+for token in (
+    "## Governance Validation Contracts",
+    "Contract changed:",
+    "User impact:",
+    "Required action:",
+    "Validation evidence:",
+    "Compatibility note:",
+):
+    if governance_template and token not in governance_template:
+        add_error(f"governance release summary template must include {token!r}")
 
 version_headings = re.findall(r"^## \[?([0-9]+\.[0-9]+\.[0-9]+)\]?(?:[\s-]|$).*", text, flags=re.MULTILINE)
 if len(version_headings) != len(set(version_headings)):

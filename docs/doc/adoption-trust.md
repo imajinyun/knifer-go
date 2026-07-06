@@ -47,3 +47,19 @@ Machine-readable phrases:
 5. Review [`SECURITY.md`](../../SECURITY.md) before reporting security issues.
 6. Run `make quick-check` locally before small changes and `make agent-check`
    before publishing agent-generated changes.
+
+## Governance Validation Contracts
+
+Use this release summary template when a change adds, removes, or tightens a
+governance gate. Keep the summary user-facing: describe what is now enforced,
+who must act, and which command proves the contract.
+
+```markdown
+### Governance Validation Contracts
+
+- Contract changed: <machine gate, metadata section, generated artifact, or CI target>
+- User impact: <what maintainers or adopters must do differently>
+- Required action: <command, metadata update, evidence field, or release note>
+- Validation evidence: <exact command output or artifact path>
+- Compatibility note: <whether existing public APIs or workflows changed>
+```

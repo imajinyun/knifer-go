@@ -228,7 +228,72 @@ func TestCheckReleaseNotesAcceptsStructureWithoutReleaseVersion(t *testing.T) {
 	}
 }
 
+func TestReleaseCheckEnforcesFullPackageCoverageMode(t *testing.T) {
+	root := repoRoot(t)
+	data, err := os.ReadFile(filepath.Join(root, "Makefile"))
+	if err != nil {
+		t.Fatalf("ReadFile(Makefile) error = %v", err)
+	}
+	makefile := string(data)
+	releaseCheckIndex := strings.Index(makefile, "\nrelease-check:")
+	if releaseCheckIndex < 0 {
+		t.Fatal("Makefile must define release-check target")
+	}
+	rest := makefile[releaseCheckIndex+1:]
+	nextTargetIndex := strings.Index(rest[len("release-check:"):], "\nagent-check:")
+	if nextTargetIndex < 0 {
+		t.Fatal("release-check target must appear before agent-check target")
+	}
+	releaseCheck := rest[:len("release-check:")+nextTargetIndex]
+	for _, want := range []string{
+		"COVERAGE_CHECK_ALL_PACKAGES=1",
+		"full-check",
+		"COVERAGE_FILE=$(COVERAGE_FILE)",
+	} {
+		if !strings.Contains(releaseCheck, want) {
+			t.Fatalf("release-check target must contain %q:\n%s", want, releaseCheck)
+		}
+	}
+}
+
+func TestCheckReleaseNotesRejectsMissingGovernanceTemplateFields(t *testing.T) {
+	changelog := writeGovernanceFixture(t, `# Changelog
+
+## Unreleased
+
+`)
+	template := writeGovernanceTemplateFixture(t, `# Adoption Trust
+
+## Governance Validation Contracts
+
+- Contract changed: make release-check
+`)
+
+	output, err := runReleaseNotesCheckWithTemplate(t, changelog, template, "")
+	if err == nil {
+		t.Fatalf("check_release_notes.sh unexpectedly succeeded:\n%s", output)
+	}
+	if !strings.Contains(output, "governance release summary template must include 'User impact:'") {
+		t.Fatalf("expected governance template field error, got:\n%s", output)
+	}
+}
+
 func runReleaseNotesCheck(t *testing.T, changelog, version string) (string, error) {
+	t.Helper()
+	template := writeGovernanceTemplateFixture(t, `# Adoption Trust
+
+## Governance Validation Contracts
+
+- Contract changed: make release-check
+- User impact: release maintainers must include validation evidence.
+- Required action: run make release-check.
+- Validation evidence: attach command output.
+- Compatibility note: public APIs are unchanged.
+`)
+	return runReleaseNotesCheckWithTemplate(t, changelog, template, version)
+}
+
+func runReleaseNotesCheckWithTemplate(t *testing.T, changelog, template, version string) (string, error) {
 	t.Helper()
 	wd, err := os.Getwd()
 	if err != nil {
@@ -241,7 +306,7 @@ func runReleaseNotesCheck(t *testing.T, changelog, version string) (string, erro
 	}
 	cmd := exec.Command("bash", args...)
 	cmd.Dir = root
-	cmd.Env = append(os.Environ(), "CHANGELOG_FILE="+changelog)
+	cmd.Env = append(os.Environ(), "CHANGELOG_FILE="+changelog, "GOVERNANCE_RELEASE_TEMPLATE_FILE="+template)
 	combined, err := cmd.CombinedOutput()
 	return string(combined), err
 }
@@ -249,6 +314,15 @@ func runReleaseNotesCheck(t *testing.T, changelog, version string) (string, erro
 func writeGovernanceFixture(t *testing.T, content string) string {
 	t.Helper()
 	path := filepath.Join(t.TempDir(), "CHANGELOG.md")
+	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
+		t.Fatalf("WriteFile() error = %v", err)
+	}
+	return path
+}
+
+func writeGovernanceTemplateFixture(t *testing.T, content string) string {
+	t.Helper()
+	path := filepath.Join(t.TempDir(), "adoption-trust.md")
 	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
 		t.Fatalf("WriteFile() error = %v", err)
 	}
