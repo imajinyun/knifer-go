@@ -27,6 +27,12 @@ func (f *governanceFixture) WriteFile(name, content string) {
 	writeTestFile(f.t, f.root, name, content)
 }
 
+func (f *governanceFixture) WriteTempFile(name, content string) string {
+	f.t.Helper()
+	f.WriteFile(name, content)
+	return filepath.Join(f.root, name)
+}
+
 func (f *governanceFixture) WriteGoMod() {
 	f.t.Helper()
 	f.WriteFile("go.mod", "module github.com/imajinyun/knifer-go\n\ngo 1.25.0\n")
@@ -50,8 +56,14 @@ func (f *governanceFixture) WriteJSON(name string, value any) {
 
 func (f *governanceFixture) RunScript(script string, env ...string) (string, error) {
 	f.t.Helper()
+	return f.RunScriptArgs(script, nil, env...)
+}
+
+func (f *governanceFixture) RunScriptArgs(script string, args []string, env ...string) (string, error) {
+	f.t.Helper()
 	root := repoRoot(f.t)
-	cmd := exec.Command("bash", filepath.Join(root, script))
+	cmdArgs := append([]string{filepath.Join(root, script)}, args...)
+	cmd := exec.Command("bash", cmdArgs...)
 	cmd.Dir = root
 	cmd.Env = append(os.Environ(), env...)
 	combined, err := cmd.CombinedOutput()
@@ -86,4 +98,30 @@ func (f *governanceFixture) RunPanicPolicyCheck() (string, error) {
 func (f *governanceFixture) RunFacadeBoundaryCheck() (string, error) {
 	f.t.Helper()
 	return f.RunScript("bin/check_facade_boundary.sh", "ARCH_CHECK_ROOT="+f.root)
+}
+
+func (f *governanceFixture) RunReleaseNotesCheck(changelog, template, version string) (string, error) {
+	f.t.Helper()
+	var args []string
+	if version != "" {
+		args = append(args, version)
+	}
+	return f.RunScriptArgs(
+		"bin/check_release_notes.sh",
+		args,
+		"CHANGELOG_FILE="+changelog,
+		"GOVERNANCE_RELEASE_TEMPLATE_FILE="+template,
+	)
+}
+
+func (f *governanceFixture) RunChangePolicyCheck(changedFiles string) (string, error) {
+	f.t.Helper()
+	return f.RunScript("bin/check_change_policy.sh", "CHANGE_POLICY_CHANGED_FILES="+changedFiles)
+}
+
+func (f *governanceFixture) RunAgentEvidenceCheck(evidence map[string]any) (string, error) {
+	f.t.Helper()
+	path := filepath.Join(f.root, "agent-evidence.json")
+	f.WriteJSON("agent-evidence.json", evidence)
+	return f.RunScript("bin/check_agent_evidence.sh", "AGENT_EVIDENCE_FILE="+path)
 }

@@ -280,7 +280,8 @@ func TestCheckReleaseNotesRejectsMissingGovernanceTemplateFields(t *testing.T) {
 
 func runReleaseNotesCheck(t *testing.T, changelog, version string) (string, error) {
 	t.Helper()
-	template := writeGovernanceTemplateFixture(t, `# Adoption Trust
+	fixture := newGovernanceFixture(t)
+	template := fixture.WriteTempFile("adoption-trust.md", `# Adoption Trust
 
 ## Governance Validation Contracts
 
@@ -290,43 +291,22 @@ func runReleaseNotesCheck(t *testing.T, changelog, version string) (string, erro
 - Validation evidence: attach command output.
 - Compatibility note: public APIs are unchanged.
 `)
-	return runReleaseNotesCheckWithTemplate(t, changelog, template, version)
+	return fixture.RunReleaseNotesCheck(changelog, template, version)
 }
 
 func runReleaseNotesCheckWithTemplate(t *testing.T, changelog, template, version string) (string, error) {
 	t.Helper()
-	wd, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("Getwd() error = %v", err)
-	}
-	root := filepath.Dir(wd)
-	args := []string{filepath.Join(root, "bin/check_release_notes.sh")}
-	if version != "" {
-		args = append(args, version)
-	}
-	cmd := exec.Command("bash", args...)
-	cmd.Dir = root
-	cmd.Env = append(os.Environ(), "CHANGELOG_FILE="+changelog, "GOVERNANCE_RELEASE_TEMPLATE_FILE="+template)
-	combined, err := cmd.CombinedOutput()
-	return string(combined), err
+	return newGovernanceFixture(t).RunReleaseNotesCheck(changelog, template, version)
 }
 
 func writeGovernanceFixture(t *testing.T, content string) string {
 	t.Helper()
-	path := filepath.Join(t.TempDir(), "CHANGELOG.md")
-	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
-		t.Fatalf("WriteFile() error = %v", err)
-	}
-	return path
+	return newGovernanceFixture(t).WriteTempFile("CHANGELOG.md", content)
 }
 
 func writeGovernanceTemplateFixture(t *testing.T, content string) string {
 	t.Helper()
-	path := filepath.Join(t.TempDir(), "adoption-trust.md")
-	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
-		t.Fatalf("WriteFile() error = %v", err)
-	}
-	return path
+	return newGovernanceFixture(t).WriteTempFile("adoption-trust.md", content)
 }
 
 func TestCoverageCheckRequiresChangedSecuritySensitivePackageData(t *testing.T) {
@@ -371,7 +351,7 @@ func TestCoverageCheckRequiresChangedSecuritySensitivePackageData(t *testing.T) 
 }
 
 func TestChangePolicyClassifiesFacadeTestAndBenchmarkSeparatelyFromPublicAPI(t *testing.T) {
-	output, err := runChangePolicyCheck(t, "vcodec/codec_benchmark_test.go\nvhttp/request_safe_constructors_test.go")
+	output, err := newGovernanceFixture(t).RunChangePolicyCheck("vcodec/codec_benchmark_test.go\nvhttp/request_safe_constructors_test.go")
 	if err != nil {
 		t.Fatalf("check_change_policy.sh failed: %v\n%s", err, output)
 	}
@@ -384,7 +364,7 @@ func TestChangePolicyClassifiesFacadeTestAndBenchmarkSeparatelyFromPublicAPI(t *
 }
 
 func TestChangePolicyClassifiesFacadeProductionAndSnapshotAsPublicAPI(t *testing.T) {
-	output, err := runChangePolicyCheck(t, "vcodec/codec.go\ndocs/api/exports.txt")
+	output, err := newGovernanceFixture(t).RunChangePolicyCheck("vcodec/codec.go\ndocs/api/exports.txt")
 	if err != nil {
 		t.Fatalf("check_change_policy.sh failed: %v\n%s", err, output)
 	}
@@ -414,7 +394,7 @@ func TestAgentEvidenceCheckAcceptsSecurityMergeReadyEvidence(t *testing.T) {
 	evidence["merge_ready"] = true
 	evidence["merge_blockers"] = []string{}
 
-	output, err := runAgentEvidenceCheck(t, evidence)
+	output, err := newGovernanceFixture(t).RunAgentEvidenceCheck(evidence)
 	if err != nil {
 		t.Fatalf("agent evidence check failed: %v\n%s", err, output)
 	}
@@ -427,7 +407,7 @@ func TestAgentEvidenceCheckRejectsMissingSecurityReviewEvidence(t *testing.T) {
 	evidence := baseAgentEvidence()
 	delete(evidence, "security_review")
 
-	output, err := runAgentEvidenceCheck(t, evidence)
+	output, err := newGovernanceFixture(t).RunAgentEvidenceCheck(evidence)
 	if err == nil {
 		t.Fatalf("agent evidence check unexpectedly passed:\n%s", output)
 	}
@@ -441,7 +421,7 @@ func TestAgentEvidenceCheckRejectsIncorrectSecurityMergeReadyEvidence(t *testing
 	evidence["merge_ready"] = true
 	evidence["merge_blockers"] = []string{}
 
-	output, err := runAgentEvidenceCheck(t, evidence)
+	output, err := newGovernanceFixture(t).RunAgentEvidenceCheck(evidence)
 	if err == nil {
 		t.Fatalf("agent evidence check unexpectedly passed:\n%s", output)
 	}
@@ -945,16 +925,6 @@ func runAPIFreezeCheck(t *testing.T, contextPath, toolsPath string) (string, err
 	return string(combined), err
 }
 
-func runChangePolicyCheck(t *testing.T, changedFiles string) (string, error) {
-	t.Helper()
-	root := repoRoot(t)
-	cmd := exec.Command("bash", filepath.Join(root, "bin/check_change_policy.sh"))
-	cmd.Dir = root
-	cmd.Env = append(os.Environ(), "CHANGE_POLICY_CHANGED_FILES="+changedFiles)
-	combined, err := cmd.CombinedOutput()
-	return string(combined), err
-}
-
 func providerContractFixture(t *testing.T) *governanceFixture {
 	t.Helper()
 	fixture := newGovernanceFixture(t)
@@ -1050,27 +1020,4 @@ func writeJSONFile(t *testing.T, path string, value any) {
 	if err := os.WriteFile(path, data, 0o600); err != nil {
 		t.Fatalf("WriteFile(%q) error = %v", path, err)
 	}
-}
-
-func runAgentEvidenceCheck(t *testing.T, evidence map[string]any) (string, error) {
-	t.Helper()
-	wd, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("Getwd() error = %v", err)
-	}
-	root := filepath.Dir(wd)
-	path := filepath.Join(t.TempDir(), "agent-evidence.json")
-	data, err := json.MarshalIndent(evidence, "", "  ")
-	if err != nil {
-		t.Fatalf("MarshalIndent() error = %v", err)
-	}
-	data = append(data, '\n')
-	if err := os.WriteFile(path, data, 0o600); err != nil {
-		t.Fatalf("WriteFile() error = %v", err)
-	}
-	cmd := exec.Command("bash", filepath.Join(root, "bin/check_agent_evidence.sh"))
-	cmd.Dir = root
-	cmd.Env = append(os.Environ(), "AGENT_EVIDENCE_FILE="+path)
-	combined, err := cmd.CombinedOutput()
-	return string(combined), err
 }
