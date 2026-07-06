@@ -114,6 +114,7 @@
 | `make quick-check` | Fast local: mod-verify → vet → arch → test → api-check → tools-check → ai-context-check → diff-whitespace |
 | `make security-check` | Lint + govulncheck |
 | `make full-check COVERAGE_FILE=/tmp/coverage.out` | Full pre-push: quick-check + race coverage + coverage gate + lint + vuln |
+| `make release-check COVERAGE_FILE=/tmp/coverage.out` | Release gate with full package coverage thresholds enabled |
 | `make agent-check` | Default AI/Agent-safe validation gate; delegates to `quick-check` |
 | `make agent-full-check COVERAGE_FILE=/tmp/knifer-go-coverage.out` | Full AI/Agent validation gate with coverage, lint, and vulnerability scan |
 | `make agent-security-check` | AI/Agent security validation gate |
@@ -148,6 +149,7 @@
 ### Governance constraints
 
 - **Coverage**: Keep total coverage above the threshold in `ai-context.json`; `bin/check_coverage.sh` reads `ai-context.json` as the default source of truth.
+- **Coverage mode**: `agent-full-check` enforces repository, changed-package, and security-sensitive coverage; `release-check` sets `COVERAGE_CHECK_ALL_PACKAGES=1` to enforce every package threshold.
 - **Architecture**: `make arch` composes focused gates for provider contracts, import direction, heavy dependency isolation, panic policy, package docs, unsafe reflection opt-in, and thin facade boundaries.
 - **API snapshot**: `docs/api/exports.txt` is CI-enforced. Run `UPDATE_API=1 make api-check` after intentional public API changes.
 - **Tools catalog**: `docs/api/tools.json` and `docs/api/tools.md` are CI-enforced by `make tools-check`. Run `make tools-gen` after intentional facade, doc comment, or Example changes.

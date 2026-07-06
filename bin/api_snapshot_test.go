@@ -518,6 +518,90 @@ func New(opts ...Option) *Client {
 	}
 }
 
+func TestCIWorkflowCheckRejectsUnknownMakeTarget(t *testing.T) {
+	fixture := ciWorkflowFixture(t, "make missing-target")
+	output, err := runCIWorkflowCheck(t, fixture)
+	if err == nil {
+		t.Fatalf("check_ci_workflows.sh unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "references unknown Makefile target") || !strings.Contains(output, "missing-target") {
+		t.Fatalf("CI workflow output missing unknown target error:\n%s", output)
+	}
+}
+
+func TestCIWorkflowCheckAcceptsDeclaredMakeTarget(t *testing.T) {
+	fixture := ciWorkflowFixture(t, "make ci-agent-governance")
+	output, err := runCIWorkflowCheck(t, fixture)
+	if err != nil {
+		t.Fatalf("check_ci_workflows.sh failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "CI workflow governance is valid") {
+		t.Fatalf("CI workflow output missing success:\n%s", output)
+	}
+}
+
+func TestDocsQuickstartCheckRejectsMissingQualitySections(t *testing.T) {
+	fixture := docsQuickstartFixture(t,
+		"# vbad Quickstart\n\n"+
+			"`vbad` has an intentionally incomplete quickstart.\n\n"+
+			"## Which helper should I use?\n\n"+
+			"Use `vbad` when testing fixture failures.\n",
+	)
+	output, err := runDocsQuickstartCheck(t, fixture)
+	if err == nil {
+		t.Fatalf("check_docs_quickstart.sh unexpectedly passed:\n%s", output)
+	}
+	for _, want := range []string{
+		"## Golden path APIs",
+		"## Benchmarks and trade-offs",
+		"checklist",
+		"error behavior",
+	} {
+		if !strings.Contains(output, want) {
+			t.Fatalf("docs quickstart output missing %q:\n%s", want, output)
+		}
+	}
+}
+
+func TestDocsQuickstartCheckAcceptsCompleteFixture(t *testing.T) {
+	fixture := docsQuickstartFixture(t,
+		"# vbad Quickstart\n\n"+
+			"`vbad` has a complete fixture quickstart.\n\n"+
+			"## Golden path APIs\n\n"+
+			"- `Run`\n\n"+
+			"## Which helper should I use?\n\n"+
+			"Use `Run` for fixture examples.\n\n"+
+			"## Fixture correctness checklist\n\n"+
+			"- Handle errors returned by `Run`.\n\n"+
+			"## When not to use vbad\n\n"+
+			"- Use direct code outside fixture tests.\n\n"+
+			"## Related packages\n\n"+
+			"- Use `vjson` when fixture data needs JSON.\n\n"+
+			"## Benchmarks and trade-offs\n\n"+
+			"Benchmark only if fixture code becomes hot.\n\n"+
+			"## FAQ\n\n"+
+			"### How do I handle errors?\n\n"+
+			"Check `err != nil` and return the error to the caller.\n\n"+
+			"```go\n"+
+			"package main\n\n"+
+			"import (\n"+
+			"\t\"fmt\"\n\n"+
+			"\t\"github.com/imajinyun/knifer-go/vbad\"\n"+
+			")\n\n"+
+			"func main() {\n"+
+			"\tfmt.Println(vbad.Run())\n"+
+			"}\n"+
+			"```\n",
+	)
+	output, err := runDocsQuickstartCheck(t, fixture)
+	if err != nil {
+		t.Fatalf("check_docs_quickstart.sh failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "quickstart docs are valid") {
+		t.Fatalf("docs quickstart output missing success:\n%s", output)
+	}
+}
+
 func baseAgentEvidence() map[string]any {
 	checks := map[string]any{
 		"ai_context_check": map[string]any{
@@ -737,6 +821,86 @@ func runProviderContractCheck(t *testing.T, fixtureRoot string) (string, error) 
 	cmd := exec.Command("bash", filepath.Join(root, "bin/check_provider_contracts.sh"))
 	cmd.Dir = root
 	cmd.Env = append(os.Environ(), "PROVIDER_CONTRACT_ROOT="+fixtureRoot)
+	combined, err := cmd.CombinedOutput()
+	return string(combined), err
+}
+
+func ciWorkflowFixture(t *testing.T, workflowCommand string) string {
+	t.Helper()
+	root := t.TempDir()
+	writeTestFile(t, root, "Makefile", "ci-agent-governance:\n\t@true\n")
+	writeJSONFile(t, filepath.Join(root, "ai-context.json"), map[string]any{
+		"commands": map[string]any{
+			"ci_agent_governance": map[string]any{"cmd": "make ci-agent-governance"},
+		},
+		"ci_workflows": map[string]any{
+			"tool_versions": map[string]any{
+				"go_1_25_patch": "1.25.11",
+				"golangci_lint": "v2.12.2",
+			},
+			"github_actions": map[string]any{
+				"go": map[string]any{
+					"path":          ".github/workflows/go.yml",
+					"required_jobs": []string{"agent-governance"},
+					"agent_governance": map[string]any{
+						"required_commands":  []string{"make ci-agent-governance"},
+						"required_env":       []string{"AGENT_CHANGE_BASE_REF", "AGENT_EVIDENCE_FILE"},
+						"required_artifacts": []string{"agent-validation-evidence"},
+					},
+				},
+			},
+		},
+	})
+	writeTestFile(t, root, ".github/workflows/go.yml", `name: fixture
+
+env:
+  GOLANGCI_LINT_VERSION: v2.12.2
+  GO_1_25_PATCH_VERSION: "1.25.11"
+
+jobs:
+  agent-governance:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo AGENT_CHANGE_BASE_REF AGENT_EVIDENCE_FILE agent-validation-evidence
+      - run: make ci-agent-governance
+      - run: `+workflowCommand+`
+  test:
+    strategy:
+      matrix:
+        go-version: ["1.25.11", "1.26"]
+`)
+	return root
+}
+
+func runCIWorkflowCheck(t *testing.T, fixtureRoot string) (string, error) {
+	t.Helper()
+	root := repoRoot(t)
+	cmd := exec.Command("bash", filepath.Join(root, "bin/check_ci_workflows.sh"))
+	cmd.Dir = root
+	cmd.Env = append(os.Environ(), "CI_WORKFLOW_ROOT="+fixtureRoot)
+	combined, err := cmd.CombinedOutput()
+	return string(combined), err
+}
+
+func docsQuickstartFixture(t *testing.T, quickstart string) string {
+	t.Helper()
+	root := t.TempDir()
+	writeJSONFile(t, filepath.Join(root, "ai-context.json"), map[string]any{
+		"public_facades": []any{
+			map[string]any{"package": "vbad"},
+		},
+	})
+	writeTestFile(t, root, "docs/doc/README.md", "- [vbad](01-vbad.md)\n")
+	writeTestFile(t, root, "docs/doc/01-vbad.md", quickstart)
+	return root
+}
+
+func runDocsQuickstartCheck(t *testing.T, fixtureRoot string) (string, error) {
+	t.Helper()
+	root := repoRoot(t)
+	cmd := exec.Command("bash", filepath.Join(root, "bin/check_docs_quickstart.sh"))
+	cmd.Dir = root
+	cmd.Env = append(os.Environ(), "DOCS_QUICKSTART_ROOT="+fixtureRoot)
 	combined, err := cmd.CombinedOutput()
 	return string(combined), err
 }

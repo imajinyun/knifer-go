@@ -300,7 +300,21 @@ def make_target_depends_on(target: str, dependency: str, seen: set[str] | None =
 	deps = make_target_dependencies(target)
 	if dependency in deps:
 		return True
-	return any(make_target_depends_on(dep, dependency, seen) for dep in deps if re.match(r"^[A-Za-z0-9_.-]+$", dep))
+	if any(make_target_depends_on(dep, dependency, seen) for dep in deps if re.match(r"^[A-Za-z0-9_.-]+$", dep)):
+		return True
+	recipe_match = re.search(rf"^{re.escape(target)}:.*\n(?P<body>(?:\t.*\n)*)", makefile, flags=re.MULTILINE)
+	if not recipe_match:
+		return False
+	called_targets = re.findall(r"(?:\$\(MAKE\)|make)\s+([A-Za-z0-9_.-]+)", recipe_match.group("body"))
+	return any(make_target_depends_on(called, dependency, seen) for called in called_targets)
+
+
+def make_variable_packages(name: str) -> set[str]:
+	match = re.search(rf"^{re.escape(name)}\s*\?=\s*(.*)$", makefile, flags=re.MULTILINE)
+	if not match:
+		add_error(f"Makefile must define {name}")
+		return set()
+	return {item for item in match.group(1).split() if item.startswith("./")}
 
 commands = require_mapping(ai_context.get("commands"), "commands")
 for command_name in ("governance_maturity_check", "bench_regression_check"):
@@ -343,6 +357,7 @@ def validate_benchmark_regression() -> None:
 		if pkg.startswith("./") and not (root / pkg[2:]).is_dir():
 			add_error(f"benchmark_regression.tracked_packages references missing package directory {pkg}")
 	tracked_set = set(tracked)
+	bench_package_set = make_variable_packages("BENCH_PKGS") | make_variable_packages("BENCH_FACADE_PKGS") | make_variable_packages("BENCH_CODEC_PKGS")
 	hot_paths = bench.get("hot_path_packages")
 	if not isinstance(hot_paths, list) or len(hot_paths) < 7:
 		add_error("benchmark_regression.hot_path_packages must include at least 7 hot-path package entries")
@@ -358,6 +373,8 @@ def validate_benchmark_regression() -> None:
 		seen_hot_packages.add(package)
 		if package not in tracked_set:
 			add_error(f"benchmark_regression.hot_path_packages.{package} must also be listed in tracked_packages")
+		if package not in bench_package_set:
+			add_error(f"benchmark_regression.hot_path_packages.{package} must be covered by BENCH_PKGS, BENCH_FACADE_PKGS, or BENCH_CODEC_PKGS")
 		if package.startswith("./") and not (root / package[2:]).is_dir():
 			add_error(f"benchmark_regression.hot_path_packages.{package} references missing package directory")
 		if not isinstance(entry.get("owner"), str) or not entry["owner"].strip():

@@ -148,7 +148,7 @@
       "network_required": true,
       "risk_level": "medium",
       "creates_artifacts": ["/tmp/knifer-go-coverage.out"],
-      "notes": "Full local pre-push gate; includes race coverage, governance maturity, benchmark metadata, lint, and govulncheck. govulncheck may require vulnerability database access."
+      "notes": "Full local pre-push gate; includes race coverage, changed-package/security-sensitive coverage, governance maturity, benchmark metadata, lint, and govulncheck. govulncheck may require vulnerability database access."
     },
     "security_check": {
       "cmd": "make security-check",
@@ -167,7 +167,7 @@
       "network_required": true,
       "risk_level": "medium",
       "creates_artifacts": ["/tmp/knifer-go-coverage.out"],
-      "notes": "Release readiness gate; runs full local checks plus CI workflow governance validation."
+      "notes": "Release readiness gate; runs full local checks with COVERAGE_CHECK_ALL_PACKAGES=1 plus CI workflow governance validation."
     },
     "release_notes_check": {
       "cmd": "make release-notes-check",

@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if [ -n "${CI_WORKFLOW_ROOT:-}" ]; then
+	ROOT_DIR="${CI_WORKFLOW_ROOT}"
+else
+	ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+fi
 AI_CONTEXT="${ROOT_DIR}/ai-context.json"
 
 python3 - "${ROOT_DIR}" "${AI_CONTEXT}" <<'PY'

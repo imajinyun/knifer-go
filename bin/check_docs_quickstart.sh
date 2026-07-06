@@ -5,7 +5,11 @@
 
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+if [ -n "${DOCS_QUICKSTART_ROOT:-}" ]; then
+	ROOT_DIR="${DOCS_QUICKSTART_ROOT}"
+else
+	ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+fi
 AI_CONTEXT="${ROOT_DIR}/ai-context.json"
 DOC_DIR="${ROOT_DIR}/docs/doc"
 DOC_INDEX="${DOC_DIR}/README.md"

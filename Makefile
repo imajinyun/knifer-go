@@ -6,8 +6,8 @@ PKGS ?= ./...
 COVERAGE_FILE ?= /tmp/knifer-go-coverage.out
 BENCH ?= .
 BENCH_PKGS ?= ./internal/slice ./internal/maps ./internal/str ./internal/num ./internal/bean ./internal/db ./internal/poi ./internal/imgx ./internal/template ./internal/cli ./internal/ai ./internal/ftp ./internal/ssh ./internal/pinyin ./internal/tokenize
-BENCH_FACADE_PKGS ?= ./vslice ./vmap ./vset ./vstr ./vnum ./vbean ./vdb ./vcrypto ./vpoi ./vimg ./vtpl ./vcli ./vai ./vftp ./vssh ./vhan ./vtok
-BENCH_CODEC_PKGS ?= ./internal/json ./vjson ./internal/xml ./vxml
+BENCH_FACADE_PKGS ?= ./vslice ./vmap ./vset ./vstr ./vnum ./vbean ./vdb ./vcrypto ./vpoi ./vimg ./vtpl ./vcli ./vai ./vftp ./vssh ./vhan ./vtok ./vhttp ./vcodec
+BENCH_CODEC_PKGS ?= ./internal/json ./vjson ./internal/xml ./vxml ./internal/codec ./vcodec
 BENCHTIME ?= 1s
 BENCHCOUNT ?= 1
 FUZZTIME ?= 1s
@@ -254,7 +254,9 @@ security-check: lint govulncheck
 
 full-check: worktree-check mod-verify vet arch test-race coverage-check api-check docs-check bench-regression-check lint govulncheck diff-whitespace
 
-release-check: release-notes-check full-check ci-workflow-check
+release-check: release-notes-check
+	COVERAGE_CHECK_ALL_PACKAGES=1 $(MAKE) full-check COVERAGE_FILE=$(COVERAGE_FILE)
+	$(MAKE) ci-workflow-check
 
 agent-check: quick-check change-policy-check security-sensitive-diff
 
