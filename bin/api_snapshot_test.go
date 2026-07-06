@@ -575,6 +575,9 @@ func TestCIWorkflowCheckRejectsUnknownMakeTarget(t *testing.T) {
 	if err == nil {
 		t.Fatalf("check_ci_workflows.sh unexpectedly passed:\n%s", output)
 	}
+	if !strings.Contains(output, "CI_WORKFLOW_UNKNOWN_MAKE_TARGET") {
+		t.Fatalf("CI workflow output missing CI_WORKFLOW_UNKNOWN_MAKE_TARGET rule id:\n%s", output)
+	}
 	if !strings.Contains(output, "references unknown Makefile target") || !strings.Contains(output, "missing-target") {
 		t.Fatalf("CI workflow output missing unknown target error:\n%s", output)
 	}
