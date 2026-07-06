@@ -92,6 +92,33 @@ func TestValidatorOptionsFallbackToDefaults(t *testing.T) {
 	}
 }
 
+func TestApplyOptionsFallbacksAfterCustomOptionClearsMatchers(t *testing.T) {
+	cfg := applyOptions([]Option{
+		func(c *config) {
+			c.email = nil
+			c.mobile = nil
+			c.idCard = nil
+			c.chinese = nil
+			c.number = nil
+		},
+	})
+	if !cfg.email("a@b.com") {
+		t.Fatal("email matcher should fallback to default")
+	}
+	if !cfg.mobile("13812345678") {
+		t.Fatal("mobile matcher should fallback to default")
+	}
+	if !cfg.idCard("11010519491231002X") {
+		t.Fatal("id card matcher should fallback to default")
+	}
+	if !cfg.chinese("你好") {
+		t.Fatal("chinese matcher should fallback to default")
+	}
+	if !cfg.number("-3.14") {
+		t.Fatal("number matcher should fallback to default")
+	}
+}
+
 func TestNilValidatorOptionsDoNotClearPreviousMatchers(t *testing.T) {
 	if !IsEmailWithOptions("custom-email", WithEmailMatcher(func(s string) bool {
 		return s == "custom-email"
