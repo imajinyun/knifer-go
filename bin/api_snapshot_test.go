@@ -605,6 +605,9 @@ func TestDocsQuickstartCheckRejectsMissingQualitySections(t *testing.T) {
 	if err == nil {
 		t.Fatalf("check_docs_quickstart.sh unexpectedly passed:\n%s", output)
 	}
+	if !strings.Contains(output, "DOCS_QUICKSTART_SECTION_MISSING") {
+		t.Fatalf("docs quickstart output missing DOCS_QUICKSTART_SECTION_MISSING rule id:\n%s", output)
+	}
 	for _, want := range []string{
 		"## Golden path APIs",
 		"## Benchmarks and trade-offs",
@@ -730,6 +733,9 @@ func TestDocsQuickstartCheckRejectsProviderProfileWithoutBoundary(t *testing.T) 
 	output, err := fixture.RunDocsQuickstartCheck()
 	if err == nil {
 		t.Fatalf("check_docs_quickstart.sh unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "DOCS_QUICKSTART_PROFILE_GUIDANCE_MISSING") {
+		t.Fatalf("docs quickstart output missing DOCS_QUICKSTART_PROFILE_GUIDANCE_MISSING rule id:\n%s", output)
 	}
 	if !strings.Contains(output, "profile provider_contract") {
 		t.Fatalf("docs quickstart output missing provider profile error:\n%s", output)
