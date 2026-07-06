@@ -349,6 +349,9 @@ func TestChangePolicyClassifiesFacadeTestAndBenchmarkSeparatelyFromPublicAPI(t *
 	if !strings.Contains(output, "detected policies: bug_fix") {
 		t.Fatalf("change policy output missing bug_fix-only policy:\n%s", output)
 	}
+	if !strings.Contains(output, "rule ids: CHANGE_BUG_FIX") {
+		t.Fatalf("change policy output missing CHANGE_BUG_FIX rule id:\n%s", output)
+	}
 	if strings.Contains(output, "public_api") {
 		t.Fatalf("facade test/benchmark files must not be classified as public_api:\n%s", output)
 	}
@@ -361,6 +364,9 @@ func TestChangePolicyClassifiesFacadeProductionAndSnapshotAsPublicAPI(t *testing
 	}
 	if !strings.Contains(output, "public_api") {
 		t.Fatalf("change policy output missing public_api policy:\n%s", output)
+	}
+	if !strings.Contains(output, "CHANGE_PUBLIC_API") {
+		t.Fatalf("change policy output missing CHANGE_PUBLIC_API rule id:\n%s", output)
 	}
 	if !strings.Contains(output, "public_api paths:") || !strings.Contains(output, "vcodec/codec.go") || !strings.Contains(output, "docs/api/exports.txt") {
 		t.Fatalf("change policy output missing public_api paths:\n%s", output)
