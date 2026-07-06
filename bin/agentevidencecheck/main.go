@@ -17,7 +17,12 @@ type checker struct {
 	root     string
 	context  map[string]any
 	evidence map[string]any
-	errors   []string
+	errors   []ruleError
+}
+
+type ruleError struct {
+	id      string
+	message string
 }
 
 func main() {
@@ -59,7 +64,7 @@ func main() {
 	c.run()
 	if len(c.errors) > 0 {
 		for _, err := range c.errors {
-			fmt.Fprintf(os.Stderr, "agent evidence check error: %s\n", err)
+			fmt.Fprintf(os.Stderr, "agent evidence check error: [%s] %s\n", err.id, err.message)
 		}
 		os.Exit(1)
 	}
@@ -87,20 +92,20 @@ func (c *checker) run() {
 	policies := c.requireMapping(c.context["change_type_policies"], "ai-context.json.change_type_policies")
 
 	if schemaVersion := c.requireString(c.evidence["schema_version"], "schema_version"); schemaVersion != "" && schemaVersion != "1.0" {
-		c.addError("schema_version must be 1.0")
+		c.addError("AGENT_EVIDENCE_SCHEMA_VERSION", "schema_version must be 1.0")
 	}
 	if c.requireString(c.evidence["repository"], "repository") != stringValue(project["name"]) {
-		c.addError("repository must match ai-context.json.project.name")
+		c.addError("AGENT_EVIDENCE_PROJECT_MISMATCH", "repository must match ai-context.json.project.name")
 	}
 	if c.requireString(c.evidence["module"], "module") != stringValue(project["module"]) {
-		c.addError("module must match ai-context.json.project.module")
+		c.addError("AGENT_EVIDENCE_PROJECT_MISMATCH", "module must match ai-context.json.project.module")
 	}
 	for _, key := range []string{"generated_at", "branch", "commit"} {
 		c.requireString(c.evidence[key], key)
 	}
 	c.requireOptionalString(c.evidence["change_base_ref"], "change_base_ref")
 	if c.requireString(c.evidence["diff_filter"], "diff_filter") != diffFilter {
-		c.addError("diff_filter must be " + diffFilter)
+		c.addError("AGENT_EVIDENCE_DIFF_FILTER_INVALID", "diff_filter must be "+diffFilter)
 	}
 
 	changedFiles := c.requireStringList(c.evidence["changed_files"], "changed_files")
@@ -109,10 +114,10 @@ func (c *checker) run() {
 	securitySensitivePaths := c.requireStringList(c.evidence["security_sensitive_paths"], "security_sensitive_paths")
 
 	if unknown := differenceStrings(detectedPolicies, mapKeys(policies)); len(unknown) > 0 {
-		c.addError("detected_change_policies contains unknown policies: " + strings.Join(unknown, ", "))
+		c.addError("AGENT_EVIDENCE_POLICY_UNKNOWN", "detected_change_policies contains unknown policies: "+strings.Join(unknown, ", "))
 	}
 	if unknown := differenceStrings(requiredCommands, mapKeys(commands)); len(unknown) > 0 {
-		c.addError("required_commands contains unknown commands: " + strings.Join(unknown, ", "))
+		c.addError("AGENT_EVIDENCE_COMMAND_UNKNOWN", "required_commands contains unknown commands: "+strings.Join(unknown, ", "))
 	}
 
 	expectedRequiredCommands := []string{}
@@ -125,7 +130,7 @@ func (c *checker) run() {
 		}
 	}
 	if !equalStrings(requiredCommands, expectedRequiredCommands) {
-		c.addError(fmt.Sprintf("required_commands must match detected policies; got %v, want %v", requiredCommands, expectedRequiredCommands))
+		c.addError("AGENT_EVIDENCE_REQUIRED_COMMANDS_MISMATCH", fmt.Sprintf("required_commands must match detected policies; got %v, want %v", requiredCommands, expectedRequiredCommands))
 	}
 
 	riskRank := map[string]int{"low": 1, "medium": 2, "high": 3, "forbidden_for_agent": 4}
@@ -135,7 +140,7 @@ func (c *checker) run() {
 		risk := stringValue(commandSpec["risk_level"])
 		rank, ok := riskRank[risk]
 		if !ok {
-			c.addError(fmt.Sprintf("ai-context.json.commands.%s.risk_level is invalid", command))
+			c.addError("AGENT_EVIDENCE_COMMAND_RISK_INVALID", fmt.Sprintf("ai-context.json.commands.%s.risk_level is invalid", command))
 			continue
 		}
 		if rank > riskRank[highestRisk] {
@@ -143,7 +148,7 @@ func (c *checker) run() {
 		}
 	}
 	if c.requireString(c.evidence["highest_required_command_risk"], "highest_required_command_risk") != highestRisk {
-		c.addError("highest_required_command_risk must be " + highestRisk)
+		c.addError("AGENT_EVIDENCE_RISK_MISMATCH", "highest_required_command_risk must be "+highestRisk)
 	}
 
 	commandAttestations := c.requireMapping(c.evidence["command_attestations"], "command_attestations")
@@ -151,11 +156,11 @@ func (c *checker) run() {
 	c.validateEmbeddedChecks(commandAttestations)
 
 	if len(securitySensitivePaths) > 0 && !contains(detectedPolicies, "security_sensitive") {
-		c.addError("security_sensitive_paths requires detected security_sensitive policy")
+		c.addError("AGENT_EVIDENCE_SECURITY_PATHS_POLICY_MISSING", "security_sensitive_paths requires detected security_sensitive policy")
 	}
 	expectedSecuritySensitivePaths := c.expectedSecuritySensitivePaths(changedFiles)
 	if !equalStrings(sortedStrings(securitySensitivePaths), expectedSecuritySensitivePaths) {
-		c.addError(fmt.Sprintf("security_sensitive_paths must match changed security-sensitive paths; got %v, want %v", sortedStrings(securitySensitivePaths), expectedSecuritySensitivePaths))
+		c.addError("AGENT_EVIDENCE_SECURITY_PATHS_MISMATCH", fmt.Sprintf("security_sensitive_paths must match changed security-sensitive paths; got %v, want %v", sortedStrings(securitySensitivePaths), expectedSecuritySensitivePaths))
 	}
 
 	c.validateSecurityReview(detectedPolicies, requiredCommands, commandAttestations, expectedSecuritySensitivePaths, policies)
@@ -163,7 +168,7 @@ func (c *checker) run() {
 	c.validateMergeReady(requiredCommands, detectedPolicies, commandAttestations)
 
 	if _, ok := c.evidence["worktree_status"].(string); !ok {
-		c.addError("worktree_status must be a string")
+		c.addError("AGENT_EVIDENCE_WORKTREE_STATUS_INVALID", "worktree_status must be a string")
 	}
 }
 
@@ -174,11 +179,11 @@ func (c *checker) validateCommandAttestations(requiredCommands []string, command
 		attestation := c.requireMapping(commandAttestations[command], "command_attestations."+command)
 		status := c.requireString(attestation["status"], "command_attestations."+command+".status")
 		if status != "" && !allowedStatuses[status] {
-			c.addError("command_attestations." + command + ".status must be one of: " + strings.Join(sortedSet(allowedStatuses), ", "))
+			c.addError("AGENT_EVIDENCE_ATTESTATION_STATUS", "command_attestations."+command+".status must be one of: "+strings.Join(sortedSet(allowedStatuses), ", "))
 		}
 		source := c.requireString(attestation["source"], "command_attestations."+command+".source")
 		if source != "" && !allowedSources[source] {
-			c.addError("command_attestations." + command + ".source must be one of: " + strings.Join(sortedSet(allowedSources), ", "))
+			c.addError("AGENT_EVIDENCE_ATTESTATION_SOURCE", "command_attestations."+command+".source must be one of: "+strings.Join(sortedSet(allowedSources), ", "))
 		}
 		if status == "pending" || status == "not_recorded" || status == "skipped" {
 			c.requireString(attestation["reason"], "command_attestations."+command+".reason")
@@ -187,11 +192,11 @@ func (c *checker) validateCommandAttestations(requiredCommands []string, command
 			c.requireString(attestation["cmd"], "command_attestations."+command+".cmd")
 			exitCode, ok := intValue(attestation["exit_code"])
 			if !ok {
-				c.addError("command_attestations." + command + ".exit_code must be an integer")
+				c.addError("AGENT_EVIDENCE_ATTESTATION_EXIT_CODE", "command_attestations."+command+".exit_code must be an integer")
 			} else if status == "passed" && exitCode != 0 {
-				c.addError("command_attestations." + command + ".exit_code must be 0 when status is passed")
+				c.addError("AGENT_EVIDENCE_ATTESTATION_EXIT_CODE", "command_attestations."+command+".exit_code must be 0 when status is passed")
 			} else if status == "failed" && exitCode == 0 {
-				c.addError("command_attestations." + command + ".exit_code must be non-zero when status is failed")
+				c.addError("AGENT_EVIDENCE_ATTESTATION_EXIT_CODE", "command_attestations."+command+".exit_code must be non-zero when status is failed")
 			}
 		}
 		if status == "covered_by_ci" {
@@ -201,17 +206,17 @@ func (c *checker) validateCommandAttestations(requiredCommands []string, command
 
 	agentEvidence := c.requireMapping(commandAttestations["agent_evidence"], "command_attestations.agent_evidence")
 	if c.requireString(agentEvidence["status"], "command_attestations.agent_evidence.status") != "passed" {
-		c.addError("command_attestations.agent_evidence.status must be passed")
+		c.addError("AGENT_EVIDENCE_ATTESTATION_STATUS", "command_attestations.agent_evidence.status must be passed")
 	}
 	if c.requireString(agentEvidence["source"], "command_attestations.agent_evidence.source") != "current_process" {
-		c.addError("command_attestations.agent_evidence.source must be current_process")
+		c.addError("AGENT_EVIDENCE_ATTESTATION_SOURCE", "command_attestations.agent_evidence.source must be current_process")
 	}
 	agentEvidenceCheck := c.requireMapping(commandAttestations["agent_evidence_check"], "command_attestations.agent_evidence_check")
 	if c.requireString(agentEvidenceCheck["status"], "command_attestations.agent_evidence_check.status") != "pending" {
-		c.addError("command_attestations.agent_evidence_check.status must be pending")
+		c.addError("AGENT_EVIDENCE_ATTESTATION_STATUS", "command_attestations.agent_evidence_check.status must be pending")
 	}
 	if c.requireString(agentEvidenceCheck["source"], "command_attestations.agent_evidence_check.source") != "post_generation" {
-		c.addError("command_attestations.agent_evidence_check.source must be post_generation")
+		c.addError("AGENT_EVIDENCE_ATTESTATION_SOURCE", "command_attestations.agent_evidence_check.source must be post_generation")
 	}
 	c.requireString(agentEvidenceCheck["reason"], "command_attestations.agent_evidence_check.reason")
 }
@@ -221,27 +226,27 @@ func (c *checker) validateEmbeddedChecks(commandAttestations map[string]any) {
 	for _, checkName := range []string{"ai_context_check", "change_policy_check"} {
 		check := c.requireMapping(checks[checkName], "checks."+checkName)
 		if c.requireString(check["status"], "checks."+checkName+".status") != "passed" {
-			c.addError("checks." + checkName + ".status must be passed")
+			c.addError("AGENT_EVIDENCE_EMBEDDED_CHECK_STATUS", "checks."+checkName+".status must be passed")
 		}
 		exitCode, ok := intValue(check["exit_code"])
 		if !ok {
-			c.addError("checks." + checkName + ".exit_code must be an integer")
+			c.addError("AGENT_EVIDENCE_EMBEDDED_CHECK_EXIT_CODE", "checks."+checkName+".exit_code must be an integer")
 		} else if exitCode != 0 {
-			c.addError("checks." + checkName + ".exit_code must be 0")
+			c.addError("AGENT_EVIDENCE_EMBEDDED_CHECK_EXIT_CODE", "checks."+checkName+".exit_code must be 0")
 		}
 		c.requireString(check["cmd"], "checks."+checkName+".cmd")
 		attestation := c.requireMapping(commandAttestations[checkName], "command_attestations."+checkName)
 		if attestation["status"] != check["status"] {
-			c.addError("command_attestations." + checkName + ".status must match checks." + checkName + ".status")
+			c.addError("AGENT_EVIDENCE_EMBEDDED_CHECK_ATTESTATION", "command_attestations."+checkName+".status must match checks."+checkName+".status")
 		}
 		if !sameInt(attestation["exit_code"], check["exit_code"]) {
-			c.addError("command_attestations." + checkName + ".exit_code must match checks." + checkName + ".exit_code")
+			c.addError("AGENT_EVIDENCE_EMBEDDED_CHECK_ATTESTATION", "command_attestations."+checkName+".exit_code must match checks."+checkName+".exit_code")
 		}
 		if attestation["cmd"] != check["cmd"] {
-			c.addError("command_attestations." + checkName + ".cmd must match checks." + checkName + ".cmd")
+			c.addError("AGENT_EVIDENCE_EMBEDDED_CHECK_ATTESTATION", "command_attestations."+checkName+".cmd must match checks."+checkName+".cmd")
 		}
 		if attestation["source"] != "embedded_check" {
-			c.addError("command_attestations." + checkName + ".source must be embedded_check")
+			c.addError("AGENT_EVIDENCE_EMBEDDED_CHECK_ATTESTATION", "command_attestations."+checkName+".source must be embedded_check")
 		}
 	}
 }
@@ -282,28 +287,28 @@ func (c *checker) validateSecurityReview(detectedPolicies, requiredCommands []st
 	securityReview := c.requireMapping(c.evidence["security_review"], "security_review")
 	reviewRequired, reviewRequiredOK := boolValue(securityReview["required"])
 	if !reviewRequiredOK {
-		c.addError("security_review.required must be a boolean")
+		c.addError("AGENT_EVIDENCE_SECURITY_REVIEW_SCHEMA", "security_review.required must be a boolean")
 	}
 	securityReviewRequired, securityReviewRequiredOK := boolValue(securityReview["security_review_required"])
 	if !securityReviewRequiredOK {
-		c.addError("security_review.security_review_required must be a boolean")
+		c.addError("AGENT_EVIDENCE_SECURITY_REVIEW_SCHEMA", "security_review.security_review_required must be a boolean")
 	}
 	expectedReviewRequired := contains(detectedPolicies, "security_sensitive")
 	if reviewRequiredOK && reviewRequired != expectedReviewRequired {
-		c.addError(fmt.Sprintf("security_review.required must be %s", strings.ToLower(fmt.Sprint(expectedReviewRequired))))
+		c.addError("AGENT_EVIDENCE_SECURITY_REVIEW_REQUIRED", fmt.Sprintf("security_review.required must be %s", strings.ToLower(fmt.Sprint(expectedReviewRequired))))
 	}
 	if securityReviewRequiredOK && securityReviewRequired != expectedReviewRequired {
-		c.addError(fmt.Sprintf("security_review.security_review_required must be %s", strings.ToLower(fmt.Sprint(expectedReviewRequired))))
+		c.addError("AGENT_EVIDENCE_SECURITY_REVIEW_REQUIRED", fmt.Sprintf("security_review.security_review_required must be %s", strings.ToLower(fmt.Sprint(expectedReviewRequired))))
 	}
 	if expectedReviewRequired {
 		securityPolicy := mapValue(policies["security_sensitive"])
 		if required, ok := boolValue(securityPolicy["security_review_required"]); !ok || !required {
-			c.addError("security_sensitive policy must require security review when security_review is required")
+			c.addError("AGENT_EVIDENCE_SECURITY_REVIEW_POLICY", "security_sensitive policy must require security review when security_review is required")
 		}
 	}
 	reviewPaths := c.requireStringList(securityReview["paths"], "security_review.paths")
 	if !equalStrings(sortedStrings(reviewPaths), expectedSecuritySensitivePaths) {
-		c.addError(fmt.Sprintf("security_review.paths must match changed security-sensitive paths; got %v, want %v", sortedStrings(reviewPaths), expectedSecuritySensitivePaths))
+		c.addError("AGENT_EVIDENCE_SECURITY_REVIEW_PATHS", fmt.Sprintf("security_review.paths must match changed security-sensitive paths; got %v, want %v", sortedStrings(reviewPaths), expectedSecuritySensitivePaths))
 	}
 	expectedReviewCommands := []string{}
 	if expectedReviewRequired {
@@ -315,7 +320,7 @@ func (c *checker) validateSecurityReview(detectedPolicies, requiredCommands []st
 	}
 	reviewCommands := c.requireStringList(securityReview["required_commands"], "security_review.required_commands")
 	if !equalStrings(reviewCommands, expectedReviewCommands) {
-		c.addError(fmt.Sprintf("security_review.required_commands must match security validation commands; got %v, want %v", reviewCommands, expectedReviewCommands))
+		c.addError("AGENT_EVIDENCE_SECURITY_REVIEW_COMMANDS", fmt.Sprintf("security_review.required_commands must match security validation commands; got %v, want %v", reviewCommands, expectedReviewCommands))
 	}
 	reviewAttestations := c.requireMapping(securityReview["command_attestations"], "security_review.command_attestations")
 	for _, command := range reviewCommands {
@@ -323,11 +328,11 @@ func (c *checker) validateSecurityReview(detectedPolicies, requiredCommands []st
 		topAttestation := c.requireMapping(commandAttestations[command], "command_attestations."+command)
 		for _, key := range []string{"status", "source", "cmd"} {
 			if reviewAttestation[key] != topAttestation[key] {
-				c.addError(fmt.Sprintf("security_review.command_attestations.%s.%s must match command_attestations.%s.%s", command, key, command, key))
+				c.addError("AGENT_EVIDENCE_SECURITY_REVIEW_ATTESTATION", fmt.Sprintf("security_review.command_attestations.%s.%s must match command_attestations.%s.%s", command, key, command, key))
 			}
 		}
 		if _, ok := topAttestation["exit_code"]; ok && !sameInt(reviewAttestation["exit_code"], topAttestation["exit_code"]) {
-			c.addError("security_review.command_attestations." + command + ".exit_code must match command_attestations." + command + ".exit_code")
+			c.addError("AGENT_EVIDENCE_SECURITY_REVIEW_ATTESTATION", "security_review.command_attestations."+command+".exit_code must match command_attestations."+command+".exit_code")
 		}
 		status := stringValue(topAttestation["status"])
 		if status == "skipped" || status == "not_recorded" {
@@ -339,7 +344,7 @@ func (c *checker) validateSecurityReview(detectedPolicies, requiredCommands []st
 	}
 	reviewStatus := c.requireString(securityReview["status"], "security_review.status")
 	if reviewStatus != "" && !setOf("not_required", "blocked", "ready")[reviewStatus] {
-		c.addError("security_review.status must be one of: blocked, not_required, ready")
+		c.addError("AGENT_EVIDENCE_SECURITY_REVIEW_STATUS", "security_review.status must be one of: blocked, not_required, ready")
 	}
 	reviewReady := expectedReviewRequired && len(expectedSecuritySensitivePaths) > 0
 	for _, command := range expectedReviewCommands {
@@ -357,15 +362,15 @@ func (c *checker) validateSecurityReview(detectedPolicies, requiredCommands []st
 		}
 	}
 	if reviewStatus != "" && reviewStatus != expectedReviewStatus {
-		c.addError("security_review.status must be " + expectedReviewStatus)
+		c.addError("AGENT_EVIDENCE_SECURITY_REVIEW_STATUS", "security_review.status must be "+expectedReviewStatus)
 	}
 	auditConclusion := c.requireString(securityReview["audit_conclusion"], "security_review.audit_conclusion")
 	if auditConclusion != "" {
 		if expectedReviewStatus == "ready" && !strings.Contains(auditConclusion, "validation attestations") {
-			c.addError("security_review.audit_conclusion must describe validation attestations when ready")
+			c.addError("AGENT_EVIDENCE_SECURITY_REVIEW_AUDIT", "security_review.audit_conclusion must describe validation attestations when ready")
 		}
 		if expectedReviewStatus == "blocked" && !strings.Contains(strings.ToLower(auditConclusion), "blocked") {
-			c.addError("security_review.audit_conclusion must explain the blocked security review")
+			c.addError("AGENT_EVIDENCE_SECURITY_REVIEW_AUDIT", "security_review.audit_conclusion must explain the blocked security review")
 		}
 	}
 }
@@ -377,39 +382,39 @@ func (c *checker) validateSecuritySensitiveDiff(commandAttestations map[string]a
 	status := c.requireString(check["status"], "checks.security_sensitive_diff.status")
 	exitCode, exitCodeOK := intValue(check["exit_code"])
 	if !exitCodeOK {
-		c.addError("checks.security_sensitive_diff.exit_code must be an integer")
+		c.addError("AGENT_EVIDENCE_SECURITY_DIFF_EXIT_CODE", "checks.security_sensitive_diff.exit_code must be an integer")
 	}
 	c.requireString(check["cmd"], "checks.security_sensitive_diff.cmd")
 	if attestation["status"] != status {
-		c.addError("command_attestations.security_sensitive_diff.status must match checks.security_sensitive_diff.status")
+		c.addError("AGENT_EVIDENCE_SECURITY_DIFF_ATTESTATION", "command_attestations.security_sensitive_diff.status must match checks.security_sensitive_diff.status")
 	}
 	if !sameInt(attestation["exit_code"], check["exit_code"]) {
-		c.addError("command_attestations.security_sensitive_diff.exit_code must match checks.security_sensitive_diff.exit_code")
+		c.addError("AGENT_EVIDENCE_SECURITY_DIFF_ATTESTATION", "command_attestations.security_sensitive_diff.exit_code must match checks.security_sensitive_diff.exit_code")
 	}
 	if attestation["cmd"] != check["cmd"] {
-		c.addError("command_attestations.security_sensitive_diff.cmd must match checks.security_sensitive_diff.cmd")
+		c.addError("AGENT_EVIDENCE_SECURITY_DIFF_ATTESTATION", "command_attestations.security_sensitive_diff.cmd must match checks.security_sensitive_diff.cmd")
 	}
 	if attestation["source"] != "embedded_check" {
-		c.addError("command_attestations.security_sensitive_diff.source must be embedded_check")
+		c.addError("AGENT_EVIDENCE_SECURITY_DIFF_ATTESTATION", "command_attestations.security_sensitive_diff.source must be embedded_check")
 	}
 	stdout := stringValue(check["stdout"])
 	stderr := stringValue(check["stderr"])
 	if len(expectedSecuritySensitivePaths) == 0 {
 		if status != "passed" {
-			c.addError("checks.security_sensitive_diff.status must be passed when no security-sensitive paths changed")
+			c.addError("AGENT_EVIDENCE_SECURITY_DIFF_STATUS", "checks.security_sensitive_diff.status must be passed when no security-sensitive paths changed")
 		}
 		if exitCodeOK && exitCode != 0 {
-			c.addError("checks.security_sensitive_diff.exit_code must be 0 when no security-sensitive paths changed")
+			c.addError("AGENT_EVIDENCE_SECURITY_DIFF_EXIT_CODE", "checks.security_sensitive_diff.exit_code must be 0 when no security-sensitive paths changed")
 		}
 		return
 	}
 	combined := strings.TrimSpace(stdout + "\n" + stderr)
 	if strings.Contains(combined, "no changed files") {
-		c.addError("checks.security_sensitive_diff output conflicts with security_sensitive_paths")
+		c.addError("AGENT_EVIDENCE_SECURITY_DIFF_OUTPUT", "checks.security_sensitive_diff output conflicts with security_sensitive_paths")
 	}
 	for _, path := range expectedSecuritySensitivePaths {
 		if !strings.Contains(combined, path) {
-			c.addError(fmt.Sprintf("checks.security_sensitive_diff output must mention changed security-sensitive path %q", path))
+			c.addError("AGENT_EVIDENCE_SECURITY_DIFF_OUTPUT", fmt.Sprintf("checks.security_sensitive_diff output must mention changed security-sensitive path %q", path))
 		}
 	}
 	documentationOnly := true
@@ -421,20 +426,20 @@ func (c *checker) validateSecuritySensitiveDiff(commandAttestations map[string]a
 	}
 	if documentationOnly {
 		if status != "passed" {
-			c.addError("checks.security_sensitive_diff.status may be passed for security-sensitive example/doc-only diffs")
+			c.addError("AGENT_EVIDENCE_SECURITY_DIFF_STATUS", "checks.security_sensitive_diff.status may be passed for security-sensitive example/doc-only diffs")
 		}
 		if exitCodeOK && exitCode != 0 {
-			c.addError("checks.security_sensitive_diff.exit_code must be 0 for security-sensitive example/doc-only diffs")
+			c.addError("AGENT_EVIDENCE_SECURITY_DIFF_EXIT_CODE", "checks.security_sensitive_diff.exit_code must be 0 for security-sensitive example/doc-only diffs")
 		}
 		if !strings.Contains(combined, "example/doc-only diff") {
-			c.addError("checks.security_sensitive_diff output must explain security-sensitive example/doc-only diff")
+			c.addError("AGENT_EVIDENCE_SECURITY_DIFF_OUTPUT", "checks.security_sensitive_diff output must explain security-sensitive example/doc-only diff")
 		}
 	} else {
 		if status != "failed" {
-			c.addError("checks.security_sensitive_diff.status must be failed when security-sensitive non-example paths changed")
+			c.addError("AGENT_EVIDENCE_SECURITY_DIFF_STATUS", "checks.security_sensitive_diff.status must be failed when security-sensitive non-example paths changed")
 		}
 		if exitCodeOK && exitCode == 0 {
-			c.addError("checks.security_sensitive_diff.exit_code must be non-zero when security-sensitive non-example paths changed")
+			c.addError("AGENT_EVIDENCE_SECURITY_DIFF_EXIT_CODE", "checks.security_sensitive_diff.exit_code must be non-zero when security-sensitive non-example paths changed")
 		}
 	}
 }
@@ -464,13 +469,13 @@ func (c *checker) validateMergeReady(requiredCommands, detectedPolicies []string
 	expectedMergeBlockers = uniqueSorted(expectedMergeBlockers)
 	mergeReady, ok := boolValue(c.evidence["merge_ready"])
 	if !ok {
-		c.addError("merge_ready must be a boolean")
+		c.addError("AGENT_EVIDENCE_MERGE_READY_SCHEMA", "merge_ready must be a boolean")
 	} else if mergeReady != (len(expectedMergeBlockers) == 0) {
-		c.addError(fmt.Sprintf("merge_ready must be %s", strings.ToLower(fmt.Sprint(len(expectedMergeBlockers) == 0))))
+		c.addError("AGENT_EVIDENCE_MERGE_READY_MISMATCH", fmt.Sprintf("merge_ready must be %s", strings.ToLower(fmt.Sprint(len(expectedMergeBlockers) == 0))))
 	}
 	mergeBlockers := c.requireStringList(c.evidence["merge_blockers"], "merge_blockers")
 	if !equalStrings(sortedStrings(mergeBlockers), expectedMergeBlockers) {
-		c.addError(fmt.Sprintf("merge_blockers must be %v, got %v", expectedMergeBlockers, sortedStrings(mergeBlockers)))
+		c.addError("AGENT_EVIDENCE_MERGE_BLOCKERS_MISMATCH", fmt.Sprintf("merge_blockers must be %v, got %v", expectedMergeBlockers, sortedStrings(mergeBlockers)))
 	}
 }
 
@@ -548,14 +553,14 @@ func loadJSON(path, label string) (map[string]any, error) {
 	return out, nil
 }
 
-func (c *checker) addError(message string) {
-	c.errors = append(c.errors, message)
+func (c *checker) addError(ruleID, message string) {
+	c.errors = append(c.errors, ruleError{id: ruleID, message: message})
 }
 
 func (c *checker) requireMapping(value any, path string) map[string]any {
 	mapping, ok := value.(map[string]any)
 	if !ok {
-		c.addError(path + " must be an object")
+		c.addError("AGENT_EVIDENCE_SCHEMA_INVALID", path+" must be an object")
 		return map[string]any{}
 	}
 	return mapping
@@ -564,7 +569,7 @@ func (c *checker) requireMapping(value any, path string) map[string]any {
 func (c *checker) requireString(value any, path string) string {
 	text, ok := value.(string)
 	if !ok || strings.TrimSpace(text) == "" {
-		c.addError(path + " must be a non-empty string")
+		c.addError("AGENT_EVIDENCE_SCHEMA_INVALID", path+" must be a non-empty string")
 		return ""
 	}
 	return text
@@ -576,7 +581,7 @@ func (c *checker) requireOptionalString(value any, path string) string {
 	}
 	text, ok := value.(string)
 	if !ok {
-		c.addError(path + " must be a string")
+		c.addError("AGENT_EVIDENCE_SCHEMA_INVALID", path+" must be a string")
 		return ""
 	}
 	return text
@@ -585,14 +590,14 @@ func (c *checker) requireOptionalString(value any, path string) string {
 func (c *checker) requireStringList(value any, path string) []string {
 	values, ok := value.([]any)
 	if !ok {
-		c.addError(path + " must be a list")
+		c.addError("AGENT_EVIDENCE_SCHEMA_INVALID", path+" must be a list")
 		return nil
 	}
 	out := []string{}
 	for i, item := range values {
 		text, ok := item.(string)
 		if !ok || strings.TrimSpace(text) == "" {
-			c.addError(fmt.Sprintf("%s[%d] must be a non-empty string", path, i))
+			c.addError("AGENT_EVIDENCE_SCHEMA_INVALID", fmt.Sprintf("%s[%d] must be a non-empty string", path, i))
 			continue
 		}
 		out = append(out, text)

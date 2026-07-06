@@ -411,6 +411,9 @@ func TestAgentEvidenceCheckRejectsMissingSecurityReviewEvidence(t *testing.T) {
 	if err == nil {
 		t.Fatalf("agent evidence check unexpectedly passed:\n%s", output)
 	}
+	if !strings.Contains(output, "AGENT_EVIDENCE_SECURITY_REVIEW_SCHEMA") {
+		t.Fatalf("agent evidence output missing AGENT_EVIDENCE_SECURITY_REVIEW_SCHEMA rule id:\n%s", output)
+	}
 	if !strings.Contains(output, "security_review must be an object") {
 		t.Fatalf("agent evidence output missing security_review error:\n%s", output)
 	}
@@ -424,6 +427,9 @@ func TestAgentEvidenceCheckRejectsIncorrectSecurityMergeReadyEvidence(t *testing
 	output, err := newGovernanceFixture(t).RunAgentEvidenceCheck(evidence)
 	if err == nil {
 		t.Fatalf("agent evidence check unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "AGENT_EVIDENCE_MERGE_READY_MISMATCH") {
+		t.Fatalf("agent evidence output missing AGENT_EVIDENCE_MERGE_READY_MISMATCH rule id:\n%s", output)
 	}
 	if !strings.Contains(output, "merge_ready must be false") {
 		t.Fatalf("agent evidence output missing merge_ready error:\n%s", output)
