@@ -16,6 +16,12 @@ import (
 
 const diffFilter = "ACDMRTUXB"
 
+type checkError struct {
+	ruleID  string
+	message string
+	code    int
+}
+
 type config struct {
 	root                          string
 	coverageFile                  string
@@ -44,8 +50,7 @@ func main() {
 		var err error
 		root, err = os.Getwd()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "COVERAGE CHECK ERROR: cannot resolve working directory: %v\n", err)
-			os.Exit(2)
+			exitCoverageError(checkError{"COVERAGE_INPUT_ERROR", fmt.Sprintf("cannot resolve working directory: %v", err), 2})
 		}
 	}
 	coverageFile := "coverage.out"
@@ -55,46 +60,42 @@ func main() {
 
 	cfg, err := loadConfig(root, coverageFile)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "COVERAGE CHECK ERROR: %v\n", err)
-		os.Exit(2)
+		exitCoverageError(checkError{"COVERAGE_INPUT_ERROR", err.Error(), 2})
 	}
 	lines, err := parseCoverageProfile(cfg.coverageFile)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "COVERAGE CHECK ERROR: %v\n", err)
-		os.Exit(2)
+		exitCoverageError(checkError{"COVERAGE_PROFILE_MISSING", err.Error(), 2})
 	}
 
 	total, ok := totalCoverage(lines)
 	if !ok {
-		fmt.Fprintln(os.Stderr, "COVERAGE CHECK ERROR: cannot read total coverage from "+cfg.coverageFile)
-		os.Exit(2)
+		exitCoverageError(checkError{"COVERAGE_PROFILE_INVALID", "cannot read total coverage from " + cfg.coverageFile, 2})
 	}
 	if total < cfg.repositoryThreshold {
-		fmt.Fprintf(os.Stderr, "coverage %.1f%% is below required %.1f%%\n", total, cfg.repositoryThreshold)
-		os.Exit(1)
+		exitCoverageError(checkError{"COVERAGE_REPOSITORY_BELOW_THRESHOLD", fmt.Sprintf("coverage %.1f%% is below required %.1f%%", total, cfg.repositoryThreshold), 1})
 	}
 	fmt.Printf("coverage %.1f%% meets required %.1f%%\n", total, cfg.repositoryThreshold)
 
 	if !cfg.coverageCheckAllPackages {
 		fmt.Println("package coverage thresholds skipped for unchanged packages; set COVERAGE_CHECK_ALL_PACKAGES=1 to enforce all package thresholds")
 	} else {
-		if code := checkPackageThresholds(lines, cfg.packageThresholds, "", false); code != 0 {
-			os.Exit(code)
+		if err := checkPackageThresholds(lines, cfg.packageThresholds, "", false); err != nil {
+			exitCoverageError(*err)
 		}
 	}
 
-	if code := checkPackageThresholds(lines, cfg.changedPackageThresholds, "changed package ", true); code != 0 {
-		os.Exit(code)
+	if err := checkPackageThresholds(lines, cfg.changedPackageThresholds, "changed package ", true); err != nil {
+		exitCoverageError(*err)
 	}
 
-	if code := checkSecuritySensitive(lines, cfg.securitySensitivePaths, cfg.securitySensitiveMinThreshold, false); code != 0 {
-		os.Exit(code)
+	if err := checkSecuritySensitive(lines, cfg.securitySensitivePaths, cfg.securitySensitiveMinThreshold, false); err != nil {
+		exitCoverageError(*err)
 	}
 	if len(cfg.changedSecuritySensitivePaths) == 0 {
 		return
 	}
-	if code := checkSecuritySensitive(lines, cfg.changedSecuritySensitivePaths, cfg.securitySensitiveMinThreshold, true); code != 0 {
-		os.Exit(code)
+	if err := checkSecuritySensitive(lines, cfg.changedSecuritySensitivePaths, cfg.securitySensitiveMinThreshold, true); err != nil {
+		exitCoverageError(*err)
 	}
 }
 
@@ -275,30 +276,32 @@ func totalCoverage(lines []profileLine) (float64, bool) {
 	return float64(covered) * 100 / float64(statements), true
 }
 
-func checkPackageThresholds(lines []profileLine, thresholds map[string]float64, prefix string, changed bool) int {
+func checkPackageThresholds(lines []profileLine, thresholds map[string]float64, prefix string, changed bool) *checkError {
 	for _, packagePath := range sortedKeys(thresholds) {
 		threshold := thresholds[packagePath]
 		total, ok := packageCoverage(lines, packagePath)
 		if !ok {
 			if changed {
-				fmt.Fprintf(os.Stderr, "COVERAGE CHECK ERROR: changed package %s has no coverage data\n", packagePath)
+				return &checkError{"COVERAGE_CHANGED_PACKAGE_MISSING", fmt.Sprintf("changed package %s has no coverage data", packagePath), 2}
 			} else {
-				fmt.Fprintf(os.Stderr, "COVERAGE CHECK ERROR: package %s has no coverage data\n", packagePath)
+				return &checkError{"COVERAGE_PACKAGE_MISSING", fmt.Sprintf("package %s has no coverage data", packagePath), 2}
 			}
-			return 2
 		}
 		if total < threshold {
-			fmt.Fprintf(os.Stderr, "%s%s coverage %.1f%% is below required %.1f%%\n", prefix, packagePath, total, threshold)
-			return 1
+			ruleID := "COVERAGE_PACKAGE_BELOW_THRESHOLD"
+			if changed {
+				ruleID = "COVERAGE_CHANGED_PACKAGE_BELOW_THRESHOLD"
+			}
+			return &checkError{ruleID, fmt.Sprintf("%s%s coverage %.1f%% is below required %.1f%%", prefix, packagePath, total, threshold), 1}
 		}
 		fmt.Printf("%s%s coverage %.1f%% meets required %.1f%%\n", prefix, packagePath, total, threshold)
 	}
-	return 0
+	return nil
 }
 
-func checkSecuritySensitive(lines []profileLine, packagePaths []string, threshold float64, changed bool) int {
+func checkSecuritySensitive(lines []profileLine, packagePaths []string, threshold float64, changed bool) *checkError {
 	if len(packagePaths) == 0 {
-		return 0
+		return nil
 	}
 	var missing []string
 	var below []string
@@ -315,26 +318,38 @@ func checkSecuritySensitive(lines []profileLine, packagePaths []string, threshol
 		}
 	}
 	if len(missing) > 0 {
+		var message strings.Builder
 		if changed {
-			fmt.Fprintln(os.Stderr, "COVERAGE CHECK ERROR: changed security-sensitive package(s) have no coverage data:")
+			message.WriteString("changed security-sensitive package(s) have no coverage data:")
 		} else {
-			fmt.Fprintln(os.Stderr, "COVERAGE CHECK ERROR: security-sensitive package(s) have no coverage data:")
+			message.WriteString("security-sensitive package(s) have no coverage data:")
 		}
 		for _, packagePath := range missing {
-			fmt.Fprintf(os.Stderr, "  - %s\n", packagePath)
+			message.WriteString("\n  - ")
+			message.WriteString(packagePath)
 		}
-		return 2
+		ruleID := "COVERAGE_SECURITY_SENSITIVE_MISSING"
+		if changed {
+			ruleID = "COVERAGE_CHANGED_SECURITY_SENSITIVE_MISSING"
+		}
+		return &checkError{ruleID, message.String(), 2}
 	}
 	if len(below) > 0 {
+		var message strings.Builder
 		if changed {
-			fmt.Fprintln(os.Stderr, "COVERAGE CHECK ERROR: changed security-sensitive package(s) are below coverage threshold:")
+			message.WriteString("changed security-sensitive package(s) are below coverage threshold:")
 		} else {
-			fmt.Fprintln(os.Stderr, "COVERAGE CHECK ERROR: security-sensitive package(s) are below coverage threshold:")
+			message.WriteString("security-sensitive package(s) are below coverage threshold:")
 		}
-		for _, message := range below {
-			fmt.Fprintf(os.Stderr, "  - %s\n", message)
+		for _, belowMessage := range below {
+			message.WriteString("\n  - ")
+			message.WriteString(belowMessage)
 		}
-		return 1
+		ruleID := "COVERAGE_SECURITY_SENSITIVE_BELOW_THRESHOLD"
+		if changed {
+			ruleID = "COVERAGE_CHANGED_SECURITY_SENSITIVE_BELOW_THRESHOLD"
+		}
+		return &checkError{ruleID, message.String(), 1}
 	}
 	label := "security-sensitive"
 	if changed {
@@ -345,7 +360,12 @@ func checkSecuritySensitive(lines []profileLine, packagePaths []string, threshol
 	} else {
 		fmt.Printf("%s coverage data present for %d package path(s)\n", label, count)
 	}
-	return 0
+	return nil
+}
+
+func exitCoverageError(err checkError) {
+	fmt.Fprintf(os.Stderr, "COVERAGE CHECK ERROR: [%s] %s\n", err.ruleID, err.message)
+	os.Exit(err.code)
 }
 
 func changedFiles(root string) []string {

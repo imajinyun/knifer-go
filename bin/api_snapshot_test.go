@@ -327,6 +327,9 @@ func TestCoverageCheckRequiresChangedSecuritySensitivePackageData(t *testing.T) 
 	if err == nil {
 		t.Fatalf("check_coverage.sh unexpectedly passed:\n%s", output)
 	}
+	if !strings.Contains(output, "COVERAGE_CHANGED_SECURITY_SENSITIVE_MISSING") {
+		t.Fatalf("coverage check output missing COVERAGE_CHANGED_SECURITY_SENSITIVE_MISSING rule id:\n%s", output)
+	}
 	if !strings.Contains(output, "changed security-sensitive package(s) have no coverage data") {
 		t.Fatalf("coverage check output missing changed package error:\n%s", output)
 	}
