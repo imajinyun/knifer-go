@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -310,17 +308,13 @@ func writeGovernanceTemplateFixture(t *testing.T, content string) string {
 }
 
 func TestCoverageCheckRequiresChangedSecuritySensitivePackageData(t *testing.T) {
-	root := repoRoot(t)
-	coverage := filepath.Join(t.TempDir(), "coverage.out")
+	fixture := newGovernanceFixture(t)
 	module := "github.com/imajinyun/knifer-go"
-	if err := os.WriteFile(coverage, []byte("mode: set\n"+module+"/vurl/url.go:1.1,1.2 1 1\n"), 0o600); err != nil {
-		t.Fatalf("WriteFile() error = %v", err)
-	}
+	coverage := fixture.WriteTempFile("coverage.out", "mode: set\n"+module+"/vurl/url.go:1.1,1.2 1 1\n")
 
-	runCoverage := func() ([]byte, error) {
-		cmd := exec.Command("bash", filepath.Join(root, "bin/check_coverage.sh"), coverage)
-		cmd.Dir = root
-		cmd.Env = append(os.Environ(),
+	runCoverage := func() (string, error) {
+		return fixture.RunCoverageCheck(
+			coverage,
 			"COVERAGE_THRESHOLD=0",
 			"PACKAGE_COVERAGE_THRESHOLDS= ",
 			"CHANGED_PACKAGE_COVERAGE_THRESHOLDS= ",
@@ -328,24 +322,21 @@ func TestCoverageCheckRequiresChangedSecuritySensitivePackageData(t *testing.T) 
 			"CHANGED_SECURITY_SENSITIVE_COVERAGE_PATHS="+module+"/vhttp",
 			"SECURITY_SENSITIVE_MIN_COVERAGE_THRESHOLD=0",
 		)
-		return cmd.CombinedOutput()
 	}
 	output, err := runCoverage()
 	if err == nil {
 		t.Fatalf("check_coverage.sh unexpectedly passed:\n%s", output)
 	}
-	if !strings.Contains(string(output), "changed security-sensitive package(s) have no coverage data") {
+	if !strings.Contains(output, "changed security-sensitive package(s) have no coverage data") {
 		t.Fatalf("coverage check output missing changed package error:\n%s", output)
 	}
 
-	if err := os.WriteFile(coverage, []byte("mode: set\n"+module+"/vhttp/request.go:1.1,1.2 1 1\n"), 0o600); err != nil {
-		t.Fatalf("WriteFile() error = %v", err)
-	}
+	fixture.WriteFile("coverage.out", "mode: set\n"+module+"/vhttp/request.go:1.1,1.2 1 1\n")
 	output, err = runCoverage()
 	if err != nil {
 		t.Fatalf("check_coverage.sh with changed package coverage failed: %v\n%s", err, output)
 	}
-	if !strings.Contains(string(output), "changed security-sensitive coverage data present for 1 package path") {
+	if !strings.Contains(output, "changed security-sensitive coverage data present for 1 package path") {
 		t.Fatalf("coverage check output missing changed package success:\n%s", output)
 	}
 }
@@ -431,9 +422,8 @@ func TestAgentEvidenceCheckRejectsIncorrectSecurityMergeReadyEvidence(t *testing
 }
 
 func TestAPIFreezeCheckRequiresStatusDecisionCards(t *testing.T) {
-	root := t.TempDir()
-	toolsPath := filepath.Join(root, "tools.json")
-	writeJSONFile(t, toolsPath, map[string]any{
+	fixture := newGovernanceFixture(t)
+	fixture.WriteJSON("tools.json", map[string]any{
 		"packages": []any{
 			map[string]any{
 				"name": "vcompat",
@@ -447,6 +437,7 @@ func TestAPIFreezeCheckRequiresStatusDecisionCards(t *testing.T) {
 			},
 		},
 	})
+	toolsPath := filepath.Join(fixture.Root(), "tools.json")
 	context := minimalAPIFreezeContext()
 	context["api_freeze"].(map[string]any)["api_status_decision_cards"] = map[string]any{
 		"recommended":   []string{"recommended-card"},
@@ -454,10 +445,10 @@ func TestAPIFreezeCheckRequiresStatusDecisionCards(t *testing.T) {
 		"experimental":  []string{"experimental-card"},
 		"deprecated":    []string{"deprecated-card"},
 	}
-	contextPath := filepath.Join(root, "ai-context.json")
-	writeJSONFile(t, contextPath, context)
+	fixture.WriteJSON("ai-context.json", context)
+	contextPath := filepath.Join(fixture.Root(), "ai-context.json")
 
-	output, err := runAPIFreezeCheck(t, contextPath, toolsPath)
+	output, err := fixture.RunAPIFreezeCheck(contextPath, toolsPath)
 	if err == nil {
 		t.Fatalf("api freeze check unexpectedly passed:\n%s", output)
 	}
@@ -471,8 +462,8 @@ func TestAPIFreezeCheckRequiresStatusDecisionCards(t *testing.T) {
 		"experimental":  []string{"experimental-card"},
 		"deprecated":    []string{"deprecated-card"},
 	}
-	writeJSONFile(t, contextPath, context)
-	output, err = runAPIFreezeCheck(t, contextPath, toolsPath)
+	fixture.WriteJSON("ai-context.json", context)
+	output, err = fixture.RunAPIFreezeCheck(contextPath, toolsPath)
 	if err != nil {
 		t.Fatalf("api freeze check failed: %v\n%s", err, output)
 	}
@@ -911,20 +902,6 @@ func apiDecisionCard(id, pkg, status string) map[string]any {
 	}
 }
 
-func runAPIFreezeCheck(t *testing.T, contextPath, toolsPath string) (string, error) {
-	t.Helper()
-	wd, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("Getwd() error = %v", err)
-	}
-	root := filepath.Dir(wd)
-	cmd := exec.Command("bash", filepath.Join(root, "bin/check_api_freeze.sh"))
-	cmd.Dir = root
-	cmd.Env = append(os.Environ(), "AI_CONTEXT_FILE="+contextPath, "TOOLS_JSON_FILE="+toolsPath)
-	combined, err := cmd.CombinedOutput()
-	return string(combined), err
-}
-
 func providerContractFixture(t *testing.T) *governanceFixture {
 	t.Helper()
 	fixture := newGovernanceFixture(t)
@@ -1008,16 +985,4 @@ func docsQuickstartFixtureWithProfiles(t *testing.T, profiles []string, quicksta
 	fixture.WriteFile("docs/doc/README.md", "- [vbad](01-vbad.md)\n")
 	fixture.WriteFile("docs/doc/01-vbad.md", quickstart)
 	return fixture
-}
-
-func writeJSONFile(t *testing.T, path string, value any) {
-	t.Helper()
-	data, err := json.MarshalIndent(value, "", "  ")
-	if err != nil {
-		t.Fatalf("MarshalIndent() error = %v", err)
-	}
-	data = append(data, '\n')
-	if err := os.WriteFile(path, data, 0o600); err != nil {
-		t.Fatalf("WriteFile(%q) error = %v", path, err)
-	}
 }
