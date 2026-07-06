@@ -4,6 +4,10 @@ GO ?= go
 GOLANGCI_LINT ?= golangci-lint
 PKGS ?= ./...
 COVERAGE_FILE ?= /tmp/knifer-go-coverage.out
+ISOLATED_GOCACHE ?= /tmp/knifer-go-gocache
+ifeq ($(USE_ISOLATED_GO_CACHE),1)
+export GOCACHE := $(ISOLATED_GOCACHE)
+endif
 BENCH ?= .
 BENCH_PKGS ?= ./internal/slice ./internal/maps ./internal/str ./internal/num ./internal/bean ./internal/db ./internal/poi ./internal/imgx ./internal/template ./internal/cli ./internal/ai ./internal/ftp ./internal/ssh ./internal/pinyin ./internal/tokenize
 BENCH_FACADE_PKGS ?= ./vslice ./vmap ./vset ./vstr ./vnum ./vbean ./vdb ./vcrypto ./vpoi ./vimg ./vtpl ./vcli ./vai ./vftp ./vssh ./vhan ./vtok ./vhttp ./vcodec

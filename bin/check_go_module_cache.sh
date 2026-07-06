@@ -2,6 +2,30 @@
 set -euo pipefail
 
 go_cmd="${GO:-go}"
+go_cache="$("$go_cmd" env GOCACHE)"
+if [ -z "${go_cache}" ]; then
+	echo "GO MODULE CACHE CHECK ERROR: go env GOCACHE returned an empty path." >&2
+	echo "Set USE_ISOLATED_GO_CACHE=1 to use /tmp/knifer-go-gocache for validation." >&2
+	exit 1
+fi
+if ! mkdir -p "${go_cache}" 2>/dev/null; then
+	echo "GO MODULE CACHE CHECK ERROR: GOCACHE is not creatable: ${go_cache}" >&2
+	echo "Set USE_ISOLATED_GO_CACHE=1 to use /tmp/knifer-go-gocache for validation." >&2
+	exit 1
+fi
+probe="${go_cache}/.knifer-go-cache-write-test"
+if ! printf 'ok\n' >"${probe}" 2>/dev/null; then
+	echo "GO MODULE CACHE CHECK ERROR: GOCACHE is not writable: ${go_cache}" >&2
+	echo "Set USE_ISOLATED_GO_CACHE=1 to use /tmp/knifer-go-gocache for validation." >&2
+	exit 1
+fi
+if ! grep -q '^ok$' "${probe}" 2>/dev/null; then
+	echo "GO MODULE CACHE CHECK ERROR: GOCACHE is not readable after write: ${go_cache}" >&2
+	echo "Set USE_ISOLATED_GO_CACHE=1 to use /tmp/knifer-go-gocache for validation." >&2
+	rm -f "${probe}" 2>/dev/null || true
+	exit 1
+fi
+rm -f "${probe}" 2>/dev/null || true
 
 packages=(
 	"github.com/pelletier/go-toml/v2"
