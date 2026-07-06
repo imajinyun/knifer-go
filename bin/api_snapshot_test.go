@@ -458,6 +458,9 @@ func TestAPIFreezeCheckRequiresStatusDecisionCards(t *testing.T) {
 	if err == nil {
 		t.Fatalf("api freeze check unexpectedly passed:\n%s", output)
 	}
+	if !strings.Contains(output, "API_FREEZE_STATUS_CARD_STATUS_MISMATCH") {
+		t.Fatalf("api freeze output missing API_FREEZE_STATUS_CARD_STATUS_MISMATCH rule id:\n%s", output)
+	}
 	if !strings.Contains(output, "api_freeze.api_status_decision_cards.compatibility references recommended-card with status 'recommended'") {
 		t.Fatalf("api freeze output missing decision-card status error:\n%s", output)
 	}
