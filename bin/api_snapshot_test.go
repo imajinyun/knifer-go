@@ -427,6 +427,97 @@ func TestAPIFreezeCheckRequiresStatusDecisionCards(t *testing.T) {
 	}
 }
 
+func TestProviderContractCheckRejectsConcreteNetworkAndMissingProvider(t *testing.T) {
+	fixture := providerContractFixture(t)
+	writeTestFile(t, fixture, "vbad/bad.go", `package vbad
+
+import "github.com/imajinyun/knifer-go/internal/bad"
+
+type Client = bad.Client
+`)
+	writeTestFile(t, fixture, "internal/bad/client.go", `package bad
+
+import (
+	"net/http"
+	"os"
+)
+
+type Client struct{}
+
+func New() *Client {
+	_ = os.Getenv("TOKEN")
+	_ = http.Client{}
+	return &Client{}
+}
+`)
+
+	output, err := runProviderContractCheck(t, fixture)
+	if err == nil {
+		t.Fatalf("check_provider_contracts.sh unexpectedly passed:\n%s", output)
+	}
+	for _, want := range []string{
+		"must define a Provider interface contract",
+		`concrete provider/network SDK dependency "net/http"`,
+		"os.Getenv",
+	} {
+		if !strings.Contains(output, want) {
+			t.Fatalf("provider contract output missing %q:\n%s", want, output)
+		}
+	}
+}
+
+func TestProviderContractCheckAcceptsProviderOnlyContract(t *testing.T) {
+	fixture := providerContractFixture(t)
+	writeTestFile(t, fixture, "vbad/bad.go", `package vbad
+
+import "github.com/imajinyun/knifer-go/internal/bad"
+
+type Provider = bad.Provider
+type Client = bad.Client
+type Option = bad.Option
+
+func WithProvider(provider Provider) Option { return bad.WithProvider(provider) }
+func New(opts ...Option) *Client { return bad.New(opts...) }
+`)
+	writeTestFile(t, fixture, "internal/bad/client.go", `package bad
+
+import "context"
+
+type Provider interface {
+	Run(context.Context, string) (string, error)
+}
+
+type Client struct{ provider Provider }
+type Option func(*Client)
+
+func WithProvider(provider Provider) Option {
+	return func(c *Client) {
+		if provider != nil {
+			c.provider = provider
+		}
+	}
+}
+
+func New(opts ...Option) *Client {
+	c := &Client{}
+	for _, opt := range opts {
+		if opt != nil {
+			opt(c)
+		}
+	}
+	return c
+}
+`)
+
+	output, err := runProviderContractCheck(t, fixture)
+	if err != nil {
+		t.Fatalf("check_provider_contracts.sh failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "provider contract governance is valid") {
+		t.Fatalf("provider contract output missing success:\n%s", output)
+	}
+}
+
 func baseAgentEvidence() map[string]any {
 	checks := map[string]any{
 		"ai_context_check": map[string]any{
@@ -622,6 +713,30 @@ func runChangePolicyCheck(t *testing.T, changedFiles string) (string, error) {
 	cmd := exec.Command("bash", filepath.Join(root, "bin/check_change_policy.sh"))
 	cmd.Dir = root
 	cmd.Env = append(os.Environ(), "CHANGE_POLICY_CHANGED_FILES="+changedFiles)
+	combined, err := cmd.CombinedOutput()
+	return string(combined), err
+}
+
+func providerContractFixture(t *testing.T) string {
+	t.Helper()
+	root := t.TempDir()
+	writeJSONFile(t, filepath.Join(root, "ai-context.json"), map[string]any{
+		"public_facades": []any{
+			map[string]any{"package": "vbad", "internal": "internal/bad"},
+		},
+		"dependency_tiers": map[string]any{
+			"provider_contract_facades": []string{"vbad"},
+		},
+	})
+	return root
+}
+
+func runProviderContractCheck(t *testing.T, fixtureRoot string) (string, error) {
+	t.Helper()
+	root := repoRoot(t)
+	cmd := exec.Command("bash", filepath.Join(root, "bin/check_provider_contracts.sh"))
+	cmd.Dir = root
+	cmd.Env = append(os.Environ(), "PROVIDER_CONTRACT_ROOT="+fixtureRoot)
 	combined, err := cmd.CombinedOutput()
 	return string(combined), err
 }

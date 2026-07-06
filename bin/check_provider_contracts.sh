@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd "$(dirname "$0")/.."
+if [ -n "${PROVIDER_CONTRACT_ROOT:-}" ]; then
+	cd "${PROVIDER_CONTRACT_ROOT}"
+else
+	cd "$(dirname "$0")/.."
+fi
 
 python3 - <<'PY'
 from __future__ import annotations

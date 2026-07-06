@@ -279,6 +279,33 @@
       "risk_level": "low",
       "notes": "Validates provider contract facades expose provider interfaces without concrete provider SDKs, direct credential reads, local file reads, or default network calls."
     },
+    "arch_imports_check": {
+      "cmd": "make arch-imports-check",
+      "safe_for_agent_auto_run": true,
+      "writes_workspace": false,
+      "writes_git_config": false,
+      "network_required": false,
+      "risk_level": "low",
+      "notes": "Validates public facade imports, internal dependency direction, and heavy dependency isolation."
+    },
+    "panic_policy_check": {
+      "cmd": "make panic-policy-check",
+      "safe_for_agent_auto_run": true,
+      "writes_workspace": false,
+      "writes_git_config": false,
+      "network_required": false,
+      "risk_level": "low",
+      "notes": "Validates production panic usage is limited to explicit Must/Panic APIs and documented compatibility paths."
+    },
+    "facade_boundary_check": {
+      "cmd": "make facade-boundary-check",
+      "safe_for_agent_auto_run": true,
+      "writes_workspace": false,
+      "writes_git_config": false,
+      "network_required": false,
+      "risk_level": "low",
+      "notes": "Validates package docs, unsafe reflection opt-in, and thin-facade implementation boundaries."
+    },
     "generate": {
       "cmd": "make generate",
       "safe_for_agent_auto_run": false,

@@ -1,4 +1,4 @@
-.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check go-module-cache-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check provider-contract-check docs-gen docs-check facade-tiering-gen utility-comparison-refresh generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
+.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check go-module-cache-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check docs-gen docs-check facade-tiering-gen utility-comparison-refresh generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -66,6 +66,9 @@ help:
 	@echo "  docs-gen        Regenerate documentation artifacts"
 	@echo "  docs-check      Verify generated documentation artifacts are current"
 	@echo "  provider-contract-check Verify provider contract facade boundaries"
+	@echo "  arch-imports-check Verify facade/internal import boundaries"
+	@echo "  panic-policy-check Verify production panic policy"
+	@echo "  facade-boundary-check Verify doc, unsafe, and thin facade boundaries"
 	@echo "  facade-tiering-gen Regenerate facade tiering generated view"
 	@echo "  utility-comparison-refresh Refresh top5 utility comparison from GitHub API"
 	@echo "  ai-context-check Verify machine-readable AI context metadata"
@@ -204,6 +207,15 @@ ci-workflow-check: bench-regression-check
 provider-contract-check:
 	bash bin/check_provider_contracts.sh
 
+arch-imports-check:
+	bash bin/check_arch_imports.sh
+
+panic-policy-check:
+	bash bin/check_panic_policy.sh
+
+facade-boundary-check:
+	bash bin/check_facade_boundary.sh
+
 generate:
 	$(GO) generate ./...
 
@@ -227,8 +239,8 @@ diff-check: diff-whitespace diff-clean
 vet:
 	$(GO) vet $(PKGS)
 
-arch: provider-contract-check
-	bash bin/check_arch.sh
+arch: provider-contract-check arch-imports-check panic-policy-check facade-boundary-check
+	@echo "Architecture check passed."
 
 lint:
 	$(GOLANGCI_LINT) run $(PKGS)

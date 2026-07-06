@@ -106,6 +106,9 @@
 | `make change-policy-check` | Detect change policies from staged, unstaged, and untracked local diff |
 | `make security-sensitive-diff` | Detect changes under security-sensitive public facades and their internal implementations |
 | `make provider-contract-check` | Verify provider contract facades do not embed concrete providers, credentials, or default network/file access |
+| `make arch-imports-check` | Verify facade/internal import direction and heavy dependency isolation |
+| `make panic-policy-check` | Verify production panic usage stays inside Must/Panic or documented compatibility paths |
+| `make facade-boundary-check` | Verify package docs, unsafe opt-in, and thin-facade boundaries |
 | `make agent-evidence` | Emit `/tmp/knifer-go-agent-validation.json` with detected policies, required commands, command attestations, and structured security review evidence |
 | `make agent-evidence-check` | Validate Agent evidence schema, policy references, command references, command attestations, security review evidence, risk, and embedded check status |
 | `make quick-check` | Fast local: mod-verify → vet → arch → test → api-check → tools-check → ai-context-check → diff-whitespace |
@@ -145,7 +148,7 @@
 ### Governance constraints
 
 - **Coverage**: Keep total coverage above the threshold in `ai-context.json`; `bin/check_coverage.sh` reads `ai-context.json` as the default source of truth.
-- **Architecture**: 8 rules enforced by `bin/check_arch.sh` — doc.go existence, no v*-to-v* imports, per-file internal/ imports, no internal→v* imports, package comments, panic policy, facade boundary policy, dependency allowlist.
+- **Architecture**: `make arch` composes focused gates for provider contracts, import direction, heavy dependency isolation, panic policy, package docs, unsafe reflection opt-in, and thin facade boundaries.
 - **API snapshot**: `docs/api/exports.txt` is CI-enforced. Run `UPDATE_API=1 make api-check` after intentional public API changes.
 - **Tools catalog**: `docs/api/tools.json` and `docs/api/tools.md` are CI-enforced by `make tools-check`. Run `make tools-gen` after intentional facade, doc comment, or Example changes.
 - **Generated docs**: `make docs-check` guards generated documentation artifacts. Run `make docs-gen` after intentional generated-doc changes, then re-run `make docs-check`.
