@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd "$(dirname "$0")/.."
+if [ -n "${ARCH_CHECK_ROOT:-}" ]; then
+	cd "${ARCH_CHECK_ROOT}"
+else
+	cd "$(dirname "$0")/.."
+fi
 
 echo "arch imports: resolving module"
 MODULE="$(go list -m 2>/dev/null | grep 'knifer-go' | head -n1)"

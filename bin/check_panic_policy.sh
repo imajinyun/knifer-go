@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd "$(dirname "$0")/.."
+if [ -n "${ARCH_CHECK_ROOT:-}" ]; then
+	cd "${ARCH_CHECK_ROOT}"
+else
+	cd "$(dirname "$0")/.."
+fi
 
 echo "panic policy: scanning production Go files"
 python3 - <<'PY'

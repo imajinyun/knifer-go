@@ -27,6 +27,11 @@ func (f *governanceFixture) WriteFile(name, content string) {
 	writeTestFile(f.t, f.root, name, content)
 }
 
+func (f *governanceFixture) WriteGoMod() {
+	f.t.Helper()
+	f.WriteFile("go.mod", "module github.com/imajinyun/knifer-go\n\ngo 1.25.0\n")
+}
+
 func (f *governanceFixture) WriteJSON(name string, value any) {
 	f.t.Helper()
 	path := filepath.Join(f.root, name)
@@ -66,4 +71,19 @@ func (f *governanceFixture) RunCIWorkflowCheck() (string, error) {
 func (f *governanceFixture) RunDocsQuickstartCheck() (string, error) {
 	f.t.Helper()
 	return f.RunScript("bin/check_docs_quickstart.sh", "DOCS_QUICKSTART_ROOT="+f.root)
+}
+
+func (f *governanceFixture) RunArchImportsCheck() (string, error) {
+	f.t.Helper()
+	return f.RunScript("bin/check_arch_imports.sh", "ARCH_CHECK_ROOT="+f.root)
+}
+
+func (f *governanceFixture) RunPanicPolicyCheck() (string, error) {
+	f.t.Helper()
+	return f.RunScript("bin/check_panic_policy.sh", "ARCH_CHECK_ROOT="+f.root)
+}
+
+func (f *governanceFixture) RunFacadeBoundaryCheck() (string, error) {
+	f.t.Helper()
+	return f.RunScript("bin/check_facade_boundary.sh", "ARCH_CHECK_ROOT="+f.root)
 }
