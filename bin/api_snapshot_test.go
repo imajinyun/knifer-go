@@ -760,6 +760,83 @@ func TestAPIFreezeCheckEmitsJSONReport(t *testing.T) {
 	}
 }
 
+func TestRandomSourcePolicyCheckAcceptsValidFixture(t *testing.T) {
+	fixture := randomSourcePolicyFixture(t)
+	output, err := fixture.RunRandomSourcePolicyCheck()
+	if err != nil {
+		t.Fatalf("randomsourcepolicycheck failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "random source policy governance is valid") {
+		t.Fatalf("random source policy output missing success:\n%s", output)
+	}
+}
+
+func TestRandomSourcePolicyCheckRejectsUnknownPolicyName(t *testing.T) {
+	fixture := randomSourcePolicyFixture(t)
+	context := randomSourcePolicyContext()
+	policies := context["random_source_policy"].(map[string]any)["policies"].([]any)
+	policies[0].(map[string]any)["name"] = "secure_bytes_fail_clsoed"
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunRandomSourcePolicyCheckJSON()
+	if err == nil {
+		t.Fatalf("randomsourcepolicycheck -json unexpectedly passed:\n%s", output)
+	}
+	var result struct {
+		Status   string `json:"status"`
+		Findings []struct {
+			RuleID string `json:"rule_id"`
+		} `json:"findings"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("randomsourcepolicycheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "failed" {
+		t.Fatalf("JSON status = %q, want failed\n%s", result.Status, output)
+	}
+	var sawUnknown bool
+	for _, finding := range result.Findings {
+		if finding.RuleID == "RANDOM_SOURCE_POLICY_UNKNOWN_NAME" {
+			sawUnknown = true
+		}
+	}
+	if !sawUnknown {
+		t.Fatalf("random source JSON findings missing unknown-name rule id:\n%s", output)
+	}
+}
+
+func TestRandomSourcePolicyCheckRejectsMissingContractTest(t *testing.T) {
+	fixture := randomSourcePolicyFixture(t)
+	context := randomSourcePolicyContext()
+	policies := context["random_source_policy"].(map[string]any)["policies"].([]any)
+	policies[0].(map[string]any)["contract_tests"] = []string{"internal/rand/random_bytes_test.go:TestMissingFixture"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunRandomSourcePolicyCheck()
+	if err == nil {
+		t.Fatalf("randomsourcepolicycheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "RANDOM_SOURCE_POLICY_CONTRACT_TEST_MISSING") {
+		t.Fatalf("random source policy output missing missing-test rule id:\n%s", output)
+	}
+}
+
+func TestRandomSourcePolicyCheckRejectsPackageCoverageDrift(t *testing.T) {
+	fixture := randomSourcePolicyFixture(t)
+	context := randomSourcePolicyContext()
+	policy := context["random_source_policy"].(map[string]any)
+	policy["packages"] = []string{"vrand", "vid", "vcrypto"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunRandomSourcePolicyCheck()
+	if err == nil {
+		t.Fatalf("randomsourcepolicycheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "RANDOM_SOURCE_POLICY_PACKAGE_COVERAGE") {
+		t.Fatalf("random source policy output missing package coverage rule id:\n%s", output)
+	}
+}
+
 func TestProviderContractCheckRejectsConcreteNetworkAndMissingProvider(t *testing.T) {
 	fixture := providerContractFixture(t)
 	fixture.WriteFile("vbad/bad.go", `package vbad
@@ -1444,6 +1521,94 @@ func providerContractFixture(t *testing.T) *governanceFixture {
 		},
 	})
 	return fixture
+}
+
+func randomSourcePolicyFixture(t *testing.T) *governanceFixture {
+	t.Helper()
+	fixture := newGovernanceFixture(t)
+	fixture.WriteJSON("ai-context.json", randomSourcePolicyContext())
+	fixture.WriteFile("internal/rand/random_bytes_test.go", `package rand
+
+func TestSecureRandomBytesFailClosed() {}
+func TestRandomBytesWithOptionsReaderAndStrictMode() {}
+func TestFillRandomBytesFallbackKeepsLength() {}
+`)
+	fixture.WriteFile("internal/crypto/random_test.go", `package crypto
+
+func TestRandomProviderFallbacksAndErrors() {}
+`)
+	fixture.WriteFile("vrand/rand_test.go", `package vrand
+
+func TestRandFacadeBytesFailureBoundaries() {}
+`)
+	fixture.WriteFile("internal/id/uuid_test.go", `package id
+
+func TestDefaultFallbackRandomSourceProviderCanBeConfiguredAndReset() {}
+`)
+	fixture.WriteFile("vid/random_source_test.go", `package vid
+
+func TestIDFacadeFallbackRandomSourceProvider() {}
+func TestIDFacadeRandomFallbackBoundaries() {}
+`)
+	fixture.WriteFile("internal/jwt/jwt_key_set_test.go", `package jwt
+
+func TestSetKeyRejectsNone() {}
+`)
+	fixture.WriteFile("internal/jwt/signer_test.go", `package jwt
+
+func TestHMACSignerStrictRejectsWeakKeys() {}
+`)
+	fixture.WriteFile("vjwt/signer_hmac_test.go", `package vjwt
+
+func TestStrictHMACSignerRejectsWeakKey() {}
+`)
+	fixture.WriteFile("internal/crypto/rsa_test.go", `package crypto
+
+func TestRSANilKeyAndProviderErrorContracts() {}
+`)
+	return fixture
+}
+
+func randomSourcePolicyContext() map[string]any {
+	return map[string]any{
+		"random_source_policy": map[string]any{
+			"packages": []string{"vrand", "vid", "vcrypto", "vjwt"},
+			"policies": []any{
+				map[string]any{
+					"name":            "secure_bytes_fail_closed",
+					"packages":        []string{"vrand", "vcrypto"},
+					"behavior":        "Security-sensitive byte helpers fail closed.",
+					"allowed_sources": []string{"crypto/rand.Reader"},
+					"forbidden_uses":  []string{"tokens from math/rand"},
+					"contract_tests":  []string{"internal/rand/random_bytes_test.go:TestSecureRandomBytesFailClosed", "internal/crypto/random_test.go:TestRandomProviderFallbacksAndErrors"},
+				},
+				map[string]any{
+					"name":            "compatibility_byte_fallback",
+					"packages":        []string{"vrand"},
+					"behavior":        "Compatibility byte helpers may fall back outside strict mode.",
+					"allowed_sources": []string{"WithRandomReader"},
+					"forbidden_uses":  []string{"secrets"},
+					"contract_tests":  []string{"internal/rand/random_bytes_test.go:TestRandomBytesWithOptionsReaderAndStrictMode", "internal/rand/random_bytes_test.go:TestFillRandomBytesFallbackKeepsLength", "vrand/rand_test.go:TestRandFacadeBytesFailureBoundaries"},
+				},
+				map[string]any{
+					"name":            "identifier_fallback_compatibility",
+					"packages":        []string{"vid"},
+					"behavior":        "Identifier helpers may use compatibility fallback.",
+					"allowed_sources": []string{"WithFallbackRandomSource"},
+					"forbidden_uses":  []string{"security-sensitive bearer tokens"},
+					"contract_tests":  []string{"internal/id/uuid_test.go:TestDefaultFallbackRandomSourceProviderCanBeConfiguredAndReset", "vid/random_source_test.go:TestIDFacadeFallbackRandomSourceProvider", "vid/random_source_test.go:TestIDFacadeRandomFallbackBoundaries"},
+				},
+				map[string]any{
+					"name":            "jwt_key_and_signer_policy",
+					"packages":        []string{"vjwt", "vcrypto"},
+					"behavior":        "JWT and crypto helpers reject unsafe algorithms.",
+					"allowed_sources": []string{"WithSignerRandomReader"},
+					"forbidden_uses":  []string{"alg=none signer fallback"},
+					"contract_tests":  []string{"internal/jwt/jwt_key_set_test.go:TestSetKeyRejectsNone", "internal/jwt/signer_test.go:TestHMACSignerStrictRejectsWeakKeys", "vjwt/signer_hmac_test.go:TestStrictHMACSignerRejectsWeakKey", "internal/crypto/rsa_test.go:TestRSANilKeyAndProviderErrorContracts"},
+				},
+			},
+		},
+	}
 }
 
 func ciWorkflowFixture(t *testing.T, workflowCommand string) *governanceFixture {

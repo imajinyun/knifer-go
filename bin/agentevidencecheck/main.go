@@ -366,6 +366,7 @@ func (c *checker) expectedStructuredChangePolicySemanticRuleIDs(changedFiles []s
 		"-json",
 	)
 	cmd.Dir = c.root
+	cmd.Env = append(os.Environ(), "CHANGE_POLICY_USE_GIT_DIFF=1")
 	output, err := cmd.Output()
 	if err != nil {
 		c.addError("AGENT_EVIDENCE_STRUCTURED_CHANGE_POLICY_RECHECK", "cannot rerun changepolicycheck for semantic rule validation")

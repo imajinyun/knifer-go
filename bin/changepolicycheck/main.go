@@ -201,7 +201,7 @@ func (c checker) run(changedFilesOverride string) changePolicyReport {
 		Findings:         []govreport.Finding{},
 		DetectedPolicies: detectedPolicies,
 		RuleIDs:          ruleIDsForPolicies(detectedPolicies),
-		SemanticRuleIDs:  c.semanticRuleIDs(changedFiles),
+		SemanticRuleIDs:  c.semanticRuleIDs(changedFiles, strings.TrimSpace(changedFilesOverride) == "" || os.Getenv("CHANGE_POLICY_USE_GIT_DIFF") == "1"),
 		RequiredCommands: requiredCommands,
 		PolicyPaths:      policyPaths,
 	}
@@ -286,9 +286,9 @@ func ruleIDsForPolicies(policies []string) []string {
 	return ids
 }
 
-func (c checker) semanticRuleIDs(paths []string) []string {
+func (c checker) semanticRuleIDs(paths []string, useGitDiff bool) []string {
 	diffText := strings.TrimSpace(os.Getenv("CHANGE_POLICY_DIFF"))
-	if diffText == "" {
+	if diffText == "" && useGitDiff {
 		diffText = c.changedDiffFromGit()
 	}
 	if diffText != "" {

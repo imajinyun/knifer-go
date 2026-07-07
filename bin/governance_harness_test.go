@@ -222,6 +222,16 @@ func (f *governanceFixture) RunAPIFreezeCheckJSON(contextPath, toolsPath string)
 	)
 }
 
+func (f *governanceFixture) RunRandomSourcePolicyCheck() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("randomsourcepolicycheck", "-root", f.root)
+}
+
+func (f *governanceFixture) RunRandomSourcePolicyCheckJSON() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("randomsourcepolicycheck", "-root", f.root, "-json")
+}
+
 func (f *governanceFixture) RunGoTool(tool string, args ...string) (string, error) {
 	f.t.Helper()
 	return f.RunGoToolEnv(tool, nil, args...)
