@@ -159,6 +159,42 @@ func Name() string { return "other" }
 	assertJSONFinding(t, output, "ARCH_IMPORT_FACADE_TO_FACADE")
 }
 
+func TestArchImportsCheckRejectsHeavyDependencyLeak(t *testing.T) {
+	fixture := newGovernanceFixture(t)
+	fixture.WriteFile("go.mod", `module github.com/imajinyun/knifer-go
+
+go 1.25.0
+
+require example.com/heavy v0.0.0
+
+replace example.com/heavy => ./testheavy
+`)
+	fixture.WriteFile("testheavy/go.mod", "module example.com/heavy\n\ngo 1.25.0\n")
+	fixture.WriteFile("testheavy/heavy.go", "package heavy\n\nfunc Use() {}\n")
+	fixture.WriteJSON("ai-context.json", map[string]any{
+		"dependency_tiers": map[string]any{
+			"heavy_dependency_allowlist": map[string]any{
+				"example.com/heavy": []string{"internal/allowed"},
+			},
+		},
+	})
+	fixture.WriteFile("vbad/doc.go", `// Package vbad exposes fixture helpers.
+package vbad
+`)
+	fixture.WriteFile("vbad/bad.go", `package vbad
+
+import "example.com/heavy"
+
+func Run() { heavy.Use() }
+`)
+
+	output, err := fixture.RunArchImportsCheckJSON()
+	if err == nil {
+		t.Fatalf("archimportscheck -json unexpectedly passed:\n%s", output)
+	}
+	assertJSONFinding(t, output, "ARCH_IMPORT_HEAVY_DEPENDENCY_LEAK")
+}
+
 func TestPanicPolicyCheckAllowsMustAPIsAndRejectsProductionPanic(t *testing.T) {
 	fixture := newGovernanceFixture(t)
 	fixture.WriteGoMod()

@@ -4196,26 +4196,6 @@ def validate_capability_domains() -> None:
 		add_error("security-sensitive facades must be represented by trust_boundary, security_primitives, or runtime_adapters: " + ", ".join(missing_sensitive))
 
 
-def validate_dependency_isolation() -> None:
-	heavy_imports = {
-		"github.com/getsentry/sentry-go": {"internal/errx", "verr"},
-		"github.com/makiuchi-d/gozxing*": {"internal/imgx", "vimg"},
-		"github.com/sirupsen/logrus": {"internal/errx", "verr"},
-		"github.com/xuri/excelize/v2": {"internal/poi", "vpoi"},
-		"resty.dev/v3": {"internal/httpx/resty", "vresty"},
-	}
-	for path in root.rglob("*.go"):
-		if path.name.endswith("_test.go") or "/.git/" in path.as_posix():
-			continue
-		rel = path.relative_to(root).as_posix()
-		text = path.read_text(encoding="utf-8")
-		for import_path, allowed_prefixes in heavy_imports.items():
-			needle = import_path.rstrip("*")
-			if f'"{needle}' not in text:
-				continue
-			if not any(rel.startswith(prefix + "/") or rel == prefix + ".go" for prefix in allowed_prefixes):
-				add_error(f"{rel} imports heavy dependency {import_path} outside isolated facade/internal package")
-
 def validate_threat_model() -> None:
 	threat_model = require_mapping(ai_context.get("threat_model"), "threat_model")
 	methodology = threat_model.get("methodology")
@@ -4318,7 +4298,6 @@ if not bench_only:
 	validate_docs_pkg_discovery_polish_governance()
 	validate_example_depth_governance()
 	validate_capability_domains()
-	validate_dependency_isolation()
 	validate_threat_model()
 
 if errors:
