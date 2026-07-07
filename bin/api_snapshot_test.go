@@ -645,8 +645,8 @@ func TestAgentEvidenceCheckRejectsStructuredCIWorkflowFindings(t *testing.T) {
 	if err == nil {
 		t.Fatalf("agent evidence check unexpectedly passed:\n%s", output)
 	}
-	if !strings.Contains(output, "AGENT_EVIDENCE_STRUCTURED_CI_WORKFLOW_FINDINGS") {
-		t.Fatalf("agent evidence output missing AGENT_EVIDENCE_STRUCTURED_CI_WORKFLOW_FINDINGS rule id:\n%s", output)
+	if !strings.Contains(output, "AGENT_EVIDENCE_STRUCTURED_CHECK_FINDINGS") {
+		t.Fatalf("agent evidence output missing AGENT_EVIDENCE_STRUCTURED_CHECK_FINDINGS rule id:\n%s", output)
 	}
 }
 
@@ -1258,6 +1258,10 @@ func baseAgentEvidence() map[string]any {
   "findings": []
 }`,
 		},
+		"provider_contract_check": structuredPassedCheck("go run ./bin/providercontractcheck -root /fixture -json"),
+		"arch_imports_check":      structuredPassedCheck("go run ./bin/archimportscheck -root /fixture -json"),
+		"panic_policy_check":      structuredPassedCheck("go run ./bin/panicpolicycheck -root /fixture -json"),
+		"facade_boundary_check":   structuredPassedCheck("go run ./bin/facadeboundarycheck -root /fixture -json"),
 	}
 	attestations := map[string]any{
 		"ai_context_check": map[string]any{
@@ -1334,6 +1338,23 @@ func baseAgentEvidence() map[string]any {
 		"security_sensitive_paths": []string{"internal/db/scan.go"},
 		"structured_checks":        structuredChecks,
 		"worktree_status":          " M internal/db/scan.go",
+	}
+}
+
+func structuredPassedCheck(cmd string) map[string]any {
+	return map[string]any{
+		"cmd":       cmd,
+		"exit_code": 0,
+		"json": map[string]any{
+			"findings": []any{},
+			"status":   "passed",
+		},
+		"status": "passed",
+		"stderr": "",
+		"stdout": `{
+  "status": "passed",
+  "findings": []
+}`,
 	}
 }
 

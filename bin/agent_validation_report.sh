@@ -207,6 +207,10 @@ checks = {
 structured_checks = {
     "change_policy_check": run_json(["go", "run", "./bin/changepolicycheck", "-root", root_dir, "-json"]),
     "ci_workflow_check": run_json(["go", "run", "./bin/ciworkflowcheck", "-root", root_dir, "-json"]),
+    "provider_contract_check": run_json(["go", "run", "./bin/providercontractcheck", "-root", root_dir, "-json"]),
+    "arch_imports_check": run_json(["go", "run", "./bin/archimportscheck", "-root", root_dir, "-json"]),
+    "panic_policy_check": run_json(["go", "run", "./bin/panicpolicycheck", "-root", root_dir, "-json"]),
+    "facade_boundary_check": run_json(["go", "run", "./bin/facadeboundarycheck", "-root", root_dir, "-json"]),
 }
 
 command_attestations = {

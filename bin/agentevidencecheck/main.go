@@ -314,14 +314,27 @@ func (c *checker) validateStructuredChecks(changedFiles, detectedPolicies, requi
 		c.addError("AGENT_EVIDENCE_STRUCTURED_CHANGE_POLICY_MISMATCH", fmt.Sprintf("structured change policy semantic_rule_ids must match changed files; got %v, want %v", reportSemanticRuleIDs, expectedSemanticRuleIDs))
 	}
 
-	ciWorkflow := c.requireMapping(structuredChecks["ci_workflow_check"], "structured_checks.ci_workflow_check")
-	c.validateStructuredCheckEnvelope(ciWorkflow, "structured_checks.ci_workflow_check")
-	ciWorkflowJSON := c.requireMapping(ciWorkflow["json"], "structured_checks.ci_workflow_check.json")
-	if c.requireString(ciWorkflowJSON["status"], "structured_checks.ci_workflow_check.json.status") != "passed" {
-		c.addError("AGENT_EVIDENCE_STRUCTURED_CHECK_STATUS", "structured_checks.ci_workflow_check.json.status must be passed")
+	for _, checkName := range []string{
+		"ci_workflow_check",
+		"provider_contract_check",
+		"arch_imports_check",
+		"panic_policy_check",
+		"facade_boundary_check",
+	} {
+		c.validateStructuredPassedNoFindings(structuredChecks, checkName)
 	}
-	if findings := c.requireList(ciWorkflowJSON["findings"], "structured_checks.ci_workflow_check.json.findings"); len(findings) != 0 {
-		c.addError("AGENT_EVIDENCE_STRUCTURED_CI_WORKFLOW_FINDINGS", "structured ci workflow findings must be empty")
+}
+
+func (c *checker) validateStructuredPassedNoFindings(structuredChecks map[string]any, checkName string) {
+	path := "structured_checks." + checkName
+	check := c.requireMapping(structuredChecks[checkName], path)
+	c.validateStructuredCheckEnvelope(check, path)
+	checkJSON := c.requireMapping(check["json"], path+".json")
+	if c.requireString(checkJSON["status"], path+".json.status") != "passed" {
+		c.addError("AGENT_EVIDENCE_STRUCTURED_CHECK_STATUS", path+".json.status must be passed")
+	}
+	if findings := c.requireList(checkJSON["findings"], path+".json.findings"); len(findings) != 0 {
+		c.addError("AGENT_EVIDENCE_STRUCTURED_CHECK_FINDINGS", path+".json.findings must be empty")
 	}
 }
 
