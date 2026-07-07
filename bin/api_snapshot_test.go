@@ -1291,6 +1291,95 @@ func TestLifecycleCheckRejectsMissingRationale(t *testing.T) {
 	}
 }
 
+func TestDependencyTiersCheckAcceptsValidFixture(t *testing.T) {
+	fixture := dependencyTiersFixture(t)
+	output, err := fixture.RunDependencyTiersCheck()
+	if err != nil {
+		t.Fatalf("dependencytierscheck failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "dependency tiers metadata is valid") {
+		t.Fatalf("dependency tiers output missing success:\n%s", output)
+	}
+}
+
+func TestDependencyTiersCheckRejectsUnknownFacade(t *testing.T) {
+	fixture := dependencyTiersFixture(t)
+	context := dependencyTiersContext()
+	context["dependency_tiers"].(map[string]any)["core_facades"] = []string{"vjson", "vmissing"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunDependencyTiersCheckJSON()
+	if err == nil {
+		t.Fatalf("dependencytierscheck -json unexpectedly passed:\n%s", output)
+	}
+	var result struct {
+		Status   string `json:"status"`
+		Findings []struct {
+			RuleID string `json:"rule_id"`
+		} `json:"findings"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("dependencytierscheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "failed" {
+		t.Fatalf("JSON status = %q, want failed\n%s", result.Status, output)
+	}
+	var sawUnknown bool
+	for _, finding := range result.Findings {
+		if finding.RuleID == "DEPENDENCY_TIERS_UNKNOWN_FACADE" {
+			sawUnknown = true
+		}
+	}
+	if !sawUnknown {
+		t.Fatalf("dependency tiers JSON findings missing unknown facade rule id:\n%s", output)
+	}
+}
+
+func TestDependencyTiersCheckRejectsTierOverlap(t *testing.T) {
+	fixture := dependencyTiersFixture(t)
+	context := dependencyTiersContext()
+	context["dependency_tiers"].(map[string]any)["provider_contract_facades"] = []string{"vai", "vimg"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunDependencyTiersCheck()
+	if err == nil {
+		t.Fatalf("dependencytierscheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "DEPENDENCY_TIERS_OVERLAP") {
+		t.Fatalf("dependency tiers output missing overlap rule id:\n%s", output)
+	}
+}
+
+func TestDependencyTiersCheckRejectsUnknownAllowlistPrefix(t *testing.T) {
+	fixture := dependencyTiersFixture(t)
+	context := dependencyTiersContext()
+	context["dependency_tiers"].(map[string]any)["heavy_dependency_allowlist"].(map[string]any)["example.com/heavy"] = []string{"internal/missing"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunDependencyTiersCheck()
+	if err == nil {
+		t.Fatalf("dependencytierscheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "DEPENDENCY_TIERS_ALLOWLIST_PREFIX_UNKNOWN") {
+		t.Fatalf("dependency tiers output missing allowlist prefix rule id:\n%s", output)
+	}
+}
+
+func TestDependencyTiersCheckRejectsAllowlistSchema(t *testing.T) {
+	fixture := dependencyTiersFixture(t)
+	context := dependencyTiersContext()
+	context["dependency_tiers"].(map[string]any)["heavy_dependency_allowlist"].(map[string]any)["example.com/heavy"] = "vimg"
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunDependencyTiersCheck()
+	if err == nil {
+		t.Fatalf("dependencytierscheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "DEPENDENCY_TIERS_ALLOWLIST_SCHEMA") {
+		t.Fatalf("dependency tiers output missing allowlist schema rule id:\n%s", output)
+	}
+}
+
 func TestProviderContractCheckRejectsConcreteNetworkAndMissingProvider(t *testing.T) {
 	fixture := providerContractFixture(t)
 	fixture.WriteFile("vbad/bad.go", `package vbad
@@ -2436,6 +2525,34 @@ func lifecycleContext() map[string]any {
 				"vai":   map[string]any{"grade": "adapter", "rationale": "Provider contract facade."},
 				"vjson": map[string]any{"grade": "core", "rationale": "Core JSON facade."},
 				"vimg":  map[string]any{"grade": "heavy", "rationale": "Heavy image facade."},
+			},
+		},
+	}
+}
+
+func dependencyTiersFixture(t *testing.T) *governanceFixture {
+	t.Helper()
+	fixture := newGovernanceFixture(t)
+	fixture.WriteJSON("ai-context.json", dependencyTiersContext())
+	for _, dir := range []string{"vjson", "vai", "vimg", "internal/json", "internal/ai", "internal/imgx"} {
+		fixture.WriteFile(dir+"/doc.go", "package fixture\n")
+	}
+	return fixture
+}
+
+func dependencyTiersContext() map[string]any {
+	return map[string]any{
+		"public_facades": []any{
+			map[string]any{"package": "vjson", "internal": "internal/json"},
+			map[string]any{"package": "vai", "internal": "internal/ai"},
+			map[string]any{"package": "vimg", "internal": "internal/imgx"},
+		},
+		"dependency_tiers": map[string]any{
+			"core_facades":              []string{"vjson"},
+			"provider_contract_facades": []string{"vai"},
+			"heavy_extension_facades":   []string{"vimg"},
+			"heavy_dependency_allowlist": map[string]any{
+				"example.com/heavy": []string{"internal/imgx", "vimg"},
 			},
 		},
 	}

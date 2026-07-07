@@ -282,6 +282,16 @@ func (f *governanceFixture) RunLifecycleCheckJSON() (string, error) {
 	return f.RunGoTool("lifecyclecheck", "-root", f.root, "-json")
 }
 
+func (f *governanceFixture) RunDependencyTiersCheck() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("dependencytierscheck", "-root", f.root)
+}
+
+func (f *governanceFixture) RunDependencyTiersCheckJSON() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("dependencytierscheck", "-root", f.root, "-json")
+}
+
 func (f *governanceFixture) RunBenchmarkRegressionCheck() (string, error) {
 	f.t.Helper()
 	return f.RunGoTool("benchmarkregressioncheck", "-root", f.root)
