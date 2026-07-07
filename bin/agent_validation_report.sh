@@ -333,8 +333,22 @@ with open(output_file, "w", encoding="utf-8") as f:
     json.dump(report, f, indent=2, sort_keys=True)
     f.write("\n")
 
+
+def summary_list(values):
+    return ", ".join(values) if values else "none"
+
+
+change_policy_json = structured_checks.get("change_policy_check", {}).get("json", {})
+ci_workflow_json = structured_checks.get("ci_workflow_check", {}).get("json", {})
+change_policy_rule_ids = change_policy_json.get("rule_ids", [])
+change_policy_semantic_rule_ids = change_policy_json.get("semantic_rule_ids", [])
+ci_workflow_findings = ci_workflow_json.get("findings", [])
+
 print(f"agent validation evidence written to {output_file}")
 print("detected policies: " + (", ".join(report["detected_change_policies"]) or "none"))
+print("change policy rule ids: " + summary_list(change_policy_rule_ids))
+print("change policy semantic rule ids: " + summary_list(change_policy_semantic_rule_ids))
+print("ci workflow findings: " + str(len(ci_workflow_findings)))
 print("required commands: " + (", ".join(required_commands) or "none"))
 print("highest required command risk: " + highest_risk)
 print("merge ready: " + ("true" if report["merge_ready"] else "false"))
