@@ -154,6 +154,7 @@ func (c *checker) run() {
 	commandAttestations := c.requireMapping(c.evidence["command_attestations"], "command_attestations")
 	c.validateCommandAttestations(requiredCommands, commandAttestations)
 	c.validateEmbeddedChecks(commandAttestations)
+	c.validateStructuredChecks(detectedPolicies, requiredCommands)
 
 	if len(securitySensitivePaths) > 0 && !contains(detectedPolicies, "security_sensitive") {
 		c.addError("AGENT_EVIDENCE_SECURITY_PATHS_POLICY_MISSING", "security_sensitive_paths requires detected security_sensitive policy")
@@ -248,6 +249,59 @@ func (c *checker) validateEmbeddedChecks(commandAttestations map[string]any) {
 		if attestation["source"] != "embedded_check" {
 			c.addError("AGENT_EVIDENCE_EMBEDDED_CHECK_ATTESTATION", "command_attestations."+checkName+".source must be embedded_check")
 		}
+	}
+}
+
+func (c *checker) validateStructuredChecks(detectedPolicies, requiredCommands []string) {
+	structuredChecks := c.requireMapping(c.evidence["structured_checks"], "structured_checks")
+	changePolicy := c.requireMapping(structuredChecks["change_policy_check"], "structured_checks.change_policy_check")
+	c.validateStructuredCheckEnvelope(changePolicy, "structured_checks.change_policy_check")
+	changePolicyJSON := c.requireMapping(changePolicy["json"], "structured_checks.change_policy_check.json")
+	if c.requireString(changePolicyJSON["status"], "structured_checks.change_policy_check.json.status") != "passed" {
+		c.addError("AGENT_EVIDENCE_STRUCTURED_CHECK_STATUS", "structured_checks.change_policy_check.json.status must be passed")
+	}
+	reportPolicies := c.requireStringList(changePolicyJSON["detected_policies"], "structured_checks.change_policy_check.json.detected_policies")
+	if !equalStrings(reportPolicies, detectedPolicies) {
+		c.addError("AGENT_EVIDENCE_STRUCTURED_CHANGE_POLICY_MISMATCH", fmt.Sprintf("structured change policy detected_policies must match evidence; got %v, want %v", reportPolicies, detectedPolicies))
+	}
+	reportRequiredCommands := c.requireStringList(changePolicyJSON["required_commands"], "structured_checks.change_policy_check.json.required_commands")
+	if !equalStrings(reportRequiredCommands, requiredCommands) {
+		c.addError("AGENT_EVIDENCE_STRUCTURED_CHANGE_POLICY_MISMATCH", fmt.Sprintf("structured change policy required_commands must match evidence; got %v, want %v", reportRequiredCommands, requiredCommands))
+	}
+	expectedRuleIDs := []string{}
+	for _, policy := range detectedPolicies {
+		if id := policyRuleID(policy); id != "" {
+			expectedRuleIDs = append(expectedRuleIDs, id)
+		}
+	}
+	reportRuleIDs := c.requireStringList(changePolicyJSON["rule_ids"], "structured_checks.change_policy_check.json.rule_ids")
+	if !equalStrings(reportRuleIDs, expectedRuleIDs) {
+		c.addError("AGENT_EVIDENCE_STRUCTURED_CHANGE_POLICY_MISMATCH", fmt.Sprintf("structured change policy rule_ids must match detected policies; got %v, want %v", reportRuleIDs, expectedRuleIDs))
+	}
+	c.requireStringList(changePolicyJSON["semantic_rule_ids"], "structured_checks.change_policy_check.json.semantic_rule_ids")
+
+	ciWorkflow := c.requireMapping(structuredChecks["ci_workflow_check"], "structured_checks.ci_workflow_check")
+	c.validateStructuredCheckEnvelope(ciWorkflow, "structured_checks.ci_workflow_check")
+	ciWorkflowJSON := c.requireMapping(ciWorkflow["json"], "structured_checks.ci_workflow_check.json")
+	if c.requireString(ciWorkflowJSON["status"], "structured_checks.ci_workflow_check.json.status") != "passed" {
+		c.addError("AGENT_EVIDENCE_STRUCTURED_CHECK_STATUS", "structured_checks.ci_workflow_check.json.status must be passed")
+	}
+	c.requireList(ciWorkflowJSON["findings"], "structured_checks.ci_workflow_check.json.findings")
+}
+
+func (c *checker) validateStructuredCheckEnvelope(check map[string]any, path string) {
+	if c.requireString(check["status"], path+".status") != "passed" {
+		c.addError("AGENT_EVIDENCE_STRUCTURED_CHECK_STATUS", path+".status must be passed")
+	}
+	exitCode, ok := intValue(check["exit_code"])
+	if !ok {
+		c.addError("AGENT_EVIDENCE_STRUCTURED_CHECK_EXIT_CODE", path+".exit_code must be an integer")
+	} else if exitCode != 0 {
+		c.addError("AGENT_EVIDENCE_STRUCTURED_CHECK_EXIT_CODE", path+".exit_code must be 0")
+	}
+	c.requireString(check["cmd"], path+".cmd")
+	if parseError := stringValue(check["parse_error"]); parseError != "" {
+		c.addError("AGENT_EVIDENCE_STRUCTURED_CHECK_JSON", path+".parse_error must be empty")
 	}
 }
 
@@ -610,6 +664,27 @@ func stringValue(value any) string {
 	return text
 }
 
+func policyRuleID(policy string) string {
+	switch policy {
+	case "bug_fix":
+		return "CHANGE_BUG_FIX"
+	case "ci_governance":
+		return "CHANGE_CI_GOVERNANCE"
+	case "dependency_change":
+		return "CHANGE_DEPENDENCY"
+	case "documentation":
+		return "CHANGE_DOCS"
+	case "internal_refactor":
+		return "CHANGE_INTERNAL_REFACTOR"
+	case "public_api":
+		return "CHANGE_PUBLIC_API"
+	case "security_sensitive":
+		return "CHANGE_SECURITY_SENSITIVE"
+	default:
+		return ""
+	}
+}
+
 func list(value any) []any {
 	values, _ := value.([]any)
 	return values
@@ -635,6 +710,15 @@ func stringList(value any) []string {
 		}
 	}
 	return out
+}
+
+func (c *checker) requireList(value any, path string) []any {
+	values, ok := value.([]any)
+	if !ok {
+		c.addError("AGENT_EVIDENCE_SCHEMA_INVALID", path+" must be a list")
+		return nil
+	}
+	return values
 }
 
 func intValue(value any) (int, bool) {

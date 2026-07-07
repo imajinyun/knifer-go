@@ -562,6 +562,25 @@ func TestAgentEvidenceCheckRejectsIncorrectSecurityMergeReadyEvidence(t *testing
 	}
 }
 
+func TestAgentEvidenceCheckRejectsStructuredChangePolicyMismatch(t *testing.T) {
+	evidence := baseAgentEvidence()
+	structuredChecks := evidence["structured_checks"].(map[string]any)
+	changePolicy := structuredChecks["change_policy_check"].(map[string]any)
+	changePolicyJSON := changePolicy["json"].(map[string]any)
+	changePolicyJSON["rule_ids"] = []string{"CHANGE_BUG_FIX"}
+
+	output, err := newGovernanceFixture(t).RunAgentEvidenceCheck(evidence)
+	if err == nil {
+		t.Fatalf("agent evidence check unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "AGENT_EVIDENCE_STRUCTURED_CHANGE_POLICY_MISMATCH") {
+		t.Fatalf("agent evidence output missing AGENT_EVIDENCE_STRUCTURED_CHANGE_POLICY_MISMATCH rule id:\n%s", output)
+	}
+	if !strings.Contains(output, "structured change policy rule_ids must match detected policies") {
+		t.Fatalf("agent evidence output missing structured rule id mismatch:\n%s", output)
+	}
+}
+
 func TestAPIFreezeCheckRequiresStatusDecisionCards(t *testing.T) {
 	fixture := newGovernanceFixture(t)
 	fixture.WriteJSON("tools.json", map[string]any{
@@ -975,6 +994,48 @@ func baseAgentEvidence() map[string]any {
 			"stderr":    "SECURITY DIFF CHECK ERROR: security-sensitive files changed:\n  - internal/db/scan.go\nRun make agent-security-check and document security review evidence before merging.",
 		},
 	}
+	structuredChecks := map[string]any{
+		"change_policy_check": map[string]any{
+			"cmd":       "go run ./bin/changepolicycheck -root /fixture -json",
+			"exit_code": 0,
+			"json": map[string]any{
+				"detected_policies": []string{"security_sensitive"},
+				"findings":          []any{},
+				"policy_paths": map[string]any{
+					"security_sensitive": []string{"internal/db/scan.go"},
+				},
+				"required_commands": []string{"change_policy_check", "security_sensitive_diff", "agent_full_check", "agent_security_check", "agent_evidence", "agent_evidence_check"},
+				"rule_ids":          []string{"CHANGE_SECURITY_SENSITIVE"},
+				"semantic_rule_ids": []string{"SEMANTIC_SECURITY_POLICY_CHANGE"},
+				"status":            "passed",
+			},
+			"status": "passed",
+			"stderr": "",
+			"stdout": `{
+  "status": "passed",
+  "findings": [],
+  "detected_policies": ["security_sensitive"],
+  "rule_ids": ["CHANGE_SECURITY_SENSITIVE"],
+  "semantic_rule_ids": ["SEMANTIC_SECURITY_POLICY_CHANGE"],
+  "required_commands": ["change_policy_check", "security_sensitive_diff", "agent_full_check", "agent_security_check", "agent_evidence", "agent_evidence_check"],
+  "policy_paths": {"security_sensitive": ["internal/db/scan.go"]}
+}`,
+		},
+		"ci_workflow_check": map[string]any{
+			"cmd":       "go run ./bin/ciworkflowcheck -root /fixture -json",
+			"exit_code": 0,
+			"json": map[string]any{
+				"findings": []any{},
+				"status":   "passed",
+			},
+			"status": "passed",
+			"stderr": "",
+			"stdout": `{
+  "status": "passed",
+  "findings": []
+}`,
+		},
+	}
 	attestations := map[string]any{
 		"ai_context_check": map[string]any{
 			"cmd":       "bash bin/check_ai_context.sh",
@@ -1048,6 +1109,7 @@ func baseAgentEvidence() map[string]any {
 			"status":                   "blocked",
 		},
 		"security_sensitive_paths": []string{"internal/db/scan.go"},
+		"structured_checks":        structuredChecks,
 		"worktree_status":          " M internal/db/scan.go",
 	}
 }

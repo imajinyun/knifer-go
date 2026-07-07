@@ -44,6 +44,29 @@ def run(args):
     }
 
 
+def run_json(args):
+    result = run(args)
+    parsed = None
+    parse_error = ""
+    raw = result["stdout"].strip()
+    if raw:
+        try:
+            parsed = json.loads(raw)
+        except json.JSONDecodeError as exc:
+            parse_error = str(exc)
+    structured = {
+        "status": result["status"],
+        "cmd": result["cmd"],
+        "exit_code": result["exit_code"],
+        "stdout": result["stdout"],
+        "stderr": result["stderr"],
+        "json": parsed if isinstance(parsed, dict) else {},
+    }
+    if parse_error:
+        structured["parse_error"] = parse_error
+    return structured
+
+
 def command_attestation(result, source):
     return {
         "status": result["status"],
@@ -181,6 +204,10 @@ checks = {
     "security_sensitive_diff": run(["bash", "bin/check_security_sensitive_diff.sh"]),
     "change_policy_check": run(["bash", "bin/check_change_policy.sh"]),
 }
+structured_checks = {
+    "change_policy_check": run_json(["go", "run", "./bin/changepolicycheck", "-root", root_dir, "-json"]),
+    "ci_workflow_check": run_json(["go", "run", "./bin/ciworkflowcheck", "-root", root_dir, "-json"]),
+}
 
 command_attestations = {
     "ai_context_check": command_attestation(checks["ai_context_check"], "embedded_check"),
@@ -293,6 +320,7 @@ report = {
     "security_sensitive_paths": sorted(set(security_sensitive_paths)),
     "security_review": build_security_review(),
     "checks": checks,
+    "structured_checks": structured_checks,
     "merge_ready": len(merge_blockers) == 0,
     "merge_blockers": sorted(set(merge_blockers)),
     "worktree_status": git(["status", "--short"]),
