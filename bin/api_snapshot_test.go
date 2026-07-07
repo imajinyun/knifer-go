@@ -837,6 +837,83 @@ func TestRandomSourcePolicyCheckRejectsPackageCoverageDrift(t *testing.T) {
 	}
 }
 
+func TestThreatModelCheckAcceptsValidBoundaryFixture(t *testing.T) {
+	fixture := threatModelFixture(t)
+	output, err := fixture.RunThreatModelCheck()
+	if err != nil {
+		t.Fatalf("threatmodelcheck failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "threat model boundary contracts are valid") {
+		t.Fatalf("threat model output missing success:\n%s", output)
+	}
+}
+
+func TestThreatModelCheckRejectsUnknownBoundaryName(t *testing.T) {
+	fixture := threatModelFixture(t)
+	context := threatModelContext()
+	boundaries := context["threat_model"].(map[string]any)["boundary_contracts"].([]any)
+	boundaries[0].(map[string]any)["name"] = "default_timeot"
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunThreatModelCheckJSON()
+	if err == nil {
+		t.Fatalf("threatmodelcheck -json unexpectedly passed:\n%s", output)
+	}
+	var result struct {
+		Status   string `json:"status"`
+		Findings []struct {
+			RuleID string `json:"rule_id"`
+		} `json:"findings"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("threatmodelcheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "failed" {
+		t.Fatalf("JSON status = %q, want failed\n%s", result.Status, output)
+	}
+	var sawUnknown bool
+	for _, finding := range result.Findings {
+		if finding.RuleID == "THREAT_MODEL_BOUNDARY_UNKNOWN_NAME" {
+			sawUnknown = true
+		}
+	}
+	if !sawUnknown {
+		t.Fatalf("threat model JSON findings missing unknown boundary rule id:\n%s", output)
+	}
+}
+
+func TestThreatModelCheckRejectsMissingContractTest(t *testing.T) {
+	fixture := threatModelFixture(t)
+	context := threatModelContext()
+	boundaries := context["threat_model"].(map[string]any)["boundary_contracts"].([]any)
+	boundaries[0].(map[string]any)["contract_tests"] = []string{"internal/httpx/contract_request_test.go:TestMissingFixture", "internal/httpx/http/request_timeout_redirect_test.go:TestRequestTimeout"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunThreatModelCheck()
+	if err == nil {
+		t.Fatalf("threatmodelcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "THREAT_MODEL_BOUNDARY_CONTRACT_TEST_MISSING") {
+		t.Fatalf("threat model output missing missing-test rule id:\n%s", output)
+	}
+}
+
+func TestThreatModelCheckRejectsUnknownPackage(t *testing.T) {
+	fixture := threatModelFixture(t)
+	context := threatModelContext()
+	boundaries := context["threat_model"].(map[string]any)["boundary_contracts"].([]any)
+	boundaries[0].(map[string]any)["packages"] = []string{"vhttp", "vmissing"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunThreatModelCheck()
+	if err == nil {
+		t.Fatalf("threatmodelcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "THREAT_MODEL_BOUNDARY_UNKNOWN_PACKAGE") {
+		t.Fatalf("threat model output missing unknown-package rule id:\n%s", output)
+	}
+}
+
 func TestProviderContractCheckRejectsConcreteNetworkAndMissingProvider(t *testing.T) {
 	fixture := providerContractFixture(t)
 	fixture.WriteFile("vbad/bad.go", `package vbad
@@ -1608,6 +1685,69 @@ func randomSourcePolicyContext() map[string]any {
 				},
 			},
 		},
+	}
+}
+
+func threatModelFixture(t *testing.T) *governanceFixture {
+	t.Helper()
+	fixture := newGovernanceFixture(t)
+	fixture.WriteJSON("ai-context.json", threatModelContext())
+	for path, functions := range threatModelTestFunctions() {
+		var body strings.Builder
+		body.WriteString("package fixture\n\n")
+		for _, fn := range functions {
+			body.WriteString("func ")
+			body.WriteString(fn)
+			body.WriteString("() {}\n")
+		}
+		fixture.WriteFile(path, body.String())
+	}
+	return fixture
+}
+
+func threatModelContext() map[string]any {
+	publicFacades := []string{"vhttp", "vresty", "vurl", "vconf"}
+	var publicFacadeEntries []any
+	for _, pkg := range publicFacades {
+		publicFacadeEntries = append(publicFacadeEntries, map[string]any{"package": pkg})
+	}
+	return map[string]any{
+		"public_facades": publicFacadeEntries,
+		"threat_model": map[string]any{
+			"boundary_contracts": []any{
+				threatBoundary("default_timeout", []string{"vhttp", "vresty"}, []string{"positive default timeout", "timeout errors classified as GK_TIMEOUT"}, []string{"internal/httpx/contract_request_test.go:TestHTTPContractDefaultTimeout", "internal/httpx/http/request_timeout_redirect_test.go:TestRequestTimeout"}),
+				threatBoundary("redirect_revalidation", []string{"vhttp", "vresty", "vurl", "vconf"}, []string{"redirect target URL policy", "round-trip host revalidation"}, []string{"internal/httpx/http/safe_request_test.go:TestSafeRequestRejectsPrivateAndUnsafeRedirects", "internal/conf/load_remote_safe_hosts_test.go:TestLoadRemoteSafeRejectsUnsafeRedirectTarget"}),
+				threatBoundary("private_host_rejection", []string{"vhttp", "vresty", "vurl", "vconf"}, []string{"loopback rejection", "multicast rejection"}, []string{"internal/httpx/http/safe_request_test.go:TestSafeRequestAllowedHostsDoesNotBypassPrivateRejection", "internal/url/safe_resource_allowlist_test.go:TestOpenSafeAllowedHostsDoesNotBypassPrivateRejection"}),
+				threatBoundary("bounded_response_reads", []string{"vhttp", "vresty", "vurl", "vconf"}, []string{"max response bytes", "ContentLength precheck"}, []string{"internal/httpx/contract_response_limits_test.go:TestHTTPContractMaxResponseBytes", "internal/url/safe_resource_limit_test.go:TestOpenSafeMaxBytes"}),
+				threatBoundary("safe_download_paths", []string{"vhttp", "vresty", "vurl"}, []string{"safe filename normalization", "download path scoping"}, []string{"internal/httpx/internal/shared/util_test.go:TestSafeDownloadedFilenameAndJoin", "internal/httpx/http/save_as_content_disposition_test.go:TestSaveAsRejectsUnsafeContentDispositionFilename"}),
+				threatBoundary("remote_config_boundary", []string{"vconf"}, []string{"safe remote loader", "allowed host policy"}, []string{"vconf/load_remote_safe_test.go:TestFacadeRemoteSafeWrappers", "internal/conf/load_remote_safe_roundtrip_test.go:TestLoadRemoteSafeRevalidatesHostAtRoundTrip"}),
+			},
+		},
+	}
+}
+
+func threatBoundary(name string, packages, controls, tests []string) map[string]any {
+	return map[string]any{
+		"name":              name,
+		"packages":          packages,
+		"required_controls": controls,
+		"contract_tests":    tests,
+	}
+}
+
+func threatModelTestFunctions() map[string][]string {
+	return map[string][]string{
+		"internal/httpx/contract_request_test.go":                 {"TestHTTPContractDefaultTimeout"},
+		"internal/httpx/http/request_timeout_redirect_test.go":    {"TestRequestTimeout"},
+		"internal/httpx/http/safe_request_test.go":                {"TestSafeRequestRejectsPrivateAndUnsafeRedirects", "TestSafeRequestAllowedHostsDoesNotBypassPrivateRejection"},
+		"internal/conf/load_remote_safe_hosts_test.go":            {"TestLoadRemoteSafeRejectsUnsafeRedirectTarget"},
+		"internal/url/safe_resource_allowlist_test.go":            {"TestOpenSafeAllowedHostsDoesNotBypassPrivateRejection"},
+		"internal/httpx/contract_response_limits_test.go":         {"TestHTTPContractMaxResponseBytes"},
+		"internal/url/safe_resource_limit_test.go":                {"TestOpenSafeMaxBytes"},
+		"internal/httpx/internal/shared/util_test.go":             {"TestSafeDownloadedFilenameAndJoin"},
+		"internal/httpx/http/save_as_content_disposition_test.go": {"TestSaveAsRejectsUnsafeContentDispositionFilename"},
+		"vconf/load_remote_safe_test.go":                          {"TestFacadeRemoteSafeWrappers"},
+		"internal/conf/load_remote_safe_roundtrip_test.go":        {"TestLoadRemoteSafeRevalidatesHostAtRoundTrip"},
 	}
 }
 

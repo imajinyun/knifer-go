@@ -232,6 +232,16 @@ func (f *governanceFixture) RunRandomSourcePolicyCheckJSON() (string, error) {
 	return f.RunGoTool("randomsourcepolicycheck", "-root", f.root, "-json")
 }
 
+func (f *governanceFixture) RunThreatModelCheck() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("threatmodelcheck", "-root", f.root)
+}
+
+func (f *governanceFixture) RunThreatModelCheckJSON() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("threatmodelcheck", "-root", f.root, "-json")
+}
+
 func (f *governanceFixture) RunGoTool(tool string, args ...string) (string, error) {
 	f.t.Helper()
 	return f.RunGoToolEnv(tool, nil, args...)
