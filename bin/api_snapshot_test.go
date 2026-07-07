@@ -1380,6 +1380,67 @@ func TestDependencyTiersCheckRejectsAllowlistSchema(t *testing.T) {
 	}
 }
 
+func TestGovernanceMigrationCheckAcceptsValidFixture(t *testing.T) {
+	fixture := governanceMigrationFixture(t)
+	output, err := fixture.RunGovernanceMigrationCheck()
+	if err != nil {
+		t.Fatalf("governancemigrationcheck failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "governance migration status is valid") {
+		t.Fatalf("governance migration output missing success:\n%s", output)
+	}
+}
+
+func TestGovernanceMigrationCheckRejectsPythonRuleRegression(t *testing.T) {
+	fixture := governanceMigrationFixture(t)
+	fixture.WriteFile("bin/check_governance_maturity.sh", "def validate_error_model() -> None:\n\tpass\n")
+
+	output, err := fixture.RunGovernanceMigrationCheckJSON()
+	if err == nil {
+		t.Fatalf("governancemigrationcheck -json unexpectedly passed:\n%s", output)
+	}
+	var result struct {
+		Status   string `json:"status"`
+		Findings []struct {
+			RuleID string `json:"rule_id"`
+		} `json:"findings"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("governancemigrationcheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "failed" {
+		t.Fatalf("JSON status = %q, want failed\n%s", result.Status, output)
+	}
+	var sawRegression bool
+	for _, finding := range result.Findings {
+		if finding.RuleID == "GOVERNANCE_MIGRATION_PYTHON_RULE_REGRESSION" {
+			sawRegression = true
+		}
+	}
+	if !sawRegression {
+		t.Fatalf("governance migration JSON findings missing regression rule id:\n%s", output)
+	}
+}
+
+func TestGovernanceMigrationCheckRejectsMissingMakeTarget(t *testing.T) {
+	fixture := governanceMigrationFixture(t)
+	fixture.WriteFile("Makefile", `governance-maturity-check:
+	bash bin/check_governance_maturity.sh
+	$(MAKE) random-source-policy-check
+
+bench-regression-check:
+	go run ./bin/benchmarkregressioncheck -root .
+`)
+
+	output, err := fixture.RunGovernanceMigrationCheck()
+	if err == nil {
+		t.Fatalf("governancemigrationcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "GOVERNANCE_MIGRATION_MAKE_TARGET_MISSING") {
+		t.Fatalf("governance migration output missing make target rule id:\n%s", output)
+	}
+}
+
 func TestProviderContractCheckRejectsConcreteNetworkAndMissingProvider(t *testing.T) {
 	fixture := providerContractFixture(t)
 	fixture.WriteFile("vbad/bad.go", `package vbad
@@ -2564,6 +2625,26 @@ func dependencyTiersContext() map[string]any {
 			},
 		},
 	}
+}
+
+func governanceMigrationFixture(t *testing.T) *governanceFixture {
+	t.Helper()
+	fixture := newGovernanceFixture(t)
+	fixture.WriteFile("bin/check_governance_maturity.sh", "# migrated rules stay out of Python\n")
+	fixture.WriteFile("Makefile", `governance-maturity-check:
+	bash bin/check_governance_maturity.sh
+	$(MAKE) random-source-policy-check
+	$(MAKE) threat-model-check
+	$(MAKE) dynamic-contracts-check
+	$(MAKE) error-model-check
+	$(MAKE) api-convergence-check
+	$(MAKE) lifecycle-check
+	$(MAKE) dependency-tiers-check
+
+bench-regression-check:
+	go run ./bin/benchmarkregressioncheck -root .
+`)
+	return fixture
 }
 
 func ciWorkflowFixture(t *testing.T, workflowCommand string) *governanceFixture {
