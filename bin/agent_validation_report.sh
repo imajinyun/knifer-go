@@ -342,17 +342,35 @@ def summary_list(values):
     return ", ".join(values) if values else "none"
 
 
+def finding_rule_ids(findings):
+    rule_ids = []
+    for finding in findings:
+        if isinstance(finding, dict) and finding.get("rule_id"):
+            rule_ids.append(finding["rule_id"])
+    return rule_ids
+
+
 change_policy_json = structured_checks.get("change_policy_check", {}).get("json", {})
 ci_workflow_json = structured_checks.get("ci_workflow_check", {}).get("json", {})
 change_policy_rule_ids = change_policy_json.get("rule_ids", [])
 change_policy_semantic_rule_ids = change_policy_json.get("semantic_rule_ids", [])
 ci_workflow_findings = ci_workflow_json.get("findings", [])
+arch_structured_check_names = [
+    "provider_contract_check",
+    "arch_imports_check",
+    "panic_policy_check",
+    "facade_boundary_check",
+]
 
 print(f"agent validation evidence written to {output_file}")
 print("detected policies: " + (", ".join(report["detected_change_policies"]) or "none"))
 print("change policy rule ids: " + summary_list(change_policy_rule_ids))
 print("change policy semantic rule ids: " + summary_list(change_policy_semantic_rule_ids))
 print("ci workflow findings: " + str(len(ci_workflow_findings)))
+for check_name in arch_structured_check_names:
+    check_json = structured_checks.get(check_name, {}).get("json", {})
+    findings = check_json.get("findings", [])
+    print(f"{check_name} findings: {len(findings)}; rule ids: {summary_list(finding_rule_ids(findings))}")
 print("required commands: " + (", ".join(required_commands) or "none"))
 print("highest required command risk: " + highest_risk)
 print("merge ready: " + ("true" if report["merge_ready"] else "false"))
