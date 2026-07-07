@@ -10,20 +10,19 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/imajinyun/knifer-go/bin/internal/govreport"
 )
 
-type violation struct {
-	ruleID  string
-	message string
-}
-
 type checker struct {
-	root       string
-	violations []violation
+	root     string
+	findings []govreport.Finding
+	count    int
 }
 
 func main() {
 	rootFlag := flag.String("root", "", "repository root")
+	jsonFlag := flag.Bool("json", false, "emit machine-readable JSON output")
 	flag.Parse()
 
 	root := strings.TrimSpace(*rootFlag)
@@ -31,7 +30,7 @@ func main() {
 		var err error
 		root, err = os.Getwd()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "PROVIDER CONTRACT VIOLATION: [PROVIDER_CONTRACT_INPUT_ERROR] cannot resolve working directory: %v\n", err)
+			writeReport(*jsonFlag, govreport.Failed([]govreport.Finding{govreport.Error("PROVIDER_CONTRACT_INPUT_ERROR", "", fmt.Sprintf("cannot resolve working directory: %v", err))}))
 			os.Exit(1)
 		}
 	}
@@ -40,12 +39,11 @@ func main() {
 	if err := c.run(); err != nil {
 		c.addViolation("PROVIDER_CONTRACT_INPUT_ERROR", err.Error())
 	}
-	if len(c.violations) > 0 {
-		for _, violation := range c.violations {
-			fmt.Fprintf(os.Stderr, "PROVIDER CONTRACT VIOLATION: [%s] %s\n", violation.ruleID, violation.message)
-		}
+	if len(c.findings) > 0 {
+		writeReport(*jsonFlag, govreport.Failed(c.findings))
 		os.Exit(1)
 	}
+	writeReport(*jsonFlag, govreport.Passed(), c.count)
 }
 
 func (c *checker) run() error {
@@ -69,6 +67,7 @@ func (c *checker) run() error {
 		providersRaw = nil
 	}
 	providers := stringList(providersRaw)
+	c.count = len(providers)
 
 	providerInterfacePattern := regexp.MustCompile(`type\s+\w*Provider\s+interface\s*{`)
 	for _, facade := range providers {
@@ -126,14 +125,30 @@ func (c *checker) run() error {
 		}
 	}
 
-	if len(c.violations) == 0 {
-		fmt.Printf("provider contract governance is valid (%d facades)\n", len(providers))
-	}
 	return nil
 }
 
 func (c *checker) addViolation(ruleID, message string) {
-	c.violations = append(c.violations, violation{ruleID: ruleID, message: message})
+	c.findings = append(c.findings, govreport.Error(ruleID, "", message))
+}
+
+func writeReport(jsonOutput bool, report govreport.Envelope, count ...int) {
+	if jsonOutput {
+		if err := govreport.WriteJSON(os.Stdout, report); err != nil {
+			fmt.Fprintf(os.Stderr, "PROVIDER CONTRACT VIOLATION: [PROVIDER_CONTRACT_INPUT_ERROR] cannot encode JSON output: %v\n", err)
+		}
+		return
+	}
+	if report.Status == govreport.StatusFailed {
+		for _, finding := range report.Findings {
+			fmt.Fprintf(os.Stderr, "PROVIDER CONTRACT VIOLATION: [%s] %s\n", finding.RuleID, finding.Message)
+		}
+	}
+	validated := 0
+	if len(count) > 0 {
+		validated = count[0]
+	}
+	fmt.Printf("provider contract governance is valid (%d facades)\n", validated)
 }
 
 func loadJSON(path string) (map[string]any, error) {

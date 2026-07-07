@@ -8,16 +8,13 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/imajinyun/knifer-go/bin/internal/govreport"
 )
 
-type violation struct {
-	ruleID  string
-	message string
-}
-
 type checker struct {
-	root       string
-	violations []violation
+	root     string
+	findings []govreport.Finding
 }
 
 var (
@@ -38,6 +35,7 @@ var allowedFacadeLogicPaths = map[string]struct{}{
 
 func main() {
 	rootFlag := flag.String("root", "", "repository root")
+	jsonFlag := flag.Bool("json", false, "emit machine-readable JSON output")
 	flag.Parse()
 
 	root := strings.TrimSpace(*rootFlag)
@@ -45,7 +43,7 @@ func main() {
 		var err error
 		root, err = os.Getwd()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "FACADE BOUNDARY VIOLATION: [FACADE_BOUNDARY_INPUT_ERROR] cannot resolve working directory: %v\n", err)
+			writeReport(*jsonFlag, govreport.Failed([]govreport.Finding{govreport.Error("FACADE_BOUNDARY_INPUT_ERROR", "", fmt.Sprintf("cannot resolve working directory: %v", err))}))
 			os.Exit(1)
 		}
 	}
@@ -54,13 +52,11 @@ func main() {
 	if err := c.run(); err != nil {
 		c.addViolation("FACADE_BOUNDARY_INPUT_ERROR", err.Error())
 	}
-	if len(c.violations) > 0 {
-		for _, violation := range c.violations {
-			fmt.Fprintf(os.Stderr, "FACADE BOUNDARY VIOLATION: [%s] %s\n", violation.ruleID, violation.message)
-		}
+	if len(c.findings) > 0 {
+		writeReport(*jsonFlag, govreport.Failed(c.findings))
 		os.Exit(1)
 	}
-	fmt.Println("facade boundary governance is valid")
+	writeReport(*jsonFlag, govreport.Passed())
 }
 
 func (c *checker) run() error {
@@ -155,5 +151,21 @@ func (c *checker) rel(path string) string {
 }
 
 func (c *checker) addViolation(ruleID, message string) {
-	c.violations = append(c.violations, violation{ruleID: ruleID, message: message})
+	c.findings = append(c.findings, govreport.Error(ruleID, "", message))
+}
+
+func writeReport(jsonOutput bool, report govreport.Envelope) {
+	if jsonOutput {
+		if err := govreport.WriteJSON(os.Stdout, report); err != nil {
+			fmt.Fprintf(os.Stderr, "FACADE BOUNDARY VIOLATION: [FACADE_BOUNDARY_INPUT_ERROR] cannot encode JSON output: %v\n", err)
+		}
+		return
+	}
+	if report.Status == govreport.StatusFailed {
+		for _, finding := range report.Findings {
+			fmt.Fprintf(os.Stderr, "FACADE BOUNDARY VIOLATION: [%s] %s\n", finding.RuleID, finding.Message)
+		}
+		return
+	}
+	fmt.Println("facade boundary governance is valid")
 }

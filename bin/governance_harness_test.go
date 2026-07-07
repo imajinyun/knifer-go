@@ -75,6 +75,11 @@ func (f *governanceFixture) RunProviderContractCheck() (string, error) {
 	return f.RunScript("bin/check_provider_contracts.sh", "PROVIDER_CONTRACT_ROOT="+f.root)
 }
 
+func (f *governanceFixture) RunProviderContractCheckJSON() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("providercontractcheck", "-root", f.root, "-json")
+}
+
 func (f *governanceFixture) RunCIWorkflowCheck() (string, error) {
 	f.t.Helper()
 	return f.RunScript("bin/check_ci_workflows.sh", "CI_WORKFLOW_ROOT="+f.root)
@@ -100,14 +105,29 @@ func (f *governanceFixture) RunArchImportsCheck() (string, error) {
 	return f.RunScript("bin/check_arch_imports.sh", "ARCH_CHECK_ROOT="+f.root)
 }
 
+func (f *governanceFixture) RunArchImportsCheckJSON() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("archimportscheck", "-root", f.root, "-json")
+}
+
 func (f *governanceFixture) RunPanicPolicyCheck() (string, error) {
 	f.t.Helper()
 	return f.RunScript("bin/check_panic_policy.sh", "ARCH_CHECK_ROOT="+f.root)
 }
 
+func (f *governanceFixture) RunPanicPolicyCheckJSON() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("panicpolicycheck", "-root", f.root, "-json")
+}
+
 func (f *governanceFixture) RunFacadeBoundaryCheck() (string, error) {
 	f.t.Helper()
 	return f.RunScript("bin/check_facade_boundary.sh", "ARCH_CHECK_ROOT="+f.root)
+}
+
+func (f *governanceFixture) RunFacadeBoundaryCheckJSON() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("facadeboundarycheck", "-root", f.root, "-json")
 }
 
 func (f *governanceFixture) RunReleaseNotesCheck(changelog, template, version string) (string, error) {

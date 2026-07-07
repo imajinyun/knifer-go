@@ -1,9 +1,32 @@
 package main
 
 import (
+	"encoding/json"
 	"strings"
 	"testing"
 )
+
+func assertJSONFinding(t *testing.T, output, ruleID string) {
+	t.Helper()
+	var result struct {
+		Status   string `json:"status"`
+		Findings []struct {
+			RuleID string `json:"rule_id"`
+		} `json:"findings"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "failed" {
+		t.Fatalf("JSON status = %q, want failed\n%s", result.Status, output)
+	}
+	for _, finding := range result.Findings {
+		if finding.RuleID == ruleID {
+			return
+		}
+	}
+	t.Fatalf("JSON findings missing rule id %q:\n%s", ruleID, output)
+}
 
 func TestArchImportsCheckAcceptsThinFacadeAndInternalDirection(t *testing.T) {
 	fixture := newGovernanceFixture(t)
@@ -98,6 +121,44 @@ func Name() string { return "other" }
 	}
 }
 
+func TestArchImportsCheckEmitsJSONFindings(t *testing.T) {
+	fixture := newGovernanceFixture(t)
+	fixture.WriteGoMod()
+	fixture.WriteJSON("ai-context.json", map[string]any{
+		"dependency_tiers": map[string]any{
+			"heavy_dependency_allowlist": map[string]any{},
+		},
+	})
+	fixture.WriteFile("vbad/doc.go", `// Package vbad exposes fixture helpers.
+package vbad
+`)
+	fixture.WriteFile("vbad/bad.go", `package vbad
+
+import "github.com/imajinyun/knifer-go/vother"
+
+func Run() string { return vother.Name() }
+`)
+	fixture.WriteFile("vother/doc.go", `// Package vother exposes another fixture facade.
+package vother
+`)
+	fixture.WriteFile("vother/other.go", `package vother
+
+import "github.com/imajinyun/knifer-go/internal/other"
+
+func Name() string { return other.Name() }
+`)
+	fixture.WriteFile("internal/other/other.go", `package other
+
+func Name() string { return "other" }
+`)
+
+	output, err := fixture.RunArchImportsCheckJSON()
+	if err == nil {
+		t.Fatalf("archimportscheck -json unexpectedly passed:\n%s", output)
+	}
+	assertJSONFinding(t, output, "ARCH_IMPORT_FACADE_TO_FACADE")
+}
+
 func TestPanicPolicyCheckAllowsMustAPIsAndRejectsProductionPanic(t *testing.T) {
 	fixture := newGovernanceFixture(t)
 	fixture.WriteGoMod()
@@ -122,6 +183,23 @@ func Run() {
 	if !strings.Contains(output, "production panic is not allowed") || !strings.Contains(output, "internal/bad/bad.go") {
 		t.Fatalf("panic policy output missing production panic error:\n%s", output)
 	}
+}
+
+func TestPanicPolicyCheckEmitsJSONFindings(t *testing.T) {
+	fixture := newGovernanceFixture(t)
+	fixture.WriteGoMod()
+	fixture.WriteFile("internal/bad/bad.go", `package bad
+
+func Run() {
+	panic("fixture")
+}
+`)
+
+	output, err := fixture.RunPanicPolicyCheckJSON()
+	if err == nil {
+		t.Fatalf("panicpolicycheck -json unexpectedly passed:\n%s", output)
+	}
+	assertJSONFinding(t, output, "PANIC_POLICY_PRODUCTION_PANIC")
 }
 
 func TestFacadeBoundaryCheckAcceptsThinFacade(t *testing.T) {
@@ -179,4 +257,27 @@ func Run(ok bool) string {
 	if !strings.Contains(output, "facade packages should not contain implementation control flow") {
 		t.Fatalf("facade boundary output missing control-flow error:\n%s", output)
 	}
+}
+
+func TestFacadeBoundaryCheckEmitsJSONFindings(t *testing.T) {
+	fixture := newGovernanceFixture(t)
+	fixture.WriteGoMod()
+	fixture.WriteFile("vbad/doc.go", `// Package vbad exposes fixture helpers.
+package vbad
+`)
+	fixture.WriteFile("vbad/bad.go", `package vbad
+
+func Run(ok bool) string {
+	if ok {
+		return "ok"
+	}
+	return "bad"
+}
+`)
+
+	output, err := fixture.RunFacadeBoundaryCheckJSON()
+	if err == nil {
+		t.Fatalf("facadeboundarycheck -json unexpectedly passed:\n%s", output)
+	}
+	assertJSONFinding(t, output, "FACADE_BOUNDARY_THIN_FACADE_VIOLATION")
 }

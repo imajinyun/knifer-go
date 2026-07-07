@@ -10,22 +10,21 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/imajinyun/knifer-go/bin/internal/govreport"
 )
 
-type violation struct {
-	ruleID  string
-	message string
-}
-
 type checker struct {
-	root       string
-	module     string
-	allowlist  map[string][]string
-	violations []violation
+	root      string
+	module    string
+	allowlist map[string][]string
+	findings  []govreport.Finding
+	quiet     bool
 }
 
 func main() {
 	rootFlag := flag.String("root", "", "repository root")
+	jsonFlag := flag.Bool("json", false, "emit machine-readable JSON output")
 	flag.Parse()
 
 	root := strings.TrimSpace(*rootFlag)
@@ -33,27 +32,24 @@ func main() {
 		var err error
 		root, err = os.Getwd()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "ARCH IMPORT VIOLATION: [ARCH_IMPORT_INPUT_ERROR] cannot resolve working directory: %v\n", err)
+			writeReport(*jsonFlag, govreport.Failed([]govreport.Finding{govreport.Error("ARCH_IMPORT_INPUT_ERROR", "", fmt.Sprintf("cannot resolve working directory: %v", err))}))
 			os.Exit(1)
 		}
 	}
 
-	c := &checker{root: root}
+	c := &checker{root: root, quiet: *jsonFlag}
 	if err := c.run(); err != nil {
 		c.addViolation("ARCH_IMPORT_INPUT_ERROR", err.Error())
 	}
-	if len(c.violations) > 0 {
-		for _, violation := range c.violations {
-			fmt.Fprintf(os.Stderr, "ARCH IMPORT VIOLATION: [%s] %s\n", violation.ruleID, violation.message)
-		}
-		fmt.Fprintln(os.Stderr, "Architecture import check failed. See violations above.")
+	if len(c.findings) > 0 {
+		writeReport(*jsonFlag, govreport.Failed(c.findings))
 		os.Exit(1)
 	}
-	fmt.Println("architecture import governance passed")
+	writeReport(*jsonFlag, govreport.Passed())
 }
 
 func (c *checker) run() error {
-	fmt.Println("arch imports: resolving module")
+	c.logStage("arch imports: resolving module")
 	module, err := c.goOutput("list", "-m")
 	if err != nil {
 		return fmt.Errorf("cannot resolve module path via 'go list -m'")
@@ -79,7 +75,7 @@ func (c *checker) run() error {
 }
 
 func (c *checker) scanPublicFacades() {
-	fmt.Println("arch imports: scanning public facades")
+	c.logStage("arch imports: scanning public facades")
 	dirs, _ := filepath.Glob(filepath.Join(c.root, "v*"))
 	sort.Strings(dirs)
 	for _, dir := range dirs {
@@ -133,7 +129,7 @@ func (c *checker) scanPublicFacades() {
 }
 
 func (c *checker) scanInternalPackages() {
-	fmt.Println("arch imports: scanning internal packages")
+	c.logStage("arch imports: scanning internal packages")
 	packages := c.goListPackages("./internal/...")
 	for _, pkg := range packages {
 		imports := c.importsForPattern(pkg)
@@ -147,7 +143,7 @@ func (c *checker) scanInternalPackages() {
 }
 
 func (c *checker) scanHeavyDependencyIsolation() {
-	fmt.Println("arch imports: scanning heavy dependency isolation")
+	c.logStage("arch imports: scanning heavy dependency isolation")
 	packages := append(c.goListPackages("./internal/..."), c.goListPackages("./v...")...)
 	sort.Strings(packages)
 	for _, pkg := range packages {
@@ -265,5 +261,28 @@ func nonEmptyLines(value string) []string {
 }
 
 func (c *checker) addViolation(ruleID, message string) {
-	c.violations = append(c.violations, violation{ruleID: ruleID, message: message})
+	c.findings = append(c.findings, govreport.Error(ruleID, "", message))
+}
+
+func (c *checker) logStage(message string) {
+	if !c.quiet {
+		fmt.Println(message)
+	}
+}
+
+func writeReport(jsonOutput bool, report govreport.Envelope) {
+	if jsonOutput {
+		if err := govreport.WriteJSON(os.Stdout, report); err != nil {
+			fmt.Fprintf(os.Stderr, "ARCH IMPORT VIOLATION: [ARCH_IMPORT_INPUT_ERROR] cannot encode JSON output: %v\n", err)
+		}
+		return
+	}
+	if report.Status == govreport.StatusFailed {
+		for _, finding := range report.Findings {
+			fmt.Fprintf(os.Stderr, "ARCH IMPORT VIOLATION: [%s] %s\n", finding.RuleID, finding.Message)
+		}
+		fmt.Fprintln(os.Stderr, "Architecture import check failed. See violations above.")
+		return
+	}
+	fmt.Println("architecture import governance passed")
 }

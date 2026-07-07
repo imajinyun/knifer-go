@@ -808,6 +808,57 @@ func New() *Client {
 	}
 }
 
+func TestProviderContractCheckEmitsJSONFindings(t *testing.T) {
+	fixture := providerContractFixture(t)
+	fixture.WriteFile("vbad/bad.go", `package vbad
+
+import "github.com/imajinyun/knifer-go/internal/bad"
+
+type Client = bad.Client
+`)
+	fixture.WriteFile("internal/bad/client.go", `package bad
+
+import "os"
+
+type Client struct{}
+
+func New() *Client {
+	_ = os.Getenv("TOKEN")
+	return &Client{}
+}
+`)
+
+	output, err := fixture.RunProviderContractCheckJSON()
+	if err == nil {
+		t.Fatalf("providercontractcheck -json unexpectedly passed:\n%s", output)
+	}
+	var result struct {
+		Status   string `json:"status"`
+		Findings []struct {
+			RuleID string `json:"rule_id"`
+		} `json:"findings"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("providercontractcheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "failed" {
+		t.Fatalf("JSON status = %q, want failed\n%s", result.Status, output)
+	}
+	var sawMissingProvider bool
+	var sawSideEffect bool
+	for _, finding := range result.Findings {
+		if finding.RuleID == "PROVIDER_CONTRACT_MISSING_PROVIDER_INTERFACE" {
+			sawMissingProvider = true
+		}
+		if finding.RuleID == "PROVIDER_CONTRACT_FORBIDDEN_SIDE_EFFECT" {
+			sawSideEffect = true
+		}
+	}
+	if !sawMissingProvider || !sawSideEffect {
+		t.Fatalf("provider JSON findings missing expected rule ids:\n%s", output)
+	}
+}
+
 func TestProviderContractCheckAcceptsProviderOnlyContract(t *testing.T) {
 	fixture := providerContractFixture(t)
 	fixture.WriteFile("vbad/bad.go", `package vbad
