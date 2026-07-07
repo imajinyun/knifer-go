@@ -124,6 +124,16 @@ func (f *governanceFixture) RunChangePolicyCheck(changedFiles string) (string, e
 	return f.RunScript("bin/check_change_policy.sh", "CHANGE_POLICY_CHANGED_FILES="+changedFiles)
 }
 
+func (f *governanceFixture) RunChangePolicyCheckWithDiff(changedFiles, diffText string) (string, error) {
+	f.t.Helper()
+	return f.RunGoToolEnv(
+		"changepolicycheck",
+		[]string{"CHANGE_POLICY_DIFF=" + diffText},
+		"-root", f.root,
+		"-changed-files", changedFiles,
+	)
+}
+
 func (f *governanceFixture) RunAgentEvidenceCheck(evidence map[string]any) (string, error) {
 	f.t.Helper()
 	path := filepath.Join(f.root, "agent-evidence.json")
@@ -147,6 +157,11 @@ func (f *governanceFixture) RunAPIFreezeCheck(contextPath, toolsPath string) (st
 
 func (f *governanceFixture) RunGoTool(tool string, args ...string) (string, error) {
 	f.t.Helper()
+	return f.RunGoToolEnv(tool, nil, args...)
+}
+
+func (f *governanceFixture) RunGoToolEnv(tool string, env []string, args ...string) (string, error) {
+	f.t.Helper()
 	root := repoRoot(f.t)
 	binary := filepath.Join(f.t.TempDir(), tool)
 	build := exec.Command("go", "build", "-o", binary, "./bin/"+tool)
@@ -158,7 +173,7 @@ func (f *governanceFixture) RunGoTool(tool string, args ...string) (string, erro
 
 	cmd := exec.Command(binary, args...)
 	cmd.Dir = root
-	cmd.Env = os.Environ()
+	cmd.Env = append(os.Environ(), env...)
 	output, err := cmd.CombinedOutput()
 	return string(output), err
 }

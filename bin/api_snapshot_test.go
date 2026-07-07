@@ -395,6 +395,92 @@ func TestChangePolicyReportsSemanticRuleIDs(t *testing.T) {
 	}
 }
 
+func TestChangePolicyReportsFieldLevelSemanticRuleIDs(t *testing.T) {
+	fixture := newGovernanceFixture(t)
+	writeSemanticChangePolicyFixture(fixture)
+	diffText := `diff --git a/ai-context.json b/ai-context.json
+--- a/ai-context.json
++++ b/ai-context.json
+@@ -15,1 +15,1 @@
+-    "v1_candidate": true
++    "v1_candidate": false
+@@ -18,1 +18,1 @@
+-    "repository_threshold": 75.2
++    "repository_threshold": 76.0
+@@ -20,1 +20,1 @@
+-  "security_sensitive_packages": ["vcrypto"],
++  "security_sensitive_packages": ["vcrypto", "vjwt"],
+@@ -22,1 +22,1 @@
+-    "policies": []
++    "policies": [{"name": "crypto_reader"}]
+@@ -25,1 +25,1 @@
+-    "boundary_contracts": []
++    "boundary_contracts": [{"name": "timeout"}]
+diff --git a/Makefile b/Makefile
+--- a/Makefile
++++ b/Makefile
+@@ -8,1 +8,1 @@
+-	$(MAKE) full-check
++	COVERAGE_CHECK_ALL_PACKAGES=1 $(MAKE) full-check
+`
+
+	output, err := fixture.RunChangePolicyCheckWithDiff("ai-context.json\nMakefile", diffText)
+	if err != nil {
+		t.Fatalf("check_change_policy.sh failed: %v\n%s", err, output)
+	}
+	for _, want := range []string{
+		"SEMANTIC_AI_CONTEXT_API_FREEZE_CHANGE",
+		"SEMANTIC_AI_CONTEXT_COVERAGE_GATES_CHANGE",
+		"SEMANTIC_AI_CONTEXT_SECURITY_SENSITIVE_PACKAGES_CHANGE",
+		"SEMANTIC_AI_CONTEXT_RANDOM_SOURCE_POLICY_CHANGE",
+		"SEMANTIC_AI_CONTEXT_THREAT_MODEL_CHANGE",
+		"SEMANTIC_MAKEFILE_RELEASE_CHECK_CHANGE",
+	} {
+		if !strings.Contains(output, want) {
+			t.Fatalf("change policy output missing field-level semantic rule id %s:\n%s", want, output)
+		}
+	}
+	for _, unwanted := range []string{
+		"SEMANTIC_AI_CONTEXT_CHANGE",
+		"SEMANTIC_MAKEFILE_CHANGE",
+		"SEMANTIC_COVERAGE_POLICY_CHANGE",
+		"SEMANTIC_API_FREEZE_POLICY_CHANGE",
+		"SEMANTIC_SECURITY_POLICY_CHANGE",
+	} {
+		if strings.Contains(output, unwanted) {
+			t.Fatalf("change policy output should prefer field-level semantic id over broad id %s:\n%s", unwanted, output)
+		}
+	}
+}
+
+func TestChangePolicyDoesNotOverclassifyUnrelatedAIContextDiff(t *testing.T) {
+	fixture := newGovernanceFixture(t)
+	writeSemanticChangePolicyFixture(fixture)
+	diffText := `diff --git a/ai-context.json b/ai-context.json
+--- a/ai-context.json
++++ b/ai-context.json
+@@ -3,1 +3,1 @@
+-    "agent_check": {"cmd": "make agent-check"}
++    "agent_check": {"cmd": "USE_ISOLATED_GO_CACHE=1 make agent-check"}
+`
+
+	output, err := fixture.RunChangePolicyCheckWithDiff("ai-context.json", diffText)
+	if err != nil {
+		t.Fatalf("check_change_policy.sh failed: %v\n%s", err, output)
+	}
+	for _, unwanted := range []string{
+		"SEMANTIC_AI_CONTEXT_COVERAGE_GATES_CHANGE",
+		"SEMANTIC_AI_CONTEXT_API_FREEZE_CHANGE",
+		"SEMANTIC_AI_CONTEXT_SECURITY_SENSITIVE_PACKAGES_CHANGE",
+		"SEMANTIC_AI_CONTEXT_RANDOM_SOURCE_POLICY_CHANGE",
+		"SEMANTIC_AI_CONTEXT_THREAT_MODEL_CHANGE",
+	} {
+		if strings.Contains(output, unwanted) {
+			t.Fatalf("change policy output overclassified unrelated ai-context diff as %s:\n%s", unwanted, output)
+		}
+	}
+}
+
 func TestAgentEvidenceCheckAcceptsSecurityMergeReadyEvidence(t *testing.T) {
 	evidence := baseAgentEvidence()
 	evidence["command_attestations"].(map[string]any)["agent_full_check"] = map[string]any{
@@ -1078,6 +1164,39 @@ jobs:
         go-version: ["1.25.11", "1.26"]
 `)
 	return fixture
+}
+
+func writeSemanticChangePolicyFixture(fixture *governanceFixture) {
+	fixture.t.Helper()
+	fixture.WriteFile("Makefile", "quick-check:\n\t@true\n\nfull-check:\n\t@true\n\nrelease-check:\n\t$(MAKE) full-check\n")
+	fixture.WriteFile("ai-context.json", `{
+  "change_type_policies": {
+    "bug_fix": {"required_commands": ["agent_check"]},
+    "ci_governance": {"required_commands": ["agent_check"]},
+    "dependency_change": {"required_commands": ["agent_check"]},
+    "documentation": {"required_commands": ["agent_check"]},
+    "internal_refactor": {"required_commands": ["agent_check"]},
+    "public_api": {"required_commands": ["agent_check"]},
+    "security_sensitive": {"required_commands": ["agent_security_check"]}
+  },
+  "commands": {
+    "agent_check": {"cmd": "make agent-check"}
+  },
+  "api_freeze": {
+    "v1_candidate": true
+  },
+  "coverage_gates": {
+    "repository_threshold": 75.2
+  },
+  "security_sensitive_packages": ["vcrypto"],
+  "random_source_policy": {
+    "policies": []
+  },
+  "threat_model": {
+    "boundary_contracts": []
+  }
+}
+`)
 }
 
 func docsQuickstartFixture(t *testing.T, quickstart string) *governanceFixture {

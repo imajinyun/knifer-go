@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 )
@@ -22,6 +23,14 @@ var policyRuleIDs = map[string]string{
 	"internal_refactor":  "CHANGE_INTERNAL_REFACTOR",
 	"public_api":         "CHANGE_PUBLIC_API",
 	"security_sensitive": "CHANGE_SECURITY_SENSITIVE",
+}
+
+var aiContextSemanticFields = map[string]string{
+	"api_freeze":                  "SEMANTIC_AI_CONTEXT_API_FREEZE_CHANGE",
+	"coverage_gates":              "SEMANTIC_AI_CONTEXT_COVERAGE_GATES_CHANGE",
+	"random_source_policy":        "SEMANTIC_AI_CONTEXT_RANDOM_SOURCE_POLICY_CHANGE",
+	"security_sensitive_packages": "SEMANTIC_AI_CONTEXT_SECURITY_SENSITIVE_PACKAGES_CHANGE",
+	"threat_model":                "SEMANTIC_AI_CONTEXT_THREAT_MODEL_CHANGE",
 }
 
 type checker struct {
@@ -157,7 +166,7 @@ func (c checker) run(changedFilesOverride string) {
 	fmt.Println("change policy check passed")
 	fmt.Println("detected policies: " + strings.Join(detectedPolicies, ", "))
 	fmt.Println("rule ids: " + strings.Join(ruleIDsForPolicies(detectedPolicies), ", "))
-	if semanticIDs := semanticRuleIDs(changedFiles); len(semanticIDs) > 0 {
+	if semanticIDs := c.semanticRuleIDs(changedFiles); len(semanticIDs) > 0 {
 		fmt.Println("semantic rule ids: " + strings.Join(semanticIDs, ", "))
 	}
 	fmt.Println("required commands: " + strings.Join(requiredCommands, ", "))
@@ -194,6 +203,24 @@ func (c checker) changedFilesFromGit() []string {
 		}
 	}
 	return sortedSet(files)
+}
+
+func (c checker) changedDiffFromGit() string {
+	var chunks []string
+	baseRef := os.Getenv("AGENT_CHANGE_BASE_REF")
+	if baseRef == "" && os.Getenv("GITHUB_BASE_REF") != "" {
+		baseRef = "origin/" + os.Getenv("GITHUB_BASE_REF")
+	}
+	if baseRef != "" && gitOK(c.root, "rev-parse", "--verify", "--quiet", baseRef+"^{commit}") {
+		chunks = append(chunks, gitOutput(c.root, "diff", "--unified=0", "--diff-filter="+diffFilter, baseRef+"...HEAD", "--", "ai-context.json", "Makefile"))
+	}
+	for _, args := range [][]string{
+		{"diff", "--unified=0", "--diff-filter=" + diffFilter, "HEAD", "--", "ai-context.json", "Makefile"},
+		{"diff", "--cached", "--unified=0", "--diff-filter=" + diffFilter, "--", "ai-context.json", "Makefile"},
+	} {
+		chunks = append(chunks, gitOutput(c.root, args...))
+	}
+	return strings.TrimSpace(strings.Join(chunks, "\n"))
 }
 
 func addPolicy(detected map[string]struct{}, matched map[string]map[string]struct{}, policy, path string) {
@@ -234,7 +261,23 @@ func ruleIDsForPolicies(policies []string) []string {
 	return ids
 }
 
-func semanticRuleIDs(paths []string) []string {
+func (c checker) semanticRuleIDs(paths []string) []string {
+	diffText := strings.TrimSpace(os.Getenv("CHANGE_POLICY_DIFF"))
+	if diffText == "" {
+		diffText = c.changedDiffFromGit()
+	}
+	if diffText != "" {
+		if ids := c.semanticRuleIDsFromDiff(diffText, paths); len(ids) > 0 {
+			return ids
+		}
+		if diffMentionsAnyFile(diffText, "ai-context.json", "Makefile") {
+			return semanticRuleIDsFromPaths(withoutPaths(paths, "ai-context.json", "Makefile"))
+		}
+	}
+	return semanticRuleIDsFromPaths(paths)
+}
+
+func semanticRuleIDsFromPaths(paths []string) []string {
 	ids := map[string]struct{}{}
 	for _, path := range paths {
 		switch {
@@ -261,25 +304,255 @@ func semanticRuleIDs(paths []string) []string {
 	return sortedSet(ids)
 }
 
+func (c checker) semanticRuleIDsFromDiff(diffText string, paths []string) []string {
+	ids := map[string]struct{}{}
+	for _, path := range paths {
+		if path == "ai-context.schema.json" {
+			ids["SEMANTIC_SCHEMA_CONTRACT_CHANGE"] = struct{}{}
+		}
+	}
+
+	changes := changedLinesByFile(diffText)
+	if change := changes["ai-context.json"]; len(change.lines) > 0 || len(change.texts) > 0 {
+		ranges := topLevelJSONRanges(filepath.Join(c.root, "ai-context.json"))
+		for _, line := range change.lines {
+			if id := semanticIDForRangeLine(ranges, line, aiContextSemanticFields); id != "" {
+				ids[id] = struct{}{}
+			}
+		}
+		for _, text := range change.texts {
+			if id := semanticIDForJSONLine(text); id != "" {
+				ids[id] = struct{}{}
+			}
+		}
+	}
+	if change := changes["Makefile"]; len(change.lines) > 0 || len(change.texts) > 0 {
+		ranges := makefileTargetRanges(filepath.Join(c.root, "Makefile"))
+		for _, line := range change.lines {
+			if rangeNameForLine(ranges, line) == "release-check" {
+				ids["SEMANTIC_MAKEFILE_RELEASE_CHECK_CHANGE"] = struct{}{}
+			}
+		}
+		for _, text := range change.texts {
+			if strings.HasPrefix(strings.TrimSpace(text), "release-check:") {
+				ids["SEMANTIC_MAKEFILE_RELEASE_CHECK_CHANGE"] = struct{}{}
+			}
+		}
+	}
+	return sortedSet(ids)
+}
+
+type fileChange struct {
+	lines []int
+	texts []string
+}
+
+func changedLinesByFile(diffText string) map[string]fileChange {
+	changes := map[string]fileChange{}
+	currentPath := ""
+	oldLine := 0
+	newLine := 0
+	inHunk := false
+	for _, line := range strings.Split(diffText, "\n") {
+		switch {
+		case strings.HasPrefix(line, "+++ "):
+			currentPath = parseDiffPath(strings.TrimSpace(strings.TrimPrefix(line, "+++ ")))
+			inHunk = false
+			continue
+		case strings.HasPrefix(line, "@@ "):
+			oldStart, newStart, ok := parseHunkStart(line)
+			if !ok {
+				inHunk = false
+				continue
+			}
+			oldLine = oldStart
+			newLine = newStart
+			inHunk = true
+			continue
+		}
+		if currentPath == "" || !inHunk || line == `\ No newline at end of file` {
+			continue
+		}
+		change := changes[currentPath]
+		switch {
+		case strings.HasPrefix(line, "+"):
+			change.lines = append(change.lines, newLine)
+			change.texts = append(change.texts, strings.TrimSpace(strings.TrimPrefix(line, "+")))
+			newLine++
+		case strings.HasPrefix(line, "-"):
+			change.lines = append(change.lines, max(newLine, 1))
+			change.texts = append(change.texts, strings.TrimSpace(strings.TrimPrefix(line, "-")))
+			oldLine++
+		default:
+			oldLine++
+			newLine++
+		}
+		changes[currentPath] = change
+	}
+	return changes
+}
+
+func parseDiffPath(path string) string {
+	if path == "/dev/null" {
+		return ""
+	}
+	path = strings.TrimPrefix(path, "b/")
+	return strings.Trim(path, "/")
+}
+
+func diffMentionsAnyFile(diffText string, paths ...string) bool {
+	wanted := map[string]struct{}{}
+	for _, path := range paths {
+		wanted[path] = struct{}{}
+	}
+	for _, line := range strings.Split(diffText, "\n") {
+		if !strings.HasPrefix(line, "+++ ") && !strings.HasPrefix(line, "--- ") {
+			continue
+		}
+		path := parseDiffPath(strings.TrimSpace(line[4:]))
+		if _, ok := wanted[path]; ok {
+			return true
+		}
+	}
+	return false
+}
+
+func withoutPaths(paths []string, excluded ...string) []string {
+	excludedSet := map[string]struct{}{}
+	for _, path := range excluded {
+		excludedSet[path] = struct{}{}
+	}
+	var out []string
+	for _, path := range paths {
+		if _, ok := excludedSet[path]; ok {
+			continue
+		}
+		out = append(out, path)
+	}
+	return out
+}
+
+var hunkStartPattern = regexp.MustCompile(`^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@`)
+
+func parseHunkStart(line string) (int, int, bool) {
+	match := hunkStartPattern.FindStringSubmatch(line)
+	if len(match) != 3 {
+		return 0, 0, false
+	}
+	oldStart := atoi(match[1])
+	newStart := atoi(match[2])
+	return oldStart, newStart, true
+}
+
+type namedRange struct {
+	name  string
+	start int
+	end   int
+}
+
+func topLevelJSONRanges(path string) []namedRange {
+	lines := readLines(path)
+	var ranges []namedRange
+	keyPattern := regexp.MustCompile(`^  "([^"]+)":`)
+	for index, line := range lines {
+		match := keyPattern.FindStringSubmatch(line)
+		if len(match) != 2 {
+			continue
+		}
+		if len(ranges) > 0 {
+			ranges[len(ranges)-1].end = index
+		}
+		ranges = append(ranges, namedRange{name: match[1], start: index + 1, end: len(lines)})
+	}
+	return ranges
+}
+
+func makefileTargetRanges(path string) []namedRange {
+	lines := readLines(path)
+	targetPattern := regexp.MustCompile(`^([A-Za-z0-9_.-]+):(?:\s|$)`)
+	var ranges []namedRange
+	for index, line := range lines {
+		match := targetPattern.FindStringSubmatch(line)
+		if len(match) != 2 {
+			continue
+		}
+		if len(ranges) > 0 {
+			ranges[len(ranges)-1].end = index
+		}
+		ranges = append(ranges, namedRange{name: match[1], start: index + 1, end: len(lines)})
+	}
+	return ranges
+}
+
+func semanticIDForRangeLine(ranges []namedRange, line int, idsByName map[string]string) string {
+	name := rangeNameForLine(ranges, line)
+	return idsByName[name]
+}
+
+func rangeNameForLine(ranges []namedRange, line int) string {
+	for _, candidate := range ranges {
+		if line >= candidate.start && line <= candidate.end {
+			return candidate.name
+		}
+	}
+	return ""
+}
+
+func semanticIDForJSONLine(line string) string {
+	keyPattern := regexp.MustCompile(`"([^"]+)":`)
+	match := keyPattern.FindStringSubmatch(line)
+	if len(match) != 2 {
+		return ""
+	}
+	return aiContextSemanticFields[match[1]]
+}
+
+func readLines(path string) []string {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil
+	}
+	return strings.Split(string(data), "\n")
+}
+
+func atoi(value string) int {
+	var out int
+	for _, r := range value {
+		if r < '0' || r > '9' {
+			return out
+		}
+		out = out*10 + int(r-'0')
+	}
+	return out
+}
+
 func gitOK(root string, args ...string) bool {
 	cmd := exec.Command("git", append([]string{"-C", root}, args...)...)
 	return cmd.Run() == nil
 }
 
 func gitLines(root string, args ...string) []string {
-	cmd := exec.Command("git", append([]string{"-C", root}, args...)...)
-	out, err := cmd.Output()
-	if err != nil {
+	out := gitOutput(root, args...)
+	if out == "" {
 		return nil
 	}
 	var lines []string
-	for _, line := range strings.Split(string(out), "\n") {
+	for _, line := range strings.Split(out, "\n") {
 		line = strings.TrimSpace(line)
 		if line != "" {
 			lines = append(lines, line)
 		}
 	}
 	return lines
+}
+
+func gitOutput(root string, args ...string) string {
+	cmd := exec.Command("git", append([]string{"-C", root}, args...)...)
+	out, err := cmd.Output()
+	if err != nil {
+		return ""
+	}
+	return string(out)
 }
 
 func loadJSON(path string) (map[string]any, error) {
