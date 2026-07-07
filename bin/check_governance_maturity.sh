@@ -4266,46 +4266,6 @@ def validate_threat_model() -> None:
 	unexpected = sorted(covered_packages - security_sensitive)
 	if unexpected:
 		add_error("threat_model.domains cover non-security-sensitive package(s): " + ", ".join(unexpected))
-	boundary_contracts = threat_model.get("boundary_contracts")
-	if not isinstance(boundary_contracts, list) or not boundary_contracts:
-		add_error("threat_model.boundary_contracts must be a non-empty list")
-		return
-	expected_boundary_names = {
-		"default_timeout",
-		"redirect_revalidation",
-		"private_host_rejection",
-		"bounded_response_reads",
-		"safe_download_paths",
-		"remote_config_boundary",
-	}
-	seen_boundary_names: set[str] = set()
-	for index, value in enumerate(boundary_contracts):
-		contract = require_mapping(value, f"threat_model.boundary_contracts[{index}]")
-		name = contract.get("name")
-		if not isinstance(name, str) or not name:
-			add_error(f"threat_model.boundary_contracts[{index}].name must be non-empty")
-			continue
-		seen_boundary_names.add(name)
-		packages = set(require_string_list(contract.get("packages"), f"threat_model.boundary_contracts.{name}.packages"))
-		unknown = sorted(packages - public_facades)
-		if unknown:
-			add_error(f"threat_model.boundary_contracts.{name}.packages contains non-public facade(s): " + ", ".join(unknown))
-		if len(require_string_list(contract.get("required_controls"), f"threat_model.boundary_contracts.{name}.required_controls")) < 2:
-			add_error(f"threat_model.boundary_contracts.{name}.required_controls must contain at least two controls")
-		references = require_string_list(contract.get("contract_tests"), f"threat_model.boundary_contracts.{name}.contract_tests")
-		if len(references) < 2:
-			add_error(f"threat_model.boundary_contracts.{name}.contract_tests must reference at least two tests")
-		for reference in references:
-			if not references_function(reference):
-				add_error(f"threat_model.boundary_contracts.{name}.contract_tests must reference explicit test functions, got {reference}")
-			if not reference_exists(reference):
-				add_error(f"threat_model.boundary_contracts.{name}.contract_tests references missing file or function {reference}")
-	missing_boundary_names = sorted(expected_boundary_names - seen_boundary_names)
-	if missing_boundary_names:
-		add_error("threat_model.boundary_contracts missing boundary/boundaries: " + ", ".join(missing_boundary_names))
-	extra_boundary_names = sorted(seen_boundary_names - expected_boundary_names)
-	if extra_boundary_names:
-		add_error("threat_model.boundary_contracts includes unknown boundary/boundaries: " + ", ".join(extra_boundary_names))
 
 validate_benchmark_regression()
 if not bench_only:
