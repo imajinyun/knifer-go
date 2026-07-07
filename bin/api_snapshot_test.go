@@ -537,6 +537,15 @@ func New() *Client {
 		t.Fatalf("check_provider_contracts.sh unexpectedly passed:\n%s", output)
 	}
 	for _, want := range []string{
+		"PROVIDER_CONTRACT_MISSING_PROVIDER_INTERFACE",
+		"PROVIDER_CONTRACT_FORBIDDEN_IMPORT",
+		"PROVIDER_CONTRACT_FORBIDDEN_SIDE_EFFECT",
+	} {
+		if !strings.Contains(output, want) {
+			t.Fatalf("provider contract output missing rule id %q:\n%s", want, output)
+		}
+	}
+	for _, want := range []string{
 		"must define a Provider interface contract",
 		`concrete provider/network SDK dependency "net/http"`,
 		"os.Getenv",
