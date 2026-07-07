@@ -10,22 +10,26 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/imajinyun/knifer-go/bin/internal/govreport"
 )
 
 type checker struct {
-	root   string
-	errors []ruleError
+	root              string
+	publicFacadeCount int
+	findings          []govreport.Finding
 }
 
-type ruleError struct {
-	id      string
-	message string
+type docsQuickstartReport struct {
+	govreport.Envelope
+	PublicFacadeCount int `json:"public_facade_count"`
 }
 
 const panicErrToken = "panic" + "(err)"
 
 func main() {
 	rootFlag := flag.String("root", "", "repository root to validate")
+	jsonFlag := flag.Bool("json", false, "emit machine-readable JSON output")
 	flag.Parse()
 
 	root := strings.TrimSpace(*rootFlag)
@@ -33,7 +37,9 @@ func main() {
 		var err error
 		root, err = os.Getwd()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "docs quickstart check error: cannot resolve working directory: %v\n", err)
+			writeDocsQuickstartReport(*jsonFlag, docsQuickstartReport{
+				Envelope: govreport.Failed([]govreport.Finding{govreport.Error("DOCS_QUICKSTART_INPUT_ERROR", "", fmt.Sprintf("cannot resolve working directory: %v", err))}),
+			})
 			os.Exit(1)
 		}
 	}
@@ -42,12 +48,14 @@ func main() {
 	if err := c.run(); err != nil {
 		c.addError("DOCS_QUICKSTART_INPUT_ERROR", err.Error())
 	}
-	if len(c.errors) > 0 {
-		for _, err := range c.errors {
-			fmt.Fprintf(os.Stderr, "docs quickstart check error: [%s] %s\n", err.id, err.message)
-		}
+	report := docsQuickstartReport{PublicFacadeCount: c.publicFacadeCount}
+	if len(c.findings) > 0 {
+		report.Envelope = govreport.Failed(c.findings)
+		writeDocsQuickstartReport(*jsonFlag, report)
 		os.Exit(1)
 	}
+	report.Envelope = govreport.Passed()
+	writeDocsQuickstartReport(*jsonFlag, report)
 }
 
 func (c *checker) run() error {
@@ -61,6 +69,7 @@ func (c *checker) run() error {
 		c.addError("DOCS_QUICKSTART_SCHEMA_INVALID", "ai-context.json public_facades must be a list")
 		publicFacades = nil
 	}
+	c.publicFacadeCount = len(publicFacades)
 	docsQualityProfiles, _ := data["docs_quality_profiles"].(map[string]any)
 	profilePackages := map[string]any{}
 	allowedProfiles := map[string]struct{}{}
@@ -159,9 +168,6 @@ func (c *checker) run() error {
 		c.addError("DOCS_QUICKSTART_UNKNOWN_DOC", "quickstart docs exist for unknown facade package(s): "+strings.Join(extraDocs, ", "))
 	}
 
-	if len(c.errors) == 0 {
-		fmt.Printf("quickstart docs are valid (%d public facades)\n", len(publicFacades))
-	}
 	return nil
 }
 
@@ -360,7 +366,23 @@ func hasProfile(profiles map[string]struct{}, profile string) bool {
 }
 
 func (c *checker) addError(ruleID, message string) {
-	c.errors = append(c.errors, ruleError{id: ruleID, message: message})
+	c.findings = append(c.findings, govreport.Error(ruleID, "", message))
+}
+
+func writeDocsQuickstartReport(jsonOutput bool, report docsQuickstartReport) {
+	if jsonOutput {
+		if err := govreport.WriteJSON(os.Stdout, report); err != nil {
+			fmt.Fprintf(os.Stderr, "docs quickstart check error: [DOCS_QUICKSTART_INPUT_ERROR] cannot encode JSON output: %v\n", err)
+		}
+		return
+	}
+	if report.Status == govreport.StatusFailed {
+		for _, finding := range report.Findings {
+			fmt.Fprintf(os.Stderr, "docs quickstart check error: [%s] %s\n", finding.RuleID, finding.Message)
+		}
+		return
+	}
+	fmt.Printf("quickstart docs are valid (%d public facades)\n", report.PublicFacadeCount)
 }
 
 func keys[V any](values map[string]V) map[string]struct{} {

@@ -12,14 +12,21 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/imajinyun/knifer-go/bin/internal/govreport"
 )
 
 const diffFilter = "ACDMRTUXB"
 
 type checkError struct {
-	ruleID  string
-	message string
+	finding govreport.Finding
 	code    int
+}
+
+type coverageReport struct {
+	govreport.Envelope
+	RepositoryCoverage float64 `json:"repository_coverage"`
+	RequiredCoverage   float64 `json:"required_coverage"`
 }
 
 type config struct {
@@ -43,6 +50,7 @@ type profileLine struct {
 
 func main() {
 	rootFlag := flag.String("root", "", "repository root")
+	jsonFlag := flag.Bool("json", false, "emit machine-readable JSON output")
 	flag.Parse()
 
 	root := strings.TrimSpace(*rootFlag)
@@ -50,7 +58,7 @@ func main() {
 		var err error
 		root, err = os.Getwd()
 		if err != nil {
-			exitCoverageError(checkError{"COVERAGE_INPUT_ERROR", fmt.Sprintf("cannot resolve working directory: %v", err), 2})
+			exitCoverageError(*jsonFlag, checkError{govreport.Error("COVERAGE_INPUT_ERROR", "", fmt.Sprintf("cannot resolve working directory: %v", err)), 2}, coverageReport{})
 		}
 	}
 	coverageFile := "coverage.out"
@@ -60,43 +68,53 @@ func main() {
 
 	cfg, err := loadConfig(root, coverageFile)
 	if err != nil {
-		exitCoverageError(checkError{"COVERAGE_INPUT_ERROR", err.Error(), 2})
+		exitCoverageError(*jsonFlag, checkError{govreport.Error("COVERAGE_INPUT_ERROR", "ai-context.json", err.Error()), 2}, coverageReport{})
 	}
 	lines, err := parseCoverageProfile(cfg.coverageFile)
 	if err != nil {
-		exitCoverageError(checkError{"COVERAGE_PROFILE_MISSING", err.Error(), 2})
+		exitCoverageError(*jsonFlag, checkError{govreport.Error("COVERAGE_PROFILE_MISSING", cfg.coverageFile, err.Error()), 2}, coverageReport{})
 	}
 
 	total, ok := totalCoverage(lines)
+	report := coverageReport{
+		RepositoryCoverage: total,
+		RequiredCoverage:   cfg.repositoryThreshold,
+	}
 	if !ok {
-		exitCoverageError(checkError{"COVERAGE_PROFILE_INVALID", "cannot read total coverage from " + cfg.coverageFile, 2})
+		exitCoverageError(*jsonFlag, checkError{govreport.Error("COVERAGE_PROFILE_INVALID", cfg.coverageFile, "cannot read total coverage from "+cfg.coverageFile), 2}, report)
 	}
 	if total < cfg.repositoryThreshold {
-		exitCoverageError(checkError{"COVERAGE_REPOSITORY_BELOW_THRESHOLD", fmt.Sprintf("coverage %.1f%% is below required %.1f%%", total, cfg.repositoryThreshold), 1})
+		exitCoverageError(*jsonFlag, checkError{govreport.Error("COVERAGE_REPOSITORY_BELOW_THRESHOLD", cfg.coverageFile, fmt.Sprintf("coverage %.1f%% is below required %.1f%%", total, cfg.repositoryThreshold)), 1}, report)
 	}
-	fmt.Printf("coverage %.1f%% meets required %.1f%%\n", total, cfg.repositoryThreshold)
+	if !*jsonFlag {
+		fmt.Printf("coverage %.1f%% meets required %.1f%%\n", total, cfg.repositoryThreshold)
+	}
 
 	if !cfg.coverageCheckAllPackages {
-		fmt.Println("package coverage thresholds skipped for unchanged packages; set COVERAGE_CHECK_ALL_PACKAGES=1 to enforce all package thresholds")
+		if !*jsonFlag {
+			fmt.Println("package coverage thresholds skipped for unchanged packages; set COVERAGE_CHECK_ALL_PACKAGES=1 to enforce all package thresholds")
+		}
 	} else {
-		if err := checkPackageThresholds(lines, cfg.packageThresholds, "", false); err != nil {
-			exitCoverageError(*err)
+		if err := checkPackageThresholds(lines, cfg.packageThresholds, "", false, *jsonFlag); err != nil {
+			exitCoverageError(*jsonFlag, *err, report)
 		}
 	}
 
-	if err := checkPackageThresholds(lines, cfg.changedPackageThresholds, "changed package ", true); err != nil {
-		exitCoverageError(*err)
+	if err := checkPackageThresholds(lines, cfg.changedPackageThresholds, "changed package ", true, *jsonFlag); err != nil {
+		exitCoverageError(*jsonFlag, *err, report)
 	}
 
-	if err := checkSecuritySensitive(lines, cfg.securitySensitivePaths, cfg.securitySensitiveMinThreshold, false); err != nil {
-		exitCoverageError(*err)
+	if err := checkSecuritySensitive(lines, cfg.securitySensitivePaths, cfg.securitySensitiveMinThreshold, false, *jsonFlag); err != nil {
+		exitCoverageError(*jsonFlag, *err, report)
 	}
 	if len(cfg.changedSecuritySensitivePaths) == 0 {
+		writeCoverageSuccess(*jsonFlag, report)
 		return
 	}
-	if err := checkSecuritySensitive(lines, cfg.changedSecuritySensitivePaths, cfg.securitySensitiveMinThreshold, true); err != nil {
-		exitCoverageError(*err)
+	if err := checkSecuritySensitive(lines, cfg.changedSecuritySensitivePaths, cfg.securitySensitiveMinThreshold, true, *jsonFlag); err != nil {
+		exitCoverageError(*jsonFlag, *err, report)
 	}
+	writeCoverageSuccess(*jsonFlag, report)
 }
 
 func loadConfig(root, coverageFile string) (config, error) {
@@ -276,15 +294,15 @@ func totalCoverage(lines []profileLine) (float64, bool) {
 	return float64(covered) * 100 / float64(statements), true
 }
 
-func checkPackageThresholds(lines []profileLine, thresholds map[string]float64, prefix string, changed bool) *checkError {
+func checkPackageThresholds(lines []profileLine, thresholds map[string]float64, prefix string, changed, quiet bool) *checkError {
 	for _, packagePath := range sortedKeys(thresholds) {
 		threshold := thresholds[packagePath]
 		total, ok := packageCoverage(lines, packagePath)
 		if !ok {
 			if changed {
-				return &checkError{"COVERAGE_CHANGED_PACKAGE_MISSING", fmt.Sprintf("changed package %s has no coverage data", packagePath), 2}
+				return &checkError{govreport.Error("COVERAGE_CHANGED_PACKAGE_MISSING", packagePath, fmt.Sprintf("changed package %s has no coverage data", packagePath)), 2}
 			} else {
-				return &checkError{"COVERAGE_PACKAGE_MISSING", fmt.Sprintf("package %s has no coverage data", packagePath), 2}
+				return &checkError{govreport.Error("COVERAGE_PACKAGE_MISSING", packagePath, fmt.Sprintf("package %s has no coverage data", packagePath)), 2}
 			}
 		}
 		if total < threshold {
@@ -292,14 +310,16 @@ func checkPackageThresholds(lines []profileLine, thresholds map[string]float64, 
 			if changed {
 				ruleID = "COVERAGE_CHANGED_PACKAGE_BELOW_THRESHOLD"
 			}
-			return &checkError{ruleID, fmt.Sprintf("%s%s coverage %.1f%% is below required %.1f%%", prefix, packagePath, total, threshold), 1}
+			return &checkError{govreport.Error(ruleID, packagePath, fmt.Sprintf("%s%s coverage %.1f%% is below required %.1f%%", prefix, packagePath, total, threshold)), 1}
 		}
-		fmt.Printf("%s%s coverage %.1f%% meets required %.1f%%\n", prefix, packagePath, total, threshold)
+		if !quiet {
+			fmt.Printf("%s%s coverage %.1f%% meets required %.1f%%\n", prefix, packagePath, total, threshold)
+		}
 	}
 	return nil
 }
 
-func checkSecuritySensitive(lines []profileLine, packagePaths []string, threshold float64, changed bool) *checkError {
+func checkSecuritySensitive(lines []profileLine, packagePaths []string, threshold float64, changed, quiet bool) *checkError {
 	if len(packagePaths) == 0 {
 		return nil
 	}
@@ -332,7 +352,7 @@ func checkSecuritySensitive(lines []profileLine, packagePaths []string, threshol
 		if changed {
 			ruleID = "COVERAGE_CHANGED_SECURITY_SENSITIVE_MISSING"
 		}
-		return &checkError{ruleID, message.String(), 2}
+		return &checkError{govreport.Error(ruleID, "", message.String()), 2}
 	}
 	if len(below) > 0 {
 		var message strings.Builder
@@ -349,23 +369,44 @@ func checkSecuritySensitive(lines []profileLine, packagePaths []string, threshol
 		if changed {
 			ruleID = "COVERAGE_CHANGED_SECURITY_SENSITIVE_BELOW_THRESHOLD"
 		}
-		return &checkError{ruleID, message.String(), 1}
+		return &checkError{govreport.Error(ruleID, "", message.String()), 1}
 	}
 	label := "security-sensitive"
 	if changed {
 		label = "changed security-sensitive"
 	}
 	if threshold > 0 {
-		fmt.Printf("%s coverage data present for %d package path(s), all at or above %.1f%%\n", label, count, threshold)
+		if !quiet {
+			fmt.Printf("%s coverage data present for %d package path(s), all at or above %.1f%%\n", label, count, threshold)
+		}
 	} else {
-		fmt.Printf("%s coverage data present for %d package path(s)\n", label, count)
+		if !quiet {
+			fmt.Printf("%s coverage data present for %d package path(s)\n", label, count)
+		}
 	}
 	return nil
 }
 
-func exitCoverageError(err checkError) {
-	fmt.Fprintf(os.Stderr, "COVERAGE CHECK ERROR: [%s] %s\n", err.ruleID, err.message)
+func exitCoverageError(jsonOutput bool, err checkError, report coverageReport) {
+	report.Envelope = govreport.Failed([]govreport.Finding{err.finding})
+	if jsonOutput {
+		if jsonErr := govreport.WriteJSON(os.Stdout, report); jsonErr != nil {
+			fmt.Fprintf(os.Stderr, "COVERAGE CHECK ERROR: [COVERAGE_INPUT_ERROR] cannot encode JSON output: %v\n", jsonErr)
+		}
+		os.Exit(err.code)
+	}
+	fmt.Fprintf(os.Stderr, "COVERAGE CHECK ERROR: [%s] %s\n", err.finding.RuleID, err.finding.Message)
 	os.Exit(err.code)
+}
+
+func writeCoverageSuccess(jsonOutput bool, report coverageReport) {
+	if !jsonOutput {
+		return
+	}
+	report.Envelope = govreport.Passed()
+	if err := govreport.WriteJSON(os.Stdout, report); err != nil {
+		fmt.Fprintf(os.Stderr, "COVERAGE CHECK ERROR: [COVERAGE_INPUT_ERROR] cannot encode JSON output: %v\n", err)
+	}
 }
 
 func changedFiles(root string) []string {

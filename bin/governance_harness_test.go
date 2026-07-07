@@ -90,6 +90,11 @@ func (f *governanceFixture) RunDocsQuickstartCheck() (string, error) {
 	return f.RunScript("bin/check_docs_quickstart.sh", "DOCS_QUICKSTART_ROOT="+f.root)
 }
 
+func (f *governanceFixture) RunDocsQuickstartCheckJSON() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("docsquickstartcheck", "-root", f.root, "-json")
+}
+
 func (f *governanceFixture) RunArchImportsCheck() (string, error) {
 	f.t.Helper()
 	return f.RunScript("bin/check_arch_imports.sh", "ARCH_CHECK_ROOT="+f.root)
@@ -171,6 +176,11 @@ func (f *governanceFixture) RunAgentEvidenceCheckJSON(evidence map[string]any) (
 func (f *governanceFixture) RunCoverageCheck(coverageFile string, env ...string) (string, error) {
 	f.t.Helper()
 	return f.RunScriptArgs("bin/check_coverage.sh", []string{coverageFile}, env...)
+}
+
+func (f *governanceFixture) RunCoverageCheckJSON(coverageFile string, env ...string) (string, error) {
+	f.t.Helper()
+	return f.RunGoToolEnv("coveragecheck", env, "-root", f.root, "-json", coverageFile)
 }
 
 func (f *governanceFixture) RunAPIFreezeCheck(contextPath, toolsPath string) (string, error) {

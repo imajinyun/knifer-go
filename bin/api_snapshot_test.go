@@ -345,6 +345,52 @@ func TestCoverageCheckRequiresChangedSecuritySensitivePackageData(t *testing.T) 
 	}
 }
 
+func TestCoverageCheckEmitsJSONReport(t *testing.T) {
+	fixture := newGovernanceFixture(t)
+	module := "github.com/imajinyun/knifer-go"
+	fixture.WriteJSON("ai-context.json", map[string]any{
+		"project": map[string]any{
+			"module": module,
+		},
+		"coverage_gates": map[string]any{
+			"repository_threshold":             0,
+			"security_sensitive_min_threshold": 0,
+			"package_thresholds":               map[string]any{},
+		},
+		"public_facades":              []any{},
+		"security_sensitive_packages": []any{},
+	})
+	coverage := fixture.WriteTempFile("coverage.out", "mode: set\n"+module+"/vhttp/request.go:1.1,1.2 1 1\n")
+
+	output, err := fixture.RunCoverageCheckJSON(
+		coverage,
+		"COVERAGE_THRESHOLD=0",
+		"PACKAGE_COVERAGE_THRESHOLDS= ",
+		"CHANGED_PACKAGE_COVERAGE_THRESHOLDS= ",
+		"SECURITY_SENSITIVE_COVERAGE_PATHS= ",
+		"CHANGED_SECURITY_SENSITIVE_COVERAGE_PATHS="+module+"/vhttp",
+		"SECURITY_SENSITIVE_MIN_COVERAGE_THRESHOLD=0",
+	)
+	if err != nil {
+		t.Fatalf("coveragecheck -json failed: %v\n%s", err, output)
+	}
+	var result struct {
+		Status             string            `json:"status"`
+		Findings           []json.RawMessage `json:"findings"`
+		RepositoryCoverage float64           `json:"repository_coverage"`
+		RequiredCoverage   float64           `json:"required_coverage"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("coveragecheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "passed" || len(result.Findings) != 0 {
+		t.Fatalf("unexpected coverage JSON status/findings:\n%s", output)
+	}
+	if result.RepositoryCoverage != 100 || result.RequiredCoverage != 0 {
+		t.Fatalf("unexpected coverage JSON coverage summary:\n%s", output)
+	}
+}
+
 func TestChangePolicyClassifiesFacadeTestAndBenchmarkSeparatelyFromPublicAPI(t *testing.T) {
 	output, err := newGovernanceFixture(t).RunChangePolicyCheck("vcodec/codec_benchmark_test.go\nvhttp/request_safe_constructors_test.go")
 	if err != nil {
@@ -963,6 +1009,53 @@ func TestDocsQuickstartCheckAcceptsCompleteFixture(t *testing.T) {
 	}
 	if !strings.Contains(output, "quickstart docs are valid") {
 		t.Fatalf("docs quickstart output missing success:\n%s", output)
+	}
+}
+
+func TestDocsQuickstartCheckEmitsJSONReport(t *testing.T) {
+	fixture := docsQuickstartFixture(t,
+		"# vbad Quickstart\n\n"+
+			"`vbad` has a complete fixture quickstart.\n\n"+
+			"## Golden path APIs\n\n"+
+			"- `Run`\n\n"+
+			"## Which helper should I use?\n\n"+
+			"Use `Run` for fixture examples.\n\n"+
+			"## Fixture correctness checklist\n\n"+
+			"- Handle errors returned by `Run`.\n\n"+
+			"## When not to use vbad\n\n"+
+			"- Use direct code outside fixture tests.\n\n"+
+			"## Related packages\n\n"+
+			"- Use `vjson` when fixture data needs JSON.\n\n"+
+			"## Benchmarks and trade-offs\n\n"+
+			"Benchmark only if fixture code becomes hot.\n\n"+
+			"## FAQ\n\n"+
+			"### How do I handle errors?\n\n"+
+			"Check `err != nil` and return the error to the caller.\n\n"+
+			"```go\n"+
+			"package main\n\n"+
+			"import (\n"+
+			"\t\"fmt\"\n\n"+
+			"\t\"github.com/imajinyun/knifer-go/vbad\"\n"+
+			")\n\n"+
+			"func main() {\n"+
+			"\tfmt.Println(vbad.Run())\n"+
+			"}\n"+
+			"```\n",
+	)
+	output, err := fixture.RunDocsQuickstartCheckJSON()
+	if err != nil {
+		t.Fatalf("docsquickstartcheck -json failed: %v\n%s", err, output)
+	}
+	var result struct {
+		Status            string            `json:"status"`
+		Findings          []json.RawMessage `json:"findings"`
+		PublicFacadeCount int               `json:"public_facade_count"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("docsquickstartcheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "passed" || len(result.Findings) != 0 || result.PublicFacadeCount != 1 {
+		t.Fatalf("unexpected docs quickstart JSON report:\n%s", output)
 	}
 }
 
