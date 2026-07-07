@@ -914,6 +914,84 @@ func TestThreatModelCheckRejectsUnknownPackage(t *testing.T) {
 	}
 }
 
+func TestDynamicContractsCheckAcceptsValidFixture(t *testing.T) {
+	fixture := dynamicContractsFixture(t)
+	output, err := fixture.RunDynamicContractsCheck()
+	if err != nil {
+		t.Fatalf("dynamiccontractscheck failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "dynamic semantic contracts are valid") {
+		t.Fatalf("dynamic contracts output missing success:\n%s", output)
+	}
+}
+
+func TestDynamicContractsCheckRejectsUnknownDomain(t *testing.T) {
+	fixture := dynamicContractsFixture(t)
+	context := dynamicContractsContext()
+	contracts := context["dynamic_semantic_contracts"].(map[string]any)
+	domains := contracts["domains"].(map[string]any)
+	domains["vjson_dyanmic"] = domains["vjson_dynamic"]
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunDynamicContractsCheckJSON()
+	if err == nil {
+		t.Fatalf("dynamiccontractscheck -json unexpectedly passed:\n%s", output)
+	}
+	var result struct {
+		Status   string `json:"status"`
+		Findings []struct {
+			RuleID string `json:"rule_id"`
+		} `json:"findings"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("dynamiccontractscheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "failed" {
+		t.Fatalf("JSON status = %q, want failed\n%s", result.Status, output)
+	}
+	var sawUnknown bool
+	for _, finding := range result.Findings {
+		if finding.RuleID == "DYNAMIC_CONTRACTS_DOMAIN_UNKNOWN" {
+			sawUnknown = true
+		}
+	}
+	if !sawUnknown {
+		t.Fatalf("dynamic contracts JSON findings missing unknown-domain rule id:\n%s", output)
+	}
+}
+
+func TestDynamicContractsCheckRejectsMissingReference(t *testing.T) {
+	fixture := dynamicContractsFixture(t)
+	context := dynamicContractsContext()
+	domains := context["dynamic_semantic_contracts"].(map[string]any)["domains"].(map[string]any)
+	domains["vjson_dynamic"].(map[string]any)["contract_tests"] = []string{"vjson/json_conversion_test.go:TestMissingFixture"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunDynamicContractsCheck()
+	if err == nil {
+		t.Fatalf("dynamiccontractscheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "DYNAMIC_CONTRACTS_REFERENCE_MISSING") {
+		t.Fatalf("dynamic contracts output missing missing-reference rule id:\n%s", output)
+	}
+}
+
+func TestDynamicContractsCheckRejectsPackageCoverageDrift(t *testing.T) {
+	fixture := dynamicContractsFixture(t)
+	context := dynamicContractsContext()
+	domains := context["dynamic_semantic_contracts"].(map[string]any)["domains"].(map[string]any)
+	domains["vref_reflection_boundaries"].(map[string]any)["packages"] = []string{"internal/ref"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunDynamicContractsCheck()
+	if err == nil {
+		t.Fatalf("dynamiccontractscheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "DYNAMIC_CONTRACTS_PACKAGE_COVERAGE") {
+		t.Fatalf("dynamic contracts output missing package-coverage rule id:\n%s", output)
+	}
+}
+
 func TestProviderContractCheckRejectsConcreteNetworkAndMissingProvider(t *testing.T) {
 	fixture := providerContractFixture(t)
 	fixture.WriteFile("vbad/bad.go", `package vbad
@@ -1748,6 +1826,64 @@ func threatModelTestFunctions() map[string][]string {
 		"internal/httpx/http/save_as_content_disposition_test.go": {"TestSaveAsRejectsUnsafeContentDispositionFilename"},
 		"vconf/load_remote_safe_test.go":                          {"TestFacadeRemoteSafeWrappers"},
 		"internal/conf/load_remote_safe_roundtrip_test.go":        {"TestLoadRemoteSafeRevalidatesHostAtRoundTrip"},
+	}
+}
+
+func dynamicContractsFixture(t *testing.T) *governanceFixture {
+	t.Helper()
+	fixture := newGovernanceFixture(t)
+	fixture.WriteJSON("ai-context.json", dynamicContractsContext())
+	for _, dir := range []string{"internal/bean", "internal/conv", "internal/ref", "vjson", "vobj", "vconf", "vconv", "vref"} {
+		fixture.WriteFile(dir+"/doc.go", "package fixture\n")
+	}
+	for path, functions := range dynamicContractTestFunctions() {
+		var body strings.Builder
+		body.WriteString("package fixture\n\n")
+		for _, fn := range functions {
+			body.WriteString("func ")
+			body.WriteString(fn)
+			body.WriteString("() {}\n")
+		}
+		fixture.WriteFile(path, body.String())
+	}
+	return fixture
+}
+
+func dynamicContractsContext() map[string]any {
+	return map[string]any{
+		"dynamic_semantic_contracts": map[string]any{
+			"required_domains": []string{"vbean_decode_copy_merge", "vjson_dynamic", "vobj_dynamic", "vconf_dynamic", "vconv_conversion_matrix", "vref_reflection_boundaries"},
+			"domains": map[string]any{
+				"vbean_decode_copy_merge":    dynamicDomain([]string{"internal/bean"}, []string{"embedded pointer nil handling", "unused field reporting", "map replace semantics"}, []string{"internal/bean/copy_options_test.go:TestDecodeContractEmbeddedPointerNilAndUnused"}, nil),
+				"vjson_dynamic":              dynamicDomain([]string{"vjson"}, []string{"scalar conversion", "path lookup", "invalid input errors"}, []string{"vjson/json_conversion_test.go:TestDynamicJSONContractMatrix"}, []string{"vjson/json_conversion_test.go:FuzzDynamicJSONStringContract"}),
+				"vobj_dynamic":               dynamicDomain([]string{"vobj"}, []string{"map serialization", "clone semantics", "nil predicates"}, []string{"vobj/serialization_test.go:TestDynamicObjectContractMatrix"}, []string{"vobj/serialization_test.go:FuzzDynamicObjectStringContract"}),
+				"vconf_dynamic":              dynamicDomain([]string{"vconf"}, []string{"profile lookup", "scalar conversion", "missing defaults"}, []string{"vconf/config_bind_options_test.go:TestDynamicConfigContractMatrix"}, []string{"vconf/config_bind_options_test.go:FuzzDynamicConfigScalarContract"}),
+				"vconv_conversion_matrix":    dynamicDomain([]string{"internal/conv", "vconv"}, []string{"nil conversion", "scalar parsing", "overflow rejection"}, []string{"internal/conv/conversion_matrix_test.go:TestConversionMatrixPropertyContract", "vconv/conv_test.go:TestConvFacadeConversionMatrix"}, []string{"internal/conv/conversion_matrix_test.go:FuzzConversionMatrixStringScalars"}),
+				"vref_reflection_boundaries": dynamicDomain([]string{"internal/ref", "vref"}, []string{"unsafe opt-in", "numeric boundaries", "invalid reflection input"}, []string{"internal/ref/checked_convert_test.go:TestCheckedConvertNumericBoundaries", "vref/ref_field_test.go:TestFacadeReflectionHelpers"}, nil),
+			},
+		},
+	}
+}
+
+func dynamicDomain(packages, guarantees, contractTests, fuzzTests []string) map[string]any {
+	return map[string]any{
+		"packages":       packages,
+		"guarantees":     guarantees,
+		"contract_tests": contractTests,
+		"fuzz_tests":     fuzzTests,
+	}
+}
+
+func dynamicContractTestFunctions() map[string][]string {
+	return map[string][]string{
+		"internal/bean/copy_options_test.go":      {"TestDecodeContractEmbeddedPointerNilAndUnused"},
+		"vjson/json_conversion_test.go":           {"TestDynamicJSONContractMatrix", "FuzzDynamicJSONStringContract"},
+		"vobj/serialization_test.go":              {"TestDynamicObjectContractMatrix", "FuzzDynamicObjectStringContract"},
+		"vconf/config_bind_options_test.go":       {"TestDynamicConfigContractMatrix", "FuzzDynamicConfigScalarContract"},
+		"internal/conv/conversion_matrix_test.go": {"TestConversionMatrixPropertyContract", "FuzzConversionMatrixStringScalars"},
+		"vconv/conv_test.go":                      {"TestConvFacadeConversionMatrix"},
+		"internal/ref/checked_convert_test.go":    {"TestCheckedConvertNumericBoundaries"},
+		"vref/ref_field_test.go":                  {"TestFacadeReflectionHelpers"},
 	}
 }
 
