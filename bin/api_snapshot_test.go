@@ -1217,6 +1217,80 @@ func TestAPIConvergenceCheckRejectsCompatibilityStatusDrift(t *testing.T) {
 	}
 }
 
+func TestLifecycleCheckAcceptsValidFixture(t *testing.T) {
+	fixture := lifecycleFixture(t)
+	output, err := fixture.RunLifecycleCheck()
+	if err != nil {
+		t.Fatalf("lifecyclecheck failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "package lifecycle metadata is valid") {
+		t.Fatalf("lifecycle output missing success:\n%s", output)
+	}
+}
+
+func TestLifecycleCheckRejectsHeavyGradeMismatch(t *testing.T) {
+	fixture := lifecycleFixture(t)
+	context := lifecycleContext()
+	context["package_lifecycle"].(map[string]any)["packages"].(map[string]any)["vimg"].(map[string]any)["grade"] = "core"
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunLifecycleCheckJSON()
+	if err == nil {
+		t.Fatalf("lifecyclecheck -json unexpectedly passed:\n%s", output)
+	}
+	var result struct {
+		Status   string `json:"status"`
+		Findings []struct {
+			RuleID string `json:"rule_id"`
+		} `json:"findings"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("lifecyclecheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "failed" {
+		t.Fatalf("JSON status = %q, want failed\n%s", result.Status, output)
+	}
+	var sawMismatch bool
+	for _, finding := range result.Findings {
+		if finding.RuleID == "LIFECYCLE_HEAVY_GRADE_MISMATCH" {
+			sawMismatch = true
+		}
+	}
+	if !sawMismatch {
+		t.Fatalf("lifecycle JSON findings missing heavy mismatch rule id:\n%s", output)
+	}
+}
+
+func TestLifecycleCheckRejectsTierOverlap(t *testing.T) {
+	fixture := lifecycleFixture(t)
+	context := lifecycleContext()
+	context["dependency_tiers"].(map[string]any)["provider_contract_facades"] = []string{"vai", "vimg"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunLifecycleCheck()
+	if err == nil {
+		t.Fatalf("lifecyclecheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "LIFECYCLE_DEPENDENCY_TIER_OVERLAP") {
+		t.Fatalf("lifecycle output missing tier overlap rule id:\n%s", output)
+	}
+}
+
+func TestLifecycleCheckRejectsMissingRationale(t *testing.T) {
+	fixture := lifecycleFixture(t)
+	context := lifecycleContext()
+	context["package_lifecycle"].(map[string]any)["packages"].(map[string]any)["vjson"].(map[string]any)["rationale"] = ""
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunLifecycleCheck()
+	if err == nil {
+		t.Fatalf("lifecyclecheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "LIFECYCLE_RATIONALE_MISSING") {
+		t.Fatalf("lifecycle output missing rationale rule id:\n%s", output)
+	}
+}
+
 func TestProviderContractCheckRejectsConcreteNetworkAndMissingProvider(t *testing.T) {
 	fixture := providerContractFixture(t)
 	fixture.WriteFile("vbad/bad.go", `package vbad
@@ -2331,6 +2405,37 @@ func apiConvergenceTools() map[string]any {
 				"functions": []any{
 					map[string]any{"name": "Reverse", "status": "recommended"},
 				},
+			},
+		},
+	}
+}
+
+func lifecycleFixture(t *testing.T) *governanceFixture {
+	t.Helper()
+	fixture := newGovernanceFixture(t)
+	fixture.WriteJSON("ai-context.json", lifecycleContext())
+	return fixture
+}
+
+func lifecycleContext() map[string]any {
+	publicFacades := []string{"vai", "vjson", "vimg"}
+	var publicFacadeEntries []any
+	for _, pkg := range publicFacades {
+		publicFacadeEntries = append(publicFacadeEntries, map[string]any{"package": pkg})
+	}
+	return map[string]any{
+		"public_facades": publicFacadeEntries,
+		"dependency_tiers": map[string]any{
+			"heavy_extension_facades":   []string{"vimg"},
+			"provider_contract_facades": []string{"vai"},
+			"core_facades":              []string{"vjson"},
+		},
+		"package_lifecycle": map[string]any{
+			"allowed_grades": []string{"core", "stable", "maintenance", "adapter", "heavy", "candidate-for-split", "candidate-for-deprecation"},
+			"packages": map[string]any{
+				"vai":   map[string]any{"grade": "adapter", "rationale": "Provider contract facade."},
+				"vjson": map[string]any{"grade": "core", "rationale": "Core JSON facade."},
+				"vimg":  map[string]any{"grade": "heavy", "rationale": "Heavy image facade."},
 			},
 		},
 	}

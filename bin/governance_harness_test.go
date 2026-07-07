@@ -272,6 +272,16 @@ func (f *governanceFixture) RunAPIConvergenceCheckJSON() (string, error) {
 	return f.RunGoTool("apiconvergencecheck", "-root", f.root, "-json")
 }
 
+func (f *governanceFixture) RunLifecycleCheck() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("lifecyclecheck", "-root", f.root)
+}
+
+func (f *governanceFixture) RunLifecycleCheckJSON() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("lifecyclecheck", "-root", f.root, "-json")
+}
+
 func (f *governanceFixture) RunBenchmarkRegressionCheck() (string, error) {
 	f.t.Helper()
 	return f.RunGoTool("benchmarkregressioncheck", "-root", f.root)
