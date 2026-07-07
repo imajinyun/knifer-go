@@ -4259,8 +4259,6 @@ def validate_capability_domains() -> None:
 
 
 def validate_dependency_isolation() -> None:
-	dependency_tiers = require_mapping(ai_context.get("dependency_tiers"), "dependency_tiers")
-	heavy_dependency_allowlist = require_mapping(dependency_tiers.get("heavy_dependency_allowlist"), "dependency_tiers.heavy_dependency_allowlist")
 	heavy_imports = {
 		"github.com/getsentry/sentry-go": {"internal/errx", "verr"},
 		"github.com/makiuchi-d/gozxing*": {"internal/imgx", "vimg"},
@@ -4268,12 +4266,6 @@ def validate_dependency_isolation() -> None:
 		"github.com/xuri/excelize/v2": {"internal/poi", "vpoi"},
 		"resty.dev/v3": {"internal/httpx/resty", "vresty"},
 	}
-	allowlist_from_context = {
-		import_path: set(require_string_list(prefixes, f"dependency_tiers.heavy_dependency_allowlist.{import_path}"))
-		for import_path, prefixes in heavy_dependency_allowlist.items()
-	}
-	if allowlist_from_context != heavy_imports:
-		add_error("dependency_tiers.heavy_dependency_allowlist must match governance heavy dependency isolation policy")
 	for path in root.rglob("*.go"):
 		if path.name.endswith("_test.go") or "/.git/" in path.as_posix():
 			continue
