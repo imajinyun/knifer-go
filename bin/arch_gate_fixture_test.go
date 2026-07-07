@@ -165,6 +165,9 @@ func Run(ok bool) string {
 	if err == nil {
 		t.Fatalf("check_facade_boundary.sh unexpectedly passed:\n%s", output)
 	}
+	if !strings.Contains(output, "FACADE_BOUNDARY_THIN_FACADE_VIOLATION") {
+		t.Fatalf("facade boundary output missing FACADE_BOUNDARY_THIN_FACADE_VIOLATION rule id:\n%s", output)
+	}
 	if !strings.Contains(output, "facade packages should not contain implementation control flow") {
 		t.Fatalf("facade boundary output missing control-flow error:\n%s", output)
 	}
