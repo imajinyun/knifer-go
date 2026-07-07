@@ -11,6 +11,8 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/imajinyun/knifer-go/bin/internal/govreport"
 )
 
 const diffFilter = "ACDMRTUXB"
@@ -38,16 +40,9 @@ type checker struct {
 	data map[string]any
 }
 
-type finding struct {
-	RuleID   string `json:"rule_id"`
-	Path     string `json:"path"`
-	Message  string `json:"message"`
-	Severity string `json:"severity"`
-}
-
 type changePolicyReport struct {
 	Status           string              `json:"status"`
-	Findings         []finding           `json:"findings"`
+	Findings         []govreport.Finding `json:"findings"`
 	DetectedPolicies []string            `json:"detected_policies"`
 	RuleIDs          []string            `json:"rule_ids"`
 	SemanticRuleIDs  []string            `json:"semantic_rule_ids"`
@@ -84,7 +79,7 @@ func main() {
 	c := checker{root: root, data: data}
 	report := c.run(changedFiles)
 	writeReport(*jsonFlag, report)
-	if report.Status == "failed" {
+	if report.Status == govreport.StatusFailed {
 		os.Exit(1)
 	}
 }
@@ -157,8 +152,8 @@ func (c checker) run(changedFilesOverride string) changePolicyReport {
 
 	if len(changedFiles) == 0 {
 		return changePolicyReport{
-			Status:           "passed",
-			Findings:         []finding{},
+			Status:           govreport.StatusPassed,
+			Findings:         []govreport.Finding{},
 			DetectedPolicies: []string{},
 			RuleIDs:          []string{},
 			SemanticRuleIDs:  []string{},
@@ -202,8 +197,8 @@ func (c checker) run(changedFilesOverride string) changePolicyReport {
 		policyPaths[policy] = paths
 	}
 	return changePolicyReport{
-		Status:           "passed",
-		Findings:         []finding{},
+		Status:           govreport.StatusPassed,
+		Findings:         []govreport.Finding{},
 		DetectedPolicies: detectedPolicies,
 		RuleIDs:          ruleIDsForPolicies(detectedPolicies),
 		SemanticRuleIDs:  c.semanticRuleIDs(changedFiles),
@@ -587,13 +582,8 @@ func gitOutput(root string, args ...string) string {
 
 func failedReport(ruleID, path, message string) changePolicyReport {
 	return changePolicyReport{
-		Status: "failed",
-		Findings: []finding{{
-			RuleID:   ruleID,
-			Path:     path,
-			Message:  message,
-			Severity: "error",
-		}},
+		Status:           govreport.StatusFailed,
+		Findings:         []govreport.Finding{govreport.Error(ruleID, path, message)},
 		DetectedPolicies: []string{},
 		RuleIDs:          []string{},
 		SemanticRuleIDs:  []string{},
@@ -604,15 +594,12 @@ func failedReport(ruleID, path, message string) changePolicyReport {
 
 func writeReport(jsonOutput bool, report changePolicyReport) {
 	if jsonOutput {
-		data, err := json.MarshalIndent(report, "", "  ")
-		if err != nil {
+		if err := govreport.WriteJSON(os.Stdout, report); err != nil {
 			fmt.Fprintf(os.Stderr, "CHANGE POLICY CHECK ERROR: cannot encode JSON output: %v\n", err)
-			return
 		}
-		fmt.Println(string(data))
 		return
 	}
-	if report.Status == "failed" {
+	if report.Status == govreport.StatusFailed {
 		for _, finding := range report.Findings {
 			fmt.Fprintf(os.Stderr, "CHANGE POLICY CHECK ERROR: %s\n", finding.Message)
 		}

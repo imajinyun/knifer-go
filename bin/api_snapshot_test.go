@@ -581,6 +581,54 @@ func TestAgentEvidenceCheckRejectsStructuredChangePolicyMismatch(t *testing.T) {
 	}
 }
 
+func TestAgentEvidenceCheckRejectsStructuredCIWorkflowFindings(t *testing.T) {
+	evidence := baseAgentEvidence()
+	structuredChecks := evidence["structured_checks"].(map[string]any)
+	ciWorkflow := structuredChecks["ci_workflow_check"].(map[string]any)
+	ciWorkflowJSON := ciWorkflow["json"].(map[string]any)
+	ciWorkflowJSON["findings"] = []any{
+		map[string]any{
+			"rule_id":  "CI_WORKFLOW_UNKNOWN_MAKE_TARGET",
+			"path":     ".github/workflows/go.yml",
+			"message":  "fixture",
+			"severity": "error",
+		},
+	}
+
+	output, err := newGovernanceFixture(t).RunAgentEvidenceCheck(evidence)
+	if err == nil {
+		t.Fatalf("agent evidence check unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "AGENT_EVIDENCE_STRUCTURED_CI_WORKFLOW_FINDINGS") {
+		t.Fatalf("agent evidence output missing AGENT_EVIDENCE_STRUCTURED_CI_WORKFLOW_FINDINGS rule id:\n%s", output)
+	}
+}
+
+func TestAgentEvidenceCheckEmitsJSONReport(t *testing.T) {
+	evidence := baseAgentEvidence()
+	output, err := newGovernanceFixture(t).RunAgentEvidenceCheckJSON(evidence)
+	if err != nil {
+		t.Fatalf("agentevidencecheck -json failed: %v\n%s", err, output)
+	}
+
+	var result struct {
+		Status               string            `json:"status"`
+		Findings             []json.RawMessage `json:"findings"`
+		PolicyCount          int               `json:"policy_count"`
+		RequiredCommandCount int               `json:"required_command_count"`
+		MergeReady           bool              `json:"merge_ready"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("agentevidencecheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "passed" || len(result.Findings) != 0 {
+		t.Fatalf("unexpected agent evidence JSON status/findings:\n%s", output)
+	}
+	if result.PolicyCount != 1 || result.RequiredCommandCount != 6 || result.MergeReady {
+		t.Fatalf("unexpected agent evidence JSON summary:\n%s", output)
+	}
+}
+
 func TestAPIFreezeCheckRequiresStatusDecisionCards(t *testing.T) {
 	fixture := newGovernanceFixture(t)
 	fixture.WriteJSON("tools.json", map[string]any{
@@ -632,6 +680,37 @@ func TestAPIFreezeCheckRequiresStatusDecisionCards(t *testing.T) {
 	}
 	if !strings.Contains(output, "api freeze metadata is valid") {
 		t.Fatalf("api freeze output missing success message:\n%s", output)
+	}
+}
+
+func TestAPIFreezeCheckEmitsJSONReport(t *testing.T) {
+	fixture := newGovernanceFixture(t)
+	fixture.WriteJSON("tools.json", map[string]any{
+		"packages": []any{},
+	})
+	toolsPath := filepath.Join(fixture.Root(), "tools.json")
+	context := minimalAPIFreezeContext()
+	fixture.WriteJSON("ai-context.json", context)
+	contextPath := filepath.Join(fixture.Root(), "ai-context.json")
+
+	output, err := fixture.RunAPIFreezeCheckJSON(contextPath, toolsPath)
+	if err != nil {
+		t.Fatalf("apifreezecheck -json failed: %v\n%s", err, output)
+	}
+	var result struct {
+		Status            string            `json:"status"`
+		Findings          []json.RawMessage `json:"findings"`
+		DeprecatedCount   int               `json:"deprecated_count"`
+		ExperimentalCount int               `json:"experimental_count"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("apifreezecheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "passed" || len(result.Findings) != 0 {
+		t.Fatalf("unexpected API freeze JSON status/findings:\n%s", output)
+	}
+	if result.DeprecatedCount != 0 || result.ExperimentalCount != 0 {
+		t.Fatalf("unexpected API freeze JSON counts:\n%s", output)
 	}
 }
 
@@ -1006,7 +1085,7 @@ func baseAgentEvidence() map[string]any {
 				},
 				"required_commands": []string{"change_policy_check", "security_sensitive_diff", "agent_full_check", "agent_security_check", "agent_evidence", "agent_evidence_check"},
 				"rule_ids":          []string{"CHANGE_SECURITY_SENSITIVE"},
-				"semantic_rule_ids": []string{"SEMANTIC_SECURITY_POLICY_CHANGE"},
+				"semantic_rule_ids": []string{},
 				"status":            "passed",
 			},
 			"status": "passed",
@@ -1016,7 +1095,7 @@ func baseAgentEvidence() map[string]any {
   "findings": [],
   "detected_policies": ["security_sensitive"],
   "rule_ids": ["CHANGE_SECURITY_SENSITIVE"],
-  "semantic_rule_ids": ["SEMANTIC_SECURITY_POLICY_CHANGE"],
+  "semantic_rule_ids": [],
   "required_commands": ["change_policy_check", "security_sensitive_diff", "agent_full_check", "agent_security_check", "agent_evidence", "agent_evidence_check"],
   "policy_paths": {"security_sensitive": ["internal/db/scan.go"]}
 }`,

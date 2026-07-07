@@ -10,25 +10,15 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/imajinyun/knifer-go/bin/internal/govreport"
 )
 
 type checker struct {
 	root              string
 	workflowCount     int
 	workflowFileCount int
-	findings          []finding
-}
-
-type finding struct {
-	RuleID   string `json:"rule_id"`
-	Path     string `json:"path"`
-	Message  string `json:"message"`
-	Severity string `json:"severity"`
-}
-
-type checkResult struct {
-	Status   string    `json:"status"`
-	Findings []finding `json:"findings"`
+	findings          []govreport.Finding
 }
 
 func main() {
@@ -41,13 +31,8 @@ func main() {
 		var err error
 		root, err = os.Getwd()
 		if err != nil {
-			findings := []finding{{
-				RuleID:   "CI_WORKFLOW_CHECK_INPUT_ERROR",
-				Path:     "",
-				Message:  fmt.Sprintf("cannot resolve working directory: %v", err),
-				Severity: "error",
-			}}
-			writeOutput(*jsonFlag, checkResult{Status: "failed", Findings: findings}, 0, 0)
+			findings := []govreport.Finding{govreport.Error("CI_WORKFLOW_CHECK_INPUT_ERROR", "", fmt.Sprintf("cannot resolve working directory: %v", err))}
+			writeOutput(*jsonFlag, govreport.Failed(findings), 0, 0)
 			os.Exit(1)
 		}
 	}
@@ -57,10 +42,10 @@ func main() {
 		c.addError("CI_WORKFLOW_CHECK_INPUT_ERROR", "", err.Error())
 	}
 	if len(c.findings) > 0 {
-		writeOutput(*jsonFlag, checkResult{Status: "failed", Findings: c.findings}, 0, 0)
+		writeOutput(*jsonFlag, govreport.Failed(c.findings), 0, 0)
 		os.Exit(1)
 	}
-	writeOutput(*jsonFlag, checkResult{Status: "passed", Findings: []finding{}}, c.workflowCount, c.workflowFileCount)
+	writeOutput(*jsonFlag, govreport.Passed(), c.workflowCount, c.workflowFileCount)
 }
 
 func (c *checker) run() error {
@@ -209,12 +194,7 @@ func readJSON(path string) (map[string]any, error) {
 }
 
 func (c *checker) addError(ruleID, path, message string) {
-	c.findings = append(c.findings, finding{
-		RuleID:   ruleID,
-		Path:     path,
-		Message:  message,
-		Severity: "error",
-	})
+	c.findings = append(c.findings, govreport.Error(ruleID, path, message))
 }
 
 func (c *checker) requireMapping(value any, path string) map[string]any {
@@ -253,17 +233,14 @@ func (c *checker) requireStringList(value any, path string) []string {
 	return out
 }
 
-func writeOutput(jsonOutput bool, result checkResult, workflowCount, fileCount int) {
+func writeOutput(jsonOutput bool, result govreport.Envelope, workflowCount, fileCount int) {
 	if jsonOutput {
-		data, err := json.MarshalIndent(result, "", "  ")
-		if err != nil {
+		if err := govreport.WriteJSON(os.Stdout, result); err != nil {
 			fmt.Fprintf(os.Stderr, "CI WORKFLOW CHECK FAILED:\n- [CI_WORKFLOW_CHECK_INPUT_ERROR] cannot encode JSON output: %v\n", err)
-			return
 		}
-		fmt.Println(string(data))
 		return
 	}
-	if result.Status == "passed" {
+	if result.Status == govreport.StatusPassed {
 		fmt.Printf("CI workflow governance is valid (%d workflows, %d files)\n", workflowCount, fileCount)
 		return
 	}

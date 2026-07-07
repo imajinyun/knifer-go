@@ -8,6 +8,8 @@ import (
 	"os"
 	"sort"
 	"strings"
+
+	"github.com/imajinyun/knifer-go/bin/internal/govreport"
 )
 
 var expectedStatuses = setOf("recommended", "compatibility", "experimental", "deprecated")
@@ -15,39 +17,49 @@ var expectedStatuses = setOf("recommended", "compatibility", "experimental", "de
 type checker struct {
 	aiContext map[string]any
 	tools     map[string]any
-	errors    []ruleError
+	findings  []govreport.Finding
 }
 
-type ruleError struct {
-	id      string
-	message string
+type apiFreezeReport struct {
+	govreport.Envelope
+	DeprecatedCount   int `json:"deprecated_count"`
+	ExperimentalCount int `json:"experimental_count"`
 }
 
 func main() {
 	contextPath := flag.String("ai-context", "ai-context.json", "ai-context.json path")
 	toolsPath := flag.String("tools", "docs/api/tools.json", "tools catalog path")
+	jsonFlag := flag.Bool("json", false, "emit machine-readable JSON output")
 	flag.Parse()
 
 	aiContext, err := loadJSON(*contextPath, "ai-context.json")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		writeAPIFreezeReport(*jsonFlag, apiFreezeReport{
+			Envelope: govreport.Failed([]govreport.Finding{govreport.Error("API_FREEZE_INPUT_ERROR", *contextPath, err.Error())}),
+		})
 		os.Exit(1)
 	}
 	tools, err := loadJSON(*toolsPath, "tools catalog")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		writeAPIFreezeReport(*jsonFlag, apiFreezeReport{
+			Envelope: govreport.Failed([]govreport.Finding{govreport.Error("API_FREEZE_INPUT_ERROR", *toolsPath, err.Error())}),
+		})
 		os.Exit(1)
 	}
 	c := &checker{aiContext: aiContext, tools: tools}
 	c.run()
-	if len(c.errors) > 0 {
-		for _, err := range c.errors {
-			fmt.Fprintf(os.Stderr, "api-freeze check error: [%s] %s\n", err.id, err.message)
-		}
+	deprecated, experimental := c.apiStatusCounts()
+	report := apiFreezeReport{
+		DeprecatedCount:   deprecated,
+		ExperimentalCount: experimental,
+	}
+	if len(c.findings) > 0 {
+		report.Envelope = govreport.Failed(c.findings)
+		writeAPIFreezeReport(*jsonFlag, report)
 		os.Exit(1)
 	}
-	deprecated, experimental := c.apiStatusCounts()
-	fmt.Printf("api freeze metadata is valid (%d deprecated, %d experimental APIs)\n", deprecated, experimental)
+	report.Envelope = govreport.Passed()
+	writeAPIFreezeReport(*jsonFlag, report)
 }
 
 func (c *checker) run() {
@@ -389,7 +401,23 @@ func loadJSON(path, label string) (map[string]any, error) {
 }
 
 func (c *checker) addError(ruleID, message string) {
-	c.errors = append(c.errors, ruleError{id: ruleID, message: message})
+	c.findings = append(c.findings, govreport.Error(ruleID, "ai-context.json", message))
+}
+
+func writeAPIFreezeReport(jsonOutput bool, report apiFreezeReport) {
+	if jsonOutput {
+		if err := govreport.WriteJSON(os.Stdout, report); err != nil {
+			fmt.Fprintf(os.Stderr, "api-freeze check error: [API_FREEZE_INPUT_ERROR] cannot encode JSON output: %v\n", err)
+		}
+		return
+	}
+	if report.Status == govreport.StatusFailed {
+		for _, finding := range report.Findings {
+			fmt.Fprintf(os.Stderr, "api-freeze check error: [%s] %s\n", finding.RuleID, finding.Message)
+		}
+		return
+	}
+	fmt.Printf("api freeze metadata is valid (%d deprecated, %d experimental APIs)\n", report.DeprecatedCount, report.ExperimentalCount)
 }
 
 func mapValue(value any) map[string]any {

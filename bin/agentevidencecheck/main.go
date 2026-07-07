@@ -6,9 +6,12 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/imajinyun/knifer-go/bin/internal/govreport"
 )
 
 const diffFilter = "ACDMRTUXB"
@@ -17,18 +20,21 @@ type checker struct {
 	root     string
 	context  map[string]any
 	evidence map[string]any
-	errors   []ruleError
+	findings []govreport.Finding
 }
 
-type ruleError struct {
-	id      string
-	message string
+type agentEvidenceReport struct {
+	govreport.Envelope
+	PolicyCount          int  `json:"policy_count"`
+	RequiredCommandCount int  `json:"required_command_count"`
+	MergeReady           bool `json:"merge_ready"`
 }
 
 func main() {
 	rootFlag := flag.String("root", "", "repository root")
 	contextFlag := flag.String("ai-context", "", "ai-context.json path")
 	evidenceFlag := flag.String("evidence", "", "agent evidence JSON path")
+	jsonFlag := flag.Bool("json", false, "emit machine-readable JSON output")
 	flag.Parse()
 
 	root := strings.TrimSpace(*rootFlag)
@@ -36,7 +42,8 @@ func main() {
 		var err error
 		root, err = os.Getwd()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "agent evidence check error: cannot resolve working directory: %v\n", err)
+			report := agentEvidenceReport{Envelope: govreport.Failed([]govreport.Finding{govreport.Error("AGENT_EVIDENCE_INPUT_ERROR", "", fmt.Sprintf("cannot resolve working directory: %v", err))})}
+			writeAgentEvidenceReport(*jsonFlag, "", report)
 			os.Exit(1)
 		}
 	}
@@ -51,38 +58,61 @@ func main() {
 
 	context, err := loadJSON(contextPath, "ai-context.json")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		report := agentEvidenceReport{Envelope: govreport.Failed([]govreport.Finding{govreport.Error("AGENT_EVIDENCE_INPUT_ERROR", contextPath, err.Error())})}
+		writeAgentEvidenceReport(*jsonFlag, evidencePath, report)
 		os.Exit(1)
 	}
 	evidence, err := loadJSON(evidencePath, "Agent evidence")
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		report := agentEvidenceReport{Envelope: govreport.Failed([]govreport.Finding{govreport.Error("AGENT_EVIDENCE_INPUT_ERROR", evidencePath, err.Error())})}
+		writeAgentEvidenceReport(*jsonFlag, evidencePath, report)
 		os.Exit(1)
 	}
 
 	c := &checker{root: root, context: context, evidence: evidence}
 	c.run()
-	if len(c.errors) > 0 {
-		for _, err := range c.errors {
-			fmt.Fprintf(os.Stderr, "agent evidence check error: [%s] %s\n", err.id, err.message)
-		}
+	detectedPolicies := stringList(c.evidence["detected_change_policies"])
+	requiredCommands := stringList(c.evidence["required_commands"])
+	mergeReady, _ := boolValue(c.evidence["merge_ready"])
+	report := agentEvidenceReport{
+		PolicyCount:          len(detectedPolicies),
+		RequiredCommandCount: len(requiredCommands),
+		MergeReady:           mergeReady,
+	}
+	if len(c.findings) > 0 {
+		report.Envelope = govreport.Failed(c.findings)
+		writeAgentEvidenceReport(*jsonFlag, evidencePath, report)
 		os.Exit(1)
 	}
+	report.Envelope = govreport.Passed()
+	writeAgentEvidenceReport(*jsonFlag, evidencePath, report)
+}
 
+func writeAgentEvidenceReport(jsonOutput bool, evidencePath string, report agentEvidenceReport) {
+	if jsonOutput {
+		if err := govreport.WriteJSON(os.Stdout, report); err != nil {
+			fmt.Fprintf(os.Stderr, "agent evidence check error: [AGENT_EVIDENCE_INPUT_ERROR] cannot encode JSON output: %v\n", err)
+		}
+		return
+	}
+	if report.Status == govreport.StatusFailed {
+		for _, finding := range report.Findings {
+			fmt.Fprintf(os.Stderr, "agent evidence check error: [%s] %s\n", finding.RuleID, finding.Message)
+		}
+		return
+	}
 	displayPath := evidencePath
-	if strings.HasPrefix(evidencePath, root+string(os.PathSeparator)) {
+	if root, err := os.Getwd(); err == nil && strings.HasPrefix(evidencePath, root+string(os.PathSeparator)) {
 		if rel, err := filepath.Rel(root, evidencePath); err == nil {
 			displayPath = rel
 		}
 	}
-	detectedPolicies := stringList(c.evidence["detected_change_policies"])
-	requiredCommands := stringList(c.evidence["required_commands"])
 	fmt.Printf(
 		"agent evidence is valid (%s; %d policies, %d required commands, merge_ready=%s)\n",
 		displayPath,
-		len(detectedPolicies),
-		len(requiredCommands),
-		strings.ToLower(fmt.Sprint(c.evidence["merge_ready"])),
+		report.PolicyCount,
+		report.RequiredCommandCount,
+		strings.ToLower(fmt.Sprint(report.MergeReady)),
 	)
 }
 
@@ -154,7 +184,7 @@ func (c *checker) run() {
 	commandAttestations := c.requireMapping(c.evidence["command_attestations"], "command_attestations")
 	c.validateCommandAttestations(requiredCommands, commandAttestations)
 	c.validateEmbeddedChecks(commandAttestations)
-	c.validateStructuredChecks(detectedPolicies, requiredCommands)
+	c.validateStructuredChecks(changedFiles, detectedPolicies, requiredCommands)
 
 	if len(securitySensitivePaths) > 0 && !contains(detectedPolicies, "security_sensitive") {
 		c.addError("AGENT_EVIDENCE_SECURITY_PATHS_POLICY_MISSING", "security_sensitive_paths requires detected security_sensitive policy")
@@ -252,7 +282,7 @@ func (c *checker) validateEmbeddedChecks(commandAttestations map[string]any) {
 	}
 }
 
-func (c *checker) validateStructuredChecks(detectedPolicies, requiredCommands []string) {
+func (c *checker) validateStructuredChecks(changedFiles, detectedPolicies, requiredCommands []string) {
 	structuredChecks := c.requireMapping(c.evidence["structured_checks"], "structured_checks")
 	changePolicy := c.requireMapping(structuredChecks["change_policy_check"], "structured_checks.change_policy_check")
 	c.validateStructuredCheckEnvelope(changePolicy, "structured_checks.change_policy_check")
@@ -278,7 +308,11 @@ func (c *checker) validateStructuredChecks(detectedPolicies, requiredCommands []
 	if !equalStrings(reportRuleIDs, expectedRuleIDs) {
 		c.addError("AGENT_EVIDENCE_STRUCTURED_CHANGE_POLICY_MISMATCH", fmt.Sprintf("structured change policy rule_ids must match detected policies; got %v, want %v", reportRuleIDs, expectedRuleIDs))
 	}
-	c.requireStringList(changePolicyJSON["semantic_rule_ids"], "structured_checks.change_policy_check.json.semantic_rule_ids")
+	reportSemanticRuleIDs := c.requireStringList(changePolicyJSON["semantic_rule_ids"], "structured_checks.change_policy_check.json.semantic_rule_ids")
+	expectedSemanticRuleIDs := c.expectedStructuredChangePolicySemanticRuleIDs(changedFiles)
+	if !equalStrings(reportSemanticRuleIDs, expectedSemanticRuleIDs) {
+		c.addError("AGENT_EVIDENCE_STRUCTURED_CHANGE_POLICY_MISMATCH", fmt.Sprintf("structured change policy semantic_rule_ids must match changed files; got %v, want %v", reportSemanticRuleIDs, expectedSemanticRuleIDs))
+	}
 
 	ciWorkflow := c.requireMapping(structuredChecks["ci_workflow_check"], "structured_checks.ci_workflow_check")
 	c.validateStructuredCheckEnvelope(ciWorkflow, "structured_checks.ci_workflow_check")
@@ -286,7 +320,9 @@ func (c *checker) validateStructuredChecks(detectedPolicies, requiredCommands []
 	if c.requireString(ciWorkflowJSON["status"], "structured_checks.ci_workflow_check.json.status") != "passed" {
 		c.addError("AGENT_EVIDENCE_STRUCTURED_CHECK_STATUS", "structured_checks.ci_workflow_check.json.status must be passed")
 	}
-	c.requireList(ciWorkflowJSON["findings"], "structured_checks.ci_workflow_check.json.findings")
+	if findings := c.requireList(ciWorkflowJSON["findings"], "structured_checks.ci_workflow_check.json.findings"); len(findings) != 0 {
+		c.addError("AGENT_EVIDENCE_STRUCTURED_CI_WORKFLOW_FINDINGS", "structured ci workflow findings must be empty")
+	}
 }
 
 func (c *checker) validateStructuredCheckEnvelope(check map[string]any, path string) {
@@ -303,6 +339,31 @@ func (c *checker) validateStructuredCheckEnvelope(check map[string]any, path str
 	if parseError := stringValue(check["parse_error"]); parseError != "" {
 		c.addError("AGENT_EVIDENCE_STRUCTURED_CHECK_JSON", path+".parse_error must be empty")
 	}
+}
+
+func (c *checker) expectedStructuredChangePolicySemanticRuleIDs(changedFiles []string) []string {
+	cmd := exec.Command(
+		"go",
+		"run",
+		"./bin/changepolicycheck",
+		"-root",
+		c.root,
+		"-changed-files",
+		strings.Join(changedFiles, "\n"),
+		"-json",
+	)
+	cmd.Dir = c.root
+	output, err := cmd.Output()
+	if err != nil {
+		c.addError("AGENT_EVIDENCE_STRUCTURED_CHANGE_POLICY_RECHECK", "cannot rerun changepolicycheck for semantic rule validation")
+		return nil
+	}
+	var report map[string]any
+	if err := json.Unmarshal(output, &report); err != nil {
+		c.addError("AGENT_EVIDENCE_STRUCTURED_CHANGE_POLICY_RECHECK", "cannot parse changepolicycheck JSON for semantic rule validation")
+		return nil
+	}
+	return stringList(report["semantic_rule_ids"])
 }
 
 func (c *checker) expectedSecuritySensitivePaths(changedFiles []string) []string {
@@ -608,7 +669,7 @@ func loadJSON(path, label string) (map[string]any, error) {
 }
 
 func (c *checker) addError(ruleID, message string) {
-	c.errors = append(c.errors, ruleError{id: ruleID, message: message})
+	c.findings = append(c.findings, govreport.Error(ruleID, "", message))
 }
 
 func (c *checker) requireMapping(value any, path string) map[string]any {

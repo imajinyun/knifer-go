@@ -156,6 +156,18 @@ func (f *governanceFixture) RunAgentEvidenceCheck(evidence map[string]any) (stri
 	return f.RunScript("bin/check_agent_evidence.sh", "AGENT_EVIDENCE_FILE="+path)
 }
 
+func (f *governanceFixture) RunAgentEvidenceCheckJSON(evidence map[string]any) (string, error) {
+	f.t.Helper()
+	path := filepath.Join(f.root, "agent-evidence.json")
+	f.WriteJSON("agent-evidence.json", evidence)
+	return f.RunGoTool(
+		"agentevidencecheck",
+		"-root", repoRoot(f.t),
+		"-evidence", path,
+		"-json",
+	)
+}
+
 func (f *governanceFixture) RunCoverageCheck(coverageFile string, env ...string) (string, error) {
 	f.t.Helper()
 	return f.RunScriptArgs("bin/check_coverage.sh", []string{coverageFile}, env...)
@@ -167,6 +179,16 @@ func (f *governanceFixture) RunAPIFreezeCheck(contextPath, toolsPath string) (st
 		"bin/check_api_freeze.sh",
 		"AI_CONTEXT_FILE="+contextPath,
 		"TOOLS_JSON_FILE="+toolsPath,
+	)
+}
+
+func (f *governanceFixture) RunAPIFreezeCheckJSON(contextPath, toolsPath string) (string, error) {
+	f.t.Helper()
+	return f.RunGoTool(
+		"apifreezecheck",
+		"-ai-context", contextPath,
+		"-tools", toolsPath,
+		"-json",
 	)
 }
 
