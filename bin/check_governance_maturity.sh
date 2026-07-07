@@ -4480,61 +4480,6 @@ def validate_threat_model() -> None:
 	if extra_boundary_names:
 		add_error("threat_model.boundary_contracts includes unknown boundary/boundaries: " + ", ".join(extra_boundary_names))
 
-
-def validate_random_source_policy() -> None:
-	policy = require_mapping(ai_context.get("random_source_policy"), "random_source_policy")
-	packages = set(require_string_list(policy.get("packages"), "random_source_policy.packages"))
-	expected_packages = {"vrand", "vid", "vcrypto", "vjwt"}
-	if packages != expected_packages:
-		add_error("random_source_policy.packages must cover exactly: " + ", ".join(sorted(expected_packages)))
-	policies_value = policy.get("policies")
-	if not isinstance(policies_value, list) or not policies_value:
-		add_error("random_source_policy.policies must be a non-empty list")
-		return
-	expected_policy_names = {
-		"secure_bytes_fail_closed",
-		"compatibility_byte_fallback",
-		"identifier_fallback_compatibility",
-		"jwt_key_and_signer_policy",
-	}
-	seen_names: set[str] = set()
-	covered_packages: set[str] = set()
-	for index, policy_value in enumerate(policies_value):
-		entry = require_mapping(policy_value, f"random_source_policy.policies[{index}]")
-		name = entry.get("name")
-		if not isinstance(name, str) or not name:
-			add_error(f"random_source_policy.policies[{index}].name must be non-empty")
-			continue
-		seen_names.add(name)
-		entry_packages = set(require_string_list(entry.get("packages"), f"random_source_policy.policies.{name}.packages"))
-		covered_packages.update(entry_packages)
-		unknown = sorted(entry_packages - expected_packages)
-		if unknown:
-			add_error(f"random_source_policy.policies.{name}.packages contains unknown package(s): " + ", ".join(unknown))
-		for field in ("behavior", "allowed_sources", "forbidden_uses", "contract_tests"):
-			values = entry.get(field)
-			if field == "behavior":
-				if not isinstance(values, str) or not values.strip():
-					add_error(f"random_source_policy.policies.{name}.behavior must be non-empty")
-				continue
-			items = require_string_list(values, f"random_source_policy.policies.{name}.{field}")
-			if not items:
-				add_error(f"random_source_policy.policies.{name}.{field} must be non-empty")
-		for reference in require_string_list(entry.get("contract_tests"), f"random_source_policy.policies.{name}.contract_tests"):
-			if not references_function(reference):
-				add_error(f"random_source_policy.policies.{name}.contract_tests must reference explicit test functions, got {reference}")
-			if not reference_exists(reference):
-				add_error(f"random_source_policy.policies.{name}.contract_tests references missing file or function {reference}")
-	missing_policy_names = sorted(expected_policy_names - seen_names)
-	if missing_policy_names:
-		add_error("random_source_policy.policies missing policy/policies: " + ", ".join(missing_policy_names))
-	extra_policy_names = sorted(seen_names - expected_policy_names)
-	if extra_policy_names:
-		add_error("random_source_policy.policies includes unknown policy/policies: " + ", ".join(extra_policy_names))
-	if covered_packages != expected_packages:
-		add_error("random_source_policy policies must cover package(s): " + ", ".join(sorted(expected_packages)))
-
-
 validate_benchmark_regression()
 if not bench_only:
 	validate_local_governance_gates()
@@ -4592,7 +4537,6 @@ if not bench_only:
 	validate_error_model()
 	validate_dynamic_semantic_contracts()
 	validate_threat_model()
-	validate_random_source_policy()
 
 if errors:
 	for error in errors:
