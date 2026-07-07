@@ -186,6 +186,13 @@ api-freeze-check: api-check tools-check
 
 governance-maturity-check: ai-context-check tools-check
 	bash bin/check_governance_maturity.sh
+	$(MAKE) random-source-policy-check
+	$(MAKE) threat-model-check
+	$(MAKE) dynamic-contracts-check
+	$(MAKE) error-model-check
+	$(MAKE) api-convergence-check
+	$(MAKE) lifecycle-check
+	$(MAKE) dependency-tiers-check
 
 random-source-policy-check:
 	$(GO) run ./bin/randomsourcepolicycheck -root .
