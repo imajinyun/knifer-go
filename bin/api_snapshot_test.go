@@ -1143,6 +1143,80 @@ func TestBenchmarkRegressionCheckRejectsMinimumCountTooLow(t *testing.T) {
 	}
 }
 
+func TestAPIConvergenceCheckAcceptsValidFixture(t *testing.T) {
+	fixture := apiConvergenceFixture(t)
+	output, err := fixture.RunAPIConvergenceCheck()
+	if err != nil {
+		t.Fatalf("apiconvergencecheck failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "api convergence metadata is valid") {
+		t.Fatalf("api convergence output missing success:\n%s", output)
+	}
+}
+
+func TestAPIConvergenceCheckRejectsGoldenPathDrift(t *testing.T) {
+	fixture := apiConvergenceFixture(t)
+	context := apiConvergenceContext()
+	context["api_convergence"].(map[string]any)["facades"].(map[string]any)["vjson"].(map[string]any)["primary"] = []string{"Format", "Parse"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunAPIConvergenceCheckJSON()
+	if err == nil {
+		t.Fatalf("apiconvergencecheck -json unexpectedly passed:\n%s", output)
+	}
+	var result struct {
+		Status   string `json:"status"`
+		Findings []struct {
+			RuleID string `json:"rule_id"`
+		} `json:"findings"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("apiconvergencecheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "failed" {
+		t.Fatalf("JSON status = %q, want failed\n%s", result.Status, output)
+	}
+	var sawDrift bool
+	for _, finding := range result.Findings {
+		if finding.RuleID == "API_CONVERGENCE_PRIMARY_DRIFT" {
+			sawDrift = true
+		}
+	}
+	if !sawDrift {
+		t.Fatalf("api convergence JSON findings missing primary drift rule id:\n%s", output)
+	}
+}
+
+func TestAPIConvergenceCheckRejectsUnknownAPI(t *testing.T) {
+	fixture := apiConvergenceFixture(t)
+	context := apiConvergenceContext()
+	context["api_convergence"].(map[string]any)["facades"].(map[string]any)["vjson"].(map[string]any)["advanced"] = []string{"MissingAPI"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunAPIConvergenceCheck()
+	if err == nil {
+		t.Fatalf("apiconvergencecheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "API_CONVERGENCE_UNKNOWN_API") {
+		t.Fatalf("api convergence output missing unknown API rule id:\n%s", output)
+	}
+}
+
+func TestAPIConvergenceCheckRejectsCompatibilityStatusDrift(t *testing.T) {
+	fixture := apiConvergenceFixture(t)
+	context := apiConvergenceContext()
+	context["api_convergence"].(map[string]any)["facades"].(map[string]any)["vjson"].(map[string]any)["compatibility"] = []string{"Format"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunAPIConvergenceCheck()
+	if err == nil {
+		t.Fatalf("apiconvergencecheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "API_CONVERGENCE_COMPATIBILITY_STATUS") {
+		t.Fatalf("api convergence output missing compatibility status rule id:\n%s", output)
+	}
+}
+
 func TestProviderContractCheckRejectsConcreteNetworkAndMissingProvider(t *testing.T) {
 	fixture := providerContractFixture(t)
 	fixture.WriteFile("vbad/bad.go", `package vbad
@@ -2194,6 +2268,71 @@ func benchmarkRegressionFunctions() map[string][]string {
 		"vdb/builder_test.go":            {"BenchmarkFacadePageOrders"},
 		"vhttp/http_benchmark_test.go":   {"BenchmarkGetStringE"},
 		"vcodec/codec_benchmark_test.go": {"BenchmarkBase64Encode"},
+	}
+}
+
+func apiConvergenceFixture(t *testing.T) *governanceFixture {
+	t.Helper()
+	fixture := newGovernanceFixture(t)
+	fixture.WriteJSON("ai-context.json", apiConvergenceContext())
+	fixture.WriteJSON("docs/api/tools.json", apiConvergenceTools())
+	return fixture
+}
+
+func apiConvergenceContext() map[string]any {
+	return map[string]any{
+		"public_facades": []any{
+			map[string]any{"package": "vjson"},
+			map[string]any{"package": "vstr"},
+		},
+		"api_convergence": map[string]any{
+			"max_golden_path_per_facade": 5,
+			"required_classifications":   []string{"primary", "advanced", "compatibility", "avoid"},
+			"facades": map[string]any{
+				"vjson": map[string]any{
+					"primary":       []string{"Parse", "Format"},
+					"advanced":      []string{},
+					"compatibility": []string{"Legacy"},
+					"avoid":         []string{},
+					"decision":      "Use primary JSON helpers.",
+				},
+				"vstr": map[string]any{
+					"primary":       []string{"Reverse"},
+					"advanced":      []string{},
+					"compatibility": []string{},
+					"avoid":         []string{},
+					"decision":      "Use primary string helpers.",
+				},
+			},
+		},
+	}
+}
+
+func apiConvergenceTools() map[string]any {
+	return map[string]any{
+		"packages": []any{
+			map[string]any{
+				"name": "vjson",
+				"golden_path": []any{
+					map[string]any{"name": "Parse"},
+					map[string]any{"name": "Format"},
+				},
+				"functions": []any{
+					map[string]any{"name": "Parse", "status": "recommended"},
+					map[string]any{"name": "Format", "status": "recommended"},
+					map[string]any{"name": "Legacy", "status": "compatibility"},
+				},
+			},
+			map[string]any{
+				"name": "vstr",
+				"golden_path": []any{
+					map[string]any{"name": "Reverse"},
+				},
+				"functions": []any{
+					map[string]any{"name": "Reverse", "status": "recommended"},
+				},
+			},
+		},
 	}
 }
 
