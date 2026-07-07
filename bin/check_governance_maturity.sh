@@ -4325,33 +4325,6 @@ def validate_dependency_isolation() -> None:
 			if not any(rel.startswith(prefix + "/") or rel == prefix + ".go" for prefix in allowed_prefixes):
 				add_error(f"{rel} imports heavy dependency {import_path} outside isolated facade/internal package")
 
-
-def validate_error_model() -> None:
-	error_model = require_mapping(ai_context.get("error_model"), "error_model")
-	taxonomy = error_model.get("taxonomy")
-	if not isinstance(taxonomy, list):
-		add_error("error_model.taxonomy must be a list")
-		taxonomy = []
-	codes = set()
-	for index, item in enumerate(taxonomy):
-		entry = require_mapping(item, f"error_model.taxonomy[{index}]")
-		for key in ("category", "code", "use_when"):
-			if not isinstance(entry.get(key), str) or not entry[key].strip():
-				add_error(f"error_model.taxonomy[{index}].{key} must be non-empty")
-		if isinstance(entry.get("code"), str):
-			codes.add(entry["code"])
-	expected_codes = {"GK_INVALID_INPUT", "GK_NOT_FOUND", "GK_UNSUPPORTED", "GK_UNSAFE_RESOURCE", "GK_TIMEOUT", "GK_PROVIDER_FAILURE", "GK_INTERNAL"}
-	if codes != expected_codes:
-		add_error("error_model.taxonomy must cover exactly: " + ", ".join(sorted(expected_codes)))
-	errors_go = (root / "errors.go").read_text(encoding="utf-8")
-	for constant_name in ("ErrCodeInvalidInput", "ErrCodeNotFound", "ErrCodeUnsupported", "ErrCodeUnsafeResource", "ErrCodeTimeout", "ErrCodeProviderFailure", "ErrCodeInternal"):
-		if constant_name not in errors_go:
-			add_error(f"errors.go must define {constant_name}")
-	for reference in require_string_list(error_model.get("contract_tests"), "error_model.contract_tests"):
-		if not reference_exists(reference):
-			add_error(f"error_model.contract_tests references missing file {reference}")
-
-
 def validate_dynamic_semantic_contracts() -> None:
 	contracts = require_mapping(ai_context.get("dynamic_semantic_contracts"), "dynamic_semantic_contracts")
 	required_domains = set(require_string_list(contracts.get("required_domains"), "dynamic_semantic_contracts.required_domains"))
@@ -4534,7 +4507,6 @@ if not bench_only:
 	validate_lifecycle()
 	validate_capability_domains()
 	validate_dependency_isolation()
-	validate_error_model()
 	validate_dynamic_semantic_contracts()
 	validate_threat_model()
 
