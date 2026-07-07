@@ -398,33 +398,8 @@ func TestChangePolicyReportsSemanticRuleIDs(t *testing.T) {
 func TestChangePolicyReportsFieldLevelSemanticRuleIDs(t *testing.T) {
 	fixture := newGovernanceFixture(t)
 	writeSemanticChangePolicyFixture(fixture)
-	diffText := `diff --git a/ai-context.json b/ai-context.json
---- a/ai-context.json
-+++ b/ai-context.json
-@@ -15,1 +15,1 @@
--    "v1_candidate": true
-+    "v1_candidate": false
-@@ -18,1 +18,1 @@
--    "repository_threshold": 75.2
-+    "repository_threshold": 76.0
-@@ -20,1 +20,1 @@
--  "security_sensitive_packages": ["vcrypto"],
-+  "security_sensitive_packages": ["vcrypto", "vjwt"],
-@@ -22,1 +22,1 @@
--    "policies": []
-+    "policies": [{"name": "crypto_reader"}]
-@@ -25,1 +25,1 @@
--    "boundary_contracts": []
-+    "boundary_contracts": [{"name": "timeout"}]
-diff --git a/Makefile b/Makefile
---- a/Makefile
-+++ b/Makefile
-@@ -8,1 +8,1 @@
--	$(MAKE) full-check
-+	COVERAGE_CHECK_ALL_PACKAGES=1 $(MAKE) full-check
-`
 
-	output, err := fixture.RunChangePolicyCheckWithDiff("ai-context.json\nMakefile", diffText)
+	output, err := fixture.RunChangePolicyCheckWithDiff("ai-context.json\nMakefile", changePolicySemanticDiffFixture())
 	if err != nil {
 		t.Fatalf("check_change_policy.sh failed: %v\n%s", err, output)
 	}
@@ -478,6 +453,52 @@ func TestChangePolicyDoesNotOverclassifyUnrelatedAIContextDiff(t *testing.T) {
 		if strings.Contains(output, unwanted) {
 			t.Fatalf("change policy output overclassified unrelated ai-context diff as %s:\n%s", unwanted, output)
 		}
+	}
+}
+
+func TestChangePolicyCheckEmitsJSONReport(t *testing.T) {
+	fixture := newGovernanceFixture(t)
+	writeSemanticChangePolicyFixture(fixture)
+
+	output, err := fixture.RunChangePolicyCheckJSON("ai-context.json\nMakefile", changePolicySemanticDiffFixture())
+	if err != nil {
+		t.Fatalf("changepolicycheck -json failed: %v\n%s", err, output)
+	}
+
+	var result struct {
+		Status           string              `json:"status"`
+		Findings         []json.RawMessage   `json:"findings"`
+		DetectedPolicies []string            `json:"detected_policies"`
+		RuleIDs          []string            `json:"rule_ids"`
+		SemanticRuleIDs  []string            `json:"semantic_rule_ids"`
+		RequiredCommands []string            `json:"required_commands"`
+		PolicyPaths      map[string][]string `json:"policy_paths"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("changepolicycheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "passed" {
+		t.Fatalf("JSON status = %q, want passed\n%s", result.Status, output)
+	}
+	if len(result.Findings) != 0 {
+		t.Fatalf("JSON findings length = %d, want 0\n%s", len(result.Findings), output)
+	}
+	if !stringSliceContains(result.DetectedPolicies, "ci_governance") {
+		t.Fatalf("JSON detected_policies missing ci_governance:\n%s", output)
+	}
+	if !stringSliceContains(result.RuleIDs, "CHANGE_CI_GOVERNANCE") {
+		t.Fatalf("JSON rule_ids missing CHANGE_CI_GOVERNANCE:\n%s", output)
+	}
+	if !stringSliceContains(result.SemanticRuleIDs, "SEMANTIC_AI_CONTEXT_API_FREEZE_CHANGE") ||
+		!stringSliceContains(result.SemanticRuleIDs, "SEMANTIC_MAKEFILE_RELEASE_CHECK_CHANGE") {
+		t.Fatalf("JSON semantic_rule_ids missing field-level ids:\n%s", output)
+	}
+	if !stringSliceContains(result.RequiredCommands, "agent_check") {
+		t.Fatalf("JSON required_commands missing agent_check:\n%s", output)
+	}
+	if !stringSliceContains(result.PolicyPaths["ci_governance"], "ai-context.json") ||
+		!stringSliceContains(result.PolicyPaths["ci_governance"], "Makefile") {
+		t.Fatalf("JSON policy_paths missing ci_governance paths:\n%s", output)
 	}
 }
 
@@ -1197,6 +1218,43 @@ func writeSemanticChangePolicyFixture(fixture *governanceFixture) {
   }
 }
 `)
+}
+
+func changePolicySemanticDiffFixture() string {
+	return `diff --git a/ai-context.json b/ai-context.json
+--- a/ai-context.json
++++ b/ai-context.json
+@@ -15,1 +15,1 @@
+-    "v1_candidate": true
++    "v1_candidate": false
+@@ -18,1 +18,1 @@
+-    "repository_threshold": 75.2
++    "repository_threshold": 76.0
+@@ -20,1 +20,1 @@
+-  "security_sensitive_packages": ["vcrypto"],
++  "security_sensitive_packages": ["vcrypto", "vjwt"],
+@@ -22,1 +22,1 @@
+-    "policies": []
++    "policies": [{"name": "crypto_reader"}]
+@@ -25,1 +25,1 @@
+-    "boundary_contracts": []
++    "boundary_contracts": [{"name": "timeout"}]
+diff --git a/Makefile b/Makefile
+--- a/Makefile
++++ b/Makefile
+@@ -8,1 +8,1 @@
+-	$(MAKE) full-check
++	COVERAGE_CHECK_ALL_PACKAGES=1 $(MAKE) full-check
+`
+}
+
+func stringSliceContains(values []string, target string) bool {
+	for _, value := range values {
+		if value == target {
+			return true
+		}
+	}
+	return false
 }
 
 func docsQuickstartFixture(t *testing.T, quickstart string) *governanceFixture {

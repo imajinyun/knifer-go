@@ -134,6 +134,21 @@ func (f *governanceFixture) RunChangePolicyCheckWithDiff(changedFiles, diffText 
 	)
 }
 
+func (f *governanceFixture) RunChangePolicyCheckJSON(changedFiles, diffText string) (string, error) {
+	f.t.Helper()
+	env := []string{}
+	if diffText != "" {
+		env = append(env, "CHANGE_POLICY_DIFF="+diffText)
+	}
+	return f.RunGoToolEnv(
+		"changepolicycheck",
+		env,
+		"-root", f.root,
+		"-changed-files", changedFiles,
+		"-json",
+	)
+}
+
 func (f *governanceFixture) RunAgentEvidenceCheck(evidence map[string]any) (string, error) {
 	f.t.Helper()
 	path := filepath.Join(f.root, "agent-evidence.json")

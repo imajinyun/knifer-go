@@ -38,9 +38,27 @@ type checker struct {
 	data map[string]any
 }
 
+type finding struct {
+	RuleID   string `json:"rule_id"`
+	Path     string `json:"path"`
+	Message  string `json:"message"`
+	Severity string `json:"severity"`
+}
+
+type changePolicyReport struct {
+	Status           string              `json:"status"`
+	Findings         []finding           `json:"findings"`
+	DetectedPolicies []string            `json:"detected_policies"`
+	RuleIDs          []string            `json:"rule_ids"`
+	SemanticRuleIDs  []string            `json:"semantic_rule_ids"`
+	RequiredCommands []string            `json:"required_commands"`
+	PolicyPaths      map[string][]string `json:"policy_paths"`
+}
+
 func main() {
 	rootFlag := flag.String("root", "", "repository root")
 	changedFilesFlag := flag.String("changed-files", "", "newline-separated changed files override")
+	jsonFlag := flag.Bool("json", false, "emit machine-readable JSON output")
 	flag.Parse()
 
 	root := strings.TrimSpace(*rootFlag)
@@ -48,13 +66,15 @@ func main() {
 		var err error
 		root, err = os.Getwd()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "CHANGE POLICY CHECK ERROR: cannot resolve working directory: %v\n", err)
+			report := failedReport("CHANGE_POLICY_INPUT_ERROR", "", fmt.Sprintf("cannot resolve working directory: %v", err))
+			writeReport(*jsonFlag, report)
 			os.Exit(1)
 		}
 	}
 	data, err := loadJSON(filepath.Join(root, "ai-context.json"))
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "CHANGE POLICY CHECK ERROR: %v\n", err)
+		report := failedReport("CHANGE_POLICY_INPUT_ERROR", "ai-context.json", err.Error())
+		writeReport(*jsonFlag, report)
 		os.Exit(1)
 	}
 	changedFiles := strings.TrimSpace(*changedFilesFlag)
@@ -62,10 +82,14 @@ func main() {
 		changedFiles = os.Getenv("CHANGE_POLICY_CHANGED_FILES")
 	}
 	c := checker{root: root, data: data}
-	c.run(changedFiles)
+	report := c.run(changedFiles)
+	writeReport(*jsonFlag, report)
+	if report.Status == "failed" {
+		os.Exit(1)
+	}
 }
 
-func (c checker) run(changedFilesOverride string) {
+func (c checker) run(changedFilesOverride string) changePolicyReport {
 	policies := mapValue(c.data["change_type_policies"])
 	facades := map[string]string{}
 	for _, entry := range list(c.data["public_facades"]) {
@@ -132,8 +156,15 @@ func (c checker) run(changedFilesOverride string) {
 	}
 
 	if len(changedFiles) == 0 {
-		fmt.Println("change policy check passed: no changed files")
-		return
+		return changePolicyReport{
+			Status:           "passed",
+			Findings:         []finding{},
+			DetectedPolicies: []string{},
+			RuleIDs:          []string{},
+			SemanticRuleIDs:  []string{},
+			RequiredCommands: []string{},
+			PolicyPaths:      map[string][]string{},
+		}
 	}
 	if len(detected) == 0 {
 		for _, path := range changedFiles {
@@ -149,8 +180,7 @@ func (c checker) run(changedFilesOverride string) {
 	}
 	sort.Strings(unknown)
 	if len(unknown) > 0 {
-		fmt.Fprintln(os.Stderr, "CHANGE POLICY CHECK ERROR: detected unknown policies: "+strings.Join(unknown, ", "))
-		os.Exit(1)
+		return failedReport("CHANGE_POLICY_UNKNOWN_POLICY", "", "detected unknown policies: "+strings.Join(unknown, ", "))
 	}
 
 	detectedPolicies := sortedSet(detected)
@@ -163,22 +193,22 @@ func (c checker) run(changedFilesOverride string) {
 		}
 	}
 
-	fmt.Println("change policy check passed")
-	fmt.Println("detected policies: " + strings.Join(detectedPolicies, ", "))
-	fmt.Println("rule ids: " + strings.Join(ruleIDsForPolicies(detectedPolicies), ", "))
-	if semanticIDs := c.semanticRuleIDs(changedFiles); len(semanticIDs) > 0 {
-		fmt.Println("semantic rule ids: " + strings.Join(semanticIDs, ", "))
-	}
-	fmt.Println("required commands: " + strings.Join(requiredCommands, ", "))
+	policyPaths := map[string][]string{}
 	for _, policy := range detectedPolicies {
 		paths := sortedSet(matched[policy])
 		if len(paths) == 0 {
 			continue
 		}
-		fmt.Printf("%s paths:\n", policy)
-		for _, path := range paths {
-			fmt.Printf("  - %s\n", path)
-		}
+		policyPaths[policy] = paths
+	}
+	return changePolicyReport{
+		Status:           "passed",
+		Findings:         []finding{},
+		DetectedPolicies: detectedPolicies,
+		RuleIDs:          ruleIDsForPolicies(detectedPolicies),
+		SemanticRuleIDs:  c.semanticRuleIDs(changedFiles),
+		RequiredCommands: requiredCommands,
+		PolicyPaths:      policyPaths,
 	}
 }
 
@@ -553,6 +583,62 @@ func gitOutput(root string, args ...string) string {
 		return ""
 	}
 	return string(out)
+}
+
+func failedReport(ruleID, path, message string) changePolicyReport {
+	return changePolicyReport{
+		Status: "failed",
+		Findings: []finding{{
+			RuleID:   ruleID,
+			Path:     path,
+			Message:  message,
+			Severity: "error",
+		}},
+		DetectedPolicies: []string{},
+		RuleIDs:          []string{},
+		SemanticRuleIDs:  []string{},
+		RequiredCommands: []string{},
+		PolicyPaths:      map[string][]string{},
+	}
+}
+
+func writeReport(jsonOutput bool, report changePolicyReport) {
+	if jsonOutput {
+		data, err := json.MarshalIndent(report, "", "  ")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "CHANGE POLICY CHECK ERROR: cannot encode JSON output: %v\n", err)
+			return
+		}
+		fmt.Println(string(data))
+		return
+	}
+	if report.Status == "failed" {
+		for _, finding := range report.Findings {
+			fmt.Fprintf(os.Stderr, "CHANGE POLICY CHECK ERROR: %s\n", finding.Message)
+		}
+		return
+	}
+	if len(report.DetectedPolicies) == 0 {
+		fmt.Println("change policy check passed: no changed files")
+		return
+	}
+	fmt.Println("change policy check passed")
+	fmt.Println("detected policies: " + strings.Join(report.DetectedPolicies, ", "))
+	fmt.Println("rule ids: " + strings.Join(report.RuleIDs, ", "))
+	if len(report.SemanticRuleIDs) > 0 {
+		fmt.Println("semantic rule ids: " + strings.Join(report.SemanticRuleIDs, ", "))
+	}
+	fmt.Println("required commands: " + strings.Join(report.RequiredCommands, ", "))
+	for _, policy := range report.DetectedPolicies {
+		paths := report.PolicyPaths[policy]
+		if len(paths) == 0 {
+			continue
+		}
+		fmt.Printf("%s paths:\n", policy)
+		for _, path := range paths {
+			fmt.Printf("  - %s\n", path)
+		}
+	}
 }
 
 func loadJSON(path string) (map[string]any, error) {
