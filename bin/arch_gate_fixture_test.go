@@ -81,6 +81,14 @@ func Name() string { return "other" }
 		t.Fatalf("check_arch_imports.sh unexpectedly passed:\n%s", output)
 	}
 	for _, want := range []string{
+		"ARCH_IMPORT_FACADE_TO_FACADE",
+		"ARCH_IMPORT_INTERNAL_TO_FACADE",
+	} {
+		if !strings.Contains(output, want) {
+			t.Fatalf("arch imports output missing rule id %q:\n%s", want, output)
+		}
+	}
+	for _, want := range []string{
 		"imports another public package",
 		"imports public facade",
 	} {
