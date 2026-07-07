@@ -376,6 +376,24 @@ func TestChangePolicyClassifiesFacadeProductionAndSnapshotAsPublicAPI(t *testing
 	}
 }
 
+func TestChangePolicyReportsSemanticRuleIDs(t *testing.T) {
+	output, err := newGovernanceFixture(t).RunChangePolicyCheck("ai-context.schema.json\nMakefile\nbin/check_api_freeze.sh\nbin/check_coverage.sh")
+	if err != nil {
+		t.Fatalf("check_change_policy.sh failed: %v\n%s", err, output)
+	}
+	for _, want := range []string{
+		"SEMANTIC_SCHEMA_CONTRACT_CHANGE",
+		"SEMANTIC_RELEASE_GATE_CHANGE",
+		"SEMANTIC_COVERAGE_POLICY_CHANGE",
+		"SEMANTIC_API_FREEZE_POLICY_CHANGE",
+		"SEMANTIC_SECURITY_POLICY_CHANGE",
+	} {
+		if !strings.Contains(output, want) {
+			t.Fatalf("change policy output missing semantic rule id %s:\n%s", want, output)
+		}
+	}
+}
+
 func TestAgentEvidenceCheckAcceptsSecurityMergeReadyEvidence(t *testing.T) {
 	evidence := baseAgentEvidence()
 	evidence["command_attestations"].(map[string]any)["agent_full_check"] = map[string]any{

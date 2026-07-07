@@ -157,6 +157,9 @@ func (c checker) run(changedFilesOverride string) {
 	fmt.Println("change policy check passed")
 	fmt.Println("detected policies: " + strings.Join(detectedPolicies, ", "))
 	fmt.Println("rule ids: " + strings.Join(ruleIDsForPolicies(detectedPolicies), ", "))
+	if semanticIDs := semanticRuleIDs(changedFiles); len(semanticIDs) > 0 {
+		fmt.Println("semantic rule ids: " + strings.Join(semanticIDs, ", "))
+	}
 	fmt.Println("required commands: " + strings.Join(requiredCommands, ", "))
 	for _, policy := range detectedPolicies {
 		paths := sortedSet(matched[policy])
@@ -229,6 +232,33 @@ func ruleIDsForPolicies(policies []string) []string {
 		}
 	}
 	return ids
+}
+
+func semanticRuleIDs(paths []string) []string {
+	ids := map[string]struct{}{}
+	for _, path := range paths {
+		switch {
+		case path == "ai-context.schema.json":
+			ids["SEMANTIC_SCHEMA_CONTRACT_CHANGE"] = struct{}{}
+		case path == "ai-context.json":
+			ids["SEMANTIC_AI_CONTEXT_CHANGE"] = struct{}{}
+		case path == "Makefile":
+			ids["SEMANTIC_MAKEFILE_CHANGE"] = struct{}{}
+		}
+		if path == "Makefile" || strings.HasPrefix(path, ".github/workflows/") {
+			ids["SEMANTIC_RELEASE_GATE_CHANGE"] = struct{}{}
+		}
+		if path == "ai-context.json" || path == "ai-context.schema.json" || strings.Contains(path, "coverage") {
+			ids["SEMANTIC_COVERAGE_POLICY_CHANGE"] = struct{}{}
+		}
+		if path == "ai-context.json" || path == "ai-context.schema.json" || strings.Contains(path, "api_freeze") || strings.Contains(path, "api-freeze") {
+			ids["SEMANTIC_API_FREEZE_POLICY_CHANGE"] = struct{}{}
+		}
+		if path == "ai-context.json" || path == "ai-context.schema.json" || strings.Contains(path, "security") || strings.Contains(path, "crypto") || strings.Contains(path, "jwt") || strings.Contains(path, "rand") {
+			ids["SEMANTIC_SECURITY_POLICY_CHANGE"] = struct{}{}
+		}
+	}
+	return sortedSet(ids)
 }
 
 func gitOK(root string, args ...string) bool {
