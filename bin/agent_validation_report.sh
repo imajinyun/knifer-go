@@ -207,6 +207,14 @@ checks = {
 structured_checks = {
     "change_policy_check": run_json(["go", "run", "./bin/changepolicycheck", "-root", root_dir, "-json"]),
     "ci_workflow_check": run_json(["go", "run", "./bin/ciworkflowcheck", "-root", root_dir, "-json"]),
+    "random_source_policy_check": run_json(["go", "run", "./bin/randomsourcepolicycheck", "-root", root_dir, "-json"]),
+    "threat_model_check": run_json(["go", "run", "./bin/threatmodelcheck", "-root", root_dir, "-json"]),
+    "dynamic_contracts_check": run_json(["go", "run", "./bin/dynamiccontractscheck", "-root", root_dir, "-json"]),
+    "error_model_check": run_json(["go", "run", "./bin/errormodelcheck", "-root", root_dir, "-json"]),
+    "api_convergence_check": run_json(["go", "run", "./bin/apiconvergencecheck", "-root", root_dir, "-json"]),
+    "lifecycle_check": run_json(["go", "run", "./bin/lifecyclecheck", "-root", root_dir, "-json"]),
+    "dependency_tiers_check": run_json(["go", "run", "./bin/dependencytierscheck", "-root", root_dir, "-json"]),
+    "benchmark_regression_check": run_json(["go", "run", "./bin/benchmarkregressioncheck", "-root", root_dir, "-json"]),
     "provider_contract_check": run_json(["go", "run", "./bin/providercontractcheck", "-root", root_dir, "-json"]),
     "arch_imports_check": run_json(["go", "run", "./bin/archimportscheck", "-root", root_dir, "-json"]),
     "panic_policy_check": run_json(["go", "run", "./bin/panicpolicycheck", "-root", root_dir, "-json"]),
@@ -355,7 +363,15 @@ ci_workflow_json = structured_checks.get("ci_workflow_check", {}).get("json", {}
 change_policy_rule_ids = change_policy_json.get("rule_ids", [])
 change_policy_semantic_rule_ids = change_policy_json.get("semantic_rule_ids", [])
 ci_workflow_findings = ci_workflow_json.get("findings", [])
-arch_structured_check_names = [
+governance_structured_check_names = [
+    "random_source_policy_check",
+    "threat_model_check",
+    "dynamic_contracts_check",
+    "error_model_check",
+    "api_convergence_check",
+    "lifecycle_check",
+    "dependency_tiers_check",
+    "benchmark_regression_check",
     "provider_contract_check",
     "arch_imports_check",
     "panic_policy_check",
@@ -367,7 +383,7 @@ print("detected policies: " + (", ".join(report["detected_change_policies"]) or 
 print("change policy rule ids: " + summary_list(change_policy_rule_ids))
 print("change policy semantic rule ids: " + summary_list(change_policy_semantic_rule_ids))
 print("ci workflow findings: " + str(len(ci_workflow_findings)))
-for check_name in arch_structured_check_names:
+for check_name in governance_structured_check_names:
     check_json = structured_checks.get(check_name, {}).get("json", {})
     findings = check_json.get("findings", [])
     print(f"{check_name} findings: {len(findings)}; rule ids: {summary_list(finding_rule_ids(findings))}")

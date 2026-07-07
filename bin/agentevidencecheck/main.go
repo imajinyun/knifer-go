@@ -316,6 +316,14 @@ func (c *checker) validateStructuredChecks(changedFiles, detectedPolicies, requi
 
 	for _, checkName := range []string{
 		"ci_workflow_check",
+		"random_source_policy_check",
+		"threat_model_check",
+		"dynamic_contracts_check",
+		"error_model_check",
+		"api_convergence_check",
+		"lifecycle_check",
+		"dependency_tiers_check",
+		"benchmark_regression_check",
 		"provider_contract_check",
 		"arch_imports_check",
 		"panic_policy_check",

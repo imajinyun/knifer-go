@@ -1878,10 +1878,18 @@ func baseAgentEvidence() map[string]any {
   "findings": []
 }`,
 		},
-		"provider_contract_check": structuredPassedCheck("go run ./bin/providercontractcheck -root /fixture -json"),
-		"arch_imports_check":      structuredPassedCheck("go run ./bin/archimportscheck -root /fixture -json"),
-		"panic_policy_check":      structuredPassedCheck("go run ./bin/panicpolicycheck -root /fixture -json"),
-		"facade_boundary_check":   structuredPassedCheck("go run ./bin/facadeboundarycheck -root /fixture -json"),
+		"random_source_policy_check": structuredPassedCheck("go run ./bin/randomsourcepolicycheck -root /fixture -json"),
+		"threat_model_check":         structuredPassedCheck("go run ./bin/threatmodelcheck -root /fixture -json"),
+		"dynamic_contracts_check":    structuredPassedCheck("go run ./bin/dynamiccontractscheck -root /fixture -json"),
+		"error_model_check":          structuredPassedCheck("go run ./bin/errormodelcheck -root /fixture -json"),
+		"api_convergence_check":      structuredPassedCheck("go run ./bin/apiconvergencecheck -root /fixture -json"),
+		"lifecycle_check":            structuredPassedCheck("go run ./bin/lifecyclecheck -root /fixture -json"),
+		"dependency_tiers_check":     structuredPassedCheck("go run ./bin/dependencytierscheck -root /fixture -json"),
+		"benchmark_regression_check": structuredPassedCheck("go run ./bin/benchmarkregressioncheck -root /fixture -json"),
+		"provider_contract_check":    structuredPassedCheck("go run ./bin/providercontractcheck -root /fixture -json"),
+		"arch_imports_check":         structuredPassedCheck("go run ./bin/archimportscheck -root /fixture -json"),
+		"panic_policy_check":         structuredPassedCheck("go run ./bin/panicpolicycheck -root /fixture -json"),
+		"facade_boundary_check":      structuredPassedCheck("go run ./bin/facadeboundarycheck -root /fixture -json"),
 	}
 	attestations := map[string]any{
 		"ai_context_check": map[string]any{
