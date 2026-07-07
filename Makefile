@@ -308,6 +308,7 @@ bench-compare:
 	$(MAKE) benchstat BENCH_BASELINE="$(BENCH_BASELINE_OUT)" BENCH_CURRENT="$(BENCH_CURRENT_OUT)"
 
 bench-regression-check: governance-maturity-check
+	$(GO) run ./bin/benchmarkregressioncheck -root .
 	bash bin/check_governance_maturity.sh --bench-only
 
 benchstat:

@@ -1069,6 +1069,80 @@ func TestErrorModelCheckRejectsMissingContractTest(t *testing.T) {
 	}
 }
 
+func TestBenchmarkRegressionCheckAcceptsValidFixture(t *testing.T) {
+	fixture := benchmarkRegressionFixture(t)
+	output, err := fixture.RunBenchmarkRegressionCheck()
+	if err != nil {
+		t.Fatalf("benchmarkregressioncheck failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "benchmark regression metadata is valid") {
+		t.Fatalf("benchmark regression output missing success:\n%s", output)
+	}
+}
+
+func TestBenchmarkRegressionCheckRejectsHotPathMissingBenchTarget(t *testing.T) {
+	fixture := benchmarkRegressionFixture(t)
+	fixture.WriteFile("Makefile", benchmarkRegressionMakefileWithout("./vjson"))
+
+	output, err := fixture.RunBenchmarkRegressionCheckJSON()
+	if err == nil {
+		t.Fatalf("benchmarkregressioncheck -json unexpectedly passed:\n%s", output)
+	}
+	var result struct {
+		Status   string `json:"status"`
+		Findings []struct {
+			RuleID string `json:"rule_id"`
+		} `json:"findings"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("benchmarkregressioncheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "failed" {
+		t.Fatalf("JSON status = %q, want failed\n%s", result.Status, output)
+	}
+	var sawBenchTarget bool
+	for _, finding := range result.Findings {
+		if finding.RuleID == "BENCHMARK_REGRESSION_HOT_PATH_BENCH_TARGET" {
+			sawBenchTarget = true
+		}
+	}
+	if !sawBenchTarget {
+		t.Fatalf("benchmark regression JSON findings missing bench-target rule id:\n%s", output)
+	}
+}
+
+func TestBenchmarkRegressionCheckRejectsMissingBenchmarkFunction(t *testing.T) {
+	fixture := benchmarkRegressionFixture(t)
+	context := benchmarkRegressionContext()
+	hotPaths := context["benchmark_regression"].(map[string]any)["hot_path_packages"].([]any)
+	hotPaths[0].(map[string]any)["benchmarks"] = []string{"vjson/json_benchmark_test.go:BenchmarkMissingFixture"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunBenchmarkRegressionCheck()
+	if err == nil {
+		t.Fatalf("benchmarkregressioncheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "BENCHMARK_REGRESSION_BENCHMARK_MISSING") {
+		t.Fatalf("benchmark regression output missing missing-benchmark rule id:\n%s", output)
+	}
+}
+
+func TestBenchmarkRegressionCheckRejectsMinimumCountTooLow(t *testing.T) {
+	fixture := benchmarkRegressionFixture(t)
+	context := benchmarkRegressionContext()
+	thresholds := context["benchmark_regression"].(map[string]any)["thresholds"].(map[string]any)
+	thresholds["minimum_count"] = 1
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunBenchmarkRegressionCheck()
+	if err == nil {
+		t.Fatalf("benchmarkregressioncheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "BENCHMARK_REGRESSION_THRESHOLD_INVALID") {
+		t.Fatalf("benchmark regression output missing threshold rule id:\n%s", output)
+	}
+}
+
 func TestProviderContractCheckRejectsConcreteNetworkAndMissingProvider(t *testing.T) {
 	fixture := providerContractFixture(t)
 	fixture.WriteFile("vbad/bad.go", `package vbad
@@ -2026,6 +2100,100 @@ func errorTaxonomy(category, code, useWhen string) map[string]any {
 		"category": category,
 		"code":     code,
 		"use_when": useWhen,
+	}
+}
+
+func benchmarkRegressionFixture(t *testing.T) *governanceFixture {
+	t.Helper()
+	fixture := newGovernanceFixture(t)
+	fixture.WriteJSON("ai-context.json", benchmarkRegressionContext())
+	fixture.WriteFile("Makefile", benchmarkRegressionMakefileWithout(""))
+	for _, dir := range []string{
+		"internal/slice", "internal/maps", "internal/str", "internal/num", "internal/bean", "internal/json", "internal/db", "internal/httpx/http", "internal/codec",
+		"vbean", "vjson", "vmap", "vslice", "vstr", "vdb", "vhttp", "vcodec",
+	} {
+		fixture.WriteFile(dir+"/doc.go", "package fixture\n")
+	}
+	for path, functions := range benchmarkRegressionFunctions() {
+		var body strings.Builder
+		body.WriteString("package fixture\n\nimport \"testing\"\n\n")
+		for _, fn := range functions {
+			body.WriteString("func ")
+			body.WriteString(fn)
+			body.WriteString("(b *testing.B) {}\n")
+		}
+		fixture.WriteFile(path, body.String())
+	}
+	return fixture
+}
+
+func benchmarkRegressionContext() map[string]any {
+	hotPaths := []any{
+		hotPath("./vjson", "data_transform", []string{"vjson/json_benchmark_test.go:BenchmarkParseObj"}),
+		hotPath("./vstr", "text_parsing", []string{"vstr/str_benchmark_test.go:BenchmarkReverse"}),
+		hotPath("./vslice", "collections", []string{"vslice/slice_benchmark_test.go:BenchmarkFilter"}),
+		hotPath("./vmap", "collections", []string{"vmap/maps_benchmark_test.go:BenchmarkFilter"}),
+		hotPath("./vdb", "data_and_cli_boundaries", []string{"vdb/builder_test.go:BenchmarkFacadePageOrders"}),
+		hotPath("./vhttp", "network_clients", []string{"vhttp/http_benchmark_test.go:BenchmarkGetStringE"}),
+		hotPath("./vcodec", "data_transform", []string{"vcodec/codec_benchmark_test.go:BenchmarkBase64Encode"}),
+	}
+	return map[string]any{
+		"benchmark_regression": map[string]any{
+			"baseline_command":   "make bench-baseline BENCHCOUNT=10 BENCHTIME=3s",
+			"compare_command":    "make bench-compare BENCHCOUNT=10 BENCHTIME=3s",
+			"benchstat_required": true,
+			"thresholds": map[string]any{
+				"ns_per_op_regression_percent":     10,
+				"bytes_per_op_regression_percent":  10,
+				"allocs_per_op_regression_percent": 5,
+				"minimum_count":                    10,
+			},
+			"tracked_packages":  []string{"./internal/slice", "./internal/maps", "./internal/str", "./internal/num", "./internal/bean", "./internal/json", "./internal/db", "./internal/httpx/http", "./internal/codec", "./vbean", "./vjson", "./vmap", "./vslice", "./vstr", "./vdb", "./vhttp", "./vcodec"},
+			"hot_path_packages": hotPaths,
+		},
+	}
+}
+
+func hotPath(pkg, owner string, benchmarks []string) map[string]any {
+	return map[string]any{
+		"package":           pkg,
+		"owner":             owner,
+		"benchmarks":        benchmarks,
+		"threshold_profile": "default",
+	}
+}
+
+func benchmarkRegressionMakefileWithout(excluded string) string {
+	benchPkgs := []string{"./internal/slice", "./internal/maps", "./internal/str", "./internal/num", "./internal/bean", "./internal/json", "./internal/db", "./internal/httpx/http", "./internal/codec"}
+	benchFacadePkgs := []string{"./vbean", "./vjson", "./vmap", "./vslice", "./vstr", "./vdb", "./vhttp", "./vcodec"}
+	benchCodecPkgs := []string{}
+	remove := func(values []string) []string {
+		var out []string
+		for _, value := range values {
+			if value != excluded {
+				out = append(out, value)
+			}
+		}
+		return out
+	}
+	return "BENCH_PKGS ?= " + strings.Join(remove(benchPkgs), " ") + "\n" +
+		"BENCH_FACADE_PKGS ?= " + strings.Join(remove(benchFacadePkgs), " ") + "\n" +
+		"BENCH_CODEC_PKGS ?= " + strings.Join(remove(benchCodecPkgs), " ") + "\n\n" +
+		"bench-baseline:\n\t@true\n\n" +
+		"bench-compare:\n\t@true\n\n" +
+		"bench-regression-check:\n\t@true\n\n" +
+		"benchstat:\n\t@true\n"
+}
+
+func benchmarkRegressionFunctions() map[string][]string {
+	return map[string][]string{
+		"vjson/json_benchmark_test.go":   {"BenchmarkParseObj"},
+		"vstr/str_benchmark_test.go":     {"BenchmarkReverse"},
+		"vslice/slice_benchmark_test.go": {"BenchmarkFilter"},
+		"vmap/maps_benchmark_test.go":    {"BenchmarkFilter"},
+		"vdb/builder_test.go":            {"BenchmarkFacadePageOrders"},
+		"vhttp/http_benchmark_test.go":   {"BenchmarkGetStringE"},
+		"vcodec/codec_benchmark_test.go": {"BenchmarkBase64Encode"},
 	}
 }
 
