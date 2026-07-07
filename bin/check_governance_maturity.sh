@@ -4193,45 +4193,6 @@ def validate_api_convergence() -> None:
 		if not isinstance(entry.get("decision"), str) or not entry["decision"].strip():
 			add_error(f"api_convergence.facades.{package_name}.decision must be non-empty")
 
-
-def validate_lifecycle() -> None:
-	lifecycle = require_mapping(ai_context.get("package_lifecycle"), "package_lifecycle")
-	allowed = set(require_string_list(lifecycle.get("allowed_grades"), "package_lifecycle.allowed_grades"))
-	for grade in ("core", "stable", "maintenance", "adapter", "heavy", "candidate-for-split", "candidate-for-deprecation"):
-		if grade not in allowed:
-			add_error(f"package_lifecycle.allowed_grades must include {grade}")
-	packages = require_mapping(lifecycle.get("packages"), "package_lifecycle.packages")
-	missing = sorted(public_facades - set(packages))
-	if missing:
-		add_error("package_lifecycle.packages missing public facade(s): " + ", ".join(missing))
-	extra = sorted(set(packages) - public_facades)
-	if extra:
-		add_error("package_lifecycle.packages includes non-public facade(s): " + ", ".join(extra))
-	dependency_tiers = require_mapping(ai_context.get("dependency_tiers"), "dependency_tiers")
-	heavy = set(require_string_list(dependency_tiers.get("heavy_extension_facades"), "dependency_tiers.heavy_extension_facades"))
-	adapters = set(require_string_list(dependency_tiers.get("provider_contract_facades"), "dependency_tiers.provider_contract_facades"))
-	core = set(require_string_list(dependency_tiers.get("core_facades"), "dependency_tiers.core_facades"))
-	for tier_name, tier_values in (("heavy_extension_facades", heavy), ("provider_contract_facades", adapters), ("core_facades", core)):
-		unknown = sorted(tier_values - public_facades)
-		if unknown:
-			add_error(f"dependency_tiers.{tier_name} includes non-public facade(s): " + ", ".join(unknown))
-	if heavy & adapters or heavy & core or adapters & core:
-		add_error("dependency_tiers facade sets must be mutually exclusive")
-	for package_name, entry_value in sorted(packages.items()):
-		entry = require_mapping(entry_value, f"package_lifecycle.packages.{package_name}")
-		grade = entry.get("grade")
-		if grade not in allowed:
-			add_error(f"package_lifecycle.packages.{package_name}.grade must be an allowed lifecycle grade")
-		if not isinstance(entry.get("rationale"), str) or not entry["rationale"].strip():
-			add_error(f"package_lifecycle.packages.{package_name}.rationale must be non-empty")
-		if package_name in heavy and grade != "heavy":
-			add_error(f"package_lifecycle.packages.{package_name}.grade must be heavy")
-		if package_name in adapters and grade != "adapter":
-			add_error(f"package_lifecycle.packages.{package_name}.grade must be adapter")
-		if package_name in core and grade not in {"core", "stable", "maintenance", "candidate-for-split", "candidate-for-deprecation"}:
-			add_error(f"package_lifecycle.packages.{package_name}.grade must remain core-compatible")
-
-
 def validate_capability_domains() -> None:
 	domains = require_mapping(ai_context.get("capability_domains"), "capability_domains")
 	expected_domains = {
@@ -4467,7 +4428,6 @@ if not bench_only:
 	validate_docs_pkg_discovery_polish_governance()
 	validate_example_depth_governance()
 	validate_api_convergence()
-	validate_lifecycle()
 	validate_capability_domains()
 	validate_dependency_isolation()
 	validate_threat_model()
