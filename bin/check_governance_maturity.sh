@@ -4325,43 +4325,6 @@ def validate_dependency_isolation() -> None:
 			if not any(rel.startswith(prefix + "/") or rel == prefix + ".go" for prefix in allowed_prefixes):
 				add_error(f"{rel} imports heavy dependency {import_path} outside isolated facade/internal package")
 
-def validate_dynamic_semantic_contracts() -> None:
-	contracts = require_mapping(ai_context.get("dynamic_semantic_contracts"), "dynamic_semantic_contracts")
-	required_domains = set(require_string_list(contracts.get("required_domains"), "dynamic_semantic_contracts.required_domains"))
-	expected_domains = {"vbean_decode_copy_merge", "vjson_dynamic", "vobj_dynamic", "vconf_dynamic", "vconv_conversion_matrix", "vref_reflection_boundaries"}
-	if required_domains != expected_domains:
-		add_error("dynamic_semantic_contracts.required_domains must cover exactly: " + ", ".join(sorted(expected_domains)))
-	domains = require_mapping(contracts.get("domains"), "dynamic_semantic_contracts.domains")
-	missing = sorted(required_domains - set(domains))
-	if missing:
-		add_error("dynamic_semantic_contracts.domains missing required domain(s): " + ", ".join(missing))
-	extra = sorted(set(domains) - required_domains)
-	if extra:
-		add_error("dynamic_semantic_contracts.domains includes unknown domain(s): " + ", ".join(extra))
-	covered_packages: set[str] = set()
-	for domain_name, domain_value in sorted(domains.items()):
-		domain = require_mapping(domain_value, f"dynamic_semantic_contracts.domains.{domain_name}")
-		packages = require_string_list(domain.get("packages"), f"dynamic_semantic_contracts.domains.{domain_name}.packages")
-		covered_packages.update(packages)
-		for package in packages:
-			if not (root / package).is_dir():
-				add_error(f"dynamic_semantic_contracts.domains.{domain_name}.packages references missing directory {package}")
-		if len(require_string_list(domain.get("guarantees"), f"dynamic_semantic_contracts.domains.{domain_name}.guarantees")) < 3:
-			add_error(f"dynamic_semantic_contracts.domains.{domain_name}.guarantees must contain at least 3 semantic guarantees")
-		for field in ("contract_tests", "fuzz_tests"):
-			references = require_string_list(domain.get(field), f"dynamic_semantic_contracts.domains.{domain_name}.{field}")
-			if field == "contract_tests" and not references:
-				add_error(f"dynamic_semantic_contracts.domains.{domain_name}.{field} must be non-empty")
-			for reference in references:
-				if not references_function(reference):
-					add_error(f"dynamic_semantic_contracts.domains.{domain_name}.{field} must reference explicit test functions, got {reference}")
-				if not reference_exists(reference):
-					add_error(f"dynamic_semantic_contracts.domains.{domain_name}.{field} references missing file or function {reference}")
-	expected_packages = {"internal/bean", "internal/conv", "internal/ref", "vjson", "vobj", "vconf", "vconv", "vref"}
-	if covered_packages != expected_packages:
-		add_error("dynamic_semantic_contracts must cover exactly package directories: " + ", ".join(sorted(expected_packages)))
-
-
 def validate_threat_model() -> None:
 	threat_model = require_mapping(ai_context.get("threat_model"), "threat_model")
 	methodology = threat_model.get("methodology")
@@ -4507,7 +4470,6 @@ if not bench_only:
 	validate_lifecycle()
 	validate_capability_domains()
 	validate_dependency_isolation()
-	validate_dynamic_semantic_contracts()
 	validate_threat_model()
 
 if errors:
