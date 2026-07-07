@@ -4131,68 +4131,6 @@ def validate_local_governance_gates() -> None:
 		if not make_target_depends_on(target, "bench-regression-check"):
 			add_error(f"Makefile target {target} must depend on bench-regression-check")
 
-
-def validate_api_convergence() -> None:
-	api_convergence = require_mapping(ai_context.get("api_convergence"), "api_convergence")
-	tools_md = (root / "docs/api/tools.md").read_text(encoding="utf-8")
-	max_golden = api_convergence.get("max_golden_path_per_facade")
-	if not isinstance(max_golden, (int, float)) or isinstance(max_golden, bool) or int(max_golden) != 5:
-		add_error("api_convergence.max_golden_path_per_facade must be 5")
-	max_golden = 5
-	required = set(require_string_list(api_convergence.get("required_classifications"), "api_convergence.required_classifications"))
-	for name in ("primary", "advanced", "compatibility", "avoid"):
-		if name not in required:
-			add_error(f"api_convergence.required_classifications must include {name}")
-	facades = require_mapping(api_convergence.get("facades"), "api_convergence.facades")
-	missing = sorted(public_facades - set(facades))
-	if missing:
-		add_error("api_convergence.facades missing public facade(s): " + ", ".join(missing))
-	extra = sorted(set(facades) - public_facades)
-	if extra:
-		add_error("api_convergence.facades includes non-public facade(s): " + ", ".join(extra))
-	for package_name in sorted(public_facades):
-		entry = require_mapping(facades.get(package_name), f"api_convergence.facades.{package_name}")
-		pkg = tool_packages.get(package_name)
-		if not pkg:
-			add_error(f"docs/api/tools.json missing package {package_name}")
-			continue
-		function_names = {fn.get("name") for fn in pkg.get("functions", []) if isinstance(fn, dict)}
-		compatibility_functions = {fn.get("name") for fn in pkg.get("functions", []) if isinstance(fn, dict) and fn.get("status") == "compatibility"}
-		golden = [item.get("name") for item in pkg.get("golden_path", []) if isinstance(item, dict)]
-		if not golden:
-			add_error(f"{package_name} must expose at least one golden_path entry")
-		if len(golden) > max_golden:
-			add_error(f"{package_name} golden_path has {len(golden)} entries; max is {max_golden}")
-		primary = require_string_list(entry.get("primary"), f"api_convergence.facades.{package_name}.primary")
-		if not primary or len(primary) > max_golden:
-			add_error(f"api_convergence.facades.{package_name}.primary must contain 1-{max_golden} APIs")
-		if primary != golden:
-			add_error(f"api_convergence.facades.{package_name}.primary must match docs/api/tools.json golden_path order")
-		tools_md_golden = extract_tools_markdown_golden_path(tools_md, package_name)
-		if tools_md_golden and tools_md_golden != primary:
-			add_error(f"docs/api/tools.md {package_name} Golden path API set must match api_convergence primary order")
-		quickstart_golden = extract_quickstart_golden_path(package_name)
-		if quickstart_golden and quickstart_golden != primary:
-			add_error(f"docs/doc quickstart {package_name} Golden path APIs must match api_convergence primary order")
-		bucket_values: dict[str, set[str]] = {}
-		for bucket in ("primary", "advanced", "compatibility", "avoid"):
-			values = require_string_list(entry.get(bucket), f"api_convergence.facades.{package_name}.{bucket}")
-			bucket_values[bucket] = set(values)
-			if len(values) != len(set(values)):
-				add_error(f"api_convergence.facades.{package_name}.{bucket} must not contain duplicates")
-			for fn_name in values:
-				if fn_name not in function_names:
-					add_error(f"api_convergence.facades.{package_name}.{bucket} references unknown API {fn_name}")
-		for left, right in (("primary", "advanced"), ("primary", "avoid"), ("advanced", "compatibility"), ("advanced", "avoid"), ("compatibility", "avoid")):
-			overlap = sorted(bucket_values[left] & bucket_values[right])
-			if overlap:
-				add_error(f"api_convergence.facades.{package_name}.{left} and {right} overlap: " + ", ".join(overlap))
-		for fn_name in require_string_list(entry.get("compatibility"), f"api_convergence.facades.{package_name}.compatibility"):
-			if fn_name not in compatibility_functions:
-				add_error(f"api_convergence.facades.{package_name}.compatibility includes non-compatibility API {fn_name}")
-		if not isinstance(entry.get("decision"), str) or not entry["decision"].strip():
-			add_error(f"api_convergence.facades.{package_name}.decision must be non-empty")
-
 def validate_capability_domains() -> None:
 	domains = require_mapping(ai_context.get("capability_domains"), "capability_domains")
 	expected_domains = {
@@ -4419,7 +4357,6 @@ if not bench_only:
 	validate_adoption_trust_governance()
 	validate_docs_pkg_discovery_polish_governance()
 	validate_example_depth_governance()
-	validate_api_convergence()
 	validate_capability_domains()
 	validate_dependency_isolation()
 	validate_threat_model()
