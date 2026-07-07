@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -622,6 +623,46 @@ func TestCIWorkflowCheckRejectsUnknownMakeTarget(t *testing.T) {
 	}
 }
 
+func TestCIWorkflowCheckEmitsJSONFindings(t *testing.T) {
+	fixture := ciWorkflowFixture(t, "make missing-target")
+	output, err := fixture.RunCIWorkflowCheckJSON()
+	if err == nil {
+		t.Fatalf("ciworkflowcheck -json unexpectedly passed:\n%s", output)
+	}
+
+	var result struct {
+		Status   string `json:"status"`
+		Findings []struct {
+			RuleID   string `json:"rule_id"`
+			Path     string `json:"path"`
+			Message  string `json:"message"`
+			Severity string `json:"severity"`
+		} `json:"findings"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("ciworkflowcheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "failed" {
+		t.Fatalf("JSON status = %q, want failed\n%s", result.Status, output)
+	}
+	if len(result.Findings) == 0 {
+		t.Fatalf("JSON findings unexpectedly empty:\n%s", output)
+	}
+	finding := result.Findings[0]
+	if finding.RuleID != "CI_WORKFLOW_UNKNOWN_MAKE_TARGET" {
+		t.Fatalf("JSON rule_id = %q, want CI_WORKFLOW_UNKNOWN_MAKE_TARGET\n%s", finding.RuleID, output)
+	}
+	if finding.Path != ".github/workflows/go.yml" {
+		t.Fatalf("JSON path = %q, want .github/workflows/go.yml\n%s", finding.Path, output)
+	}
+	if finding.Severity != "error" {
+		t.Fatalf("JSON severity = %q, want error\n%s", finding.Severity, output)
+	}
+	if !strings.Contains(finding.Message, "missing-target") {
+		t.Fatalf("JSON message missing target name:\n%s", output)
+	}
+}
+
 func TestCIWorkflowCheckAcceptsDeclaredMakeTarget(t *testing.T) {
 	fixture := ciWorkflowFixture(t, "make ci-agent-governance")
 	output, err := fixture.RunCIWorkflowCheck()
@@ -630,6 +671,28 @@ func TestCIWorkflowCheckAcceptsDeclaredMakeTarget(t *testing.T) {
 	}
 	if !strings.Contains(output, "CI workflow governance is valid") {
 		t.Fatalf("CI workflow output missing success:\n%s", output)
+	}
+}
+
+func TestCIWorkflowCheckEmitsPassingJSON(t *testing.T) {
+	fixture := ciWorkflowFixture(t, "make ci-agent-governance")
+	output, err := fixture.RunCIWorkflowCheckJSON()
+	if err != nil {
+		t.Fatalf("ciworkflowcheck -json failed: %v\n%s", err, output)
+	}
+
+	var result struct {
+		Status   string            `json:"status"`
+		Findings []json.RawMessage `json:"findings"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("ciworkflowcheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "passed" {
+		t.Fatalf("JSON status = %q, want passed\n%s", result.Status, output)
+	}
+	if len(result.Findings) != 0 {
+		t.Fatalf("JSON findings length = %d, want 0\n%s", len(result.Findings), output)
 	}
 }
 

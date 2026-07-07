@@ -80,6 +80,11 @@ func (f *governanceFixture) RunCIWorkflowCheck() (string, error) {
 	return f.RunScript("bin/check_ci_workflows.sh", "CI_WORKFLOW_ROOT="+f.root)
 }
 
+func (f *governanceFixture) RunCIWorkflowCheckJSON() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("ciworkflowcheck", "-root", f.root, "-json")
+}
+
 func (f *governanceFixture) RunDocsQuickstartCheck() (string, error) {
 	f.t.Helper()
 	return f.RunScript("bin/check_docs_quickstart.sh", "DOCS_QUICKSTART_ROOT="+f.root)
@@ -138,4 +143,22 @@ func (f *governanceFixture) RunAPIFreezeCheck(contextPath, toolsPath string) (st
 		"AI_CONTEXT_FILE="+contextPath,
 		"TOOLS_JSON_FILE="+toolsPath,
 	)
+}
+
+func (f *governanceFixture) RunGoTool(tool string, args ...string) (string, error) {
+	f.t.Helper()
+	root := repoRoot(f.t)
+	binary := filepath.Join(f.t.TempDir(), tool)
+	build := exec.Command("go", "build", "-o", binary, "./bin/"+tool)
+	build.Dir = root
+	build.Env = os.Environ()
+	if output, err := build.CombinedOutput(); err != nil {
+		f.t.Fatalf("go build ./bin/%s failed: %v\n%s", tool, err, string(output))
+	}
+
+	cmd := exec.Command(binary, args...)
+	cmd.Dir = root
+	cmd.Env = os.Environ()
+	output, err := cmd.CombinedOutput()
+	return string(output), err
 }

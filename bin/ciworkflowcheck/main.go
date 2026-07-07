@@ -13,17 +13,27 @@ import (
 )
 
 type checker struct {
-	root   string
-	errors []ruleError
+	root              string
+	workflowCount     int
+	workflowFileCount int
+	findings          []finding
 }
 
-type ruleError struct {
-	id      string
-	message string
+type finding struct {
+	RuleID   string `json:"rule_id"`
+	Path     string `json:"path"`
+	Message  string `json:"message"`
+	Severity string `json:"severity"`
+}
+
+type checkResult struct {
+	Status   string    `json:"status"`
+	Findings []finding `json:"findings"`
 }
 
 func main() {
 	rootFlag := flag.String("root", "", "repository root to validate")
+	jsonFlag := flag.Bool("json", false, "emit machine-readable JSON output")
 	flag.Parse()
 
 	root := strings.TrimSpace(*rootFlag)
@@ -31,22 +41,26 @@ func main() {
 		var err error
 		root, err = os.Getwd()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "CI WORKFLOW CHECK FAILED:\n- cannot resolve working directory: %v\n", err)
+			findings := []finding{{
+				RuleID:   "CI_WORKFLOW_CHECK_INPUT_ERROR",
+				Path:     "",
+				Message:  fmt.Sprintf("cannot resolve working directory: %v", err),
+				Severity: "error",
+			}}
+			writeOutput(*jsonFlag, checkResult{Status: "failed", Findings: findings}, 0, 0)
 			os.Exit(1)
 		}
 	}
 
 	c := &checker{root: root}
 	if err := c.run(); err != nil {
-		c.addError("CI_WORKFLOW_CHECK_INPUT_ERROR", err.Error())
+		c.addError("CI_WORKFLOW_CHECK_INPUT_ERROR", "", err.Error())
 	}
-	if len(c.errors) > 0 {
-		fmt.Fprintln(os.Stderr, "CI WORKFLOW CHECK FAILED:")
-		for _, err := range c.errors {
-			fmt.Fprintf(os.Stderr, "- [%s] %s\n", err.id, err.message)
-		}
+	if len(c.findings) > 0 {
+		writeOutput(*jsonFlag, checkResult{Status: "failed", Findings: c.findings}, 0, 0)
 		os.Exit(1)
 	}
+	writeOutput(*jsonFlag, checkResult{Status: "passed", Findings: []finding{}}, c.workflowCount, c.workflowFileCount)
 }
 
 func (c *checker) run() error {
@@ -84,6 +98,8 @@ func (c *checker) run() error {
 	}
 	definedMakeTargets := makeTargets(string(makefileText))
 	actualPaths := workflowFiles(filepath.Join(c.root, ".github", "workflows"))
+	c.workflowCount = len(githubActions)
+	c.workflowFileCount = len(actualPaths)
 	declaredPaths := map[string]struct{}{}
 
 	names := sortedKeys(githubActions)
@@ -101,66 +117,66 @@ func (c *checker) run() error {
 		declaredPaths[workflowPath] = struct{}{}
 		workflowBytes, err := os.ReadFile(filepath.Join(c.root, workflowPath))
 		if err != nil {
-			c.addError("CI_WORKFLOW_MISSING_FILE", fmt.Sprintf("ci_workflows.github_actions.%s.path references missing workflow %q", name, workflowPath))
+			c.addError("CI_WORKFLOW_MISSING_FILE", workflowPath, fmt.Sprintf("ci_workflows.github_actions.%s.path references missing workflow %q", name, workflowPath))
 			continue
 		}
 		workflowText := string(workflowBytes)
 
 		for _, target := range sortedSet(workflowMakeTargets(workflowText)) {
 			if _, ok := definedMakeTargets[target]; !ok {
-				c.addError("CI_WORKFLOW_UNKNOWN_MAKE_TARGET", fmt.Sprintf("%s references unknown Makefile target %q", workflowPath, target))
+				c.addError("CI_WORKFLOW_UNKNOWN_MAKE_TARGET", workflowPath, fmt.Sprintf("%s references unknown Makefile target %q", workflowPath, target))
 			}
 		}
 
 		jobs := workflowJobNames(workflowText)
 		for _, job := range requiredJobs {
 			if _, ok := jobs[job]; !ok {
-				c.addError("CI_WORKFLOW_MISSING_REQUIRED_JOB", fmt.Sprintf("%s is missing required job %q", workflowPath, job))
+				c.addError("CI_WORKFLOW_MISSING_REQUIRED_JOB", workflowPath, fmt.Sprintf("%s is missing required job %q", workflowPath, job))
 			}
 		}
 
 		for _, requiredText := range requiredCommands {
 			if !strings.Contains(workflowText, requiredText) {
-				c.addError("CI_WORKFLOW_REQUIRED_COMMAND_MISSING", fmt.Sprintf("%s must contain required command %q", workflowPath, requiredText))
+				c.addError("CI_WORKFLOW_REQUIRED_COMMAND_MISSING", workflowPath, fmt.Sprintf("%s must contain required command %q", workflowPath, requiredText))
 			}
 			target := makeTargetFromCommand(requiredText)
 			if target == "" {
 				continue
 			}
 			if _, ok := definedMakeTargets[target]; !ok {
-				c.addError("CI_WORKFLOW_UNKNOWN_MAKE_TARGET", fmt.Sprintf("ci_workflows.github_actions.%s required command %q references unknown Makefile target", name, requiredText))
+				c.addError("CI_WORKFLOW_UNKNOWN_MAKE_TARGET", "ai-context.json", fmt.Sprintf("ci_workflows.github_actions.%s required command %q references unknown Makefile target", name, requiredText))
 			}
 			if _, ok := commandMakeTargets[target]; !ok {
-				c.addError("CI_WORKFLOW_COMMAND_NOT_IN_AI_CONTEXT", fmt.Sprintf("ci_workflows.github_actions.%s required command %q has no ai-context.commands entry", name, requiredText))
+				c.addError("CI_WORKFLOW_COMMAND_NOT_IN_AI_CONTEXT", "ai-context.json", fmt.Sprintf("ci_workflows.github_actions.%s required command %q has no ai-context.commands entry", name, requiredText))
 			}
 		}
 		for _, envName := range requiredEnv {
 			if !strings.Contains(workflowText, envName) {
-				c.addError("CI_WORKFLOW_REQUIRED_ENV_MISSING", fmt.Sprintf("%s must contain required env %q", workflowPath, envName))
+				c.addError("CI_WORKFLOW_REQUIRED_ENV_MISSING", workflowPath, fmt.Sprintf("%s must contain required env %q", workflowPath, envName))
 			}
 		}
 		for _, artifact := range requiredArtifacts {
 			if !strings.Contains(workflowText, artifact) {
-				c.addError("CI_WORKFLOW_REQUIRED_ARTIFACT_MISSING", fmt.Sprintf("%s must upload required artifact %q", workflowPath, artifact))
+				c.addError("CI_WORKFLOW_REQUIRED_ARTIFACT_MISSING", workflowPath, fmt.Sprintf("%s must upload required artifact %q", workflowPath, artifact))
 			}
 		}
 
 		if name == "go" || name == "release" {
 			if !strings.Contains(workflowText, "GO_1_25_PATCH_VERSION") || !strings.Contains(workflowText, go125Patch) {
-				c.addError("CI_WORKFLOW_VERSION_DRIFT", fmt.Sprintf("%s must use declared Go patch version %q", workflowPath, go125Patch))
+				c.addError("CI_WORKFLOW_VERSION_DRIFT", workflowPath, fmt.Sprintf("%s must use declared Go patch version %q", workflowPath, go125Patch))
 			}
 		}
 		if name == "go" {
 			if !strings.Contains(workflowText, "GOLANGCI_LINT_VERSION") || !strings.Contains(workflowText, golangciLintVersion) {
-				c.addError("CI_WORKFLOW_VERSION_DRIFT", fmt.Sprintf("%s must use declared golangci-lint version %q", workflowPath, golangciLintVersion))
+				c.addError("CI_WORKFLOW_VERSION_DRIFT", workflowPath, fmt.Sprintf("%s must use declared golangci-lint version %q", workflowPath, golangciLintVersion))
 			}
 			matrix := fmt.Sprintf(`go-version: ["%s", "1.26"]`, go125Patch)
 			if go125Patch != "" && !strings.Contains(workflowText, matrix) {
-				c.addError("CI_WORKFLOW_VERSION_DRIFT", fmt.Sprintf("%s test matrix must include %q and '1.26'", workflowPath, go125Patch))
+				c.addError("CI_WORKFLOW_VERSION_DRIFT", workflowPath, fmt.Sprintf("%s test matrix must include %q and '1.26'", workflowPath, go125Patch))
 			}
 			for _, duplicateStep := range []string{"make race-test", "make shuffle-test", "make mod-check"} {
 				if strings.Contains(workflowText, duplicateStep) {
-					c.addError("CI_WORKFLOW_DUPLICATE_SUBSTEP", fmt.Sprintf("%s should not duplicate ci-test sub-step %q", workflowPath, duplicateStep))
+					c.addError("CI_WORKFLOW_DUPLICATE_SUBSTEP", workflowPath, fmt.Sprintf("%s should not duplicate ci-test sub-step %q", workflowPath, duplicateStep))
 				}
 			}
 		}
@@ -169,14 +185,10 @@ func (c *checker) run() error {
 	undeclared := difference(actualPaths, declaredPaths)
 	missingFiles := difference(declaredPaths, actualPaths)
 	if len(undeclared) > 0 {
-		c.addError("CI_WORKFLOW_UNDECLARED_FILE", "undeclared GitHub workflow file(s): "+strings.Join(undeclared, ", "))
+		c.addError("CI_WORKFLOW_UNDECLARED_FILE", ".github/workflows", "undeclared GitHub workflow file(s): "+strings.Join(undeclared, ", "))
 	}
 	if len(missingFiles) > 0 {
-		c.addError("CI_WORKFLOW_MISSING_FILE", "declared GitHub workflow path(s) not present on disk: "+strings.Join(missingFiles, ", "))
-	}
-
-	if len(c.errors) == 0 {
-		fmt.Printf("CI workflow governance is valid (%d workflows, %d files)\n", len(githubActions), len(actualPaths))
+		c.addError("CI_WORKFLOW_MISSING_FILE", ".github/workflows", "declared GitHub workflow path(s) not present on disk: "+strings.Join(missingFiles, ", "))
 	}
 	return nil
 }
@@ -196,14 +208,19 @@ func readJSON(path string) (map[string]any, error) {
 	return out, nil
 }
 
-func (c *checker) addError(ruleID, message string) {
-	c.errors = append(c.errors, ruleError{id: ruleID, message: message})
+func (c *checker) addError(ruleID, path, message string) {
+	c.findings = append(c.findings, finding{
+		RuleID:   ruleID,
+		Path:     path,
+		Message:  message,
+		Severity: "error",
+	})
 }
 
 func (c *checker) requireMapping(value any, path string) map[string]any {
 	mapping, ok := value.(map[string]any)
 	if !ok {
-		c.addError("CI_WORKFLOW_SCHEMA_INVALID", path+" must be an object")
+		c.addError("CI_WORKFLOW_SCHEMA_INVALID", pathToFile(path), path+" must be an object")
 		return map[string]any{}
 	}
 	return mapping
@@ -212,7 +229,7 @@ func (c *checker) requireMapping(value any, path string) map[string]any {
 func (c *checker) requireString(value any, path string) string {
 	text, ok := value.(string)
 	if !ok || strings.TrimSpace(text) == "" {
-		c.addError("CI_WORKFLOW_SCHEMA_INVALID", path+" must be a non-empty string")
+		c.addError("CI_WORKFLOW_SCHEMA_INVALID", pathToFile(path), path+" must be a non-empty string")
 		return ""
 	}
 	return text
@@ -221,19 +238,46 @@ func (c *checker) requireString(value any, path string) string {
 func (c *checker) requireStringList(value any, path string) []string {
 	values, ok := value.([]any)
 	if !ok {
-		c.addError("CI_WORKFLOW_SCHEMA_INVALID", path+" must be a list")
+		c.addError("CI_WORKFLOW_SCHEMA_INVALID", pathToFile(path), path+" must be a list")
 		return nil
 	}
 	var out []string
 	for i, item := range values {
 		text, ok := item.(string)
 		if !ok || strings.TrimSpace(text) == "" {
-			c.addError("CI_WORKFLOW_SCHEMA_INVALID", fmt.Sprintf("%s[%d] must be a non-empty string", path, i))
+			c.addError("CI_WORKFLOW_SCHEMA_INVALID", pathToFile(path), fmt.Sprintf("%s[%d] must be a non-empty string", path, i))
 			continue
 		}
 		out = append(out, text)
 	}
 	return out
+}
+
+func writeOutput(jsonOutput bool, result checkResult, workflowCount, fileCount int) {
+	if jsonOutput {
+		data, err := json.MarshalIndent(result, "", "  ")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "CI WORKFLOW CHECK FAILED:\n- [CI_WORKFLOW_CHECK_INPUT_ERROR] cannot encode JSON output: %v\n", err)
+			return
+		}
+		fmt.Println(string(data))
+		return
+	}
+	if result.Status == "passed" {
+		fmt.Printf("CI workflow governance is valid (%d workflows, %d files)\n", workflowCount, fileCount)
+		return
+	}
+	fmt.Fprintln(os.Stderr, "CI WORKFLOW CHECK FAILED:")
+	for _, finding := range result.Findings {
+		fmt.Fprintf(os.Stderr, "- [%s] %s\n", finding.RuleID, finding.Message)
+	}
+}
+
+func pathToFile(path string) string {
+	if strings.HasPrefix(path, "ci_workflows") || strings.HasPrefix(path, "commands") {
+		return "ai-context.json"
+	}
+	return ""
 }
 
 func stringValue(value any) string {
