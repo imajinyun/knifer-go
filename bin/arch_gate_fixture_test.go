@@ -108,6 +108,9 @@ func Run() {
 	if err == nil {
 		t.Fatalf("check_panic_policy.sh unexpectedly passed:\n%s", output)
 	}
+	if !strings.Contains(output, "PANIC_POLICY_PRODUCTION_PANIC") {
+		t.Fatalf("panic policy output missing PANIC_POLICY_PRODUCTION_PANIC rule id:\n%s", output)
+	}
 	if !strings.Contains(output, "production panic is not allowed") || !strings.Contains(output, "internal/bad/bad.go") {
 		t.Fatalf("panic policy output missing production panic error:\n%s", output)
 	}
