@@ -1,4 +1,4 @@
-.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check go-module-cache-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check random-source-policy-check threat-model-check dynamic-contracts-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check docs-gen docs-check facade-tiering-gen utility-comparison-refresh generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
+.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check go-module-cache-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check docs-gen docs-check facade-tiering-gen utility-comparison-refresh generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -37,6 +37,7 @@ help:
 	@echo "  random-source-policy-check Verify random source policy metadata and contract tests"
 	@echo "  threat-model-check Verify threat model boundary contracts"
 	@echo "  dynamic-contracts-check Verify dynamic semantic contract metadata"
+	@echo "  error-model-check Verify error taxonomy metadata and contract tests"
 	@echo "  bench-core      Run core benchmark baselines"
 	@echo "  bench-facade    Run facade benchmark baselines"
 	@echo "  bench-codec     Run JSON/XML benchmark baselines"
@@ -191,6 +192,9 @@ threat-model-check:
 
 dynamic-contracts-check:
 	$(GO) run ./bin/dynamiccontractscheck -root .
+
+error-model-check:
+	$(GO) run ./bin/errormodelcheck -root .
 
 tools-check:
 	$(GO) test ./bin/toolsgen

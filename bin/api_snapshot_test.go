@@ -992,6 +992,83 @@ func TestDynamicContractsCheckRejectsPackageCoverageDrift(t *testing.T) {
 	}
 }
 
+func TestErrorModelCheckAcceptsValidFixture(t *testing.T) {
+	fixture := errorModelFixture(t)
+	output, err := fixture.RunErrorModelCheck()
+	if err != nil {
+		t.Fatalf("errormodelcheck failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "error model governance is valid") {
+		t.Fatalf("error model output missing success:\n%s", output)
+	}
+}
+
+func TestErrorModelCheckRejectsMissingCode(t *testing.T) {
+	fixture := errorModelFixture(t)
+	context := errorModelContext()
+	taxonomy := context["error_model"].(map[string]any)["taxonomy"].([]any)
+	taxonomy = taxonomy[:len(taxonomy)-1]
+	context["error_model"].(map[string]any)["taxonomy"] = taxonomy
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunErrorModelCheckJSON()
+	if err == nil {
+		t.Fatalf("errormodelcheck -json unexpectedly passed:\n%s", output)
+	}
+	var result struct {
+		Status   string `json:"status"`
+		Findings []struct {
+			RuleID string `json:"rule_id"`
+		} `json:"findings"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("errormodelcheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "failed" {
+		t.Fatalf("JSON status = %q, want failed\n%s", result.Status, output)
+	}
+	var sawCoverage bool
+	for _, finding := range result.Findings {
+		if finding.RuleID == "ERROR_MODEL_TAXONOMY_COVERAGE" {
+			sawCoverage = true
+		}
+	}
+	if !sawCoverage {
+		t.Fatalf("error model JSON findings missing taxonomy coverage rule id:\n%s", output)
+	}
+}
+
+func TestErrorModelCheckRejectsMissingConstant(t *testing.T) {
+	fixture := errorModelFixture(t)
+	fixture.WriteFile("errors.go", `package knifer
+
+const ErrCodeInvalidInput = "GK_INVALID_INPUT"
+`)
+
+	output, err := fixture.RunErrorModelCheck()
+	if err == nil {
+		t.Fatalf("errormodelcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "ERROR_MODEL_ERROR_CONSTANT_MISSING") {
+		t.Fatalf("error model output missing missing-constant rule id:\n%s", output)
+	}
+}
+
+func TestErrorModelCheckRejectsMissingContractTest(t *testing.T) {
+	fixture := errorModelFixture(t)
+	context := errorModelContext()
+	context["error_model"].(map[string]any)["contract_tests"] = []string{"errors_test.go:TestMissingFixture"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunErrorModelCheck()
+	if err == nil {
+		t.Fatalf("errormodelcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "ERROR_MODEL_CONTRACT_TEST_MISSING") {
+		t.Fatalf("error model output missing missing-contract-test rule id:\n%s", output)
+	}
+}
+
 func TestProviderContractCheckRejectsConcreteNetworkAndMissingProvider(t *testing.T) {
 	fixture := providerContractFixture(t)
 	fixture.WriteFile("vbad/bad.go", `package vbad
@@ -1884,6 +1961,71 @@ func dynamicContractTestFunctions() map[string][]string {
 		"vconv/conv_test.go":                      {"TestConvFacadeConversionMatrix"},
 		"internal/ref/checked_convert_test.go":    {"TestCheckedConvertNumericBoundaries"},
 		"vref/ref_field_test.go":                  {"TestFacadeReflectionHelpers"},
+	}
+}
+
+func errorModelFixture(t *testing.T) *governanceFixture {
+	t.Helper()
+	fixture := newGovernanceFixture(t)
+	fixture.WriteJSON("ai-context.json", errorModelContext())
+	fixture.WriteFile("errors.go", `package knifer
+
+const (
+	ErrCodeInvalidInput     = "GK_INVALID_INPUT"
+	ErrCodeNotFound         = "GK_NOT_FOUND"
+	ErrCodeUnsupported      = "GK_UNSUPPORTED"
+	ErrCodeUnsafeResource   = "GK_UNSAFE_RESOURCE"
+	ErrCodeTimeout          = "GK_TIMEOUT"
+	ErrCodeProviderFailure  = "GK_PROVIDER_FAILURE"
+	ErrCodeInternal         = "GK_INTERNAL"
+)
+`)
+	fixture.WriteFile("errors_test.go", `package knifer
+
+func TestUnifiedErrorTaxonomyCodes() {}
+`)
+	fixture.WriteFile("internal/bean/error_contract_test.go", `package bean
+
+func TestBeanErrorContract() {}
+`)
+	fixture.WriteFile("internal/db/error_contract_test.go", `package db
+
+func TestDBErrorContract() {}
+`)
+	fixture.WriteFile("vdb/error_contract_test.go", `package vdb
+
+func TestVDBErrorContract() {}
+`)
+	return fixture
+}
+
+func errorModelContext() map[string]any {
+	return map[string]any{
+		"error_model": map[string]any{
+			"taxonomy": []any{
+				errorTaxonomy("invalid input", "GK_INVALID_INPUT", "invalid caller input"),
+				errorTaxonomy("not found", "GK_NOT_FOUND", "missing resource"),
+				errorTaxonomy("unsupported type", "GK_UNSUPPORTED", "unsupported operation"),
+				errorTaxonomy("unsafe resource", "GK_UNSAFE_RESOURCE", "unsafe resource"),
+				errorTaxonomy("timeout", "GK_TIMEOUT", "deadline exceeded"),
+				errorTaxonomy("provider failure", "GK_PROVIDER_FAILURE", "provider failed"),
+				errorTaxonomy("internal", "GK_INTERNAL", "internal failure"),
+			},
+			"contract_tests": []string{
+				"errors_test.go:TestUnifiedErrorTaxonomyCodes",
+				"internal/bean/error_contract_test.go:TestBeanErrorContract",
+				"internal/db/error_contract_test.go:TestDBErrorContract",
+				"vdb/error_contract_test.go:TestVDBErrorContract",
+			},
+		},
+	}
+}
+
+func errorTaxonomy(category, code, useWhen string) map[string]any {
+	return map[string]any{
+		"category": category,
+		"code":     code,
+		"use_when": useWhen,
 	}
 }
 

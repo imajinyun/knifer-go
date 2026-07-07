@@ -252,6 +252,16 @@ func (f *governanceFixture) RunDynamicContractsCheckJSON() (string, error) {
 	return f.RunGoTool("dynamiccontractscheck", "-root", f.root, "-json")
 }
 
+func (f *governanceFixture) RunErrorModelCheck() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("errormodelcheck", "-root", f.root)
+}
+
+func (f *governanceFixture) RunErrorModelCheckJSON() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("errormodelcheck", "-root", f.root, "-json")
+}
+
 func (f *governanceFixture) RunGoTool(tool string, args ...string) (string, error) {
 	f.t.Helper()
 	return f.RunGoToolEnv(tool, nil, args...)
