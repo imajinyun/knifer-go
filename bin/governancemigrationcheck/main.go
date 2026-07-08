@@ -17,6 +17,10 @@ type checker struct {
 }
 
 var forbiddenPythonTokens = []string{
+	"def validate_benchmark_regression",
+	"validate_benchmark_regression()",
+	"--bench-only",
+	"BENCH_ONLY",
 	"def validate_random_source_policy",
 	"validate_random_source_policy()",
 	"def validate_error_model",
@@ -98,6 +102,9 @@ func (c *checker) run() {
 	if !strings.Contains(benchRecipe, "benchmarkregressioncheck") {
 		c.addError("GOVERNANCE_MIGRATION_MAKE_TARGET_MISSING", "Makefile", "bench-regression-check must run benchmarkregressioncheck")
 	}
+	if makeTargetDependencies(makefileText, "bench-regression-check")["governance-maturity-check"] {
+		c.addError("GOVERNANCE_MIGRATION_MAKE_TARGET_REGRESSION", "Makefile", "bench-regression-check must not depend on governance-maturity-check")
+	}
 }
 
 func makeTargetRecipe(makefileText, target string) string {
@@ -119,6 +126,19 @@ func makeTargetRecipe(makefileText, target string) string {
 		}
 	}
 	return strings.Join(out, "\n")
+}
+
+func makeTargetDependencies(makefileText, target string) map[string]bool {
+	pattern := regexp.MustCompile(`(?m)^` + regexp.QuoteMeta(target) + `:\s*(.*)$`)
+	match := pattern.FindStringSubmatch(makefileText)
+	if len(match) != 2 {
+		return nil
+	}
+	out := map[string]bool{}
+	for _, dep := range strings.Fields(match[1]) {
+		out[dep] = true
+	}
+	return out
 }
 
 func (c *checker) addError(ruleID, path, message string) {

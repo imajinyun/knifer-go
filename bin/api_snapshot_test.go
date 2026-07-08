@@ -1143,6 +1143,19 @@ func TestBenchmarkRegressionCheckRejectsMinimumCountTooLow(t *testing.T) {
 	}
 }
 
+func TestBenchmarkRegressionCheckRejectsMissingMakeTarget(t *testing.T) {
+	fixture := benchmarkRegressionFixture(t)
+	fixture.WriteFile("Makefile", benchmarkRegressionMakefileWithoutTarget("benchstat"))
+
+	output, err := fixture.RunBenchmarkRegressionCheck()
+	if err == nil {
+		t.Fatalf("benchmarkregressioncheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "BENCHMARK_REGRESSION_MAKE_TARGET_MISSING") {
+		t.Fatalf("benchmark regression output missing make-target rule id:\n%s", output)
+	}
+}
+
 func TestAPIConvergenceCheckAcceptsValidFixture(t *testing.T) {
 	fixture := apiConvergenceFixture(t)
 	output, err := fixture.RunAPIConvergenceCheck()
@@ -2489,6 +2502,21 @@ func benchmarkRegressionMakefileWithout(excluded string) string {
 		"bench-compare:\n\t@true\n\n" +
 		"bench-regression-check:\n\t@true\n\n" +
 		"benchstat:\n\t@true\n"
+}
+
+func benchmarkRegressionMakefileWithoutTarget(excludedTarget string) string {
+	var body strings.Builder
+	body.WriteString("BENCH_PKGS ?= ./internal/slice ./internal/maps ./internal/str ./internal/num ./internal/bean ./internal/json ./internal/db ./internal/httpx/http ./internal/codec\n")
+	body.WriteString("BENCH_FACADE_PKGS ?= ./vbean ./vjson ./vmap ./vslice ./vstr ./vdb ./vhttp ./vcodec\n")
+	body.WriteString("BENCH_CODEC_PKGS ?=\n\n")
+	for _, target := range []string{"bench-baseline", "bench-compare", "bench-regression-check", "benchstat"} {
+		if target == excludedTarget {
+			continue
+		}
+		body.WriteString(target)
+		body.WriteString(":\n\t@true\n\n")
+	}
+	return body.String()
 }
 
 func benchmarkRegressionFunctions() map[string][]string {

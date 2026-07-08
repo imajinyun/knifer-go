@@ -3,12 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-BENCH_ONLY=0
-if [ "${1:-}" = "--bench-only" ]; then
-	BENCH_ONLY=1
-fi
-
-python3 - "${BENCH_ONLY}" <<'PY'
+python3 - <<'PY'
 from __future__ import annotations
 
 import json
@@ -17,7 +12,6 @@ import re
 import sys
 from pathlib import Path
 
-bench_only = sys.argv[1] == "1"
 root = Path.cwd()
 errors: list[str] = []
 
@@ -244,20 +238,6 @@ def test_function_exists(reference: str) -> bool:
 	return re.search(rf"^func\s+{re.escape(symbol)}\s*\(\s*t\s+\*testing\.T\s*\)", text, flags=re.MULTILINE) is not None
 
 
-def benchmark_function_exists(reference: str) -> bool:
-	path, separator, symbol = reference.partition(":")
-	if not separator or not re.match(r"^Benchmark[A-Za-z_]\w*$", symbol):
-		return False
-	file_path = root / path
-	if not file_path.exists():
-		return False
-	try:
-		text = file_path.read_text(encoding="utf-8")
-	except UnicodeDecodeError:
-		return False
-	return re.search(rf"^func\s+{re.escape(symbol)}\s*\(\s*b\s+\*testing\.B\s*\)", text, flags=re.MULTILINE) is not None
-
-
 def example_function_exists(package_name: str, example_name: str) -> bool:
 	package_dir = root / package_name
 	if not package_dir.is_dir():
@@ -309,13 +289,6 @@ def make_target_depends_on(target: str, dependency: str, seen: set[str] | None =
 	return any(make_target_depends_on(called, dependency, seen) for called in called_targets)
 
 
-def make_variable_packages(name: str) -> set[str]:
-	match = re.search(rf"^{re.escape(name)}\s*\?=\s*(.*)$", makefile, flags=re.MULTILINE)
-	if not match:
-		add_error(f"Makefile must define {name}")
-		return set()
-	return {item for item in match.group(1).split() if item.startswith("./")}
-
 commands = require_mapping(ai_context.get("commands"), "commands")
 for command_name in ("governance_maturity_check", "bench_regression_check"):
 	if command_name not in commands:
@@ -328,71 +301,6 @@ public_facades = set(name for name in public_facade_names if isinstance(name, st
 tool_packages = {pkg.get("name"): pkg for pkg in tools.get("packages", []) if isinstance(pkg, dict)}
 if len(public_facade_names) != len(public_facades):
 	add_error("public_facades must not contain duplicate package names")
-
-
-def validate_benchmark_regression() -> None:
-	bench = require_mapping(ai_context.get("benchmark_regression"), "benchmark_regression")
-	if bench.get("benchstat_required") is not True:
-		add_error("benchmark_regression.benchstat_required must be true")
-	for field in ("baseline_command", "compare_command"):
-		value = bench.get(field)
-		if not isinstance(value, str) or not value.startswith("make bench-"):
-			add_error(f"benchmark_regression.{field} must start with a make bench-* target")
-	thresholds = require_mapping(bench.get("thresholds"), "benchmark_regression.thresholds")
-	for key in ("ns_per_op_regression_percent", "bytes_per_op_regression_percent", "allocs_per_op_regression_percent"):
-		value = thresholds.get(key)
-		if not isinstance(value, (int, float)) or isinstance(value, bool) or value <= 0:
-			add_error(f"benchmark_regression.thresholds.{key} must be a positive number")
-	minimum_count = thresholds.get("minimum_count")
-	if not isinstance(minimum_count, (int, float)) or isinstance(minimum_count, bool) or minimum_count < 10:
-		add_error("benchmark_regression.thresholds.minimum_count must be at least 10")
-	tracked = require_string_list(bench.get("tracked_packages"), "benchmark_regression.tracked_packages")
-	if len(tracked) < 5:
-		add_error("benchmark_regression.tracked_packages must include representative core and facade packages")
-	if not any(pkg.startswith("./internal/") for pkg in tracked):
-		add_error("benchmark_regression.tracked_packages must include at least one internal package")
-	if not any(pkg.startswith("./v") for pkg in tracked):
-		add_error("benchmark_regression.tracked_packages must include at least one public facade package")
-	for pkg in tracked:
-		if pkg.startswith("./") and not (root / pkg[2:]).is_dir():
-			add_error(f"benchmark_regression.tracked_packages references missing package directory {pkg}")
-	tracked_set = set(tracked)
-	bench_package_set = make_variable_packages("BENCH_PKGS") | make_variable_packages("BENCH_FACADE_PKGS") | make_variable_packages("BENCH_CODEC_PKGS")
-	hot_paths = bench.get("hot_path_packages")
-	if not isinstance(hot_paths, list) or len(hot_paths) < 7:
-		add_error("benchmark_regression.hot_path_packages must include at least 7 hot-path package entries")
-		hot_paths = []
-	expected_hot_packages = {"./vjson", "./vstr", "./vslice", "./vmap", "./vdb", "./vhttp", "./vcodec"}
-	seen_hot_packages: set[str] = set()
-	for index, item in enumerate(hot_paths):
-		entry = require_mapping(item, f"benchmark_regression.hot_path_packages[{index}]")
-		package = entry.get("package")
-		if not isinstance(package, str) or not package:
-			add_error(f"benchmark_regression.hot_path_packages[{index}].package must be non-empty")
-			continue
-		seen_hot_packages.add(package)
-		if package not in tracked_set:
-			add_error(f"benchmark_regression.hot_path_packages.{package} must also be listed in tracked_packages")
-		if package not in bench_package_set:
-			add_error(f"benchmark_regression.hot_path_packages.{package} must be covered by BENCH_PKGS, BENCH_FACADE_PKGS, or BENCH_CODEC_PKGS")
-		if package.startswith("./") and not (root / package[2:]).is_dir():
-			add_error(f"benchmark_regression.hot_path_packages.{package} references missing package directory")
-		if not isinstance(entry.get("owner"), str) or not entry["owner"].strip():
-			add_error(f"benchmark_regression.hot_path_packages.{package}.owner must be non-empty")
-		if entry.get("threshold_profile") != "default":
-			add_error(f"benchmark_regression.hot_path_packages.{package}.threshold_profile must be default")
-		benchmarks = require_string_list(entry.get("benchmarks"), f"benchmark_regression.hot_path_packages.{package}.benchmarks")
-		if len(benchmarks) < 1:
-			add_error(f"benchmark_regression.hot_path_packages.{package}.benchmarks must not be empty")
-		for reference in benchmarks:
-			if not benchmark_function_exists(reference):
-				add_error(f"benchmark_regression.hot_path_packages.{package}.benchmarks references missing benchmark {reference}")
-	missing_hot_packages = sorted(expected_hot_packages - seen_hot_packages)
-	if missing_hot_packages:
-		add_error("benchmark_regression.hot_path_packages missing package(s): " + ", ".join(missing_hot_packages))
-	for target in ("bench-baseline", "bench-compare", "bench-regression-check", "benchstat"):
-		if not re.search(rf"^{re.escape(target)}:(?:\s|$)", makefile, flags=re.MULTILINE):
-			add_error(f"Makefile must define benchmark target {target}")
 
 
 def validate_roadmap_catalog_baseline() -> None:
@@ -4247,66 +4155,61 @@ def validate_threat_model() -> None:
 	if unexpected:
 		add_error("threat_model.domains cover non-security-sensitive package(s): " + ", ".join(unexpected))
 
-validate_benchmark_regression()
-if not bench_only:
-	validate_local_governance_gates()
-	validate_roadmap_catalog_baseline()
-	validate_roadmap_star_domain_scorecard()
-	validate_safe_http_cookbook_governance()
-	validate_safe_crypto_cookbook_governance()
-	validate_daily_json_file_faq_governance()
-	validate_star_domain_no_missing_governance()
-	validate_vdb_deepening_governance()
-	validate_vdb_execution_evidence_governance()
-	validate_vdb_example_depth_governance()
-	validate_safe_crypto_advanced_backlog_governance()
-	validate_safe_crypto_otp_governance()
-	validate_safe_crypto_password_hashing_governance()
-	validate_safe_crypto_argon2id_governance()
-	validate_safe_crypto_jwk_jwks_governance()
-	validate_safe_crypto_jwk_jwks_implementation_governance()
-	validate_safe_crypto_secret_handling_governance()
-	validate_safe_crypto_interoperability_governance()
-	validate_safe_crypto_benchmark_scope_governance()
-	validate_utility_library_comparison_governance()
-	validate_utility_top5_comparison_governance_v2()
-	validate_utility_top5_refresh_workflow_governance()
-	validate_safe_crypto_advanced_closeout_governance()
-	validate_go_version_adoption_governance()
-	validate_collections_comparison_governance()
-	validate_collection_mindshare_pack_governance()
-	validate_collection_advanced_backlog_governance()
-	validate_vconv_vbean_migration_governance()
-	validate_vconv_cast_migration_governance()
-	validate_vconv_cast_migration_examples_governance()
-	validate_dynamic_data_toolkit_matrix_governance()
-	validate_task_index_governance()
-	validate_task_index_auto_check_governance()
-	validate_facade_tiering_import_governance()
-	validate_facade_tiering_generated_view_governance()
-	validate_daily_developer_toolkit_governance()
-	validate_daily_utility_cookbook_v2_governance()
-	validate_developer_debug_test_backlog_governance()
-	validate_developer_debug_test_api_decision_governance()
-	validate_benchmark_trust_governance()
-	validate_collections_benchmark_trust_governance()
-	validate_first_use_golden_paths_governance()
-	validate_weak_facade_example_density_governance()
-	validate_weak_facade_example_density_governance_2()
-	validate_weak_facade_example_density_governance_3()
-	validate_adoption_trust_governance()
-	validate_docs_pkg_discovery_polish_governance()
-	validate_example_depth_governance()
-	validate_capability_domains()
-	validate_threat_model()
+validate_local_governance_gates()
+validate_roadmap_catalog_baseline()
+validate_roadmap_star_domain_scorecard()
+validate_safe_http_cookbook_governance()
+validate_safe_crypto_cookbook_governance()
+validate_daily_json_file_faq_governance()
+validate_star_domain_no_missing_governance()
+validate_vdb_deepening_governance()
+validate_vdb_execution_evidence_governance()
+validate_vdb_example_depth_governance()
+validate_safe_crypto_advanced_backlog_governance()
+validate_safe_crypto_otp_governance()
+validate_safe_crypto_password_hashing_governance()
+validate_safe_crypto_argon2id_governance()
+validate_safe_crypto_jwk_jwks_governance()
+validate_safe_crypto_jwk_jwks_implementation_governance()
+validate_safe_crypto_secret_handling_governance()
+validate_safe_crypto_interoperability_governance()
+validate_safe_crypto_benchmark_scope_governance()
+validate_utility_library_comparison_governance()
+validate_utility_top5_comparison_governance_v2()
+validate_utility_top5_refresh_workflow_governance()
+validate_safe_crypto_advanced_closeout_governance()
+validate_go_version_adoption_governance()
+validate_collections_comparison_governance()
+validate_collection_mindshare_pack_governance()
+validate_collection_advanced_backlog_governance()
+validate_vconv_vbean_migration_governance()
+validate_vconv_cast_migration_governance()
+validate_vconv_cast_migration_examples_governance()
+validate_dynamic_data_toolkit_matrix_governance()
+validate_task_index_governance()
+validate_task_index_auto_check_governance()
+validate_facade_tiering_import_governance()
+validate_facade_tiering_generated_view_governance()
+validate_daily_developer_toolkit_governance()
+validate_daily_utility_cookbook_v2_governance()
+validate_developer_debug_test_backlog_governance()
+validate_developer_debug_test_api_decision_governance()
+validate_benchmark_trust_governance()
+validate_collections_benchmark_trust_governance()
+validate_first_use_golden_paths_governance()
+validate_weak_facade_example_density_governance()
+validate_weak_facade_example_density_governance_2()
+validate_weak_facade_example_density_governance_3()
+validate_adoption_trust_governance()
+validate_docs_pkg_discovery_polish_governance()
+validate_example_depth_governance()
+validate_capability_domains()
+validate_threat_model()
 
 if errors:
 	for error in errors:
 		print(f"governance maturity check error: {error}", file=sys.stderr)
 	sys.exit(1)
 
-if bench_only:
-	print("benchmark regression metadata is valid")
-else:
-	print("governance maturity metadata is valid")
+print("governance maturity metadata is valid")
 PY

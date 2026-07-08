@@ -331,9 +331,8 @@ bench-compare:
 	$(GO) test -bench=$(BENCH) -benchmem -benchtime=$(BENCHTIME) -count=$(BENCHCOUNT) -run=^$$ $(BENCH_PKGS) $(BENCH_FACADE_PKGS) $(BENCH_CODEC_PKGS) | tee "$(BENCH_CURRENT_OUT)"
 	$(MAKE) benchstat BENCH_BASELINE="$(BENCH_BASELINE_OUT)" BENCH_CURRENT="$(BENCH_CURRENT_OUT)"
 
-bench-regression-check: governance-maturity-check
+bench-regression-check:
 	$(GO) run ./bin/benchmarkregressioncheck -root .
-	bash bin/check_governance_maturity.sh --bench-only
 
 benchstat:
 	@test -n "$(BENCH_BASELINE)" || (echo "BENCH_BASELINE is required" >&2; exit 2)
