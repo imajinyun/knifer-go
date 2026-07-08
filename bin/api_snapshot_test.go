@@ -843,7 +843,7 @@ func TestThreatModelCheckAcceptsValidBoundaryFixture(t *testing.T) {
 	if err != nil {
 		t.Fatalf("threatmodelcheck failed: %v\n%s", err, output)
 	}
-	if !strings.Contains(output, "threat model boundary contracts are valid") {
+	if !strings.Contains(output, "threat model governance is valid") {
 		t.Fatalf("threat model output missing success:\n%s", output)
 	}
 }
@@ -911,6 +911,116 @@ func TestThreatModelCheckRejectsUnknownPackage(t *testing.T) {
 	}
 	if !strings.Contains(output, "THREAT_MODEL_BOUNDARY_UNKNOWN_PACKAGE") {
 		t.Fatalf("threat model output missing unknown-package rule id:\n%s", output)
+	}
+}
+
+func TestThreatModelCheckRejectsIncompleteMethodology(t *testing.T) {
+	fixture := threatModelFixture(t)
+	context := threatModelContext()
+	context["threat_model"].(map[string]any)["methodology"] = "STRIDE only"
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunThreatModelCheck()
+	if err == nil {
+		t.Fatalf("threatmodelcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "THREAT_MODEL_METHODOLOGY_INCOMPLETE") {
+		t.Fatalf("threat model output missing methodology rule id:\n%s", output)
+	}
+}
+
+func TestThreatModelCheckRejectsMissingTopLevelMisuseTest(t *testing.T) {
+	fixture := threatModelFixture(t)
+	context := threatModelContext()
+	context["threat_model"].(map[string]any)["misuse_tests"] = []string{"internal/httpx/contract_safe_url_test.go:TestMissingFixture"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunThreatModelCheck()
+	if err == nil {
+		t.Fatalf("threatmodelcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "THREAT_MODEL_MISUSE_TEST_MISSING") {
+		t.Fatalf("threat model output missing top-level misuse-test rule id:\n%s", output)
+	}
+}
+
+func TestThreatModelCheckRejectsDomainMissingThreatContract(t *testing.T) {
+	fixture := threatModelFixture(t)
+	context := threatModelContext()
+	network := context["threat_model"].(map[string]any)["domains"].(map[string]any)["network_clients"].(map[string]any)
+	delete(network["contract_tests"].(map[string]any), "SSRF")
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunThreatModelCheck()
+	if err == nil {
+		t.Fatalf("threatmodelcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "THREAT_MODEL_DOMAIN_CONTRACT_TEST_MISSING_THREAT") {
+		t.Fatalf("threat model output missing missing-threat rule id:\n%s", output)
+	}
+}
+
+func TestThreatModelCheckRejectsDomainUnknownThreatContract(t *testing.T) {
+	fixture := threatModelFixture(t)
+	context := threatModelContext()
+	network := context["threat_model"].(map[string]any)["domains"].(map[string]any)["network_clients"].(map[string]any)
+	network["contract_tests"].(map[string]any)["unexpected threat"] = []string{"internal/httpx/contract_safe_url_test.go:TestHTTPContractSafeURLRejectsUnsafeTargets", "internal/httpx/http/safe_request_test.go:TestSafeRequestRejectsPrivateAndUnsafeRedirects", "internal/httpx/resty/safe_request_test.go:TestSafeRequestRejectsPrivateAndUnsafeRedirects"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunThreatModelCheck()
+	if err == nil {
+		t.Fatalf("threatmodelcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "THREAT_MODEL_DOMAIN_CONTRACT_TEST_UNKNOWN_THREAT") {
+		t.Fatalf("threat model output missing unknown-threat rule id:\n%s", output)
+	}
+}
+
+func TestThreatModelCheckRejectsHighRiskDomainInsufficientReferences(t *testing.T) {
+	fixture := threatModelFixture(t)
+	context := threatModelContext()
+	network := context["threat_model"].(map[string]any)["domains"].(map[string]any)["network_clients"].(map[string]any)
+	network["contract_tests"].(map[string]any)["SSRF"] = []string{"internal/httpx/contract_safe_url_test.go:TestHTTPContractSafeURLRejectsUnsafeTargets", "internal/httpx/http/safe_request_test.go:TestSafeRequestRejectsPrivateAndUnsafeRedirects"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunThreatModelCheck()
+	if err == nil {
+		t.Fatalf("threatmodelcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "THREAT_MODEL_DOMAIN_CONTRACT_TEST_INCOMPLETE") {
+		t.Fatalf("threat model output missing incomplete-contract rule id:\n%s", output)
+	}
+}
+
+func TestThreatModelCheckRejectsSecuritySensitiveCoverageGap(t *testing.T) {
+	fixture := threatModelFixture(t)
+	context := threatModelContext()
+	network := context["threat_model"].(map[string]any)["domains"].(map[string]any)["network_clients"].(map[string]any)
+	network["packages"] = []string{"vhttp", "vresty"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunThreatModelCheck()
+	if err == nil {
+		t.Fatalf("threatmodelcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "THREAT_MODEL_SECURITY_SENSITIVE_COVERAGE") {
+		t.Fatalf("threat model output missing security-sensitive coverage rule id:\n%s", output)
+	}
+}
+
+func TestThreatModelCheckRejectsUnexpectedDomainPackage(t *testing.T) {
+	fixture := threatModelFixture(t)
+	context := threatModelContext()
+	context["public_facades"] = append(context["public_facades"].([]any), map[string]any{"package": "vextra"})
+	context["threat_model"].(map[string]any)["domains"].(map[string]any)["configuration_and_ai"].(map[string]any)["packages"] = []string{"vconf", "vextra"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunThreatModelCheck()
+	if err == nil {
+		t.Fatalf("threatmodelcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "THREAT_MODEL_DOMAIN_UNEXPECTED_PACKAGE") {
+		t.Fatalf("threat model output missing unexpected-package rule id:\n%s", output)
 	}
 }
 
@@ -2382,8 +2492,30 @@ func threatModelContext() map[string]any {
 		publicFacadeEntries = append(publicFacadeEntries, map[string]any{"package": pkg})
 	}
 	return map[string]any{
-		"public_facades": publicFacadeEntries,
+		"public_facades":              publicFacadeEntries,
+		"security_sensitive_packages": []string{"vhttp", "vresty", "vurl", "vconf"},
 		"threat_model": map[string]any{
+			"methodology":  "STRIDE with DREAD scoring.",
+			"misuse_tests": []string{"internal/httpx/contract_safe_url_test.go:TestHTTPContractSafeURLRejectsUnsafeTargets"},
+			"domains": map[string]any{
+				"network_clients": map[string]any{
+					"packages": []string{"vhttp", "vresty", "vurl"},
+					"threats":  []string{"SSRF", "open redirects"},
+					"contract_tests": map[string]any{
+						"SSRF":           []string{"internal/httpx/contract_safe_url_test.go:TestHTTPContractSafeURLRejectsUnsafeTargets", "internal/httpx/http/safe_request_test.go:TestSafeRequestRejectsPrivateAndUnsafeRedirects", "internal/httpx/resty/safe_request_test.go:TestSafeRequestRejectsPrivateAndUnsafeRedirects"},
+						"open redirects": []string{"internal/httpx/http/safe_request_test.go:TestSafeRequestRejectsPrivateAndUnsafeRedirects", "internal/httpx/resty/safe_request_test.go:TestSafeRequestRejectsPrivateAndUnsafeRedirects", "internal/conf/load_remote_safe_hosts_test.go:TestLoadRemoteSafeRejectsUnsafeRedirectTarget"},
+					},
+					"misuse_tests": []string{"internal/httpx/contract_safe_url_test.go", "internal/httpx/http/safe_request_test.go"},
+				},
+				"configuration_and_ai": map[string]any{
+					"packages": []string{"vconf"},
+					"threats":  []string{"remote configuration SSRF"},
+					"contract_tests": map[string]any{
+						"remote configuration SSRF": []string{"internal/conf/load_remote_safe_hosts_test.go:TestLoadRemoteSafeRejectsUnsafeRedirectTarget", "internal/conf/load_remote_safe_roundtrip_test.go:TestLoadRemoteSafeRevalidatesHostAtRoundTrip"},
+					},
+					"misuse_tests": []string{"internal/conf/load_remote_safe_hosts_test.go"},
+				},
+			},
 			"boundary_contracts": []any{
 				threatBoundary("default_timeout", []string{"vhttp", "vresty"}, []string{"positive default timeout", "timeout errors classified as GK_TIMEOUT"}, []string{"internal/httpx/contract_request_test.go:TestHTTPContractDefaultTimeout", "internal/httpx/http/request_timeout_redirect_test.go:TestRequestTimeout"}),
 				threatBoundary("redirect_revalidation", []string{"vhttp", "vresty", "vurl", "vconf"}, []string{"redirect target URL policy", "round-trip host revalidation"}, []string{"internal/httpx/http/safe_request_test.go:TestSafeRequestRejectsPrivateAndUnsafeRedirects", "internal/conf/load_remote_safe_hosts_test.go:TestLoadRemoteSafeRejectsUnsafeRedirectTarget"}),
@@ -2407,17 +2539,19 @@ func threatBoundary(name string, packages, controls, tests []string) map[string]
 
 func threatModelTestFunctions() map[string][]string {
 	return map[string][]string{
+		"internal/httpx/contract_safe_url_test.go":                {"TestHTTPContractSafeURLRejectsUnsafeTargets"},
 		"internal/httpx/contract_request_test.go":                 {"TestHTTPContractDefaultTimeout"},
 		"internal/httpx/http/request_timeout_redirect_test.go":    {"TestRequestTimeout"},
 		"internal/httpx/http/safe_request_test.go":                {"TestSafeRequestRejectsPrivateAndUnsafeRedirects", "TestSafeRequestAllowedHostsDoesNotBypassPrivateRejection"},
+		"internal/httpx/resty/safe_request_test.go":               {"TestSafeRequestRejectsPrivateAndUnsafeRedirects"},
 		"internal/conf/load_remote_safe_hosts_test.go":            {"TestLoadRemoteSafeRejectsUnsafeRedirectTarget"},
+		"internal/conf/load_remote_safe_roundtrip_test.go":        {"TestLoadRemoteSafeRevalidatesHostAtRoundTrip"},
 		"internal/url/safe_resource_allowlist_test.go":            {"TestOpenSafeAllowedHostsDoesNotBypassPrivateRejection"},
 		"internal/httpx/contract_response_limits_test.go":         {"TestHTTPContractMaxResponseBytes"},
 		"internal/url/safe_resource_limit_test.go":                {"TestOpenSafeMaxBytes"},
 		"internal/httpx/internal/shared/util_test.go":             {"TestSafeDownloadedFilenameAndJoin"},
 		"internal/httpx/http/save_as_content_disposition_test.go": {"TestSaveAsRejectsUnsafeContentDispositionFilename"},
 		"vconf/load_remote_safe_test.go":                          {"TestFacadeRemoteSafeWrappers"},
-		"internal/conf/load_remote_safe_roundtrip_test.go":        {"TestLoadRemoteSafeRevalidatesHostAtRoundTrip"},
 	}
 }
 

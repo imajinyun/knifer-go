@@ -80,6 +80,117 @@ func (c *checker) run(data map[string]any) {
 		c.addError("THREAT_MODEL_SCHEMA_INVALID", "threat_model must be an object")
 		return
 	}
+	c.validateMethodology(threatModel)
+	c.validateTopLevelMisuseTests(threatModel)
+	c.validateDomains(threatModel, data, publicFacades)
+	c.validateBoundaryContracts(threatModel, publicFacades)
+}
+
+func (c *checker) validateMethodology(threatModel map[string]any) {
+	methodology := stringValue(threatModel["methodology"])
+	if !strings.Contains(methodology, "STRIDE") || !strings.Contains(methodology, "DREAD") {
+		c.addError("THREAT_MODEL_METHODOLOGY_INCOMPLETE", "threat_model.methodology must mention STRIDE and DREAD")
+	}
+}
+
+func (c *checker) validateTopLevelMisuseTests(threatModel map[string]any) {
+	for _, reference := range stringList(threatModel["misuse_tests"]) {
+		if !referencesFunction(reference) {
+			c.addError("THREAT_MODEL_MISUSE_TEST_INVALID", "threat_model.misuse_tests must reference explicit test functions, got "+reference)
+			continue
+		}
+		if !c.referenceExists(reference) {
+			c.addError("THREAT_MODEL_MISUSE_TEST_MISSING", "threat_model.misuse_tests references missing file or function "+reference)
+		}
+	}
+}
+
+func (c *checker) validateDomains(threatModel map[string]any, data map[string]any, publicFacades map[string]bool) {
+	domains := mapValue(threatModel["domains"])
+	if domains == nil {
+		c.addError("THREAT_MODEL_DOMAINS_SCHEMA_INVALID", "threat_model.domains must be an object")
+		return
+	}
+	coveredPackages := map[string]bool{}
+	for _, domainName := range sortedAnyKeys(domains) {
+		domain := mapValue(domains[domainName])
+		if domain == nil {
+			c.addError("THREAT_MODEL_DOMAIN_SCHEMA_INVALID", fmt.Sprintf("threat_model.domains.%s must be an object", domainName))
+			continue
+		}
+		c.validateDomain(domainName, domain, coveredPackages)
+	}
+
+	securitySensitive := setOf(stringList(data["security_sensitive_packages"])...)
+	if unknown := differenceSet(securitySensitive, publicFacades); len(unknown) > 0 {
+		c.addError("THREAT_MODEL_SECURITY_SENSITIVE_UNKNOWN", "security_sensitive_packages includes non-public facade(s): "+strings.Join(unknown, ", "))
+	}
+	if missing := differenceSet(securitySensitive, coveredPackages); len(missing) > 0 {
+		c.addError("THREAT_MODEL_SECURITY_SENSITIVE_COVERAGE", "threat_model.domains do not cover security-sensitive package(s): "+strings.Join(missing, ", "))
+	}
+	if unexpected := differenceSet(coveredPackages, securitySensitive); len(unexpected) > 0 {
+		c.addError("THREAT_MODEL_DOMAIN_UNEXPECTED_PACKAGE", "threat_model.domains cover non-security-sensitive package(s): "+strings.Join(unexpected, ", "))
+	}
+}
+
+func (c *checker) validateDomain(domainName string, domain map[string]any, coveredPackages map[string]bool) {
+	packages := stringList(domain["packages"])
+	if len(packages) == 0 {
+		c.addError("THREAT_MODEL_DOMAIN_PACKAGES_MISSING", fmt.Sprintf("threat_model.domains.%s.packages must be non-empty", domainName))
+	}
+	for _, pkg := range packages {
+		coveredPackages[pkg] = true
+	}
+
+	threats := stringList(domain["threats"])
+	if len(threats) == 0 {
+		c.addError("THREAT_MODEL_DOMAIN_THREATS_MISSING", fmt.Sprintf("threat_model.domains.%s.threats must be non-empty", domainName))
+	}
+	threatSet := setOf(threats...)
+	contractTests := mapValue(domain["contract_tests"])
+	if contractTests == nil {
+		c.addError("THREAT_MODEL_DOMAIN_CONTRACT_TESTS_SCHEMA_INVALID", fmt.Sprintf("threat_model.domains.%s.contract_tests must be an object", domainName))
+		contractTests = map[string]any{}
+	}
+	if missing := differenceSet(threatSet, anyKeys(contractTests)); len(missing) > 0 {
+		c.addError("THREAT_MODEL_DOMAIN_CONTRACT_TEST_MISSING_THREAT", fmt.Sprintf("threat_model.domains.%s.contract_tests missing threat(s): %s", domainName, strings.Join(missing, ", ")))
+	}
+	for _, threat := range sortedAnyKeys(contractTests) {
+		if !threatSet[threat] {
+			c.addError("THREAT_MODEL_DOMAIN_CONTRACT_TEST_UNKNOWN_THREAT", fmt.Sprintf("threat_model.domains.%s.contract_tests declares unknown threat %s", domainName, threat))
+		}
+		c.validateThreatReferences(domainName, threat, stringList(contractTests[threat]))
+	}
+	for _, reference := range stringList(domain["misuse_tests"]) {
+		if !c.referencePathExists(reference) {
+			c.addError("THREAT_MODEL_DOMAIN_MISUSE_TEST_MISSING", fmt.Sprintf("threat_model.domains.%s.misuse_tests references missing file %s", domainName, reference))
+		}
+	}
+}
+
+func (c *checker) validateThreatReferences(domainName, threat string, references []string) {
+	minimumReferences := 2
+	if domainName == "network_clients" || domainName == "crypto_identity_randomness" || domainName == "data_and_cli_boundaries" {
+		minimumReferences = 3
+	}
+	if len(references) < minimumReferences {
+		c.addError("THREAT_MODEL_DOMAIN_CONTRACT_TEST_INCOMPLETE", fmt.Sprintf("threat_model.domains.%s.contract_tests.%s must reference at least %d tests", domainName, threat, minimumReferences))
+	}
+	hasFunctionReference := false
+	for _, reference := range references {
+		if referencesFunction(reference) {
+			hasFunctionReference = true
+		}
+		if !c.referenceExists(reference) {
+			c.addError("THREAT_MODEL_DOMAIN_CONTRACT_TEST_MISSING", fmt.Sprintf("threat_model.domains.%s.contract_tests.%s references missing file or function %s", domainName, threat, reference))
+		}
+	}
+	if !hasFunctionReference {
+		c.addError("THREAT_MODEL_DOMAIN_CONTRACT_TEST_INVALID", fmt.Sprintf("threat_model.domains.%s.contract_tests.%s must reference at least one explicit test function", domainName, threat))
+	}
+}
+
+func (c *checker) validateBoundaryContracts(threatModel map[string]any, publicFacades map[string]bool) {
 	boundaryContracts, ok := threatModel["boundary_contracts"].([]any)
 	if !ok || len(boundaryContracts) == 0 {
 		c.addError("THREAT_MODEL_BOUNDARY_CONTRACTS_MISSING", "threat_model.boundary_contracts must be a non-empty list")
@@ -149,7 +260,7 @@ func writeReport(jsonOutput bool, report govreport.Envelope) {
 		}
 		return
 	}
-	fmt.Println("threat model boundary contracts are valid")
+	fmt.Println("threat model governance is valid")
 }
 
 func loadJSON(path string) (map[string]any, error) {
@@ -184,6 +295,15 @@ func (c *checker) referenceExists(reference string) bool {
 		return false
 	}
 	return regexp.MustCompile(`(?m)^func\s+` + regexp.QuoteMeta(match[2]) + `\s*\(`).Match(data)
+}
+
+func (c *checker) referencePathExists(reference string) bool {
+	path := reference
+	if match := referencePattern.FindStringSubmatch(reference); len(match) == 3 {
+		path = match[1]
+	}
+	stat, err := os.Stat(filepath.Join(c.root, filepath.FromSlash(path)))
+	return err == nil && !stat.IsDir()
 }
 
 func mapValue(value any) map[string]any {
@@ -221,6 +341,23 @@ func setOf(values ...string) map[string]bool {
 		out[value] = true
 	}
 	return out
+}
+
+func anyKeys(values map[string]any) map[string]bool {
+	out := map[string]bool{}
+	for key := range values {
+		out[key] = true
+	}
+	return out
+}
+
+func sortedAnyKeys(values map[string]any) []string {
+	keys := make([]string, 0, len(values))
+	for key := range values {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	return keys
 }
 
 func differenceSet(left, right map[string]bool) []string {
