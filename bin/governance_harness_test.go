@@ -292,6 +292,16 @@ func (f *governanceFixture) RunDependencyTiersCheckJSON() (string, error) {
 	return f.RunGoTool("dependencytierscheck", "-root", f.root, "-json")
 }
 
+func (f *governanceFixture) RunCapabilityDomainsCheck() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("capabilitydomainscheck", "-root", f.root)
+}
+
+func (f *governanceFixture) RunCapabilityDomainsCheckJSON() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("capabilitydomainscheck", "-root", f.root, "-json")
+}
+
 func (f *governanceFixture) RunGovernanceMigrationCheck() (string, error) {
 	f.t.Helper()
 	return f.RunGoTool("governancemigrationcheck", "-root", f.root)

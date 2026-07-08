@@ -1393,6 +1393,128 @@ func TestDependencyTiersCheckRejectsAllowlistSchema(t *testing.T) {
 	}
 }
 
+func TestCapabilityDomainsCheckAcceptsValidFixture(t *testing.T) {
+	fixture := capabilityDomainsFixture(t)
+	output, err := fixture.RunCapabilityDomainsCheck()
+	if err != nil {
+		t.Fatalf("capabilitydomainscheck failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "capability domains metadata is valid") {
+		t.Fatalf("capability domains output missing success:\n%s", output)
+	}
+}
+
+func TestCapabilityDomainsCheckRejectsMissingRequiredDomain(t *testing.T) {
+	fixture := capabilityDomainsFixture(t)
+	context := capabilityDomainsContext()
+	delete(context["capability_domains"].(map[string]any), "domain_helpers")
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunCapabilityDomainsCheck()
+	if err == nil {
+		t.Fatalf("capabilitydomainscheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "CAPABILITY_DOMAINS_REQUIRED_DOMAIN_MISSING") {
+		t.Fatalf("capability domains output missing required-domain rule id:\n%s", output)
+	}
+}
+
+func TestCapabilityDomainsCheckRejectsUnknownDomain(t *testing.T) {
+	fixture := capabilityDomainsFixture(t)
+	context := capabilityDomainsContext()
+	context["capability_domains"].(map[string]any)["unknown_domain"] = capabilityDomain([]string{"vjson", "vxml"}, []string{"contract", "example"})
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunCapabilityDomainsCheckJSON()
+	if err == nil {
+		t.Fatalf("capabilitydomainscheck -json unexpectedly passed:\n%s", output)
+	}
+	var result struct {
+		Status   string `json:"status"`
+		Findings []struct {
+			RuleID string `json:"rule_id"`
+		} `json:"findings"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("capabilitydomainscheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "failed" {
+		t.Fatalf("JSON status = %q, want failed\n%s", result.Status, output)
+	}
+	var sawUnknown bool
+	for _, finding := range result.Findings {
+		if finding.RuleID == "CAPABILITY_DOMAINS_UNKNOWN_DOMAIN" {
+			sawUnknown = true
+		}
+	}
+	if !sawUnknown {
+		t.Fatalf("capability domains JSON findings missing unknown-domain rule id:\n%s", output)
+	}
+}
+
+func TestCapabilityDomainsCheckRejectsNonPublicFacade(t *testing.T) {
+	fixture := capabilityDomainsFixture(t)
+	context := capabilityDomainsContext()
+	context["capability_domains"].(map[string]any)["data_transform"].(map[string]any)["packages"] = []string{"vjson", "vmissing"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunCapabilityDomainsCheck()
+	if err == nil {
+		t.Fatalf("capabilitydomainscheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "CAPABILITY_DOMAINS_UNKNOWN_FACADE") {
+		t.Fatalf("capability domains output missing unknown-facade rule id:\n%s", output)
+	}
+}
+
+func TestCapabilityDomainsCheckRejectsUncoveredPublicFacade(t *testing.T) {
+	fixture := capabilityDomainsFixture(t)
+	context := capabilityDomainsContext()
+	context["public_facades"] = append(context["public_facades"].([]any), map[string]any{"package": "vextra"})
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunCapabilityDomainsCheck()
+	if err == nil {
+		t.Fatalf("capabilitydomainscheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "CAPABILITY_DOMAINS_FACADE_COVERAGE") {
+		t.Fatalf("capability domains output missing facade-coverage rule id:\n%s", output)
+	}
+}
+
+func TestCapabilityDomainsCheckRejectsSecuritySensitiveCoverageGap(t *testing.T) {
+	fixture := capabilityDomainsFixture(t)
+	context := capabilityDomainsContext()
+	context["security_sensitive_packages"] = append(context["security_sensitive_packages"].([]string), "vjson")
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunCapabilityDomainsCheck()
+	if err == nil {
+		t.Fatalf("capabilitydomainscheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "CAPABILITY_DOMAINS_SECURITY_SENSITIVE_COVERAGE") {
+		t.Fatalf("capability domains output missing security-sensitive coverage rule id:\n%s", output)
+	}
+}
+
+func TestCapabilityDomainsCheckRejectsRequiredTestsContract(t *testing.T) {
+	fixture := capabilityDomainsFixture(t)
+	context := capabilityDomainsContext()
+	context["capability_domains"].(map[string]any)["collections"].(map[string]any)["required_tests"] = []string{"contract", "typo"}
+	fixture.WriteJSON("ai-context.json", context)
+
+	output, err := fixture.RunCapabilityDomainsCheck()
+	if err == nil {
+		t.Fatalf("capabilitydomainscheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "CAPABILITY_DOMAINS_REQUIRED_TEST_UNKNOWN") {
+		t.Fatalf("capability domains output missing unknown-test rule id:\n%s", output)
+	}
+	if !strings.Contains(output, "CAPABILITY_DOMAINS_REQUIRED_TEST_MISSING") {
+		t.Fatalf("capability domains output missing required-test rule id:\n%s", output)
+	}
+}
+
 func TestGovernanceMigrationCheckAcceptsValidFixture(t *testing.T) {
 	fixture := governanceMigrationFixture(t)
 	output, err := fixture.RunGovernanceMigrationCheck()
@@ -2652,6 +2774,42 @@ func dependencyTiersContext() map[string]any {
 				"example.com/heavy": []string{"internal/imgx", "vimg"},
 			},
 		},
+	}
+}
+
+func capabilityDomainsFixture(t *testing.T) *governanceFixture {
+	t.Helper()
+	fixture := newGovernanceFixture(t)
+	fixture.WriteJSON("ai-context.json", capabilityDomainsContext())
+	return fixture
+}
+
+func capabilityDomainsContext() map[string]any {
+	publicFacades := []any{}
+	for _, pkg := range []string{"vjson", "vconv", "vslice", "vmap", "vstr", "vregex", "vhttp", "vurl", "vcrypto", "vjwt", "vai", "vssh", "vdate", "vfile"} {
+		publicFacades = append(publicFacades, map[string]any{"package": pkg})
+	}
+	return map[string]any{
+		"public_facades":              publicFacades,
+		"security_sensitive_packages": []string{"vhttp", "vurl", "vcrypto", "vjwt", "vai", "vssh"},
+		"capability_domains": map[string]any{
+			"data_transform":      capabilityDomain([]string{"vjson", "vconv"}, []string{"contract", "fuzz", "error_contract"}),
+			"collections":         capabilityDomain([]string{"vslice", "vmap"}, []string{"contract", "benchmark"}),
+			"text_parsing":        capabilityDomain([]string{"vstr", "vregex"}, []string{"contract", "fuzz", "provider_contract"}),
+			"trust_boundary":      capabilityDomain([]string{"vhttp", "vurl"}, []string{"contract", "security", "misuse", "fuzz", "error_contract"}),
+			"security_primitives": capabilityDomain([]string{"vcrypto", "vjwt"}, []string{"contract", "security", "misuse", "error_contract"}),
+			"runtime_adapters":    capabilityDomain([]string{"vai", "vssh"}, []string{"contract", "provider_contract"}),
+			"domain_helpers":      capabilityDomain([]string{"vdate", "vfile"}, []string{"contract", "example"}),
+		},
+	}
+}
+
+func capabilityDomain(packages, requiredTests []string) map[string]any {
+	return map[string]any{
+		"purpose":        "Fixture capability domain.",
+		"packages":       packages,
+		"required_focus": []string{"correctness", "adoption"},
+		"required_tests": requiredTests,
 	}
 }
 

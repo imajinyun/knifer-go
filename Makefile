@@ -1,4 +1,4 @@
-.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check go-module-cache-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check docs-gen docs-check facade-tiering-gen utility-comparison-refresh generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
+.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check go-module-cache-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check docs-gen docs-check facade-tiering-gen utility-comparison-refresh generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -42,6 +42,7 @@ help:
 	@echo "  api-convergence-check Verify API convergence metadata and tools golden paths"
 	@echo "  lifecycle-check Verify package lifecycle metadata and dependency tiers"
 	@echo "  dependency-tiers-check Verify dependency tier metadata and allowlist prefixes"
+	@echo "  capability-domains-check Verify capability domain metadata and coverage"
 	@echo "  bench-core      Run core benchmark baselines"
 	@echo "  bench-facade    Run facade benchmark baselines"
 	@echo "  bench-codec     Run JSON/XML benchmark baselines"
@@ -194,6 +195,7 @@ governance-maturity-check: ai-context-check tools-check
 	$(MAKE) api-convergence-check
 	$(MAKE) lifecycle-check
 	$(MAKE) dependency-tiers-check
+	$(MAKE) capability-domains-check
 	$(MAKE) governance-migration-check
 
 governance-migration-check:
@@ -219,6 +221,9 @@ lifecycle-check:
 
 dependency-tiers-check:
 	$(GO) run ./bin/dependencytierscheck -root .
+
+capability-domains-check:
+	$(GO) run ./bin/capabilitydomainscheck -root .
 
 tools-check:
 	$(GO) test ./bin/toolsgen
