@@ -37,12 +37,15 @@ var forbiddenPythonTokens = []string{
 	"validate_capability_domains()",
 	"def validate_threat_model",
 	"validate_threat_model()",
+	"def validate_local_governance_gates",
+	"validate_local_governance_gates()",
 	"threat_model.boundary_contracts",
 	"threat_model.domains",
 	"threat_model.misuse_tests",
 }
 
 var requiredMaturityTargets = []string{
+	"local-governance-gates-check",
 	"random-source-policy-check",
 	"threat-model-check",
 	"dynamic-contracts-check",

@@ -4034,12 +4034,6 @@ def validate_example_depth_governance() -> None:
 		add_error(f"{roadmap_path} Sprint 22 row missing facade(s): " + ", ".join(missing_from_sprint))
 
 
-def validate_local_governance_gates() -> None:
-	for target in ("quick-check", "full-check", "ci-workflow-check", "release-check"):
-		if not make_target_depends_on(target, "bench-regression-check"):
-			add_error(f"Makefile target {target} must depend on bench-regression-check")
-
-validate_local_governance_gates()
 validate_roadmap_catalog_baseline()
 validate_roadmap_star_domain_scorecard()
 validate_safe_http_cookbook_governance()

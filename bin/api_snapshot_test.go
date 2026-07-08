@@ -1796,6 +1796,19 @@ func TestGovernanceMigrationCheckRejectsThreatModelPythonRegression(t *testing.T
 	}
 }
 
+func TestGovernanceMigrationCheckRejectsLocalGovernanceGatesPythonRegression(t *testing.T) {
+	fixture := governanceMigrationFixture(t)
+	fixture.WriteFile("bin/check_governance_maturity.sh", "def validate_local_governance_gates() -> None:\n\tpass\n")
+
+	output, err := fixture.RunGovernanceMigrationCheck()
+	if err == nil {
+		t.Fatalf("governancemigrationcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "GOVERNANCE_MIGRATION_PYTHON_RULE_REGRESSION") {
+		t.Fatalf("governance migration output missing local governance regression rule id:\n%s", output)
+	}
+}
+
 func TestGovernanceMigrationCheckRejectsMissingMakeTarget(t *testing.T) {
 	fixture := governanceMigrationFixture(t)
 	fixture.WriteFile("Makefile", `governance-maturity-check:
@@ -3103,6 +3116,7 @@ func governanceMigrationFixture(t *testing.T) *governanceFixture {
 	fixture.WriteFile("bin/check_governance_maturity.sh", "# migrated rules stay out of Python\n")
 	fixture.WriteFile("Makefile", `governance-maturity-check:
 	bash bin/check_governance_maturity.sh
+	$(MAKE) local-governance-gates-check
 	$(MAKE) random-source-policy-check
 	$(MAKE) threat-model-check
 	$(MAKE) dynamic-contracts-check
