@@ -11,6 +11,7 @@ import os
 import re
 import sys
 from pathlib import Path
+from typing import Callable
 
 root = Path.cwd()
 errors: list[str] = []
@@ -18,6 +19,12 @@ errors: list[str] = []
 
 def add_error(message: str) -> None:
 	errors.append(message)
+
+
+def run_section(name: str, validators: list[Callable[[], None]]) -> None:
+	print(f"governance maturity: running {name}")
+	for validator in validators:
+		validator()
 
 
 def require_mapping(value: object, path: str) -> dict:
@@ -4034,53 +4041,71 @@ def validate_example_depth_governance() -> None:
 		add_error(f"{roadmap_path} Sprint 22 row missing facade(s): " + ", ".join(missing_from_sprint))
 
 
-validate_roadmap_catalog_baseline()
-validate_roadmap_star_domain_scorecard()
-validate_safe_http_cookbook_governance()
-validate_safe_crypto_cookbook_governance()
-validate_daily_json_file_faq_governance()
-validate_star_domain_no_missing_governance()
-validate_vdb_deepening_governance()
-validate_vdb_execution_evidence_governance()
-validate_vdb_example_depth_governance()
-validate_safe_crypto_advanced_backlog_governance()
-validate_safe_crypto_otp_governance()
-validate_safe_crypto_password_hashing_governance()
-validate_safe_crypto_argon2id_governance()
-validate_safe_crypto_jwk_jwks_governance()
-validate_safe_crypto_jwk_jwks_implementation_governance()
-validate_safe_crypto_secret_handling_governance()
-validate_safe_crypto_interoperability_governance()
-validate_safe_crypto_benchmark_scope_governance()
-validate_utility_library_comparison_governance()
-validate_utility_top5_comparison_governance_v2()
-validate_utility_top5_refresh_workflow_governance()
-validate_safe_crypto_advanced_closeout_governance()
-validate_go_version_adoption_governance()
-validate_collections_comparison_governance()
-validate_collection_mindshare_pack_governance()
-validate_collection_advanced_backlog_governance()
-validate_vconv_vbean_migration_governance()
-validate_vconv_cast_migration_governance()
-validate_vconv_cast_migration_examples_governance()
-validate_dynamic_data_toolkit_matrix_governance()
-validate_task_index_governance()
-validate_task_index_auto_check_governance()
-validate_facade_tiering_import_governance()
-validate_facade_tiering_generated_view_governance()
-validate_daily_developer_toolkit_governance()
-validate_daily_utility_cookbook_v2_governance()
-validate_developer_debug_test_backlog_governance()
-validate_developer_debug_test_api_decision_governance()
-validate_benchmark_trust_governance()
-validate_collections_benchmark_trust_governance()
-validate_first_use_golden_paths_governance()
-validate_weak_facade_example_density_governance()
-validate_weak_facade_example_density_governance_2()
-validate_weak_facade_example_density_governance_3()
-validate_adoption_trust_governance()
-validate_docs_pkg_discovery_polish_governance()
-validate_example_depth_governance()
+run_section("roadmap_catalog", [
+	validate_roadmap_catalog_baseline,
+	validate_roadmap_star_domain_scorecard,
+])
+run_section("star_domains", [
+	validate_safe_http_cookbook_governance,
+	validate_daily_json_file_faq_governance,
+	validate_star_domain_no_missing_governance,
+	validate_vdb_deepening_governance,
+	validate_vdb_execution_evidence_governance,
+	validate_vdb_example_depth_governance,
+])
+run_section("safe_crypto", [
+	validate_safe_crypto_cookbook_governance,
+	validate_safe_crypto_advanced_backlog_governance,
+	validate_safe_crypto_otp_governance,
+	validate_safe_crypto_password_hashing_governance,
+	validate_safe_crypto_argon2id_governance,
+	validate_safe_crypto_jwk_jwks_governance,
+	validate_safe_crypto_jwk_jwks_implementation_governance,
+	validate_safe_crypto_secret_handling_governance,
+	validate_safe_crypto_interoperability_governance,
+	validate_safe_crypto_benchmark_scope_governance,
+	validate_safe_crypto_advanced_closeout_governance,
+])
+run_section("utility_comparison", [
+	validate_utility_library_comparison_governance,
+	validate_utility_top5_comparison_governance_v2,
+	validate_utility_top5_refresh_workflow_governance,
+	validate_go_version_adoption_governance,
+])
+run_section("collections", [
+	validate_collections_comparison_governance,
+	validate_collection_mindshare_pack_governance,
+	validate_collection_advanced_backlog_governance,
+	validate_collections_benchmark_trust_governance,
+])
+run_section("migration_domains", [
+	validate_vconv_vbean_migration_governance,
+	validate_vconv_cast_migration_governance,
+	validate_vconv_cast_migration_examples_governance,
+	validate_dynamic_data_toolkit_matrix_governance,
+])
+run_section("facade_tiering", [
+	validate_task_index_governance,
+	validate_task_index_auto_check_governance,
+	validate_facade_tiering_import_governance,
+	validate_facade_tiering_generated_view_governance,
+])
+run_section("daily_toolkit", [
+	validate_daily_developer_toolkit_governance,
+	validate_daily_utility_cookbook_v2_governance,
+	validate_developer_debug_test_backlog_governance,
+	validate_developer_debug_test_api_decision_governance,
+])
+run_section("trust_and_examples", [
+	validate_benchmark_trust_governance,
+	validate_first_use_golden_paths_governance,
+	validate_weak_facade_example_density_governance,
+	validate_weak_facade_example_density_governance_2,
+	validate_weak_facade_example_density_governance_3,
+	validate_adoption_trust_governance,
+	validate_docs_pkg_discovery_polish_governance,
+	validate_example_depth_governance,
+])
 
 if errors:
 	for error in errors:
