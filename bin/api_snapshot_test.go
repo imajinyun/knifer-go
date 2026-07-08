@@ -650,6 +650,26 @@ func TestAgentEvidenceCheckRejectsStructuredCIWorkflowFindings(t *testing.T) {
 	}
 }
 
+func TestAgentEvidenceCheckRejectsMissingMaturitySection(t *testing.T) {
+	evidence := baseAgentEvidence()
+	structuredChecks := evidence["structured_checks"].(map[string]any)
+	maturitySections := structuredChecks["governance_maturity_sections"].(map[string]any)
+	maturityJSON := maturitySections["json"].(map[string]any)
+	sections := maturityJSON["sections"].([]any)
+	maturityJSON["sections"] = sections[:len(sections)-1]
+
+	output, err := newGovernanceFixture(t).RunAgentEvidenceCheck(evidence)
+	if err == nil {
+		t.Fatalf("agent evidence check unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "AGENT_EVIDENCE_MATURITY_SECTION_COUNT") {
+		t.Fatalf("agent evidence output missing AGENT_EVIDENCE_MATURITY_SECTION_COUNT rule id:\n%s", output)
+	}
+	if !strings.Contains(output, "AGENT_EVIDENCE_MATURITY_SECTION_MISSING") {
+		t.Fatalf("agent evidence output missing AGENT_EVIDENCE_MATURITY_SECTION_MISSING rule id:\n%s", output)
+	}
+}
+
 func TestAgentEvidenceCheckEmitsJSONReport(t *testing.T) {
 	evidence := baseAgentEvidence()
 	output, err := newGovernanceFixture(t).RunAgentEvidenceCheckJSON(evidence)
@@ -2286,6 +2306,7 @@ func baseAgentEvidence() map[string]any {
 		},
 	}
 	structuredChecks := map[string]any{
+		"governance_maturity_sections": maturitySectionsCheck(),
 		"change_policy_check": map[string]any{
 			"cmd":       "go run ./bin/changepolicycheck -root /fixture -json",
 			"exit_code": 0,
@@ -2431,6 +2452,41 @@ func structuredPassedCheck(cmd string) map[string]any {
   "status": "passed",
   "findings": []
 }`,
+	}
+}
+
+func maturitySectionsCheck() map[string]any {
+	sections := []any{
+		maturitySection("roadmap_catalog", 2),
+		maturitySection("star_domains", 6),
+		maturitySection("safe_crypto", 11),
+		maturitySection("utility_comparison", 4),
+		maturitySection("collections", 4),
+		maturitySection("migration_domains", 4),
+		maturitySection("facade_tiering", 4),
+		maturitySection("daily_toolkit", 4),
+		maturitySection("trust_and_examples", 8),
+	}
+	return map[string]any{
+		"cmd":       "bash bin/check_governance_maturity.sh --section-json",
+		"exit_code": 0,
+		"json": map[string]any{
+			"sections": sections,
+			"status":   "passed",
+		},
+		"status": "passed",
+		"stderr": "",
+		"stdout": `{
+  "status": "passed",
+  "sections": []
+}`,
+	}
+}
+
+func maturitySection(name string, validators int) map[string]any {
+	return map[string]any{
+		"name":       name,
+		"validators": validators,
 	}
 }
 

@@ -16,6 +16,18 @@ import (
 
 const diffFilter = "ACDMRTUXB"
 
+var expectedMaturitySections = []string{
+	"roadmap_catalog",
+	"star_domains",
+	"safe_crypto",
+	"utility_comparison",
+	"collections",
+	"migration_domains",
+	"facade_tiering",
+	"daily_toolkit",
+	"trust_and_examples",
+}
+
 type checker struct {
 	root     string
 	context  map[string]any
@@ -284,6 +296,7 @@ func (c *checker) validateEmbeddedChecks(commandAttestations map[string]any) {
 
 func (c *checker) validateStructuredChecks(changedFiles, detectedPolicies, requiredCommands []string) {
 	structuredChecks := c.requireMapping(c.evidence["structured_checks"], "structured_checks")
+	c.validateGovernanceMaturitySections(structuredChecks)
 	changePolicy := c.requireMapping(structuredChecks["change_policy_check"], "structured_checks.change_policy_check")
 	c.validateStructuredCheckEnvelope(changePolicy, "structured_checks.change_policy_check")
 	changePolicyJSON := c.requireMapping(changePolicy["json"], "structured_checks.change_policy_check.json")
@@ -330,6 +343,36 @@ func (c *checker) validateStructuredChecks(changedFiles, detectedPolicies, requi
 		"facade_boundary_check",
 	} {
 		c.validateStructuredPassedNoFindings(structuredChecks, checkName)
+	}
+}
+
+func (c *checker) validateGovernanceMaturitySections(structuredChecks map[string]any) {
+	path := "structured_checks.governance_maturity_sections"
+	check := c.requireMapping(structuredChecks["governance_maturity_sections"], path)
+	c.validateStructuredCheckEnvelope(check, path)
+	checkJSON := c.requireMapping(check["json"], path+".json")
+	if c.requireString(checkJSON["status"], path+".json.status") != "passed" {
+		c.addError("AGENT_EVIDENCE_MATURITY_SECTION_STATUS", path+".json.status must be passed")
+	}
+	sections := c.requireList(checkJSON["sections"], path+".json.sections")
+	if len(sections) != len(expectedMaturitySections) {
+		c.addError("AGENT_EVIDENCE_MATURITY_SECTION_COUNT", fmt.Sprintf("%s.json.sections must contain %d sections", path, len(expectedMaturitySections)))
+	}
+	seen := map[string]bool{}
+	for index, raw := range sections {
+		section := c.requireMapping(raw, fmt.Sprintf("%s.json.sections[%d]", path, index))
+		name := c.requireString(section["name"], fmt.Sprintf("%s.json.sections[%d].name", path, index))
+		if name != "" {
+			seen[name] = true
+		}
+		if _, ok := intValue(section["validators"]); !ok {
+			c.addError("AGENT_EVIDENCE_MATURITY_SECTION_VALIDATORS", fmt.Sprintf("%s.json.sections[%d].validators must be an integer", path, index))
+		}
+	}
+	for _, expected := range expectedMaturitySections {
+		if !seen[expected] {
+			c.addError("AGENT_EVIDENCE_MATURITY_SECTION_MISSING", path+".json.sections missing "+expected)
+		}
 	}
 }
 

@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-python3 - <<'PY'
+python3 - "$@" <<'PY'
 from __future__ import annotations
 
 import json
@@ -15,6 +15,8 @@ from typing import Callable
 
 root = Path.cwd()
 errors: list[str] = []
+section_json = "--section-json" in sys.argv[1:]
+section_summaries: list[dict[str, object]] = []
 
 
 def add_error(message: str) -> None:
@@ -22,7 +24,9 @@ def add_error(message: str) -> None:
 
 
 def run_section(name: str, validators: list[Callable[[], None]]) -> None:
-	print(f"governance maturity: running {name}")
+	section_summaries.append({"name": name, "validators": len(validators)})
+	if not section_json:
+		print(f"governance maturity: running {name}")
 	for validator in validators:
 		validator()
 
@@ -4108,9 +4112,14 @@ run_section("trust_and_examples", [
 ])
 
 if errors:
+	if section_json:
+		print(json.dumps({"status": "failed", "sections": section_summaries}, indent=2, sort_keys=True))
 	for error in errors:
 		print(f"governance maturity check error: {error}", file=sys.stderr)
 	sys.exit(1)
 
-print("governance maturity metadata is valid")
+if section_json:
+	print(json.dumps({"status": "passed", "sections": section_summaries}, indent=2, sort_keys=True))
+else:
+	print("governance maturity metadata is valid")
 PY

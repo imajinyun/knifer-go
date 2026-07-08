@@ -205,6 +205,7 @@ checks = {
     "change_policy_check": run(["bash", "bin/check_change_policy.sh"]),
 }
 structured_checks = {
+    "governance_maturity_sections": run_json(["bash", "bin/check_governance_maturity.sh", "--section-json"]),
     "change_policy_check": run_json(["go", "run", "./bin/changepolicycheck", "-root", root_dir, "-json"]),
     "ci_workflow_check": run_json(["go", "run", "./bin/ciworkflowcheck", "-root", root_dir, "-json"]),
     "random_source_policy_check": run_json(["go", "run", "./bin/randomsourcepolicycheck", "-root", root_dir, "-json"]),
@@ -363,6 +364,12 @@ ci_workflow_json = structured_checks.get("ci_workflow_check", {}).get("json", {}
 change_policy_rule_ids = change_policy_json.get("rule_ids", [])
 change_policy_semantic_rule_ids = change_policy_json.get("semantic_rule_ids", [])
 ci_workflow_findings = ci_workflow_json.get("findings", [])
+governance_maturity_sections_json = structured_checks.get("governance_maturity_sections", {}).get("json", {})
+governance_maturity_sections = [
+    section.get("name", "")
+    for section in governance_maturity_sections_json.get("sections", [])
+    if isinstance(section, dict) and section.get("name")
+]
 governance_structured_check_names = [
     "random_source_policy_check",
     "threat_model_check",
@@ -383,6 +390,7 @@ print("detected policies: " + (", ".join(report["detected_change_policies"]) or 
 print("change policy rule ids: " + summary_list(change_policy_rule_ids))
 print("change policy semantic rule ids: " + summary_list(change_policy_semantic_rule_ids))
 print("ci workflow findings: " + str(len(ci_workflow_findings)))
+print("governance maturity sections: " + summary_list(governance_maturity_sections))
 for check_name in governance_structured_check_names:
     check_json = structured_checks.get(check_name, {}).get("json", {})
     findings = check_json.get("findings", [])
