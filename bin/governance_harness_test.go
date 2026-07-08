@@ -302,6 +302,16 @@ func (f *governanceFixture) RunCapabilityDomainsCheckJSON() (string, error) {
 	return f.RunGoTool("capabilitydomainscheck", "-root", f.root, "-json")
 }
 
+func (f *governanceFixture) RunRoadmapCatalogCheck() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("roadmapcatalogcheck", "-root", f.root)
+}
+
+func (f *governanceFixture) RunRoadmapCatalogCheckJSON() (string, error) {
+	f.t.Helper()
+	return f.RunGoTool("roadmapcatalogcheck", "-root", f.root, "-json")
+}
+
 func (f *governanceFixture) RunLocalGovernanceGatesCheck() (string, error) {
 	f.t.Helper()
 	return f.RunGoTool("localgovernancegatescheck", "-root", f.root)

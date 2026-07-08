@@ -1645,6 +1645,91 @@ func TestCapabilityDomainsCheckRejectsRequiredTestsContract(t *testing.T) {
 	}
 }
 
+func TestRoadmapCatalogCheckAcceptsValidFixture(t *testing.T) {
+	fixture := roadmapCatalogFixture(t, roadmapCatalogMarkdown())
+	output, err := fixture.RunRoadmapCatalogCheck()
+	if err != nil {
+		t.Fatalf("roadmapcatalogcheck failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "roadmap catalog governance is valid") {
+		t.Fatalf("roadmap catalog output missing success:\n%s", output)
+	}
+}
+
+func TestRoadmapCatalogCheckRejectsBaselineDrift(t *testing.T) {
+	fixture := roadmapCatalogFixture(t, strings.Replace(roadmapCatalogMarkdown(), "| Public functions | 30 |", "| Public functions | 29 |", 1))
+	output, err := fixture.RunRoadmapCatalogCheck()
+	if err == nil {
+		t.Fatalf("roadmapcatalogcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "ROADMAP_CATALOG_BASELINE_DRIFT") {
+		t.Fatalf("roadmap catalog output missing baseline drift rule id:\n%s", output)
+	}
+}
+
+func TestRoadmapCatalogCheckRejectsMissingBaselineMetric(t *testing.T) {
+	fixture := roadmapCatalogFixture(t, strings.Replace(roadmapCatalogMarkdown(), "| Public facade packages | 5 |\n", "", 1))
+	output, err := fixture.RunRoadmapCatalogCheckJSON()
+	if err == nil {
+		t.Fatalf("roadmapcatalogcheck -json unexpectedly passed:\n%s", output)
+	}
+	var result struct {
+		Status   string `json:"status"`
+		Findings []struct {
+			RuleID string `json:"rule_id"`
+		} `json:"findings"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("roadmapcatalogcheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "failed" {
+		t.Fatalf("JSON status = %q, want failed\n%s", result.Status, output)
+	}
+	var sawMissing bool
+	for _, finding := range result.Findings {
+		if finding.RuleID == "ROADMAP_CATALOG_BASELINE_METRIC_MISSING" {
+			sawMissing = true
+		}
+	}
+	if !sawMissing {
+		t.Fatalf("roadmap catalog JSON findings missing baseline-missing rule id:\n%s", output)
+	}
+}
+
+func TestRoadmapCatalogCheckRejectsMissingStarDomainRow(t *testing.T) {
+	fixture := roadmapCatalogFixture(t, strings.Replace(roadmapCatalogMarkdown(), "| Daily JSON/file (`vjson`, `vfile`) | 7 | 6 | 85.7% |\n", "", 1))
+	output, err := fixture.RunRoadmapCatalogCheck()
+	if err == nil {
+		t.Fatalf("roadmapcatalogcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "ROADMAP_CATALOG_SCORECARD_DOMAIN_MISSING") {
+		t.Fatalf("roadmap catalog output missing domain-missing rule id:\n%s", output)
+	}
+}
+
+func TestRoadmapCatalogCheckRejectsExtraStarDomainRow(t *testing.T) {
+	roadmap := strings.Replace(roadmapCatalogMarkdown(), "## Done\n", "| Extra (`vextra`) | 1 | 1 | 100.0% |\n\n## Done\n", 1)
+	fixture := roadmapCatalogFixture(t, roadmap)
+	output, err := fixture.RunRoadmapCatalogCheck()
+	if err == nil {
+		t.Fatalf("roadmapcatalogcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "ROADMAP_CATALOG_SCORECARD_DOMAIN_EXTRA") {
+		t.Fatalf("roadmap catalog output missing domain-extra rule id:\n%s", output)
+	}
+}
+
+func TestRoadmapCatalogCheckRejectsExampleRatioDrift(t *testing.T) {
+	fixture := roadmapCatalogFixture(t, strings.Replace(roadmapCatalogMarkdown(), "| Safe HTTP (`vhttp`, `vresty`, `vurl`) | 18 | 15 | 83.3% |", "| Safe HTTP (`vhttp`, `vresty`, `vurl`) | 18 | 15 | 80.0% |", 1))
+	output, err := fixture.RunRoadmapCatalogCheck()
+	if err == nil {
+		t.Fatalf("roadmapcatalogcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "ROADMAP_CATALOG_SCORECARD_RATIO_DRIFT") {
+		t.Fatalf("roadmap catalog output missing ratio-drift rule id:\n%s", output)
+	}
+}
+
 func TestLocalGovernanceGatesCheckAcceptsValidFixture(t *testing.T) {
 	fixture := localGovernanceGatesFixture(t, localGovernanceMakefileDirect())
 	output, err := fixture.RunLocalGovernanceGatesCheck()
@@ -3143,6 +3228,79 @@ func capabilityDomain(packages, requiredTests []string) map[string]any {
 		"required_focus": []string{"correctness", "adoption"},
 		"required_tests": requiredTests,
 	}
+}
+
+func roadmapCatalogFixture(t *testing.T, roadmap string) *governanceFixture {
+	t.Helper()
+	fixture := newGovernanceFixture(t)
+	fixture.WriteJSON("ai-context.json", map[string]any{"project": map[string]any{"name": "fixture"}})
+	fixture.WriteJSON("docs/api/tools.json", roadmapCatalogTools())
+	fixture.WriteFile("docs/superpowers/plans/49-roadmap.md", roadmap)
+	return fixture
+}
+
+func roadmapCatalogTools() map[string]any {
+	return map[string]any{
+		"summary": map[string]any{
+			"package_count":           5,
+			"function_count":          30,
+			"functions_with_examples": 24,
+			"context_aware_functions": 3,
+			"returns_error_functions": 8,
+			"status_counts":           map[string]any{"recommended": 28, "compatibility": 2},
+			"synopsis_sources":        map[string]any{"empty": 0, "facade": 20, "internal": 10},
+		},
+		"packages": []any{
+			roadmapCatalogPackage("vhttp", 10, 8),
+			roadmapCatalogPackage("vresty", 5, 4),
+			roadmapCatalogPackage("vurl", 3, 3),
+			roadmapCatalogPackage("vcrypto", 8, 7),
+			roadmapCatalogPackage("vrand", 4, 3),
+			roadmapCatalogPackage("vjwt", 3, 2),
+			roadmapCatalogPackage("vjson", 4, 4),
+			roadmapCatalogPackage("vfile", 3, 2),
+		},
+	}
+}
+
+func roadmapCatalogPackage(name string, functions, examples int) map[string]any {
+	return map[string]any{
+		"name": name,
+		"summary": map[string]any{
+			"function_count":          functions,
+			"functions_with_examples": examples,
+		},
+	}
+}
+
+func roadmapCatalogMarkdown() string {
+	return `# Roadmap
+
+## Baseline
+
+| Metric | Value |
+| --- | ---: |
+| Public facade packages | 5 |
+| Public functions | 30 |
+| Functions with executable examples | 24 |
+| Context-aware functions | 3 |
+| Functions returning errors | 8 |
+| Recommended public functions | 28 |
+| Compatibility public functions | 2 |
+| Empty function synopses | 0 |
+| Facade-sourced function synopses | 20 |
+| Internal-sourced function synopses | 10 |
+
+## 90-Day Star Domain Scorecard
+
+| Domain | Public functions | Examples | Example ratio |
+| --- | ---: | ---: | ---: |
+| Safe HTTP (` + "`" + `vhttp` + "`" + `, ` + "`" + `vresty` + "`" + `, ` + "`" + `vurl` + "`" + `) | 18 | 15 | 83.3% |
+| Safe crypto (` + "`" + `vcrypto` + "`" + `, ` + "`" + `vrand` + "`" + `, ` + "`" + `vjwt` + "`" + `) | 15 | 12 | 80.0% |
+| Daily JSON/file (` + "`" + `vjson` + "`" + `, ` + "`" + `vfile` + "`" + `) | 7 | 6 | 85.7% |
+
+## Done
+`
 }
 
 func localGovernanceGatesFixture(t *testing.T, makefile string) *governanceFixture {
