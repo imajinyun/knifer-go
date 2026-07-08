@@ -4039,70 +4039,6 @@ def validate_local_governance_gates() -> None:
 		if not make_target_depends_on(target, "bench-regression-check"):
 			add_error(f"Makefile target {target} must depend on bench-regression-check")
 
-def validate_capability_domains() -> None:
-	domains = require_mapping(ai_context.get("capability_domains"), "capability_domains")
-	expected_domains = {
-		"data_transform",
-		"collections",
-		"text_parsing",
-		"trust_boundary",
-		"security_primitives",
-		"runtime_adapters",
-		"domain_helpers",
-	}
-	missing_domains = sorted(expected_domains - set(domains))
-	if missing_domains:
-		add_error("capability_domains missing required domain(s): " + ", ".join(missing_domains))
-	extra_domains = sorted(set(domains) - expected_domains)
-	if extra_domains:
-		add_error("capability_domains includes unknown domain(s): " + ", ".join(extra_domains))
-	covered_packages: set[str] = set()
-	allowed_test_types = {"benchmark", "contract", "error_contract", "example", "fuzz", "misuse", "provider_contract", "security"}
-	required_test_matrix = {
-		"data_transform": {"contract", "fuzz", "error_contract"},
-		"collections": {"contract", "benchmark"},
-		"text_parsing": {"contract", "fuzz", "provider_contract"},
-		"trust_boundary": {"contract", "security", "misuse", "fuzz", "error_contract"},
-		"security_primitives": {"contract", "security", "misuse", "error_contract"},
-		"runtime_adapters": {"contract", "provider_contract"},
-		"domain_helpers": {"contract", "example"},
-	}
-	for domain_name, domain_value in sorted(domains.items()):
-		domain = require_mapping(domain_value, f"capability_domains.{domain_name}")
-		purpose = domain.get("purpose")
-		if not isinstance(purpose, str) or not purpose.strip():
-			add_error(f"capability_domains.{domain_name}.purpose must be non-empty")
-		packages = require_string_list(domain.get("packages"), f"capability_domains.{domain_name}.packages")
-		if len(packages) < 2:
-			add_error(f"capability_domains.{domain_name}.packages must include at least 2 facades")
-		unknown = sorted(set(packages) - public_facades)
-		if unknown:
-			add_error(f"capability_domains.{domain_name}.packages includes non-public facade(s): " + ", ".join(unknown))
-		covered_packages.update(packages)
-		if len(require_string_list(domain.get("required_focus"), f"capability_domains.{domain_name}.required_focus")) < 2:
-			add_error(f"capability_domains.{domain_name}.required_focus must include at least 2 focus areas")
-		required_tests = set(require_string_list(domain.get("required_tests"), f"capability_domains.{domain_name}.required_tests"))
-		if not required_tests:
-			add_error(f"capability_domains.{domain_name}.required_tests must be non-empty")
-		unknown_tests = sorted(required_tests - allowed_test_types)
-		if unknown_tests:
-			add_error(f"capability_domains.{domain_name}.required_tests includes unknown test type(s): " + ", ".join(unknown_tests))
-		missing_tests = sorted(required_test_matrix.get(domain_name, set()) - required_tests)
-		if missing_tests:
-			add_error(f"capability_domains.{domain_name}.required_tests missing required test type(s): " + ", ".join(missing_tests))
-	missing_packages = sorted(public_facades - covered_packages)
-	if missing_packages:
-		add_error("capability_domains do not cover public facade(s): " + ", ".join(missing_packages))
-
-	security_sensitive = set(require_string_list(ai_context.get("security_sensitive_packages"), "security_sensitive_packages"))
-	trust_boundary = set(require_string_list(require_mapping(domains.get("trust_boundary"), "capability_domains.trust_boundary").get("packages"), "capability_domains.trust_boundary.packages"))
-	security_primitives = set(require_string_list(require_mapping(domains.get("security_primitives"), "capability_domains.security_primitives").get("packages"), "capability_domains.security_primitives.packages"))
-	runtime_adapters = set(require_string_list(require_mapping(domains.get("runtime_adapters"), "capability_domains.runtime_adapters").get("packages"), "capability_domains.runtime_adapters.packages"))
-	covered_sensitive = trust_boundary | security_primitives | runtime_adapters
-	missing_sensitive = sorted(security_sensitive - covered_sensitive)
-	if missing_sensitive:
-		add_error("security-sensitive facades must be represented by trust_boundary, security_primitives, or runtime_adapters: " + ", ".join(missing_sensitive))
-
 
 def validate_threat_model() -> None:
 	threat_model = require_mapping(ai_context.get("threat_model"), "threat_model")
@@ -4203,7 +4139,6 @@ validate_weak_facade_example_density_governance_3()
 validate_adoption_trust_governance()
 validate_docs_pkg_discovery_polish_governance()
 validate_example_depth_governance()
-validate_capability_domains()
 validate_threat_model()
 
 if errors:

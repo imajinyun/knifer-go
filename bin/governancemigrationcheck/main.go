@@ -33,6 +33,8 @@ var forbiddenPythonTokens = []string{
 	"validate_api_convergence()",
 	"def validate_dependency_isolation",
 	"validate_dependency_isolation()",
+	"def validate_capability_domains",
+	"validate_capability_domains()",
 	"threat_model.boundary_contracts",
 }
 
@@ -44,6 +46,7 @@ var requiredMaturityTargets = []string{
 	"api-convergence-check",
 	"lifecycle-check",
 	"dependency-tiers-check",
+	"capability-domains-check",
 }
 
 func main() {

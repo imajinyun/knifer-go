@@ -2826,6 +2826,7 @@ func governanceMigrationFixture(t *testing.T) *governanceFixture {
 	$(MAKE) api-convergence-check
 	$(MAKE) lifecycle-check
 	$(MAKE) dependency-tiers-check
+	$(MAKE) capability-domains-check
 
 bench-regression-check:
 	go run ./bin/benchmarkregressioncheck -root .
