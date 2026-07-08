@@ -4039,58 +4039,6 @@ def validate_local_governance_gates() -> None:
 		if not make_target_depends_on(target, "bench-regression-check"):
 			add_error(f"Makefile target {target} must depend on bench-regression-check")
 
-
-def validate_threat_model() -> None:
-	threat_model = require_mapping(ai_context.get("threat_model"), "threat_model")
-	methodology = threat_model.get("methodology")
-	if not isinstance(methodology, str) or "STRIDE" not in methodology or "DREAD" not in methodology:
-		add_error("threat_model.methodology must mention STRIDE and DREAD")
-	for reference in require_string_list(threat_model.get("misuse_tests"), "threat_model.misuse_tests"):
-		if not references_function(reference):
-			add_error(f"threat_model.misuse_tests must reference explicit test functions, got {reference}")
-		if not reference_exists(reference):
-			add_error(f"threat_model.misuse_tests references missing file or function {reference}")
-	domains = require_mapping(threat_model.get("domains"), "threat_model.domains")
-	covered_packages: set[str] = set()
-	for domain_name, domain_value in sorted(domains.items()):
-		domain = require_mapping(domain_value, f"threat_model.domains.{domain_name}")
-		packages = require_string_list(domain.get("packages"), f"threat_model.domains.{domain_name}.packages")
-		covered_packages.update(packages)
-		threats = require_string_list(domain.get("threats"), f"threat_model.domains.{domain_name}.threats")
-		if not threats:
-			add_error(f"threat_model.domains.{domain_name}.threats must be non-empty")
-		contract_tests = require_mapping(domain.get("contract_tests"), f"threat_model.domains.{domain_name}.contract_tests")
-		missing_threat_contracts = sorted(set(threats) - set(contract_tests))
-		if missing_threat_contracts:
-			add_error(f"threat_model.domains.{domain_name}.contract_tests missing threat(s): " + ", ".join(missing_threat_contracts))
-		for threat, references_value in sorted(contract_tests.items()):
-			if threat not in threats:
-				add_error(f"threat_model.domains.{domain_name}.contract_tests declares unknown threat {threat}")
-			references = require_string_list(references_value, f"threat_model.domains.{domain_name}.contract_tests.{threat}")
-			minimum_references = 2
-			if domain_name in {"network_clients", "crypto_identity_randomness", "data_and_cli_boundaries"}:
-				minimum_references = 3
-			if len(references) < minimum_references:
-				add_error(f"threat_model.domains.{domain_name}.contract_tests.{threat} must reference at least {minimum_references} tests")
-			if not any(references_function(reference) for reference in references):
-				add_error(f"threat_model.domains.{domain_name}.contract_tests.{threat} must reference at least one explicit test function")
-			for reference in references:
-				if not reference_exists(reference):
-					add_error(f"threat_model.domains.{domain_name}.contract_tests.{threat} references missing file or function {reference}")
-		for reference in require_string_list(domain.get("misuse_tests"), f"threat_model.domains.{domain_name}.misuse_tests"):
-			if not reference_exists(reference):
-				add_error(f"threat_model.domains.{domain_name}.misuse_tests references missing file {reference}")
-	security_sensitive = set(require_string_list(ai_context.get("security_sensitive_packages"), "security_sensitive_packages"))
-	unknown_sensitive = sorted(security_sensitive - public_facades)
-	if unknown_sensitive:
-		add_error("security_sensitive_packages includes non-public facade(s): " + ", ".join(unknown_sensitive))
-	missing = sorted(security_sensitive - covered_packages)
-	if missing:
-		add_error("threat_model.domains do not cover security-sensitive package(s): " + ", ".join(missing))
-	unexpected = sorted(covered_packages - security_sensitive)
-	if unexpected:
-		add_error("threat_model.domains cover non-security-sensitive package(s): " + ", ".join(unexpected))
-
 validate_local_governance_gates()
 validate_roadmap_catalog_baseline()
 validate_roadmap_star_domain_scorecard()
@@ -4139,7 +4087,6 @@ validate_weak_facade_example_density_governance_3()
 validate_adoption_trust_governance()
 validate_docs_pkg_discovery_polish_governance()
 validate_example_depth_governance()
-validate_threat_model()
 
 if errors:
 	for error in errors:

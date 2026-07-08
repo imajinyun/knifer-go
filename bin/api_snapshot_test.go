@@ -1667,6 +1667,19 @@ func TestGovernanceMigrationCheckRejectsPythonRuleRegression(t *testing.T) {
 	}
 }
 
+func TestGovernanceMigrationCheckRejectsThreatModelPythonRegression(t *testing.T) {
+	fixture := governanceMigrationFixture(t)
+	fixture.WriteFile("bin/check_governance_maturity.sh", "def validate_threat_model() -> None:\n\tpass\n")
+
+	output, err := fixture.RunGovernanceMigrationCheck()
+	if err == nil {
+		t.Fatalf("governancemigrationcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "GOVERNANCE_MIGRATION_PYTHON_RULE_REGRESSION") {
+		t.Fatalf("governance migration output missing threat model regression rule id:\n%s", output)
+	}
+}
+
 func TestGovernanceMigrationCheckRejectsMissingMakeTarget(t *testing.T) {
 	fixture := governanceMigrationFixture(t)
 	fixture.WriteFile("Makefile", `governance-maturity-check:

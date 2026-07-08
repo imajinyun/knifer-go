@@ -35,7 +35,11 @@ var forbiddenPythonTokens = []string{
 	"validate_dependency_isolation()",
 	"def validate_capability_domains",
 	"validate_capability_domains()",
+	"def validate_threat_model",
+	"validate_threat_model()",
 	"threat_model.boundary_contracts",
+	"threat_model.domains",
+	"threat_model.misuse_tests",
 }
 
 var requiredMaturityTargets = []string{
