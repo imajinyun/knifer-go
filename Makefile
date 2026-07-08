@@ -194,6 +194,7 @@ governance-maturity-check: ai-context-check tools-check
 	$(MAKE) api-convergence-check
 	$(MAKE) lifecycle-check
 	$(MAKE) dependency-tiers-check
+	$(MAKE) governance-migration-check
 
 governance-migration-check:
 	$(GO) run ./bin/governancemigrationcheck -root .
