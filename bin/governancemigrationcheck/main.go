@@ -39,6 +39,10 @@ var forbiddenPythonTokens = []string{
 	"validate_threat_model()",
 	"def validate_local_governance_gates",
 	"validate_local_governance_gates()",
+	"def validate_roadmap_catalog_baseline",
+	"validate_roadmap_catalog_baseline()",
+	"def validate_roadmap_star_domain_scorecard",
+	"validate_roadmap_star_domain_scorecard()",
 	"threat_model.boundary_contracts",
 	"threat_model.domains",
 	"threat_model.misuse_tests",
@@ -46,6 +50,7 @@ var forbiddenPythonTokens = []string{
 
 var requiredMaturityTargets = []string{
 	"local-governance-gates-check",
+	"roadmap-catalog-check",
 	"random-source-policy-check",
 	"threat-model-check",
 	"dynamic-contracts-check",

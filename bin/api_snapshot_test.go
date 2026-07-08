@@ -1914,6 +1914,19 @@ func TestGovernanceMigrationCheckRejectsLocalGovernanceGatesPythonRegression(t *
 	}
 }
 
+func TestGovernanceMigrationCheckRejectsRoadmapCatalogPythonRegression(t *testing.T) {
+	fixture := governanceMigrationFixture(t)
+	fixture.WriteFile("bin/check_governance_maturity.sh", "def validate_roadmap_catalog_baseline() -> None:\n\tpass\n")
+
+	output, err := fixture.RunGovernanceMigrationCheck()
+	if err == nil {
+		t.Fatalf("governancemigrationcheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "GOVERNANCE_MIGRATION_PYTHON_RULE_REGRESSION") {
+		t.Fatalf("governance migration output missing roadmap catalog regression rule id:\n%s", output)
+	}
+}
+
 func TestGovernanceMigrationCheckRejectsMissingMakeTarget(t *testing.T) {
 	fixture := governanceMigrationFixture(t)
 	fixture.WriteFile("Makefile", `governance-maturity-check:
@@ -2542,7 +2555,7 @@ func structuredPassedCheck(cmd string) map[string]any {
 
 func maturitySectionsCheck() map[string]any {
 	sections := []any{
-		maturitySection("roadmap_catalog", 2),
+		maturitySection("roadmap_catalog", 0),
 		maturitySection("star_domains", 6),
 		maturitySection("safe_crypto", 11),
 		maturitySection("utility_comparison", 4),
@@ -3331,6 +3344,7 @@ func governanceMigrationFixture(t *testing.T) *governanceFixture {
 	fixture.WriteFile("Makefile", `governance-maturity-check:
 	bash bin/check_governance_maturity.sh
 	$(MAKE) local-governance-gates-check
+	$(MAKE) roadmap-catalog-check
 	$(MAKE) random-source-policy-check
 	$(MAKE) threat-model-check
 	$(MAKE) dynamic-contracts-check

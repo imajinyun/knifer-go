@@ -314,110 +314,12 @@ if len(public_facade_names) != len(public_facades):
 	add_error("public_facades must not contain duplicate package names")
 
 
-def validate_roadmap_catalog_baseline() -> None:
-	summary = require_mapping(tools.get("summary"), "docs/api/tools.json.summary")
-	status_counts = require_mapping(summary.get("status_counts"), "docs/api/tools.json.summary.status_counts")
-	synopsis_sources = require_mapping(summary.get("synopsis_sources"), "docs/api/tools.json.summary.synopsis_sources")
-	expected = {
-		"Public facade packages": summary.get("package_count"),
-		"Public functions": summary.get("function_count"),
-		"Functions with executable examples": summary.get("functions_with_examples"),
-		"Context-aware functions": summary.get("context_aware_functions"),
-		"Functions returning errors": summary.get("returns_error_functions"),
-		"Recommended public functions": status_counts.get("recommended"),
-		"Compatibility public functions": status_counts.get("compatibility"),
-		"Empty function synopses": synopsis_sources.get("empty"),
-		"Facade-sourced function synopses": synopsis_sources.get("facade"),
-		"Internal-sourced function synopses": synopsis_sources.get("internal"),
-	}
-	actual = extract_markdown_table(root / "docs/superpowers/plans/49-roadmap.md", "Baseline")
-	for metric, expected_value in expected.items():
-		if not isinstance(expected_value, int) or isinstance(expected_value, bool):
-			add_error(f"docs/api/tools.json.summary source for {metric} must be an integer")
-			continue
-		actual_value = actual.get(metric)
-		if actual_value is None:
-			add_error(f"docs/superpowers/plans/49-roadmap.md Baseline missing metric {metric}")
-			continue
-		if actual_value != expected_value:
-			add_error(
-				"docs/superpowers/plans/49-roadmap.md Baseline "
-				f"{metric}={actual_value} must match docs/api/tools.json.summary value {expected_value}"
-			)
-	extra_metrics = sorted(set(actual) - set(expected))
-	if extra_metrics:
-		add_error("docs/superpowers/plans/49-roadmap.md Baseline includes unmanaged metric(s): " + ", ".join(extra_metrics))
-
-
-def package_summary_int(package_name: str, field: str) -> int | None:
-	pkg = tool_packages.get(package_name)
-	if not pkg:
-		add_error(f"docs/api/tools.json missing package {package_name}")
-		return None
-	summary = require_mapping(pkg.get("summary"), f"docs/api/tools.json.packages.{package_name}.summary")
-	value = summary.get(field)
-	if not isinstance(value, int) or isinstance(value, bool):
-		add_error(f"docs/api/tools.json.packages.{package_name}.summary.{field} must be an integer")
-		return None
-	return value
-
-
 def package_summary(package_name: str) -> dict:
 	pkg = tool_packages.get(package_name)
 	if not pkg:
 		add_error(f"docs/api/tools.json missing package {package_name}")
 		return {}
 	return require_mapping(pkg.get("summary"), f"docs/api/tools.json.packages.{package_name}.summary")
-
-
-def parse_int_cell(value: str, path: str) -> int | None:
-	number = value.replace(",", "")
-	if not re.fullmatch(r"\d+", number):
-		add_error(f"{path} must be an integer, got {value!r}")
-		return None
-	return int(number)
-
-
-def validate_roadmap_star_domain_scorecard() -> None:
-	roadmap = root / "docs/superpowers/plans/49-roadmap.md"
-	domains = {
-		"Safe HTTP (`vhttp`, `vresty`, `vurl`)": ("vhttp", "vresty", "vurl"),
-		"Safe crypto (`vcrypto`, `vrand`, `vjwt`)": ("vcrypto", "vrand", "vjwt"),
-		"Daily JSON/file (`vjson`, `vfile`)": ("vjson", "vfile"),
-	}
-	rows = {
-		row.get("Domain", ""): row
-		for row in extract_markdown_rows(roadmap, "90-Day Star Domain Scorecard")
-	}
-	missing = sorted(set(domains) - set(rows))
-	if missing:
-		add_error("docs/superpowers/plans/49-roadmap.md scorecard missing domain row(s): " + ", ".join(missing))
-	extra = sorted(set(rows) - set(domains))
-	if extra:
-		add_error("docs/superpowers/plans/49-roadmap.md scorecard includes unmanaged domain row(s): " + ", ".join(extra))
-	for domain, packages in domains.items():
-		row = rows.get(domain)
-		if not row:
-			continue
-		function_count = 0
-		example_count = 0
-		for package_name in packages:
-			package_functions = package_summary_int(package_name, "function_count")
-			package_examples = package_summary_int(package_name, "functions_with_examples")
-			if package_functions is not None:
-				function_count += package_functions
-			if package_examples is not None:
-				example_count += package_examples
-		actual_functions = parse_int_cell(row.get("Public functions", ""), f"{domain} Public functions")
-		actual_examples = parse_int_cell(row.get("Examples", ""), f"{domain} Examples")
-		if actual_functions is not None and actual_functions != function_count:
-			add_error(f"{domain} Public functions={actual_functions} must match tools catalog value {function_count}")
-		if actual_examples is not None and actual_examples != example_count:
-			add_error(f"{domain} Examples={actual_examples} must match tools catalog value {example_count}")
-		expected_ratio = "0.0%" if function_count == 0 else f"{example_count / function_count * 100:.1f}%"
-		actual_ratio = row.get("Example ratio", "")
-		if actual_ratio != expected_ratio:
-			add_error(f"{domain} Example ratio={actual_ratio!r} must match tools catalog value {expected_ratio!r}")
 
 
 def validate_safe_http_cookbook_governance() -> None:
@@ -4045,10 +3947,7 @@ def validate_example_depth_governance() -> None:
 		add_error(f"{roadmap_path} Sprint 22 row missing facade(s): " + ", ".join(missing_from_sprint))
 
 
-run_section("roadmap_catalog", [
-	validate_roadmap_catalog_baseline,
-	validate_roadmap_star_domain_scorecard,
-])
+run_section("roadmap_catalog", [])
 run_section("star_domains", [
 	validate_safe_http_cookbook_governance,
 	validate_daily_json_file_faq_governance,
