@@ -1,4 +1,4 @@
-.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check go-module-cache-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check docs-gen docs-check facade-tiering-gen utility-comparison-refresh generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
+.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check go-module-cache-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check local-governance-gates-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check docs-gen docs-check facade-tiering-gen utility-comparison-refresh generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -35,6 +35,7 @@ help:
 	@echo "  api-freeze-check Verify v1 API freeze/deprecation governance"
 	@echo "  governance-maturity-check Verify API convergence, lifecycle, error, threat, and benchmark governance"
 	@echo "  governance-migration-check Verify migrated governance checks stay out of Python maturity"
+	@echo "  local-governance-gates-check Verify local gate wiring dependencies"
 	@echo "  random-source-policy-check Verify random source policy metadata and contract tests"
 	@echo "  threat-model-check Verify threat model boundary contracts"
 	@echo "  dynamic-contracts-check Verify dynamic semantic contract metadata"
@@ -188,6 +189,7 @@ api-freeze-check: api-check tools-check
 
 governance-maturity-check: ai-context-check tools-check
 	bash bin/check_governance_maturity.sh
+	$(MAKE) local-governance-gates-check
 	$(MAKE) random-source-policy-check
 	$(MAKE) threat-model-check
 	$(MAKE) dynamic-contracts-check
@@ -200,6 +202,9 @@ governance-maturity-check: ai-context-check tools-check
 
 governance-migration-check:
 	$(GO) run ./bin/governancemigrationcheck -root .
+
+local-governance-gates-check:
+	$(GO) run ./bin/localgovernancegatescheck -root .
 
 random-source-policy-check:
 	$(GO) run ./bin/randomsourcepolicycheck -root .

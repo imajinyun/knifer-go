@@ -1625,6 +1625,122 @@ func TestCapabilityDomainsCheckRejectsRequiredTestsContract(t *testing.T) {
 	}
 }
 
+func TestLocalGovernanceGatesCheckAcceptsValidFixture(t *testing.T) {
+	fixture := localGovernanceGatesFixture(t, localGovernanceMakefileDirect())
+	output, err := fixture.RunLocalGovernanceGatesCheck()
+	if err != nil {
+		t.Fatalf("localgovernancegatescheck failed: %v\n%s", err, output)
+	}
+	if !strings.Contains(output, "local governance gates are valid") {
+		t.Fatalf("local governance output missing success:\n%s", output)
+	}
+}
+
+func TestLocalGovernanceGatesCheckRejectsMissingTarget(t *testing.T) {
+	fixture := localGovernanceGatesFixture(t, `full-check: bench-regression-check
+
+ci-workflow-check: bench-regression-check
+
+release-check: bench-regression-check
+
+bench-regression-check:
+	@true
+`)
+
+	output, err := fixture.RunLocalGovernanceGatesCheckJSON()
+	if err == nil {
+		t.Fatalf("localgovernancegatescheck -json unexpectedly passed:\n%s", output)
+	}
+	var result struct {
+		Status   string `json:"status"`
+		Findings []struct {
+			RuleID string `json:"rule_id"`
+		} `json:"findings"`
+	}
+	if err := json.Unmarshal([]byte(output), &result); err != nil {
+		t.Fatalf("localgovernancegatescheck -json output is not valid JSON: %v\n%s", err, output)
+	}
+	if result.Status != "failed" {
+		t.Fatalf("JSON status = %q, want failed\n%s", result.Status, output)
+	}
+	var sawMissing bool
+	for _, finding := range result.Findings {
+		if finding.RuleID == "LOCAL_GOVERNANCE_MAKE_TARGET_MISSING" {
+			sawMissing = true
+		}
+	}
+	if !sawMissing {
+		t.Fatalf("local governance JSON findings missing target-missing rule id:\n%s", output)
+	}
+}
+
+func TestLocalGovernanceGatesCheckRejectsMissingBenchDependency(t *testing.T) {
+	fixture := localGovernanceGatesFixture(t, `quick-check: bench-regression-check
+
+full-check: bench-regression-check
+
+ci-workflow-check: bench-regression-check
+
+release-check:
+	@true
+
+bench-regression-check:
+	@true
+`)
+
+	output, err := fixture.RunLocalGovernanceGatesCheck()
+	if err == nil {
+		t.Fatalf("localgovernancegatescheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "LOCAL_GOVERNANCE_BENCH_REGRESSION_DEP_MISSING") {
+		t.Fatalf("local governance output missing dependency rule id:\n%s", output)
+	}
+}
+
+func TestLocalGovernanceGatesCheckAcceptsRecipeIndirection(t *testing.T) {
+	fixture := localGovernanceGatesFixture(t, `quick-check: bench-regression-check
+
+full-check:
+	$(MAKE) quick-check
+
+ci-workflow-check:
+	make full-check
+
+release-check:
+	$(MAKE) ci-workflow-check
+
+bench-regression-check:
+	@true
+`)
+
+	output, err := fixture.RunLocalGovernanceGatesCheck()
+	if err != nil {
+		t.Fatalf("localgovernancegatescheck failed for recipe indirection: %v\n%s", err, output)
+	}
+}
+
+func TestLocalGovernanceGatesCheckRejectsCycleWithoutBenchDependency(t *testing.T) {
+	fixture := localGovernanceGatesFixture(t, `quick-check: full-check
+
+full-check: quick-check
+
+ci-workflow-check: quick-check
+
+release-check: ci-workflow-check
+
+bench-regression-check:
+	@true
+`)
+
+	output, err := fixture.RunLocalGovernanceGatesCheck()
+	if err == nil {
+		t.Fatalf("localgovernancegatescheck unexpectedly passed:\n%s", output)
+	}
+	if !strings.Contains(output, "LOCAL_GOVERNANCE_BENCH_REGRESSION_DEP_MISSING") {
+		t.Fatalf("local governance output missing dependency rule id for cycle:\n%s", output)
+	}
+}
+
 func TestGovernanceMigrationCheckAcceptsValidFixture(t *testing.T) {
 	fixture := governanceMigrationFixture(t)
 	output, err := fixture.RunGovernanceMigrationCheck()
@@ -2958,6 +3074,27 @@ func capabilityDomain(packages, requiredTests []string) map[string]any {
 		"required_focus": []string{"correctness", "adoption"},
 		"required_tests": requiredTests,
 	}
+}
+
+func localGovernanceGatesFixture(t *testing.T, makefile string) *governanceFixture {
+	t.Helper()
+	fixture := newGovernanceFixture(t)
+	fixture.WriteFile("Makefile", makefile)
+	return fixture
+}
+
+func localGovernanceMakefileDirect() string {
+	return `quick-check: bench-regression-check
+
+full-check: bench-regression-check
+
+ci-workflow-check: bench-regression-check
+
+release-check: bench-regression-check
+
+bench-regression-check:
+	@true
+`
 }
 
 func governanceMigrationFixture(t *testing.T) *governanceFixture {
