@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/emmansun/gmsm v0.44.0
-	github.com/getsentry/sentry-go v0.47.0
+	github.com/getsentry/sentry-go v0.48.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/makiuchi-d/gozxing v0.1.1
 	github.com/pelletier/go-toml/v2 v2.4.3
