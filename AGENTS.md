@@ -41,6 +41,8 @@ For Go changes, load `golang-how-to` first, then use the relevant Go skills it s
 6. If generated artifacts are expected to change, run the generator, review the diff, then run the corresponding check target.
 7. Report exact commands run and whether they passed, failed, or were skipped with a reason.
 
+Agent and governance Make targets use `/tmp/knifer-go-gocache` by default so restricted environments do not depend on the user Go build cache. Set `GOCACHE` explicitly to override this path. `make doctor` treats required-command stderr or a non-zero status as a diagnostic failure.
+
 ## Validation shortcuts
 
 - `make quick-check`: fast local gate for normal changes.

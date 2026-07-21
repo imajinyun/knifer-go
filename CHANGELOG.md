@@ -15,6 +15,12 @@ subpackage APIs are treated as the compatibility boundary.
 
 ### Governance
 
+- Made an isolated Go build cache under `/tmp` the default for Agent,
+  governance, API, and documentation Make targets while preserving explicit
+  `GOCACHE` overrides.
+- Hardened `make doctor` so required diagnostics preserve stderr and fail on
+  either stderr output or a non-zero exit status instead of reporting false
+  success after cache write errors.
 - Defined public API stability levels for stable `v*` facades, internal
   implementation packages, and experimental provider or adapter contracts.
 - Documented breaking-change rules, the two-minor-release deprecation window,

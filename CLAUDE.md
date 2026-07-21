@@ -138,6 +138,18 @@
 | `make bench-codec` | JSON/XML benchmark baselines |
 | `make bench-smoke` | Short core benchmark smoke check |
 
+Agent, governance, API, and documentation Make targets default `GOCACHE` to
+`/tmp/knifer-go-gocache`. This keeps validation writable in restricted
+environments without changing ordinary development targets such as `make test`.
+Set `GOCACHE` explicitly to use another cache. The compatibility flag
+`USE_ISOLATED_GO_CACHE=1` remains available for callers that want to isolate an
+arbitrary Make target.
+
+`make doctor` preserves stdout and stderr for required diagnostics. A required
+command is considered failed when it returns a non-zero status or writes to
+stderr, including Go commands that report cache write failures while returning
+status zero.
+
 ### API design rules
 
 - Prefer `(result, error)` over `panic` for recoverable failures.

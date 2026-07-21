@@ -5,9 +5,13 @@ GOLANGCI_LINT ?= golangci-lint
 PKGS ?= ./...
 COVERAGE_FILE ?= /tmp/knifer-go-coverage.out
 ISOLATED_GOCACHE ?= /tmp/knifer-go-gocache
+EFFECTIVE_ISOLATED_GOCACHE := $(if $(strip $(GOCACHE)),$(GOCACHE),$(ISOLATED_GOCACHE))
 ifeq ($(USE_ISOLATED_GO_CACHE),1)
 export GOCACHE := $(ISOLATED_GOCACHE)
 endif
+AGENT_GOVERNANCE_TARGETS := doctor worktree-check agent-evidence agent-evidence-check change-policy-check security-sensitive-diff aiflow-layout-check go-module-cache-check coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check local-governance-gates-check roadmap-catalog-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check docs-gen docs-check facade-tiering-gen ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check generate mod-verify tidy-check mod-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench-regression-check ci-test
+
+$(AGENT_GOVERNANCE_TARGETS): export GOCACHE := $(EFFECTIVE_ISOLATED_GOCACHE)
 BENCH ?= .
 BENCH_PKGS ?= ./internal/slice ./internal/maps ./internal/str ./internal/num ./internal/bean ./internal/db ./internal/poi ./internal/imgx ./internal/template ./internal/cli ./internal/ai ./internal/ftp ./internal/ssh ./internal/pinyin ./internal/tokenize
 BENCH_FACADE_PKGS ?= ./vslice ./vmap ./vset ./vstr ./vnum ./vbean ./vdb ./vcrypto ./vpoi ./vimg ./vtpl ./vcli ./vai ./vftp ./vssh ./vhan ./vtok ./vhttp ./vcodec
@@ -92,23 +96,7 @@ help:
 	@echo "  ci-test         Run CI test-job gates"
 
 doctor:
-	@echo "== go =="
-	@$(GO) version
-	@echo "== python3 =="
-	@if command -v python3 >/dev/null 2>&1; then python3 --version; else echo "python3 not found"; fi
-	@echo "== golangci-lint =="
-	@if command -v $(GOLANGCI_LINT) >/dev/null 2>&1; then $(GOLANGCI_LINT) version; else echo "$(GOLANGCI_LINT) not found"; fi
-	@echo "== govulncheck =="
-	@if $(GO) tool govulncheck -version >/dev/null 2>&1; then $(GO) tool govulncheck -version; else echo "govulncheck tool not available; run: go get -tool golang.org/x/vuln/cmd/govulncheck"; fi
-	@echo "== git status =="
-	@git status --short --branch
-	@echo "== module =="
-	@$(GO) list -m | grep 'knifer-go' || $(GO) list -m
-	@echo "== module cache =="
-	@bash bin/check_go_module_cache.sh
-	@echo "== package list =="
-	@$(GO) list ./... >/dev/null
-	@echo "go list ./... OK"
+	@GO="$(GO)" GOLANGCI_LINT="$(GOLANGCI_LINT)" bash bin/doctor.sh
 
 install-hooks:
 	@git config core.hooksPath .githooks

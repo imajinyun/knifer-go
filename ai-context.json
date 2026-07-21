@@ -16,7 +16,7 @@
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "low",
-      "notes": "Reports local Go/tooling/Git state without modifying repository files."
+      "notes": "Reports local Go/tooling/Git state with an isolated Go build cache by default. Required diagnostics preserve stderr and fail on either stderr output or a non-zero status."
     },
     "worktree_check": {
       "cmd": "make worktree-check",
@@ -43,7 +43,7 @@
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "low",
-      "notes": "Fast local gate; includes worktree-check, module verification, vet, architecture, tests, API snapshot, documentation checks, governance maturity, benchmark metadata, and whitespace diff checks."
+      "notes": "Fast local gate with an isolated Go build cache by default; includes worktree-check, module verification, vet, architecture, tests, API snapshot, documentation checks, governance maturity, benchmark metadata, and whitespace diff checks."
     },
     "agent_check": {
       "cmd": "make agent-check",
@@ -52,7 +52,7 @@
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "low",
-      "notes": "Default AI/Agent-safe validation entrypoint; delegates to quick-check and detects security-sensitive diffs."
+      "notes": "Default AI/Agent-safe validation entrypoint with an isolated Go build cache; delegates to quick-check and detects security-sensitive diffs."
     },
     "security_sensitive_diff": {
       "cmd": "make security-sensitive-diff",
