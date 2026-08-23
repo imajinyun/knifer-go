@@ -180,9 +180,19 @@ Per-package quickstart examples live in the linked documents above so examples s
 
 ## 🧭 Sprint direction
 
-Numbered governance sprints through 66 are completed. The module is a v1 candidate (`ai-context.json` `api_freeze.v1_candidate`). Current work is freeze and release readiness rather than opening a new numbered sprint: keep generated catalogs current, raise coverage toward 80%, continue weak-facade example density, and implement planned `vtest`/`vdump` or collection-advanced APIs only with an API decision card.
+Current pointer: **v1 freeze rehearsal**. Numbered governance sprints through 66 are completed. `ai-context.json` marks `api_freeze.v1_candidate` as true, experimental APIs are blocked, and `CHANGELOG.md` is still Unreleased. Do not open a new numbered sprint or add public APIs until freeze evidence is green.
 
 Sprint state is maintained through the generated API snapshots, this documentation hub, `ai-context.json` governance records, and recent commits. Local sprint plans may exist under ignored `docs/superpowers/plans/`. The former tracked `49-roadmap.md` page is no longer part of the committed documentation set; do not recreate it unless roadmap restoration is explicitly requested.
+
+### Next execution loop
+
+1. **Land catalog alignment** if the 55-facade count sync is still uncommitted. Inspect `doc.go`, `CLAUDE.md`, `llms.txt`, `CONTRIBUTING.md`, and this hub. Validate with `make worktree-check`, `make docs-check`, and `git diff --check`.
+
+2. **v1 freeze rehearsal** (current). Inspect `CHANGELOG.md` Unreleased, `ai-context.json` `v1_readiness` / `api_freeze`, and `.github/workflows/release.yml` first. Group user-visible notes into Added / Changed / Deprecated / Removed / Fixed / Security / Migration. Record gate gaps instead of tagging. Validate with `make api-freeze-check`, `make release-notes-check`, `make fuzz-smoke`, `make bench-smoke`, then `make release-check COVERAGE_FILE=/tmp/knifer-go-coverage.out` when notes are ready. Do not tag until the v1 blocking exit criteria pass.
+
+3. **Weak-example ratchet** after freeze notes, or in parallel if freeze is blocked only on evidence gathering. Next pair from the generated catalog: `verr` (15.1%) and `vid` (17.0%). Inspect `docs/api/tools.md` golden paths, existing Example tests, and recommended entry points first. Raise coverage in small increments; keep examples deterministic. Validate with `go test ./verr ./vid`, `make tools-gen`, `make docs-check`, `make ai-context-check`, and `make agent-security-check` because `vid` is security-sensitive.
+
+4. **Parked until an API decision card exists.** Do not implement `vtest` or `vdump`. Do not add collection helpers such as `ZipN`, cartesian product, channel wrappers, or parallel transforms. Keep the repository coverage gate at 75.2% until new tests can support a raise toward 80%. Refresh the GitHub Top 5 comparison only with `make utility-comparison-refresh` when a v1 announcement needs current competitor metadata.
 
 <a id="architecture-and-package-boundaries"></a>
 
