@@ -1,6 +1,6 @@
 # knifer-go — AI Agent Guide
 
-> Go utility library (54 public `v*` facade packages + `internal/*` implementations).
+> Go utility library (55 public `v*` facade packages + `internal/*` implementations).
 
 `AGENTS.md` is the cross-agent concise entrypoint. This file is the Claude-specific detailed guide and should carry the deeper workflow, package-boundary, and validation playbooks. Keep shared rules aligned, but avoid duplicating long policy text across both files.
 
@@ -22,7 +22,7 @@
 │   ├── api/exports.txt # exported API snapshot (19k+ lines, CI-enforced)
 │   ├── api/tools.json  # machine-readable facade function catalog for AI/tooling
 │   ├── api/tools.md    # generated human-readable facade function catalog
-│   └── doc/            # 54 per-package quickstart docs (01-vai.md .. 54-vzip.md)
+│   └── doc/            # 55 per-package quickstart docs (01-vai.md .. 55-vgeo.md)
 ├── AGENTS.md           # cross-agent workflow, validation, and generated-doc rules
 └── .github/workflows/  # CI (go.yml) + release (release.yml) automation
 ```
@@ -34,7 +34,7 @@
 - **Production `panic` is exceptional.** Only in `MustXxx`/`PanicXxx` APIs or documented cases.
 - **Facades are thin.** No business logic, loops, `panic`, or type assertions in `v*`.
 
-### Package catalog (54 v* packages)
+### Package catalog (55 v* packages)
 
 | Package | Domain | internal |
 |---------|--------|----------|
@@ -86,6 +86,7 @@
 | vpass | password strength | internal/pass |
 | vident | identity numbers | internal/identity |
 | vform | form/input validation | internal/validator |
+| vgeo | coordinate conversion | internal/geo |
 | vver | version comparison | internal/version |
 | vsys | system information | internal/system |
 | vhan | Han text romanization adapters | internal/pinyin |

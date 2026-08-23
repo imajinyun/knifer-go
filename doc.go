@@ -3,7 +3,7 @@
 
 // Package knifer is the root package of the knifer-go utility toolkit.
 //
-// This module is split into 48 public subpackages by domain. Import only the
+// This module is split into 55 public subpackages by domain. Import only the
 // packages you need. The subpackages are grouped below for navigation:
 //
 // String & text:
@@ -12,6 +12,8 @@
 //	vregex  regular expressions
 //	vtpl    html/template rendering (TemPLate)
 //	vurl    URL/URI parsing, escaping, query building
+//	vhan    Han text romanization adapters
+//	vtok    tokenization adapters
 //
 // Collections & data structures:
 //
@@ -47,6 +49,8 @@
 //	vmail   email message construction, MIME attachments, and SMTP sending
 //	vskt    sockets (SocKeT)
 //	vnet    IP/port/interface utilities
+//	vftp    FTP adapters
+//	vssh    SSH/SFTP adapters
 //
 // Security & matching:
 //
@@ -75,6 +79,8 @@
 //	vlog    logging
 //	verr    error handling, panic recovery, stacks (errx)
 //	vconf   configuration
+//	vcli    CLI helpers
+//	vai     AI adapters
 //
 // Identity & misc:
 //
@@ -83,6 +89,7 @@
 //	vform   form and input validators
 //	vver    version comparison (VERsion)
 //	vdb     database/sql helpers
+//	vgeo    coordinate conversion (WGS-84/GCJ-02/BD-09)
 //
 // Example:
 //

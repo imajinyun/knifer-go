@@ -121,6 +121,7 @@ If the task is only Lodash-style collection helpers, `samber/lo` may be narrower
 | vpass | password strength | internal/pass |
 | vident | identity numbers | internal/identity |
 | vform | form/input validation | internal/validator |
+| vgeo | coordinate conversion | internal/geo |
 | vver | version comparison | internal/version |
 | vsys | system information | internal/system |
 | vhan | Han text romanization adapters | internal/pinyin |

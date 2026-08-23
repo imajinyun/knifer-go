@@ -107,6 +107,7 @@
 | [`vfile`](17-vfile.md) | `github.com/imajinyun/knifer-go/vfile` | 文件与 IO 工具：读写复制、按行读取、mkdir/touch/delete、文件名处理、静默关闭和 provider-backed 文件系统操作。 |
 | [`vform`](18-vform.md) | `github.com/imajinyun/knifer-go/vform` | 表单与输入校验工具：邮箱、手机号、URL、IPv4/IPv6、身份证、中文、数字字符串和 matcher provider。 |
 | [`vftp`](19-vftp.md) | `github.com/imajinyun/knifer-go/vftp` | FTP adapter 工具：可注入 provider 的目录列表、内存下载/上传契约、请求校验、传输大小限制和防御性拷贝。 |
+| [`vgeo`](55-vgeo.md) | `github.com/imajinyun/knifer-go/vgeo` | 坐标转换工具：WGS-84、GCJ-02、BD-09、粗略中国范围判断和 Haversine 距离。 |
 | [`vhan`](20-vhan.md) | `github.com/imajinyun/knifer-go/vhan` | 汉字转写 adapter 工具：可注入 provider 的中文转拼音与首字母提取、请求校验、输入长度限制和防御性拷贝。 |
 | [`vhash`](21-vhash.md) | `github.com/imajinyun/knifer-go/vhash` | 非加密 Hash 工具：Additive、FNV、可注入 32-bit provider 和经典字符串哈希。 |
 | [`vhttp`](22-vhttp.md) | `github.com/imajinyun/knifer-go/vhttp` | 标准库 HTTP facade：链式客户端、全局/隔离配置、显式错误快捷函数、分类 HTTP 错误、安全下载、BasicAuth、HTML helper 和 provider-backed transport/factory。 |

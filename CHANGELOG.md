@@ -9,9 +9,10 @@ subpackage APIs are treated as the compatibility boundary.
 
 ### Documentation
 
-- Standardized all 54 facade quickstarts with helper selection guidance,
+- Standardized all 55 facade quickstarts with helper selection guidance,
   safety and correctness checklists, when-not-to-use boundaries, related package
   guidance, benchmark and trade-off notes, and FAQs.
+- Aligned public facade counts and catalogs to 55 packages, including `vgeo`.
 
 ### Governance
 

@@ -132,8 +132,8 @@ The project follows an “internal implementation + public facade” layout: `in
 | [`verr`](16-verr.md) | `github.com/imajinyun/knifer-go/verr` | Error helpers: panic recovery, aggregation, multierror matching, stack capture/formatting, injectable logging/stack/exit/timer/runner providers, and optional logrus/Sentry integration. |
 | [`vfile`](17-vfile.md) | `github.com/imajinyun/knifer-go/vfile` | File and IO helpers: read/write/copy, lines, mkdir/touch/delete, filename helpers, quiet close, and provider-backed file-system operations. |
 | [`vform`](18-vform.md) | `github.com/imajinyun/knifer-go/vform` | Form and input validation helpers: email, mobile, URL, IPv4/IPv6, ID card, Chinese text, number strings, and matcher providers. |
-| [`vgeo`](55-vgeo.md) | `github.com/imajinyun/knifer-go/vgeo` | Coordinate conversion helpers: WGS-84, GCJ-02, BD-09, rough China-bound checks, and Haversine distance. |
 | [`vftp`](19-vftp.md) | `github.com/imajinyun/knifer-go/vftp` | FTP adapter helpers: provider-injected listing, in-memory download/upload contracts, request validation, transfer limits, and defensive copies. |
+| [`vgeo`](55-vgeo.md) | `github.com/imajinyun/knifer-go/vgeo` | Coordinate conversion helpers: WGS-84, GCJ-02, BD-09, rough China-bound checks, and Haversine distance. |
 | [`vhan`](20-vhan.md) | `github.com/imajinyun/knifer-go/vhan` | Han text adapter helpers: provider-injected Chinese-to-pinyin conversion and initials extraction, request validation, input limits, and defensive copies. |
 | [`vhash`](21-vhash.md) | `github.com/imajinyun/knifer-go/vhash` | Non-cryptographic hash helpers: additive, FNV, injectable 32-bit providers, and classic string hashes. |
 | [`vhttp`](22-vhttp.md) | `github.com/imajinyun/knifer-go/vhttp` | Standard-library HTTP facade: chainable clients, global/isolated config, explicit-error shortcuts, classified HTTP errors, safe downloads, BasicAuth, HTML helpers, and provider-backed transports/factories. |
@@ -180,9 +180,9 @@ Per-package quickstart examples live in the linked documents above so examples s
 
 ## 🧭 Sprint direction
 
-The current governance stream prioritizes scenario mindshare, deeper high-value modules, documentation and benchmark trust, and explicit ecosystem adapter lanes for AI, FTP, SSH/SFTP, pinyin, tokenization, multi-template engines, and CLI utilities.
+Numbered governance sprints through 66 are completed. The module is a v1 candidate (`ai-context.json` `api_freeze.v1_candidate`). Current work is freeze and release readiness rather than opening a new numbered sprint: keep generated catalogs current, raise coverage toward 80%, continue weak-facade example density, and implement planned `vtest`/`vdump` or collection-advanced APIs only with an API decision card.
 
-Sprint state is maintained through the generated API snapshots, this documentation hub, local sprint plans under `docs/superpowers/plans/`, and recent commits. The former `49-roadmap.md` page is no longer part of the tracked documentation set; do not recreate it unless roadmap restoration is explicitly requested.
+Sprint state is maintained through the generated API snapshots, this documentation hub, `ai-context.json` governance records, and recent commits. Local sprint plans may exist under ignored `docs/superpowers/plans/`. The former tracked `49-roadmap.md` page is no longer part of the committed documentation set; do not recreate it unless roadmap restoration is explicitly requested.
 
 <a id="architecture-and-package-boundaries"></a>
 
@@ -390,7 +390,7 @@ Use capability domains for planning and review. They group packages by the engin
 | Trust boundary | `vcli`, `vconf`, `vfile`, `vhttp`, `vresty`, `vurl`, `vzip` | Threat-model mapped misuse tests, `Safe`/`E`/`WithOptions` consistency, bounded IO, and fail-closed defaults. | contract, security, misuse, fuzz, error contract |
 | Security primitives | `vcrypto`, `vid`, `vjwt`, `vmask`, `vpass`, `vrand` | Weak-input rejection, secret handling guarantees, algorithm policy, and random-source policy. | contract, security, misuse, error contract, benchmark |
 | Runtime adapters | `vai`, `vcron`, `vdb`, `verr`, `vftp`, `vimg`, `vjob`, `vlog`, `vmail`, `vnet`, `vpoi`, `vresty`, `vskt`, `vsys`, `vtpl`, `vssh` | Context cancellation, provider injection, dependency isolation, and lifecycle metadata. | contract, provider contract, security, benchmark, example |
-| Domain helpers | `vblf`, `vbool`, `vcache`, `vcodec`, `vcsv`, `vdate`, `vform`, `vhash`, `vident`, `vnum`, `vref`, `vsem`, `vver` | Package-level examples, edge-case tests, and core dependency discipline. | contract, example, benchmark |
+| Domain helpers | `vblf`, `vbool`, `vcache`, `vcodec`, `vcsv`, `vdate`, `vform`, `vgeo`, `vhash`, `vident`, `vnum`, `vref`, `vsem`, `vver` | Package-level examples, edge-case tests, and core dependency discipline. | contract, example, benchmark |
 
 The capability map is machine-readable in `ai-context.json` under `capability_domains` and is validated by `make governance-maturity-check`. Every public facade must be covered by at least one capability domain, and each domain must declare the test responsibility types expected for future work.
 
