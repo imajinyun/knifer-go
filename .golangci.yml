@@ -61,6 +61,16 @@ linters:
         linters:
           - gosec
         text: "InsecureSkipVerify"
+      # Governance checkers read repository-relative paths and invoke git/go
+      # with arguments they construct. They are local tools, not library APIs.
+      - path: bin/
+        linters:
+          - gosec
+        text: "Potential file inclusion via variable"
+      - path: bin/
+        linters:
+          - gosec
+        text: "Subprocess launched"
       - path: internal/(file/file|httpx/http/response|httpx/resty/response|imgx/captcha|net/multipart|xml/xml)\.go
         linters:
           - gosec

@@ -7,109 +7,103 @@ subpackage APIs are treated as the compatibility boundary.
 
 ## Unreleased
 
-### Documentation
+### Added
+
+- Added `vgeo` coordinate conversion helpers for WGS-84, GCJ-02, BD-09,
+  BD-09 Mercator, coarse China-bound checks, and Haversine distance.
+- Added provider-contract facades `vai`, `vftp`, `vssh`, `vhan`, and `vtok`
+  so callers inject chat, FTP, SSH/SFTP, pinyin, and tokenization providers
+  without pulling concrete clients into the core module.
+- Added `vcrypto` TOTP/HOTP helpers with injected clocks, window verification,
+  Base32 secrets, and `otpauth` URL formatting.
+- Added `vcrypto` Argon2id-style encoded password hashing and verification
+  with bounded test costs and malformed-hash errors.
+- Added local RSA JWK/JWKS helpers for parse/marshal and `kid` selection,
+  without remote JWKS discovery or key rotation.
+- Added SM2/SM3/SM4 helpers for interoperability-only workflows, with
+  SM4-ECB documented as non-default.
+- Added `vcsv` helpers for configurable record reading/writing, map
+  conversion, struct tag export, and per-record callbacks.
+- Added `vimg` helpers for proportional thumbnails, PNG/JPEG/GIF conversion,
+  metadata introspection, QR/barcode workflows, and graphical captchas.
+- Added `vpass` password strength helpers for deterministic local scoring,
+  strength buckets, and common weak-password checks.
+- Added `vstr` Unicode escape helpers, Ant-style path matching, rune-set
+  Jaccard similarity, rune n-gram similarity, SimHash, and Hamming distance.
+- Added `vref` nil-safe reflection helpers for type classification, interface
+  checks, exported field discovery, and object-level predicates.
+- Added generic `vnum` sum, average, min, max, and absolute-value APIs.
+- Expanded `vmail` with account-based quick send helpers, SMTP envelope
+  sender control, lazy attachments, and RFC 2231 filename parameters.
+- Added a repository security policy for private vulnerability reporting and
+  security-sensitive package review areas.
+- Added OpenSSF Scorecard to CI and the README trust signals.
+
+### Changed
 
 - Standardized all 55 facade quickstarts with helper selection guidance,
-  safety and correctness checklists, when-not-to-use boundaries, related package
-  guidance, benchmark and trade-off notes, and FAQs.
+  safety checklists, when-not-to-use boundaries, related packages,
+  benchmark notes, and FAQs.
 - Aligned public facade counts and catalogs to 55 packages, including `vgeo`.
-
-### Governance
-
-- Made an isolated Go build cache under `/tmp` the default for Agent,
-  governance, API, and documentation Make targets while preserving explicit
-  `GOCACHE` overrides.
-- Hardened `make doctor` so required diagnostics preserve stderr and fail on
-  either stderr output or a non-zero exit status instead of reporting false
-  success after cache write errors.
 - Defined public API stability levels for stable `v*` facades, internal
-  implementation packages, and experimental provider or adapter contracts.
+  packages, and experimental provider or adapter contracts.
 - Documented breaking-change rules, the two-minor-release deprecation window,
-  and the required release note sections for user-visible changes and
-  migrations.
-- Added a repository security policy for private vulnerability reporting,
-  supported versions, and security-sensitive package review areas.
-- Added a coverage gate script so CI can enforce a measurable test baseline.
-- Added facade coverage tests for `vurl`, `vzip`, `vdb`, `vjwt`, `vhttp`,
-  `vnum`, `vtpl`, `vmap`, `vref`, `vobj`, `vmask`, `vresty`, `vconf`,
-  `vcrypto`, and `vfile`.
-- Added core HTTP client coverage tests for `internal/httpx/http` and
-  `internal/httpx/resty`.
-- Added package-level coverage gates for security-sensitive facade packages:
-  `vhttp`, `vresty`, `vconf`, `vzip`, `vcrypto`, `vurl`, `vfile`,
-  `internal/httpx/http`, and `internal/httpx/resty`.
-- Strengthened coverage governance so security-sensitive packages declared in
-  `ai-context.json` must have coverage profile data.
-- Hardened database mutation guards, upsert conflict validation, secure random
-  byte failure handling, and zip extraction destination safety tests.
-- Added executable examples for database named parameters and updates, random
-  option helpers, and ZIP file/filter archive helpers.
-- Added a release readiness gate and strengthened release automation with tag
-  format, changelog, full validation, and protected environment checks.
-- Added OpenSSF Scorecard to CI and surfaced the Scorecard badge in the README
-  so dependency, branch-protection, and workflow trust signals are easier to
-  audit.
-- Extended `ai-context.json` with AI/tooling metadata for catalog metrics,
-  agent import rules, package-selection rules, top entry points, and metadata
-  refresh triggers.
-- Added Makefile-driven stability gates so local validation and CI share the
-  same module, vet, architecture, race/shuffle test, coverage, lint, and
-  vulnerability check targets.
-- Fixed package-level coverage accounting so race-mode coverage profiles count
-  each statement as covered once instead of multiplying by execution count.
-- Added `vref` reflection helper APIs for nil-safe `reflect.Value` checks,
-  type classification, interface implementation checks, and exported field name
-  discovery.
-- Added `vref` object-level type predicate helpers for functions, iteratees,
-  collections, slices, arrays, and maps.
-- Updated object equality helpers so `time.Time` values compare by instant while
-  preserving cross-numeric value comparison.
-- Added `vcsv` CSV helpers for configurable record reading/writing, map
-  conversion, struct tag export, and per-record callbacks.
-- Added `vimg` image helpers: proportional thumbnails, lossless format
-  conversion between PNG/JPEG/GIF, metadata introspection (width/height/format),
-  and image captcha generation through the unified `internal/imgx` implementation
-  package.
-- Added `vpass` password strength helpers for deterministic local password
-  scoring, strength classification, and rule-level analysis.
-- Added `vstr` text helpers for Unicode escaping/unescaping and Ant-style path
-  matching, plus rune-set Jaccard similarity, rune n-gram similarity, SimHash,
-  and 64-bit Hamming distance without introducing a separate text package.
-- Scoped the exported API compatibility snapshot to the module root and
-  top-level `v*` facades, keeping `internal/*` refactors out of the public API
-  gate.
-- Expanded the API compatibility snapshot from exported symbol names to
-  function signatures, exported type definitions, exported struct fields,
-  interface methods, and method sets so breaking public API shape changes are
-  detected before release.
-- Expanded `vmail` with account-based quick send helpers, SMTP envelope sender
-  control, lazy reader/file attachments, and RFC 2231-compliant attachment
-  filename parameter rendering.
-- Added internal generic numeric constraints for shared implementation helpers
-  and exposed generic `vnum` sum, average, min, max, and absolute-value APIs.
-- Added direct coverage for `internal/httpx/internal/shared` so HTTP protocol
-  helpers are validated before being wrapped by `vhttp` and `vresty`.
+  and the required release-note sections.
+- Scoped the exported API snapshot to the module root and top-level `v*`
+  facades, then expanded it from symbol names to signatures, types, fields,
+  interface methods, and method sets.
+- Updated object equality helpers so `time.Time` values compare by instant
+  while preserving cross-numeric value comparison.
+- Made an isolated Go build cache under `/tmp` the default for Agent,
+  governance, API, and documentation Make targets, with explicit `GOCACHE`
+  overrides still honored.
+- Added Makefile-driven stability gates so local validation and CI share
+  module, vet, architecture, race/shuffle, coverage, lint, and vulnerability
+  targets.
+- Set the repository coverage gate to 75.2% statement coverage, with an 80%
+  minimum for security-sensitive packages that contain statements.
+
+### Deprecated
+
+- None.
+
+### Removed
+
+- None.
+
+### Fixed
+
 - Fixed quoted `Content-Disposition` filename parsing when parameters follow
   the filename token.
-- Documented release notes in a changelog so user-visible changes can be
-  reviewed before tagging.
+- Fixed package-level coverage accounting so race-mode profiles count each
+  statement once instead of multiplying by execution count.
+- Hardened `make doctor` so required diagnostics preserve stderr and fail on
+  stderr output or a non-zero status.
+- Hardened database mutation guards, upsert conflict validation, secure
+  random byte failure handling, and zip extraction destination safety tests.
 
-### Quality targets
+### Security
 
-- Current coverage gate baseline: 75.2%.
-- Current security-sensitive package minimum: every security-sensitive package
-  path that contains statements must have coverage profile data and meet at
-  least 80% statement coverage.
-- Package-specific gates may be higher than the security-sensitive minimum for
-  mature packages; when a package-specific gate is lower, the 80% security
-  minimum still wins for security-sensitive paths.
-- Near-term target: 75% total statement coverage.
-- Longer-term target: 80% total statement coverage, with priority on public
-  facade packages and security-sensitive packages.
+- Safe HTTP/URL helpers continue to reject local, private, link-local, and
+  unspecified targets by default and re-check redirect targets.
+- `vfile`, `vconf`, `vurl`, and `vzip` keep bounded reads or
+  extraction/decompression limits by default; ZIP extraction rejects
+  traversal and symlink escape.
+- Security-sensitive byte helpers fail closed on entropy errors instead of
+  falling back to pseudo-random bytes.
+- JWT helpers reject unsigned `alg=none` tokens; HMAC strict constructors
+  reject weak keys.
+- Provider-contract facades do not open network connections, read
+  credentials, or touch local filesystem paths; callers inject providers.
 
-### Review focus
+### Migration
 
-- Prioritize tests for `vhttp`, `vresty`, `vurl`, `vconf`, `vjwt`, `vzip`,
-  `vcrypto`, `vdb`, and other packages that process untrusted input.
-- Keep `v*` facade packages thin and preserve the `v* -> internal/*`
-  dependency direction.
+- Prefer `Safe`, `E`, and `WithOptions` helpers at trust boundaries. Keep
+  zero/default fallbacks for trusted inputs and compatibility call sites.
+- `MustXxx` APIs remain available as compatibility helpers. New code should
+  use `vcron.NewPattern`, `vjwt.NewHMACSigner` or `NewHMACSignerStrict`,
+  `vobj.DeserializeTo`, and return errors instead of `verr.MustExit`.
+- Experimental APIs are blocked while the module is a v1 candidate.
+- `vtest` and `vdump` are not public facades; keep using `testing`, `vcli`,
+  `vsys`, `vfile`, and `vlog`.
+- Do not import `internal/*` from application code.
