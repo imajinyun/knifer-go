@@ -174,6 +174,7 @@ func (c *checker) goListPackages(pattern string) []string {
 }
 
 func (c *checker) goOutput(args ...string) (string, error) {
+	// #nosec G204 G702 -- checker invokes `go` with args it constructs; it never starts a shell.
 	cmd := exec.Command("go", args...)
 	cmd.Dir = c.root
 	out, err := cmd.Output()

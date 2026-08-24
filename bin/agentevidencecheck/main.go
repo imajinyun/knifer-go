@@ -234,11 +234,12 @@ func (c *checker) validateCommandAttestations(requiredCommands []string, command
 		if status == "passed" || status == "failed" {
 			c.requireString(attestation["cmd"], "command_attestations."+command+".cmd")
 			exitCode, ok := intValue(attestation["exit_code"])
-			if !ok {
+			switch {
+			case !ok:
 				c.addError("AGENT_EVIDENCE_ATTESTATION_EXIT_CODE", "command_attestations."+command+".exit_code must be an integer")
-			} else if status == "passed" && exitCode != 0 {
+			case status == "passed" && exitCode != 0:
 				c.addError("AGENT_EVIDENCE_ATTESTATION_EXIT_CODE", "command_attestations."+command+".exit_code must be 0 when status is passed")
-			} else if status == "failed" && exitCode == 0 {
+			case status == "failed" && exitCode == 0:
 				c.addError("AGENT_EVIDENCE_ATTESTATION_EXIT_CODE", "command_attestations."+command+".exit_code must be non-zero when status is failed")
 			}
 		}
@@ -406,6 +407,7 @@ func (c *checker) validateStructuredCheckEnvelope(check map[string]any, path str
 }
 
 func (c *checker) expectedStructuredChangePolicySemanticRuleIDs(changedFiles []string) []string {
+	// #nosec G204 G702 -- checker reruns `go run` on this repo's changepolicycheck; it never starts a shell.
 	cmd := exec.Command(
 		"go",
 		"run",

@@ -2070,18 +2070,18 @@ def validate_go_version_adoption_governance() -> None:
 	if governance.get("minimum_go_version") != "1.25":
 		add_error("go_version_adoption_governance.minimum_go_version must be 1.25")
 	ci_versions = require_string_list(governance.get("ci_versions"), "go_version_adoption_governance.ci_versions")
-	if ci_versions != ["1.25.11", "1.26"]:
-		add_error("go_version_adoption_governance.ci_versions must be ordered as: 1.25.11, 1.26")
-	if governance.get("release_go_version") != "1.25.11":
-		add_error("go_version_adoption_governance.release_go_version must be 1.25.11")
+	if ci_versions != ["1.25.13", "1.26"]:
+		add_error("go_version_adoption_governance.ci_versions must be ordered as: 1.25.13, 1.26")
+	if governance.get("release_go_version") != "1.25.13":
+		add_error("go_version_adoption_governance.release_go_version must be 1.25.13")
 	if governance.get("downgrade_status") != "not supported today":
 		add_error("go_version_adoption_governance.downgrade_status must be not supported today")
 	required_rationale = require_string_list(governance.get("required_rationale"), "go_version_adoption_governance.required_rationale")
 	expected_rationale = [
 		"go.mod declares go 1.25.0",
 		"benchmarks use testing.B.Loop",
-		"ci verifies go 1.25.11 and 1.26",
-		"release workflow pins go 1.25.11",
+		"ci verifies go 1.25.13 and 1.26",
+		"release workflow pins go 1.25.13",
 	]
 	if required_rationale != expected_rationale:
 		add_error("go_version_adoption_governance.required_rationale must be ordered as: " + ", ".join(expected_rationale))
@@ -2099,16 +2099,16 @@ def validate_go_version_adoption_governance() -> None:
 	if "go-version-adoption-policy.md" not in readme_text:
 		add_error("README.md must link docs/doc/go-version-adoption-policy.md")
 	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
-	for phrase in ("Go 1.25", "Go 1.25.11", "Go 1.26", "Go 1.23/1.24 downgrade", "testing.B.Loop"):
+	for phrase in ("Go 1.25", "Go 1.25.13", "Go 1.26", "Go 1.23/1.24 downgrade", "testing.B.Loop"):
 		if doc_text and phrase not in doc_text:
 			add_error(f"{doc_path} must include {phrase!r}")
 	workflow_text = (root / ".github/workflows/go.yml").read_text(encoding="utf-8")
-	for version in ("1.25.11", "1.26"):
+	for version in ("1.25.13", "1.26"):
 		if version not in workflow_text:
 			add_error(f".github/workflows/go.yml must include Go {version}")
 	release_text = (root / ".github/workflows/release.yml").read_text(encoding="utf-8")
-	if "1.25.11" not in release_text:
-		add_error(".github/workflows/release.yml must pin Go 1.25.11")
+	if "1.25.13" not in release_text:
+		add_error(".github/workflows/release.yml must pin Go 1.25.13")
 	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
 	sprint_41_rows = [row for row in sprint_rows if row.get("Sprint") == "41"]
 	if len(sprint_41_rows) != 1:

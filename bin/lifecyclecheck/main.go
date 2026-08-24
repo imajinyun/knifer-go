@@ -13,8 +13,10 @@ import (
 	"github.com/imajinyun/knifer-go/bin/internal/govreport"
 )
 
-var requiredGrades = setOf("core", "stable", "maintenance", "adapter", "heavy", "candidate-for-split", "candidate-for-deprecation")
-var coreCompatibleGrades = setOf("core", "stable", "maintenance", "candidate-for-split", "candidate-for-deprecation")
+var (
+	requiredGrades       = setOf("core", "stable", "maintenance", "adapter", "heavy", "candidate-for-split", "candidate-for-deprecation")
+	coreCompatibleGrades = setOf("core", "stable", "maintenance", "candidate-for-split", "candidate-for-deprecation")
+)
 
 type checker struct {
 	findings []govreport.Finding

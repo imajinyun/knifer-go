@@ -180,15 +180,15 @@ Per-package quickstart examples live in the linked documents above so examples s
 
 ## 🧭 Sprint direction
 
-Current pointer: **v1 freeze rehearsal**. Numbered governance sprints through 66 are completed. Catalog alignment landed in `9543554`. `ai-context.json` marks `api_freeze.v1_candidate` as true, experimental APIs are blocked, and `CHANGELOG.md` Unreleased is grouped into Added / Changed / Deprecated / Removed / Fixed / Security / Migration. Do not open a new numbered sprint or add public APIs until freeze evidence is green.
+Current pointer: **v1 freeze rehearsal**. Numbered governance sprints through 66 are completed. Catalog alignment landed in `9543554`. `ai-context.json` marks `api_freeze.v1_candidate` as true, experimental APIs are blocked, and `CHANGELOG.md` Unreleased is grouped into Added / Changed / Deprecated / Removed / Fixed / Security / Migration. Do not open a new numbered sprint or add public APIs until freeze evidence is green on CI.
 
 Sprint state is maintained through the generated API snapshots, this documentation hub, `ai-context.json` governance records, and recent commits. Local sprint plans may exist under ignored `docs/superpowers/plans/`. The former tracked `49-roadmap.md` page is no longer part of the committed documentation set; do not recreate it unless roadmap restoration is explicitly requested.
 
 ### Next execution loop
 
-1. **v1 freeze rehearsal** (current). Unreleased notes are grouped. Next: run `make worktree-check`, `make release-notes-check`, `make api-freeze-check`, `make fuzz-smoke`, and `make bench-smoke`. Record gate gaps instead of tagging. Run `make release-check COVERAGE_FILE=/tmp/knifer-go-coverage.out` only after those lighter freeze checks pass. Do not tag until the v1 blocking exit criteria pass.
+1. **v1 freeze rehearsal** (current). Unreleased notes are grouped. Local freeze evidence: `make worktree-check`, `make release-notes-check`, `make api-freeze-check`, `make fuzz-smoke`, `make bench-smoke`, `make docs-check`, `make lint` (0 issues), and `make govulncheck` passed; repository coverage 77.9% meets 75.2%; security-sensitive packages meet 80%. CI/release Go 1.25 patch is pinned to 1.25.13 for the stdlib advisories that failed `govulncheck` on 1.25.11. Do not tag until `github/main` lint and govulncheck jobs are green.
 
-2. **Weak-example ratchet** after freeze notes, or in parallel if freeze is blocked only on evidence gathering. Next pair from the generated catalog: `verr` (15.1%) and `vid` (17.0%). Inspect `docs/api/tools.md` golden paths, existing Example tests, and recommended entry points first. Raise coverage in small increments; keep examples deterministic. Validate with `go test ./verr ./vid`, `make tools-gen`, `make docs-check`, `make ai-context-check`, and `make agent-security-check` because `vid` is security-sensitive.
+2. **Weak-example ratchet** after freeze lands on CI. Next pair from the generated catalog: `verr` (15.1%) and `vid` (17.0%). Inspect `docs/api/tools.md` golden paths, existing Example tests, and recommended entry points first. Raise coverage in small increments; keep examples deterministic. Validate with `go test ./verr ./vid`, `make tools-gen`, `make docs-check`, `make ai-context-check`, and `make agent-security-check` because `vid` is security-sensitive.
 
 3. **Parked until an API decision card exists.** Do not implement `vtest` or `vdump`. Do not add collection helpers such as `ZipN`, cartesian product, channel wrappers, or parallel transforms. Keep the repository coverage gate at 75.2% until new tests can support a raise toward 80%. Refresh the GitHub Top 5 comparison only with `make utility-comparison-refresh` when a v1 announcement needs current competitor metadata.
 

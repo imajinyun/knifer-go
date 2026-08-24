@@ -114,40 +114,7 @@ func (c checker) run(changedFilesOverride string) changePolicyReport {
 	}
 
 	for _, path := range changedFiles {
-		if path == "go.mod" || path == "go.sum" {
-			addPolicy(detected, matched, "dependency_change", path)
-		}
-		if path == "ai-context.json" || path == "Makefile" || strings.HasPrefix(path, ".github/") || strings.HasPrefix(path, "bin/check_") || strings.HasPrefix(path, "bin/agent_") {
-			addPolicy(detected, matched, "ci_governance", path)
-		}
-		if path == "docs/api/exports.txt" {
-			addPolicy(detected, matched, "public_api", path)
-		}
-		if strings.HasSuffix(path, ".md") || path == "CLAUDE.md" || path == "llms.txt" || strings.HasPrefix(path, "docs/") {
-			addPolicy(detected, matched, "documentation", path)
-		}
-		if hasPrefix(path, securityPrefixes) {
-			addPolicy(detected, matched, "security_sensitive", path)
-		}
-		facadePath := ""
-		for pkg := range facades {
-			if strings.HasPrefix(path, pkg+"/") {
-				facadePath = pkg
-				break
-			}
-		}
-		if facadePath != "" && strings.HasSuffix(path, ".go") && !strings.HasSuffix(path, "_test.go") {
-			addPolicy(detected, matched, "public_api", path)
-		} else if facadePath != "" && strings.HasSuffix(path, "_test.go") {
-			addPolicy(detected, matched, "bug_fix", path)
-		}
-		if strings.HasPrefix(path, "internal/") && !hasPrefix(path, securityPrefixes) {
-			if strings.HasSuffix(path, "_test.go") {
-				addPolicy(detected, matched, "bug_fix", path)
-			} else {
-				addPolicy(detected, matched, "internal_refactor", path)
-			}
-		}
+		classifyChangedPath(path, facades, securityPrefixes, detected, matched)
 	}
 
 	if len(changedFiles) == 0 {
@@ -248,6 +215,43 @@ func (c checker) changedDiffFromGit() string {
 	return strings.TrimSpace(strings.Join(chunks, "\n"))
 }
 
+func classifyChangedPath(path string, facades map[string]string, securityPrefixes map[string]struct{}, detected map[string]struct{}, matched map[string]map[string]struct{}) {
+	if path == "go.mod" || path == "go.sum" {
+		addPolicy(detected, matched, "dependency_change", path)
+	}
+	if path == "ai-context.json" || path == "Makefile" || strings.HasPrefix(path, ".github/") || strings.HasPrefix(path, "bin/check_") || strings.HasPrefix(path, "bin/agent_") {
+		addPolicy(detected, matched, "ci_governance", path)
+	}
+	if path == "docs/api/exports.txt" {
+		addPolicy(detected, matched, "public_api", path)
+	}
+	if strings.HasSuffix(path, ".md") || path == "CLAUDE.md" || path == "llms.txt" || strings.HasPrefix(path, "docs/") {
+		addPolicy(detected, matched, "documentation", path)
+	}
+	if hasPrefix(path, securityPrefixes) {
+		addPolicy(detected, matched, "security_sensitive", path)
+	}
+	facadePath := ""
+	for pkg := range facades {
+		if strings.HasPrefix(path, pkg+"/") {
+			facadePath = pkg
+			break
+		}
+	}
+	if facadePath != "" && strings.HasSuffix(path, ".go") && !strings.HasSuffix(path, "_test.go") {
+		addPolicy(detected, matched, "public_api", path)
+	} else if facadePath != "" && strings.HasSuffix(path, "_test.go") {
+		addPolicy(detected, matched, "bug_fix", path)
+	}
+	if strings.HasPrefix(path, "internal/") && !hasPrefix(path, securityPrefixes) {
+		if strings.HasSuffix(path, "_test.go") {
+			addPolicy(detected, matched, "bug_fix", path)
+		} else {
+			addPolicy(detected, matched, "internal_refactor", path)
+		}
+	}
+}
+
 func addPolicy(detected map[string]struct{}, matched map[string]map[string]struct{}, policy, path string) {
 	detected[policy] = struct{}{}
 	if matched[policy] == nil {
@@ -305,12 +309,12 @@ func (c checker) semanticRuleIDs(paths []string, useGitDiff bool) []string {
 func semanticRuleIDsFromPaths(paths []string) []string {
 	ids := map[string]struct{}{}
 	for _, path := range paths {
-		switch {
-		case path == "ai-context.schema.json":
+		switch path {
+		case "ai-context.schema.json":
 			ids["SEMANTIC_SCHEMA_CONTRACT_CHANGE"] = struct{}{}
-		case path == "ai-context.json":
+		case "ai-context.json":
 			ids["SEMANTIC_AI_CONTEXT_CHANGE"] = struct{}{}
-		case path == "Makefile":
+		case "Makefile":
 			ids["SEMANTIC_MAKEFILE_CHANGE"] = struct{}{}
 		}
 		if path == "Makefile" || strings.HasPrefix(path, ".github/workflows/") {
@@ -552,6 +556,7 @@ func atoi(value string) int {
 }
 
 func gitOK(root string, args ...string) bool {
+	// #nosec G204 G702 -- checker invokes git with args it constructs; it never starts a shell.
 	cmd := exec.Command("git", append([]string{"-C", root}, args...)...)
 	return cmd.Run() == nil
 }
@@ -572,6 +577,7 @@ func gitLines(root string, args ...string) []string {
 }
 
 func gitOutput(root string, args ...string) string {
+	// #nosec G204 G702 -- checker invokes git with args it constructs; it never starts a shell.
 	cmd := exec.Command("git", append([]string{"-C", root}, args...)...)
 	out, err := cmd.Output()
 	if err != nil {

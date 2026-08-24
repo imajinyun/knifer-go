@@ -1,3 +1,4 @@
+// Package govreport provides a shared JSON report envelope for governance checkers.
 package govreport
 
 import (

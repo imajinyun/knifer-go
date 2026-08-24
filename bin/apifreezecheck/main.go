@@ -68,10 +68,10 @@ func (c *checker) run() {
 		c.addError("API_FREEZE_SCHEMA_INVALID", "ai-context.json api_freeze must be an object")
 		apiFreeze = map[string]any{}
 	}
-	if boolValue(apiFreeze["decision_card_required"]) != true {
+	if !boolValue(apiFreeze["decision_card_required"]) {
 		c.addError("API_FREEZE_DECISION_CARD_REQUIRED", "api_freeze.decision_card_required must be true")
 	}
-	if boolValue(apiFreeze["replacement_required_for_deprecation"]) != true {
+	if !boolValue(apiFreeze["replacement_required_for_deprecation"]) {
 		c.addError("API_FREEZE_DEPRECATION_REPLACEMENT_REQUIRED", "api_freeze.replacement_required_for_deprecation must be true")
 	}
 	if !sameSet(stringList(apiFreeze["allowed_statuses"]), expectedStatuses) {
@@ -104,11 +104,12 @@ func (c *checker) run() {
 			continue
 		}
 		cardID := stringValue(card["id"])
-		if cardID == "" {
+		switch {
+		case cardID == "":
 			c.addError("API_FREEZE_DECISION_CARD_SCHEMA", fmt.Sprintf("api_freeze.decision_cards[%d].id must be non-empty", index))
-		} else if seenCardIDs[cardID] {
+		case seenCardIDs[cardID]:
 			c.addError("API_FREEZE_DECISION_CARD_DUPLICATE", "api_freeze.decision_cards duplicate id "+cardID)
-		} else {
+		default:
 			seenCardIDs[cardID] = true
 			cardsByID[cardID] = card
 		}

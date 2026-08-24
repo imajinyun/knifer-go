@@ -66,9 +66,10 @@ func (c *checker) run() error {
 }
 
 func (c *checker) checkPackageDocs() {
-	paths := []string{filepath.Join(c.root, "doc.go")}
 	matches, _ := filepath.Glob(filepath.Join(c.root, "v*", "doc.go"))
 	sort.Strings(matches)
+	paths := make([]string, 0, 1+len(matches))
+	paths = append(paths, filepath.Join(c.root, "doc.go"))
 	paths = append(paths, matches...)
 	for _, path := range paths {
 		data, err := os.ReadFile(path)

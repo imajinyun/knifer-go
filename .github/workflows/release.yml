@@ -1,7 +1,7 @@
 name: knifer-go-release
 
 env:
-  GO_1_25_PATCH_VERSION: "1.25.11"
+  GO_1_25_PATCH_VERSION: "1.25.13"
 
 on:
   push:

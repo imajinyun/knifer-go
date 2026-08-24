@@ -71,6 +71,10 @@ linters:
         linters:
           - gosec
         text: "Subprocess launched"
+      - path: bin/
+        linters:
+          - gosec
+        text: "Command injection via taint analysis"
       - path: internal/(file/file|httpx/http/response|httpx/resty/response|imgx/captcha|net/multipart|xml/xml)\.go
         linters:
           - gosec

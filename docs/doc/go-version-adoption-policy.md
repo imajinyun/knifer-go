@@ -1,7 +1,7 @@
 # Go Version Adoption Policy
 
 `knifer-go` currently targets Go 1.25 or later. The CI matrix verifies Go
-1.25.11 and the next Go line, and release builds use the pinned Go 1.25 patch
+1.25.13 and the next Go line, and release builds use the pinned Go 1.25 patch
 version declared in GitHub Actions.
 
 ## Current Decision
@@ -9,8 +9,8 @@ version declared in GitHub Actions.
 | Decision | Status | Rationale |
 | --- | --- | --- |
 | Minimum supported Go version | Go 1.25 | The module uses Go 1.25 syntax and tooling expectations, including `testing.B.Loop` in benchmark code. |
-| CI compatibility check | Go 1.25.11 and Go 1.26 | CI verifies the supported minimum and the next Go line without claiming older versions are supported. |
-| Release toolchain | Go 1.25.11 | Release workflow pins the patch version for repeatable release gates. |
+| CI compatibility check | Go 1.25.13 and Go 1.26 | CI verifies the supported minimum and the next Go line without claiming older versions are supported. |
+| Release toolchain | Go 1.25.13 | Release workflow pins the patch version for repeatable release gates. |
 | Go 1.23/1.24 downgrade | Not supported today | Downgrade would require replacing Go 1.25 benchmark loops and revalidating generated docs, snapshots, lint, race, and release gates. |
 
 ## Compatibility Boundaries

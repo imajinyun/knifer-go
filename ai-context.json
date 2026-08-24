@@ -533,7 +533,7 @@
   },
   "ci_workflows": {
     "tool_versions": {
-      "go_1_25_patch": "1.25.11",
+      "go_1_25_patch": "1.25.13",
       "golangci_lint": "v2.12.2"
     },
     "github_actions": {
@@ -1457,14 +1457,14 @@
     "sprint": 41,
     "status": "completed",
     "minimum_go_version": "1.25",
-    "ci_versions": ["1.25.11", "1.26"],
-    "release_go_version": "1.25.11",
+    "ci_versions": ["1.25.13", "1.26"],
+    "release_go_version": "1.25.13",
     "downgrade_status": "not supported today",
     "required_rationale": [
       "go.mod declares go 1.25.0",
       "benchmarks use testing.B.Loop",
-      "ci verifies go 1.25.11 and 1.26",
-      "release workflow pins go 1.25.11"
+      "ci verifies go 1.25.13 and 1.26",
+      "release workflow pins go 1.25.13"
     ],
     "required_checks": ["docs-check", "ai-context-check", "ci-workflow-check", "governance-maturity-check"]
   },

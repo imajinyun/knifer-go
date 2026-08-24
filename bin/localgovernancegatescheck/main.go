@@ -112,7 +112,7 @@ func (c *checker) targetDependencies(target string) []string {
 func (c *checker) targetRecipeCalls(target string) []string {
 	body := c.targetRecipe(target)
 	matches := regexp.MustCompile(`(?:\$\(MAKE\)|make)\s+([A-Za-z0-9_.-]+)`).FindAllStringSubmatch(body, -1)
-	var out []string
+	out := make([]string, 0, len(matches))
 	for _, match := range matches {
 		out = append(out, match[1])
 	}

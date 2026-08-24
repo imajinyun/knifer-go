@@ -5,7 +5,7 @@ name: knifer-go-ci
 
 env:
   GOLANGCI_LINT_VERSION: v2.12.2
-  GO_1_25_PATCH_VERSION: "1.25.11"
+  GO_1_25_PATCH_VERSION: "1.25.13"
 
 on:
   push:
@@ -58,7 +58,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go-version: ["1.25.11", "1.26"]
+        go-version: ["1.25.13", "1.26"]
     steps:
       - name: Checkout
         uses: actions/checkout@v7

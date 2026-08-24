@@ -95,6 +95,9 @@ subpackage APIs are treated as the compatibility boundary.
   reject weak keys.
 - Provider-contract facades do not open network connections, read
   credentials, or touch local filesystem paths; callers inject providers.
+- Pinned CI and release Go 1.25 patch to 1.25.13 so `govulncheck` uses
+  the standard-library fixes in `net/url`, `html/template`, `crypto/tls`,
+  `net/http`, and `encoding/xml`.
 
 ### Migration
 

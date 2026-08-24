@@ -222,7 +222,7 @@ func parseCoverageProfile(path string) ([]profileLine, error) {
 		}
 		return nil, err
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	scanner := bufio.NewScanner(file)
 	if !scanner.Scan() {
@@ -433,11 +433,13 @@ func changedFiles(root string) []string {
 }
 
 func gitOK(root string, args ...string) bool {
+	// #nosec G204 G702 -- checker invokes git with args it constructs; it never starts a shell.
 	cmd := exec.Command("git", append([]string{"-C", root}, args...)...)
 	return cmd.Run() == nil
 }
 
 func gitLines(root string, args ...string) []string {
+	// #nosec G204 G702 -- checker invokes git with args it constructs; it never starts a shell.
 	cmd := exec.Command("git", append([]string{"-C", root}, args...)...)
 	out, err := cmd.Output()
 	if err != nil {

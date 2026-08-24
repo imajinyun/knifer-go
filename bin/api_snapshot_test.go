@@ -2783,7 +2783,7 @@ func threatModelFixture(t *testing.T) *governanceFixture {
 
 func threatModelContext() map[string]any {
 	publicFacades := []string{"vhttp", "vresty", "vurl", "vconf"}
-	var publicFacadeEntries []any
+	publicFacadeEntries := make([]any, 0, len(publicFacades))
 	for _, pkg := range publicFacades {
 		publicFacadeEntries = append(publicFacadeEntries, map[string]any{"package": pkg})
 	}
@@ -3157,7 +3157,7 @@ func lifecycleFixture(t *testing.T) *governanceFixture {
 
 func lifecycleContext() map[string]any {
 	publicFacades := []string{"vai", "vjson", "vimg"}
-	var publicFacadeEntries []any
+	publicFacadeEntries := make([]any, 0, len(publicFacades))
 	for _, pkg := range publicFacades {
 		publicFacadeEntries = append(publicFacadeEntries, map[string]any{"package": pkg})
 	}
@@ -3215,8 +3215,9 @@ func capabilityDomainsFixture(t *testing.T) *governanceFixture {
 }
 
 func capabilityDomainsContext() map[string]any {
-	publicFacades := []any{}
-	for _, pkg := range []string{"vjson", "vconv", "vslice", "vmap", "vstr", "vregex", "vhttp", "vurl", "vcrypto", "vjwt", "vai", "vssh", "vdate", "vfile"} {
+	pkgs := []string{"vjson", "vconv", "vslice", "vmap", "vstr", "vregex", "vhttp", "vurl", "vcrypto", "vjwt", "vai", "vssh", "vdate", "vfile"}
+	publicFacades := make([]any, 0, len(pkgs))
+	for _, pkg := range pkgs {
 		publicFacades = append(publicFacades, map[string]any{"package": pkg})
 	}
 	return map[string]any{

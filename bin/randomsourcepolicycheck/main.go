@@ -14,12 +14,14 @@ import (
 	"github.com/imajinyun/knifer-go/bin/internal/govreport"
 )
 
-var expectedPackages = setOf("vrand", "vid", "vcrypto", "vjwt")
-var expectedPolicyNames = setOf(
-	"secure_bytes_fail_closed",
-	"compatibility_byte_fallback",
-	"identifier_fallback_compatibility",
-	"jwt_key_and_signer_policy",
+var (
+	expectedPackages    = setOf("vrand", "vid", "vcrypto", "vjwt")
+	expectedPolicyNames = setOf(
+		"secure_bytes_fail_closed",
+		"compatibility_byte_fallback",
+		"identifier_fallback_compatibility",
+		"jwt_key_and_signer_policy",
+	)
 )
 
 type checker struct {
