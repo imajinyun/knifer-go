@@ -186,7 +186,7 @@ Sprint state is maintained through the generated API snapshots, this documentati
 
 ### Next execution loop
 
-1. **Weak-example ratchet** (current). Golden-path Examples landed for `verr` (15.1% → 32.1%) and `vid` (17.0% → 39.6%). Next pair from the generated catalog: `vpoi` (16.2%) and `vcsv` (21.7%). Do not tag.
+1. **Weak-example ratchet** (current). Golden-path Examples landed for `verr` (15.1% → 32.1%), `vid` (17.0% → 39.6%), `vpoi` (16.2% → 35.1%), and `vcsv` (21.7% → 65.2%). Next pair from the generated catalog: `vdfa` (22.0%) and `vskt` (22.0%). Do not tag.
 
 2. **v1 freeze rehearsal** is waiting on an explicit tag request. Unreleased notes are grouped. Do not tag until asked; Scorecard still fails on the unpinned action tag and is parked unless a v1 announcement needs it.
 

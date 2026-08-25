@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
 | Functions | 2765 |
-| Functions with examples | 1769 |
+| Functions with examples | 1786 |
 | Context-aware functions | 36 |
 | Functions returning error | 688 |
 | Variadic functions | 804 |
@@ -774,7 +774,7 @@ Import path: `github.com/imajinyun/knifer-go/vcsv`
 
 Package vcsv provides public APIs for CSV reading and writing.
 
-Quality: 23 functions · 5 with examples · 21.7% example coverage · statuses: recommended=23, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=0, internal=23, empty=0
+Quality: 23 functions · 15 with examples · 65.2% example coverage · statuses: recommended=23, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=0, internal=23, empty=0
 
 Recommended entrypoints:
 
@@ -795,15 +795,15 @@ Golden path API set:
 
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
-| `ForEach` | `func ForEach(r io.Reader, handle func([]string) error, opts ...ReadOption) error` | recommended | ForEach reads CSV records from r and invokes handle for each record. | internal | — |
-| `MapsToRecords` | `func MapsToRecords(headers []string, rows []map[string]string) [][]string` | recommended | MapsToRecords converts maps into records using headers as column order. | internal | — |
-| `Read` | `func Read(r io.Reader, opts ...ReadOption) ([][]string, error)` | recommended | Read reads all CSV records from r. | internal | — |
-| `ReadMaps` | `func ReadMaps(r io.Reader, opts ...ReadOption) ([]map[string]string, error)` | recommended | ReadMaps reads CSV records into maps keyed by the header row. | internal | — |
+| `ForEach` | `func ForEach(r io.Reader, handle func([]string) error, opts ...ReadOption) error` | recommended | ForEach reads CSV records from r and invokes handle for each record. | internal | `ExampleForEach` |
+| `MapsToRecords` | `func MapsToRecords(headers []string, rows []map[string]string) [][]string` | recommended | MapsToRecords converts maps into records using headers as column order. | internal | `ExampleMapsToRecords` |
+| `Read` | `func Read(r io.Reader, opts ...ReadOption) ([][]string, error)` | recommended | Read reads all CSV records from r. | internal | `ExampleRead` |
+| `ReadMaps` | `func ReadMaps(r io.Reader, opts ...ReadOption) ([]map[string]string, error)` | recommended | ReadMaps reads CSV records into maps keyed by the header row. | internal | `ExampleReadMaps` |
 | `ReadString` | `func ReadString(s string, opts ...ReadOption) ([][]string, error)` | recommended | ReadString reads all CSV records from s. | internal | `ExampleReadString` |
 | `ReadStringMaps` | `func ReadStringMaps(s string, opts ...ReadOption) ([]map[string]string, error)` | recommended | ReadStringMaps reads CSV records from s into maps keyed by the header row. | internal | `ExampleReadStringMaps` |
 | `RecordsToMaps` | `func RecordsToMaps(records [][]string) ([]map[string]string, error)` | recommended | RecordsToMaps converts records into maps keyed by the first row. | internal | `ExampleRecordsToMaps` |
-| `StructsToRecords` | `func StructsToRecords(values any) ([][]string, error)` | recommended | StructsToRecords converts a slice of structs into CSV records. | internal | — |
-| `WithComma` | `func WithComma(comma rune) Option` | recommended | WithComma sets the field delimiter used by readers and writers. | internal | — |
+| `StructsToRecords` | `func StructsToRecords(values any) ([][]string, error)` | recommended | StructsToRecords converts a slice of structs into CSV records. | internal | `ExampleStructsToRecords` |
+| `WithComma` | `func WithComma(comma rune) Option` | recommended | WithComma sets the field delimiter used by readers and writers. | internal | `ExampleWithComma` |
 | `WithComment` | `func WithComment(comment rune) ReadOption` | recommended | WithComment sets the comment character used by readers. | internal | — |
 | `WithFieldsPerRecord` | `func WithFieldsPerRecord(n int) ReadOption` | recommended | WithFieldsPerRecord sets the expected number of fields per record. | internal | — |
 | `WithLazyQuotes` | `func WithLazyQuotes(enabled bool) ReadOption` | recommended | WithLazyQuotes allows lazy quote handling in read helpers. | internal | — |
@@ -812,12 +812,12 @@ Golden path API set:
 | `WithTrimUTF8BOM` | `func WithTrimUTF8BOM(enabled bool) ReadOption` | recommended | WithTrimUTF8BOM controls whether read helpers remove a leading UTF-8 BOM. | internal | — |
 | `WithUTF8BOM` | `func WithUTF8BOM(enabled bool) WriteOption` | recommended | WithUTF8BOM controls whether write helpers prepend a UTF-8 BOM. | internal | — |
 | `WithUseCRLF` | `func WithUseCRLF(enabled bool) WriteOption` | recommended | WithUseCRLF makes writers terminate records with \\r\\n. | internal | — |
-| `Write` | `func Write(w io.Writer, records [][]string, opts ...WriteOption) error` | recommended | Write writes CSV records to w. | internal | — |
-| `WriteMaps` | `func WriteMaps(w io.Writer, headers []string, rows []map[string]string, opts ...WriteOption) error` | recommended | WriteMaps writes maps using headers as the output column order. | internal | — |
+| `Write` | `func Write(w io.Writer, records [][]string, opts ...WriteOption) error` | recommended | Write writes CSV records to w. | internal | `ExampleWrite` |
+| `WriteMaps` | `func WriteMaps(w io.Writer, headers []string, rows []map[string]string, opts ...WriteOption) error` | recommended | WriteMaps writes maps using headers as the output column order. | internal | `ExampleWriteMaps` |
 | `WriteString` | `func WriteString(records [][]string, opts ...WriteOption) (string, error)` | recommended | WriteString writes CSV records into a string. | internal | `ExampleWriteString` |
-| `WriteStringMaps` | `func WriteStringMaps(headers []string, rows []map[string]string, opts ...WriteOption) (string, error)` | recommended | WriteStringMaps writes maps into a CSV string using headers as column order. | internal | — |
+| `WriteStringMaps` | `func WriteStringMaps(headers []string, rows []map[string]string, opts ...WriteOption) (string, error)` | recommended | WriteStringMaps writes maps into a CSV string using headers as column order. | internal | `ExampleWriteStringMaps` |
 | `WriteStringStructs` | `func WriteStringStructs(values any, opts ...WriteOption) (string, error)` | recommended | WriteStringStructs writes a slice of structs into a CSV string. | internal | `ExampleWriteStringStructs` |
-| `WriteStructs` | `func WriteStructs(w io.Writer, values any, opts ...WriteOption) error` | recommended | WriteStructs writes a slice of structs as CSV records. | internal | — |
+| `WriteStructs` | `func WriteStructs(w io.Writer, values any, opts ...WriteOption) error` | recommended | WriteStructs writes a slice of structs as CSV records. | internal | `ExampleWriteStructs` |
 
 ### vdate
 
@@ -2933,7 +2933,7 @@ Import path: `github.com/imajinyun/knifer-go/vpoi`
 
 Package vpoi provides office-document utilities.
 
-Quality: 37 functions · 6 with examples · 16.2% example coverage · statuses: recommended=37, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=37, internal=0, empty=0
+Quality: 37 functions · 13 with examples · 35.1% example coverage · statuses: recommended=37, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=37, internal=0, empty=0
 
 Recommended entrypoints:
 
@@ -2941,7 +2941,7 @@ Recommended entrypoints:
 | --- | --- | --- |
 | `ReadCells` | error | Prefer when callers must distinguish invalid input or provider failure from default values. |
 | `WithOpenOptions` | options | Prefer when providers, limits, parsers, or policies must be reviewable at the call site. |
-| `WithReadSheet` | day-one | Start here for concise, trusted-input use cases in this package. |
+| `IsValidSheetName` | day-one | Start here for concise, trusted-input use cases in this package. |
 
 Golden path API set:
 
@@ -2949,16 +2949,16 @@ Golden path API set:
 | --- | --- | --- |
 | `ReadCells` | Use first when callers must observe invalid input or provider failure. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `WithOpenOptions` | Use first when policies, providers, parsers, limits, or clocks must be explicit. | Avoid for trivial in-memory code where the standard library is clearer. |
-| `WithReadSheet` | Use first for concise trusted-input workflows in vpoi. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vpoi. |
 | `IsValidSheetName` | Use first for concise trusted-input workflows in vpoi. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vpoi. |
 | `ReadCellsFromReader` | Use first for concise trusted-input workflows in vpoi. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vpoi. |
+| `ReadRows` | Use first for concise trusted-input workflows in vpoi. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vpoi. |
 
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
-| `IsValidSheetName` | `func IsValidSheetName(sheet string) bool` | recommended | IsValidSheetName reports whether sheet can be used as an Excel worksheet name. | facade | — |
-| `ReadCells` | `func ReadCells(path string, opts ...ReadOption) ([][]Cell, error)` | recommended | ReadCells reads typed cell metadata from the first worksheet in path. | facade | — |
-| `ReadCellsFromReader` | `func ReadCellsFromReader(r io.Reader, opts ...ReadOption) ([][]Cell, error)` | recommended | ReadCellsFromReader reads typed cell metadata from the first worksheet in r. | facade | — |
-| `ReadRows` | `func ReadRows(path string, opts ...ReadOption) ([][]string, error)` | recommended | ReadRows reads rows from the first worksheet in path. | facade | — |
+| `IsValidSheetName` | `func IsValidSheetName(sheet string) bool` | recommended | IsValidSheetName reports whether sheet can be used as an Excel worksheet name. | facade | `ExampleIsValidSheetName` |
+| `ReadCells` | `func ReadCells(path string, opts ...ReadOption) ([][]Cell, error)` | recommended | ReadCells reads typed cell metadata from the first worksheet in path. | facade | `ExampleReadCells` |
+| `ReadCellsFromReader` | `func ReadCellsFromReader(r io.Reader, opts ...ReadOption) ([][]Cell, error)` | recommended | ReadCellsFromReader reads typed cell metadata from the first worksheet in r. | facade | `ExampleReadCellsFromReader` |
+| `ReadRows` | `func ReadRows(path string, opts ...ReadOption) ([][]string, error)` | recommended | ReadRows reads rows from the first worksheet in path. | facade | `ExampleReadRows` |
 | `ReadRowsFromReader` | `func ReadRowsFromReader(r io.Reader, opts ...ReadOption) ([][]string, error)` | recommended | ReadRowsFromReader reads rows from the first worksheet in r. | facade | `ExampleReadRowsFromReader`, `ExampleReadRowsFromReader_withReadSheet`, `ExampleReadRowsFromReader_withValidatedSheet` |
 | `ReadSheetCells` | `func ReadSheetCells(path string, sheet string) ([][]Cell, error)` | recommended | ReadSheetCells reads typed cell metadata from sheet in path. | facade | — |
 | `ReadSheetCellsWithOptions` | `func ReadSheetCellsWithOptions(path string, sheet string, opts ...ReadOption) ([][]Cell, error)` | recommended | ReadSheetCellsWithOptions reads typed cell metadata from sheet in path. | facade | — |
@@ -2974,7 +2974,7 @@ Golden path API set:
 | `WithMkdirAll` | `func WithMkdirAll(mkdirAll func(string, fs.FileMode) error) WriteOption` | recommended | WithMkdirAll sets the directory creator used when saving workbooks. | facade | — |
 | `WithNewFileFunc` | `func WithNewFileFunc(newFile NewFileFunc) WriteOption` | recommended | WithNewFileFunc sets the workbook factory used by write helpers. | facade | — |
 | `WithOpenFileFunc` | `func WithOpenFileFunc(openFile OpenFileFunc) ReadOption` | recommended | WithOpenFileFunc sets the workbook opener used by path-based read helpers. | facade | — |
-| `WithOpenOptions` | `func WithOpenOptions(opts ...excelize.Options) ReadOption` | recommended | WithOpenOptions sets excelize options used when opening workbooks. | facade | — |
+| `WithOpenOptions` | `func WithOpenOptions(opts ...excelize.Options) ReadOption` | recommended | WithOpenOptions sets excelize options used when opening workbooks. | facade | `ExampleWithOpenOptions` |
 | `WithOpenReaderFunc` | `func WithOpenReaderFunc(openReader OpenReaderFunc) ReadOption` | recommended | WithOpenReaderFunc sets the workbook opener used by reader-based read helpers. | facade | — |
 | `WithOverwrite` | `func WithOverwrite(overwrite bool) WriteOption` | recommended | WithOverwrite controls whether an existing workbook may be replaced. | facade | — |
 | `WithReadLimit` | `func WithReadLimit(maxRows int, maxCols int) ReadOption` | recommended | WithReadLimit limits the number of rows and columns returned by row-reading helpers. | facade | — |
@@ -2986,8 +2986,8 @@ Golden path API set:
 | `WithStat` | `func WithStat(stat func(string) (os.FileInfo, error)) WriteOption` | recommended | WithStat sets the stat provider used when checking workbook overwrite behavior. | facade | — |
 | `WithWriteSheet` | `func WithWriteSheet(sheet string) WriteOption` | recommended | WithWriteSheet selects the worksheet written by write helpers. | facade | `ExampleWithWriteSheet` |
 | `WriteAnyRows` | `func WriteAnyRows(path string, rows [][]any, opts ...WriteOption) error` | recommended | WriteAnyRows writes typed cell values into path using the default worksheet name. | facade | — |
-| `WriteAnyRowsToBuffer` | `func WriteAnyRowsToBuffer(sheet string, rows [][]any, opts ...WriteOption) (*bytes.Buffer, error)` | recommended | WriteAnyRowsToBuffer writes typed cell values into an in-memory XLSX workbook. | facade | — |
-| `WriteRows` | `func WriteRows(path string, rows [][]string, opts ...WriteOption) error` | recommended | WriteRows writes rows into path using the default worksheet name. | facade | — |
+| `WriteAnyRowsToBuffer` | `func WriteAnyRowsToBuffer(sheet string, rows [][]any, opts ...WriteOption) (*bytes.Buffer, error)` | recommended | WriteAnyRowsToBuffer writes typed cell values into an in-memory XLSX workbook. | facade | `ExampleWriteAnyRowsToBuffer` |
+| `WriteRows` | `func WriteRows(path string, rows [][]string, opts ...WriteOption) error` | recommended | WriteRows writes rows into path using the default worksheet name. | facade | `ExampleWriteRows` |
 | `WriteRowsToBuffer` | `func WriteRowsToBuffer(sheet string, rows [][]string, opts ...WriteOption) (*bytes.Buffer, error)` | recommended | WriteRowsToBuffer writes rows into an in-memory XLSX workbook. | facade | `ExampleWriteRowsToBuffer`, `ExampleWriteRowsToBuffer_emptySheetName` |
 | `WriteSheetAnyRows` | `func WriteSheetAnyRows(path string, sheet string, rows [][]any, opts ...WriteOption) error` | recommended | WriteSheetAnyRows writes typed cell values into path using sheet. | facade | — |
 | `WriteSheetRows` | `func WriteSheetRows(path string, sheet string, rows [][]string, opts ...WriteOption) error` | recommended | WriteSheetRows writes rows into path using sheet. | facade | — |

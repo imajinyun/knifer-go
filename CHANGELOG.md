@@ -45,6 +45,7 @@ subpackage APIs are treated as the compatibility boundary.
   safety checklists, when-not-to-use boundaries, related packages,
   benchmark notes, and FAQs.
 - Added golden-path Example tests for `verr` and `vid`.
+- Added golden-path Example tests for `vpoi` and `vcsv`.
 - Aligned public facade counts and catalogs to 55 packages, including `vgeo`.
 - Defined public API stability levels for stable `v*` facades, internal
   packages, and experimental provider or adapter contracts.

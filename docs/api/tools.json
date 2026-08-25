@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 55,
     "function_count": 2765,
-    "functions_with_examples": 1769,
+    "functions_with_examples": 1786,
     "context_aware_functions": 36,
     "returns_error_functions": 688,
     "variadic_functions": 804,
@@ -10673,8 +10673,8 @@
       "synopsis": "Package vcsv provides public APIs for CSV reading and writing.",
       "summary": {
         "function_count": 23,
-        "functions_with_examples": 5,
-        "example_coverage_percent": 21.7,
+        "functions_with_examples": 15,
+        "example_coverage_percent": 65.2,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
@@ -10752,7 +10752,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleForEach"
+          ]
         },
         {
           "name": "MapsToRecords",
@@ -10775,7 +10778,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleMapsToRecords"
+          ]
         },
         {
           "name": "Read",
@@ -10799,7 +10805,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleRead"
+          ]
         },
         {
           "name": "ReadMaps",
@@ -10823,7 +10832,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleReadMaps"
+          ]
         },
         {
           "name": "ReadString",
@@ -10920,7 +10932,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleStructsToRecords"
+          ]
         },
         {
           "name": "WithComma",
@@ -10939,7 +10954,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleWithComma"
+          ]
         },
         {
           "name": "WithComment",
@@ -11118,7 +11136,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWrite"
+          ]
         },
         {
           "name": "WriteMaps",
@@ -11149,7 +11170,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWriteMaps"
+          ]
         },
         {
           "name": "WriteString",
@@ -11204,7 +11228,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWriteStringMaps"
+          ]
         },
         {
           "name": "WriteStringStructs",
@@ -11258,7 +11285,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWriteStructs"
+          ]
         }
       ]
     },
@@ -45215,8 +45245,8 @@
       "synopsis": "Package vpoi provides office-document utilities.",
       "summary": {
         "function_count": 37,
-        "functions_with_examples": 6,
-        "example_coverage_percent": 16.2,
+        "functions_with_examples": 13,
+        "example_coverage_percent": 35.1,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
@@ -45241,17 +45271,17 @@
           "avoid_when": "Avoid for trivial in-memory code where the standard library is clearer."
         },
         {
-          "name": "WithReadSheet",
-          "use_when": "Use first for concise trusted-input workflows in vpoi.",
-          "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vpoi."
-        },
-        {
           "name": "IsValidSheetName",
           "use_when": "Use first for concise trusted-input workflows in vpoi.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vpoi."
         },
         {
           "name": "ReadCellsFromReader",
+          "use_when": "Use first for concise trusted-input workflows in vpoi.",
+          "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vpoi."
+        },
+        {
+          "name": "ReadRows",
           "use_when": "Use first for concise trusted-input workflows in vpoi.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vpoi."
         }
@@ -45268,7 +45298,7 @@
           "rationale": "Prefer when providers, limits, parsers, or policies must be reviewable at the call site."
         },
         {
-          "name": "WithReadSheet",
+          "name": "IsValidSheetName",
           "profile": "day-one",
           "rationale": "Start here for concise, trusted-input use cases in this package."
         }
@@ -45291,7 +45321,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleIsValidSheetName"
+          ]
         },
         {
           "name": "ReadCells",
@@ -45315,7 +45348,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleReadCells"
+          ]
         },
         {
           "name": "ReadCellsFromReader",
@@ -45339,7 +45375,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleReadCellsFromReader"
+          ]
         },
         {
           "name": "ReadRows",
@@ -45363,7 +45402,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleReadRows"
+          ]
         },
         {
           "name": "ReadRowsFromReader",
@@ -45717,7 +45759,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWithOpenOptions"
+          ]
         },
         {
           "name": "WithOpenReaderFunc",
@@ -45980,7 +46025,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWriteAnyRowsToBuffer"
+          ]
         },
         {
           "name": "WriteRows",
@@ -46007,7 +46055,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWriteRows"
+          ]
         },
         {
           "name": "WriteRowsToBuffer",
