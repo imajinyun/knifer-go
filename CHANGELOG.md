@@ -46,6 +46,11 @@ subpackage APIs are treated as the compatibility boundary.
   benchmark notes, and FAQs.
 - Added golden-path Example tests for `verr` and `vid`.
 - Added golden-path Example tests for `vpoi` and `vcsv`.
+- Added golden-path Example tests for `vdfa` and `vskt`.
+- Aligned `vdfa`, `verr`, `vid`, and `vpoi` golden-path order with the
+  generated tools catalog.
+- Recorded that importing `vcrypto` accepts `github.com/emmansun/gmsm` for
+  SM2/SM3/SM4 interoperability, without a module split or new public facade.
 - Aligned public facade counts and catalogs to 55 packages, including `vgeo`.
 - Defined public API stability levels for stable `v*` facades, internal
   packages, and experimental provider or adapter contracts.
@@ -100,6 +105,8 @@ subpackage APIs are treated as the compatibility boundary.
 - Pinned CI and release Go 1.25 patch to 1.25.13 so `govulncheck` uses
   the standard-library fixes in `net/url`, `html/template`, `crypto/tls`,
   `net/http`, and `encoding/xml`.
+- Pinned OpenSSF Scorecard to `ossf/scorecard-action` v2.4.4 by commit SHA
+  so the CI job no longer depends on the unresolved `@v2` tag.
 
 ### Migration
 

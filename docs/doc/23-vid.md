@@ -7,10 +7,10 @@
 The first-choice API set for this facade is kept in sync with `ai-context.json` and the generated tools catalog.
 
 - `ConfigureDefaultSnowflake`
-- `GetSnowflakeNextID`
-- `FastSimpleUUID`
 - `ConfigureDefaultFallbackRandomSourceProvider`
+- `FastSimpleUUID`
 - `CreateSnowflake`
+- `CreateSnowflakeWithOptions`
 
 ## Which helper should I use?
 

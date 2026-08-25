@@ -130,6 +130,38 @@ func ExampleSocketConnectWithOptions() {
 	// true
 }
 
+func ExampleChannelDial() {
+	conn, err := vskt.ChannelDial(nil, time.Second)
+
+	fmt.Println(conn == nil)
+	fmt.Println(err.Error())
+	// Output:
+	// true
+	// address must not be nil
+}
+
+func ExampleChannelDialWithOptions() {
+	cause := errors.New("offline")
+	addr := &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80}
+	conn, err := vskt.ChannelDialWithOptions(addr, vskt.WithConnectDialer(exampleDialer{err: cause}))
+
+	fmt.Println(conn == nil)
+	fmt.Println(errors.Is(err, cause))
+	// Output:
+	// true
+	// true
+}
+
+func ExampleChannelUtilDial() {
+	conn, err := vskt.ChannelUtilDial(nil, time.Second)
+
+	fmt.Println(conn == nil)
+	fmt.Println(err.Error())
+	// Output:
+	// true
+	// address must not be nil
+}
+
 func ExampleSocketConnectAddrWithOptions() {
 	cause := errors.New("offline")
 	addr := &net.TCPAddr{IP: net.ParseIP("127.0.0.1"), Port: 80}

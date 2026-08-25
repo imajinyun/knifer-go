@@ -16,6 +16,39 @@ func ExampleContains() {
 	// false
 }
 
+func ExampleContainsAny() {
+	vdfa.Init([]string{"secret"})
+	value := struct {
+		Text string `json:"text"`
+	}{Text: "has secret"}
+
+	fmt.Println(vdfa.ContainsAny(value))
+	// Output: true
+}
+
+func ExampleConfigureAsyncRunner() {
+	defer vdfa.ResetAsyncRunner()
+	vdfa.ConfigureAsyncRunner(func(fn func()) { fn() })
+	vdfa.InitAsync([]string{"secret"})
+
+	fmt.Println(vdfa.Contains("keep secret"))
+	// Output: true
+}
+
+func ExampleFilterAny() {
+	type payload struct {
+		Text string `json:"text"`
+	}
+	vdfa.Init([]string{"secret"})
+
+	got, err := vdfa.FilterAny(payload{Text: "a secret"}, true, nil)
+	fmt.Println(err)
+	fmt.Println(got.Text)
+	// Output:
+	// <nil>
+	// a ******
+}
+
 func ExampleFilter() {
 	vdfa.Init([]string{"bad"})
 

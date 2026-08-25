@@ -180,15 +180,15 @@ Per-package quickstart examples live in the linked documents above so examples s
 
 ## 🧭 Sprint direction
 
-Current pointer: **weak-example ratchet**. Numbered governance sprints through 66 are completed. Catalog alignment landed in `9543554`. Freeze lint and govulncheck jobs are green on `github/main` at `16c8b8b` after pinning CI to Go 1.25.13. `ai-context.json` still marks `api_freeze.v1_candidate` as true; do not add public APIs or tag v1. OpenSSF Scorecard remains red because `ossf/scorecard-action@v2` cannot resolve; that is not a tag blocker for this loop.
+Current pointer: **weak-example ratchet**. Numbered governance sprints through 66 are completed. Catalog alignment landed in `9543554`. Freeze lint and govulncheck jobs are green on `github/main` at `16c8b8b` after pinning CI to Go 1.25.13. `ai-context.json` still marks `api_freeze.v1_candidate` as true; do not add public APIs or tag v1. OpenSSF Scorecard is pinned to the `ossf/scorecard-action` v2.4.4 commit SHA so the job can resolve. Importing `vcrypto` accepts `github.com/emmansun/gmsm` for SM interoperability; that exception is recorded on freeze card `v1-vcrypto-gmsm-interop` with no module split.
 
 Sprint state is maintained through the generated API snapshots, this documentation hub, `ai-context.json` governance records, and recent commits. Local sprint plans may exist under ignored `docs/superpowers/plans/`. The former tracked `49-roadmap.md` page is no longer part of the committed documentation set; do not recreate it unless roadmap restoration is explicitly requested.
 
 ### Next execution loop
 
-1. **Weak-example ratchet** (current). Golden-path Examples landed for `verr` (15.1% → 32.1%), `vid` (17.0% → 39.6%), `vpoi` (16.2% → 35.1%), and `vcsv` (21.7% → 65.2%). Next pair from the generated catalog: `vdfa` (22.0%) and `vskt` (22.0%). Do not tag.
+1. **Weak-example ratchet** (current). Golden-path Examples landed for `verr` (15.1% → 32.1%), `vid` (17.0% → 39.6%), `vpoi` (16.2% → 35.1%), `vcsv` (21.7% → 65.2%), `vdfa` (22.0% → 29.3%), and `vskt` (22.0% → 28.0%). Next pair from the generated catalog: `vlog` (22.2%) and `vcron` (23.5%). Do not tag.
 
-2. **v1 freeze rehearsal** is waiting on an explicit tag request. Unreleased notes are grouped. Do not tag until asked; Scorecard still fails on the unpinned action tag and is parked unless a v1 announcement needs it.
+2. **v1 freeze rehearsal** is waiting on an explicit tag request. Unreleased notes are grouped. Do not tag until asked. Scorecard is pinned; wait for the next CI run before treating that job as green.
 
 3. **Parked until an API decision card exists.** Do not implement `vtest` or `vdump`. Do not add collection helpers such as `ZipN`, cartesian product, channel wrappers, or parallel transforms. Keep the repository coverage gate at 75.2% until new tests can support a raise toward 80%. Refresh the GitHub Top 5 comparison only with `make utility-comparison-refresh` when a v1 announcement needs current competitor metadata.
 

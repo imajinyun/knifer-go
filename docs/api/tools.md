@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
 | Functions | 2765 |
-| Functions with examples | 1786 |
+| Functions with examples | 1792 |
 | Context-aware functions | 36 |
 | Functions returning error | 688 |
 | Variadic functions | 804 |
@@ -975,7 +975,7 @@ Import path: `github.com/imajinyun/knifer-go/vdfa`
 
 Package vdfa exposes deterministic-finite-automaton text matching APIs.
 
-Quality: 41 functions · 9 with examples · 22.0% example coverage · statuses: recommended=41, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=41, internal=0, empty=0
+Quality: 41 functions · 12 with examples · 29.3% example coverage · statuses: recommended=41, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=41, internal=0, empty=0
 
 Recommended entrypoints:
 
@@ -983,7 +983,7 @@ Recommended entrypoints:
 | --- | --- | --- |
 | `FilterAny` | error | Prefer when callers must distinguish invalid input or provider failure from default values. |
 | `ContainsAnyWithOptions` | options | Prefer when providers, limits, parsers, or policies must be reviewable at the call site. |
-| `Contains` | day-one | Start here for concise, trusted-input use cases in this package. |
+| `ConfigureAsyncRunner` | day-one | Start here for concise, trusted-input use cases in this package. |
 
 Golden path API set:
 
@@ -991,20 +991,20 @@ Golden path API set:
 | --- | --- | --- |
 | `FilterAny` | Use first when callers must observe invalid input or provider failure. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `ContainsAnyWithOptions` | Use first when policies, providers, parsers, limits, or clocks must be explicit. | Avoid for trivial in-memory code where the standard library is clearer. |
-| `Contains` | Use first for concise trusted-input workflows in vdfa. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vdfa. |
 | `ConfigureAsyncRunner` | Use first for concise trusted-input workflows in vdfa. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vdfa. |
+| `Contains` | Use first for concise trusted-input workflows in vdfa. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vdfa. |
 | `ContainsAny` | Use first for concise trusted-input workflows in vdfa. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vdfa. |
 
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
-| `ConfigureAsyncRunner` | `func ConfigureAsyncRunner(runner func(func()))` | recommended | ConfigureAsyncRunner sets the runner used by asynchronous package-level matcher initialization. | facade | — |
+| `ConfigureAsyncRunner` | `func ConfigureAsyncRunner(runner func(func()))` | recommended | ConfigureAsyncRunner sets the runner used by asynchronous package-level matcher initialization. | facade | `ExampleConfigureAsyncRunner` |
 | `Contains` | `func Contains(text string) bool` | recommended | Contains reports whether text contains a word from the package-level matcher. | facade | `ExampleContains` |
-| `ContainsAny` | `func ContainsAny(value any) bool` | recommended | ContainsAny marshals value as JSON and checks it with the package-level matcher. | facade | — |
+| `ContainsAny` | `func ContainsAny(value any) bool` | recommended | ContainsAny marshals value as JSON and checks it with the package-level matcher. | facade | `ExampleContainsAny` |
 | `ContainsAnyWithOptions` | `func ContainsAnyWithOptions(value any, opts ...MatcherOption) bool` | recommended | ContainsAnyWithOptions marshals value as JSON and checks it with the selected matcher. | facade | `ExampleContainsAnyWithOptions` |
 | `ContainsWithOptions` | `func ContainsWithOptions(text string, opts ...MatcherOption) bool` | recommended | ContainsWithOptions reports whether text contains a word from the selected matcher. | facade | — |
 | `DefaultProcessor` | `func DefaultProcessor(word FoundWord) string` | recommended | DefaultProcessor replaces each rune of the matched text with an asterisk. | facade | — |
 | `Filter` | `func Filter(text string) string` | recommended | Filter replaces words found by the package-level matcher. | facade | `ExampleFilter` |
-| `FilterAny` | `func FilterAny[T any](value T, greedMatch bool, processor Processor) (T, error)` | recommended | FilterAny marshals value as JSON, filters matched text, and unmarshals it back. | facade | — |
+| `FilterAny` | `func FilterAny[T any](value T, greedMatch bool, processor Processor) (T, error)` | recommended | FilterAny marshals value as JSON, filters matched text, and unmarshals it back. | facade | `ExampleFilterAny` |
 | `FilterAnyWithOptions` | `func FilterAnyWithOptions[T any](value T, greedMatch bool, processor Processor, opts ...MatcherOption) (T, error)` | recommended | FilterAnyWithOptions marshals value, filters matched text with the selected matcher, and unmarshals it back. | facade | — |
 | `FilterMode` | `func FilterMode(text string, greedMatch bool, processor Processor) string` | recommended | FilterMode replaces words found by the package-level matcher using processor. | facade | — |
 | `FilterModeWithOptions` | `func FilterModeWithOptions(text string, greedMatch bool, processor Processor, opts ...MatcherOption) string` | recommended | FilterModeWithOptions replaces words found by the selected matcher using processor. | facade | `ExampleFilterModeWithOptions` |
@@ -3491,7 +3491,7 @@ Import path: `github.com/imajinyun/knifer-go/vskt`
 
 Package vskt provides public APIs for socket utilities.
 
-Quality: 50 functions · 11 with examples · 22.0% example coverage · statuses: recommended=50, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=50, internal=0, empty=0
+Quality: 50 functions · 14 with examples · 28.0% example coverage · statuses: recommended=50, compatibility=0, experimental=0, deprecated=0 · synopsis sources: facade=50, internal=0, empty=0
 
 Recommended entrypoints:
 
@@ -3513,9 +3513,9 @@ Golden path API set:
 
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
-| `ChannelDial` | `func ChannelDial(addr *net.TCPAddr, timeout time.Duration) (net.Conn, error)` | recommended | ChannelDial dials addr with timeout. | facade | — |
-| `ChannelDialWithOptions` | `func ChannelDialWithOptions(addr *net.TCPAddr, opts ...ConnectOption) (net.Conn, error)` | recommended | ChannelDialWithOptions dials addr with custom dial options. | facade | — |
-| `ChannelUtilDial` | `func ChannelUtilDial(addr *net.TCPAddr, timeout time.Duration) (net.Conn, error)` | recommended | ChannelUtilDial delegates to the internal socketx implementation. | facade | — |
+| `ChannelDial` | `func ChannelDial(addr *net.TCPAddr, timeout time.Duration) (net.Conn, error)` | recommended | ChannelDial dials addr with timeout. | facade | `ExampleChannelDial` |
+| `ChannelDialWithOptions` | `func ChannelDialWithOptions(addr *net.TCPAddr, opts ...ConnectOption) (net.Conn, error)` | recommended | ChannelDialWithOptions dials addr with custom dial options. | facade | `ExampleChannelDialWithOptions` |
+| `ChannelUtilDial` | `func ChannelUtilDial(addr *net.TCPAddr, timeout time.Duration) (net.Conn, error)` | recommended | ChannelUtilDial delegates to the internal socketx implementation. | facade | `ExampleChannelUtilDial` |
 | `GetRemoteAddress` | `func GetRemoteAddress(conn net.Conn) net.Addr` | recommended | GetRemoteAddress delegates to the internal socketx implementation. | facade | `ExampleGetRemoteAddress` |
 | `NewAioClient` | `func NewAioClient(addr *net.TCPAddr, action IoAction[*bytes.Buffer]) (*AioClient, error)` | recommended | NewAioClient creates an AIO-style TCP client. | facade | — |
 | `NewAioClientWithConfig` | `func NewAioClientWithConfig(addr *net.TCPAddr, action IoAction[*bytes.Buffer], cfg *SocketConfig) (*AioClient, error)` | recommended | NewAioClientWithConfig creates an AIO-style TCP client with config. | facade | — |

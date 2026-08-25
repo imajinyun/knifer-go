@@ -8,8 +8,8 @@ The first-choice API set for this facade is kept in sync with `ai-context.json` 
 
 - `FilterAny`
 - `ContainsAnyWithOptions`
-- `Contains`
 - `ConfigureAsyncRunner`
+- `Contains`
 - `ContainsAny`
 
 ## Which helper should I use?

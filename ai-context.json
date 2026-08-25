@@ -595,7 +595,7 @@
       "recommended_profile_schema": "recommended_entrypoints profiles: day-one, safe, error, options, compatibility; golden_path lists 1-7 APIs with use_when and avoid_when guidance",
       "package_count": 55,
       "function_count": 2765,
-      "functions_with_examples": 1786,
+      "functions_with_examples": 1792,
       "context_aware_functions": 36,
       "returns_error_functions": 688,
       "status_counts": {
@@ -709,6 +709,7 @@
     "heavy_extension_facades": ["verr", "vimg", "vpoi", "vresty"],
     "provider_contract_facades": ["vai", "vftp", "vhan", "vssh", "vtok"],
     "heavy_dependency_allowlist": {
+      "github.com/emmansun/gmsm/*": ["internal/crypto"],
       "github.com/getsentry/sentry-go": ["internal/errx", "verr"],
       "github.com/makiuchi-d/gozxing*": ["internal/imgx", "vimg"],
       "github.com/sirupsen/logrus": ["internal/errx", "verr"],
@@ -717,6 +718,7 @@
     },
     "notes": [
       "Core facades should avoid third-party runtime dependencies unless explicitly allowlisted by dependency_tiers.heavy_dependency_allowlist.",
+      "Importing vcrypto pulls github.com/emmansun/gmsm for SM2/SM3/SM4 interoperability; that dependency stays isolated to internal/crypto, SM4-ECB remains non-default, and vcrypto is not split into a new module.",
       "Heavy extension facades isolate optional integrations such as Sentry, Logrus, Excelize, Resty, and barcode/image adapters.",
       "Provider contract facades expose interfaces and adapters while keeping concrete clients, credentials, dictionaries, or NLP engines outside core."
     ]
@@ -799,15 +801,15 @@
       "vcsv": { "primary": ["ForEach", "MapsToRecords", "Read", "ReadMaps", "ReadString"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vdate": { "primary": ["LunarToSolar", "NowWithOptions", "BeginOfDay", "BeginOfMonth", "BeginOfYear"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vdb": { "primary": ["IsSafeIdentifier", "AssignEntity", "NewBuilder", "BuildLikeValue", "AndGroup"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
-      "vdfa": { "primary": ["FilterAny", "ContainsAnyWithOptions", "Contains", "ConfigureAsyncRunner", "ContainsAny"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
-      "verr": { "primary": ["Recover", "GetStackTraceWithOptions", "ErrorIs", "MustExit", "ConfigureDefaultLogFunc"], "advanced": [], "compatibility": ["MustExit", "MustExitWithOptions"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
+      "vdfa": { "primary": ["FilterAny", "ContainsAnyWithOptions", "ConfigureAsyncRunner", "Contains", "ContainsAny"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
+      "verr": { "primary": ["Recover", "GetStackTraceWithOptions", "ConfigureDefaultLogFunc", "MustExit", "ErrorIs"], "advanced": [], "compatibility": ["MustExit", "MustExitWithOptions"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
       "vfile": { "primary": ["SafeJoin", "AppendFileString", "ExistsWithOptions", "CloseQuietly", "AppendFileStringWithOptions"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vform": { "primary": ["IsChineseWithOptions", "IsEmail", "IsChinese", "IsEmailWithOptions", "IsIDCard"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vgeo": { "primary": ["Convert", "BD09ToGCJ02", "BD09MCToBD09", "BD09MCToGCJ02", "BD09MCToWGS84"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vftp": { "primary": ["Download", "New", "WithProvider", "List", "Upload"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vhash": { "primary": ["NewConsistentHash", "AdditiveHash", "ApHash", "BkdrHash", "DjbHash"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vhttp": { "primary": ["DeleteSafe", "Download", "CleanHTMLWithOptions", "AddGlobalHeader", "BuildBasicAuth"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
-      "vid": { "primary": ["ConfigureDefaultSnowflake", "GetSnowflakeNextID", "FastSimpleUUID", "ConfigureDefaultFallbackRandomSourceProvider", "CreateSnowflake"], "advanced": [], "compatibility": ["FastSimpleUUID", "FastSimpleUUIDWithOptions", "FastUUID", "FastUUIDWithOptions", "UUID"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
+      "vid": { "primary": ["ConfigureDefaultSnowflake", "ConfigureDefaultFallbackRandomSourceProvider", "FastSimpleUUID", "CreateSnowflake", "CreateSnowflakeWithOptions"], "advanced": [], "compatibility": ["FastSimpleUUID", "FastSimpleUUIDWithOptions", "FastUUID", "FastUUIDWithOptions", "UUID"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
       "vident": { "primary": ["ParseCreditCode", "AgeWithOptions", "Age", "AgeAt", "BirthDate"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vimg": { "primary": ["AddTextWatermark", "GenMathGeneratorWithOptions", "CanDecodeBarcodeFormat", "AddWatermark", "BarcodeASCII"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vjob": { "primary": ["NewMapE", "NewBatch", "NewBatchSingle", "NewMap", "NewMapKeys"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
@@ -822,7 +824,7 @@
       "vobj": { "primary": ["Clone", "CloneIfPossibleWithOptions", "Accept", "Equals", "Apply"], "advanced": [], "compatibility": ["Equals", "HasNull", "IsNotNull", "IsNull", "MustDeserialize"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
       "vpass": { "primary": ["Analyze", "IsStrong", "IsWeak", "Score", "StrengthOf"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vhan": { "primary": ["Convert", "New", "WithProvider", "Initials"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
-      "vpoi": { "primary": ["ReadCells", "WithOpenOptions", "WithReadSheet", "IsValidSheetName", "ReadCellsFromReader"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
+      "vpoi": { "primary": ["ReadCells", "WithOpenOptions", "IsValidSheetName", "ReadCellsFromReader", "ReadRows"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
       "vrand": { "primary": ["BytesWithOptions", "BoolWithOptions", "Bool", "WithRandomSource", "ConfigureDefaultRandomSourceProvider"], "advanced": [], "compatibility": ["WithRandomSource"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
       "vref": { "primary": ["Invoke", "GetFieldValueWithOptions", "GetFieldValue", "GetConstructorsDirectly", "GetConstructor"], "advanced": [], "compatibility": ["GetConstructorsDirectly", "GetFieldName", "IsOuterClassField", "RemoveFinalModify", "SetFieldValueWithOptions"], "avoid": [], "decision": "Prefer primary APIs; use compatibility only during migration." },
       "vregex": { "primary": ["ContainsWithOptions", "Contains", "ContainsRe", "Count", "CountRe"], "advanced": [], "compatibility": [], "avoid": [], "decision": "Start with primary golden-path APIs." },
@@ -855,7 +857,7 @@
       "vconf": { "grade": "core", "rationale": "Core facade for configuration; should avoid non-allowlisted runtime dependencies." },
       "vconv": { "grade": "core", "rationale": "Core facade for type conversion; should avoid non-allowlisted runtime dependencies." },
       "vcron": { "grade": "core", "rationale": "Core facade for cron scheduling; should avoid non-allowlisted runtime dependencies." },
-      "vcrypto": { "grade": "core", "rationale": "Core facade for cryptography and digests; should avoid non-allowlisted runtime dependencies." },
+      "vcrypto": { "grade": "core", "rationale": "Core facade for cryptography and digests; SM2/SM3/SM4 interoperability allowlists github.com/emmansun/gmsm in internal/crypto, and SM4-ECB stays non-default." },
       "vcsv": { "grade": "core", "rationale": "Core facade for CSV; should avoid non-allowlisted runtime dependencies." },
       "vdate": { "grade": "core", "rationale": "Core facade for date/time; should avoid non-allowlisted runtime dependencies." },
       "vdb": { "grade": "core", "rationale": "Core facade for database/SQL; should avoid non-allowlisted runtime dependencies." },
@@ -1889,6 +1891,14 @@
         "validation": ["make arch", "make governance-maturity-check", "dependency_tiers.heavy_dependency_allowlist matches check_governance_maturity policy"]
       },
       {
+        "id": "v1-vcrypto-gmsm-interop",
+        "packages": ["vcrypto"],
+        "status": "recommended",
+        "decision": "SM2/SM3/SM4 interoperability stays inside vcrypto and internal/crypto. Importing vcrypto accepts github.com/emmansun/gmsm. SM4-ECB remains non-default. Do not add a new public SM facade or split the module in this freeze.",
+        "rationale": "Callers who need AES, HMAC, or digest helpers currently also pull gmsm. Splitting that graph would be a breaking import-path change. Recording the exception keeps vcrypto core while making the SM stack an explicit allowlisted interoperability dependency.",
+        "validation": ["make arch", "make api-freeze-check", "make governance-maturity-check"]
+      },
+      {
         "id": "v1-error-taxonomy",
         "packages": ["all"],
         "status": "recommended",
@@ -1930,7 +1940,7 @@
       }
     ],
     "api_status_decision_cards": {
-      "recommended": ["v1-public-api-entry-budget", "v1-dynamic-contract-matrix", "v1-heavy-dependency-isolation", "v1-error-taxonomy", "v1-security-threat-model"],
+      "recommended": ["v1-public-api-entry-budget", "v1-dynamic-contract-matrix", "v1-heavy-dependency-isolation", "v1-vcrypto-gmsm-interop", "v1-error-taxonomy", "v1-security-threat-model"],
       "compatibility": ["v1-compatibility-api-budget"],
       "experimental": ["v1-experimental-api-denylist"],
       "deprecated": ["v1-deprecation-replacement-policy"]

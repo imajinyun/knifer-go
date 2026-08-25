@@ -8,9 +8,9 @@ The first-choice API set for this facade is kept in sync with `ai-context.json` 
 
 - `Recover`
 - `GetStackTraceWithOptions`
-- `ErrorIs`
-- `MustExit`
 - `ConfigureDefaultLogFunc`
+- `MustExit`
+- `ErrorIs`
 
 ## Which helper should I use?
 

@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 55,
     "function_count": 2765,
-    "functions_with_examples": 1786,
+    "functions_with_examples": 1792,
     "context_aware_functions": 36,
     "returns_error_functions": 688,
     "variadic_functions": 804,
@@ -13557,8 +13557,8 @@
       "synopsis": "Package vdfa exposes deterministic-finite-automaton text matching APIs.",
       "summary": {
         "function_count": 41,
-        "functions_with_examples": 9,
-        "example_coverage_percent": 22,
+        "functions_with_examples": 12,
+        "example_coverage_percent": 29.3,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
@@ -13583,12 +13583,12 @@
           "avoid_when": "Avoid for trivial in-memory code where the standard library is clearer."
         },
         {
-          "name": "Contains",
+          "name": "ConfigureAsyncRunner",
           "use_when": "Use first for concise trusted-input workflows in vdfa.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vdfa."
         },
         {
-          "name": "ConfigureAsyncRunner",
+          "name": "Contains",
           "use_when": "Use first for concise trusted-input workflows in vdfa.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vdfa."
         },
@@ -13610,7 +13610,7 @@
           "rationale": "Prefer when providers, limits, parsers, or policies must be reviewable at the call site."
         },
         {
-          "name": "Contains",
+          "name": "ConfigureAsyncRunner",
           "profile": "day-one",
           "rationale": "Start here for concise, trusted-input use cases in this package."
         }
@@ -13630,7 +13630,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleConfigureAsyncRunner"
+          ]
         },
         {
           "name": "Contains",
@@ -13671,7 +13674,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleContainsAny"
+          ]
         },
         {
           "name": "ContainsAnyWithOptions",
@@ -13789,7 +13795,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleFilterAny"
+          ]
         },
         {
           "name": "FilterAnyWithOptions",
@@ -54394,8 +54403,8 @@
       "synopsis": "Package vskt provides public APIs for socket utilities.",
       "summary": {
         "function_count": 50,
-        "functions_with_examples": 11,
-        "example_coverage_percent": 22,
+        "functions_with_examples": 14,
+        "example_coverage_percent": 28,
         "status_counts": {
           "compatibility": 0,
           "deprecated": 0,
@@ -54475,7 +54484,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleChannelDial"
+          ]
         },
         {
           "name": "ChannelDialWithOptions",
@@ -54499,7 +54511,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleChannelDialWithOptions"
+          ]
         },
         {
           "name": "ChannelUtilDial",
@@ -54523,7 +54538,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleChannelUtilDial"
+          ]
         },
         {
           "name": "GetRemoteAddress",

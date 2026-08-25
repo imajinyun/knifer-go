@@ -10,9 +10,9 @@ The first-choice API set for this facade is kept in sync with `ai-context.json` 
 
 - `ReadCells`
 - `WithOpenOptions`
-- `WithReadSheet`
 - `IsValidSheetName`
 - `ReadCellsFromReader`
+- `ReadRows`
 
 ## Which helper should I use?
 

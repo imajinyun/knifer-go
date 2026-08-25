@@ -10,7 +10,7 @@ This baseline is derived from `docs/api/tools.json.summary`. `make governance-ma
 | --- | ---: |
 | Public facade packages | 55 |
 | Public functions | 2765 |
-| Functions with executable examples | 1748 |
+| Functions with executable examples | 1792 |
 | Context-aware functions | 36 |
 | Functions returning errors | 688 |
 | Recommended public functions | 2743 |
