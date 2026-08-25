@@ -44,6 +44,7 @@ subpackage APIs are treated as the compatibility boundary.
 - Standardized all 55 facade quickstarts with helper selection guidance,
   safety checklists, when-not-to-use boundaries, related packages,
   benchmark notes, and FAQs.
+- Added golden-path Example tests for `verr` and `vid`.
 - Aligned public facade counts and catalogs to 55 packages, including `vgeo`.
 - Defined public API stability levels for stable `v*` facades, internal
   packages, and experimental provider or adapter contracts.

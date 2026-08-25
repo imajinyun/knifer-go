@@ -12,7 +12,7 @@ This document is generated from `docs/api/tools.json` for human review and AI re
 | Module | `github.com/imajinyun/knifer-go` |
 | Packages | 55 |
 | Functions | 2765 |
-| Functions with examples | 1748 |
+| Functions with examples | 1769 |
 | Context-aware functions | 36 |
 | Functions returning error | 688 |
 | Variadic functions | 804 |
@@ -1045,7 +1045,7 @@ Import path: `github.com/imajinyun/knifer-go/verr`
 
 Package verr exposes error handling, panic recovery, and stack helpers.
 
-Quality: 53 functions · 8 with examples · 15.1% example coverage · statuses: recommended=51, compatibility=2, experimental=0, deprecated=0 · synopsis sources: facade=53, internal=0, empty=0
+Quality: 53 functions · 17 with examples · 32.1% example coverage · statuses: recommended=51, compatibility=2, experimental=0, deprecated=0 · synopsis sources: facade=53, internal=0, empty=0
 
 Recommended entrypoints:
 
@@ -1053,7 +1053,7 @@ Recommended entrypoints:
 | --- | --- | --- |
 | `Recover` | error | Prefer when callers must distinguish invalid input or provider failure from default values. |
 | `GetStackTraceWithOptions` | options | Prefer when providers, limits, parsers, or policies must be reviewable at the call site. |
-| `ErrorIs` | day-one | Start here for concise, trusted-input use cases in this package. |
+| `ConfigureDefaultLogFunc` | day-one | Start here for concise, trusted-input use cases in this package. |
 | `MustExit` | compatibility | Compatibility API; use only when preserving existing call-site semantics. |
 
 Golden path API set:
@@ -1062,30 +1062,30 @@ Golden path API set:
 | --- | --- | --- |
 | `Recover` | Use first when callers must observe invalid input or provider failure. | Avoid for trivial in-memory code where the standard library is clearer. |
 | `GetStackTraceWithOptions` | Use first when policies, providers, parsers, limits, or clocks must be explicit. | Avoid for trivial in-memory code where the standard library is clearer. |
-| `ErrorIs` | Use first for concise trusted-input workflows in verr. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in verr. |
-| `MustExit` | Use only to preserve existing call-site behavior during migration. | Avoid for new code when a Recommended, Safe, E, or WithOptions variant exists. |
 | `ConfigureDefaultLogFunc` | Use first for concise trusted-input workflows in verr. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in verr. |
+| `MustExit` | Use only to preserve existing call-site behavior during migration. | Avoid for new code when a Recommended, Safe, E, or WithOptions variant exists. |
+| `ErrorIs` | Use first for concise trusted-input workflows in verr. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in verr. |
 
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
-| `ConfigureDefaultLogFunc` | `func ConfigureDefaultLogFunc(logFunc LogFunc)` | recommended | ConfigureDefaultLogFunc sets the package-level logger used by errx helpers when no logger is provided. | facade | — |
+| `ConfigureDefaultLogFunc` | `func ConfigureDefaultLogFunc(logFunc LogFunc)` | recommended | ConfigureDefaultLogFunc sets the package-level logger used by errx helpers when no logger is provided. | facade | `ExampleConfigureDefaultLogFunc` |
 | `ErrorIs` | `func ErrorIs(err error, target error) bool` | recommended | ErrorIs is like errors.Is, but it also checks each member of a multierror. | facade | `ExampleErrorIs` |
-| `GetStack` | `func GetStack(err error) string` | recommended | GetStack returns the stack attached to err, or the current goroutine stack. | facade | — |
-| `GetStackTrace` | `func GetStackTrace(skip int) StackTrace` | recommended | GetStackTrace captures the current goroutine stack trace. | facade | — |
-| `GetStackTraceWithOptions` | `func GetStackTraceWithOptions(opts ...StackTraceOption) StackTrace` | recommended | GetStackTraceWithOptions captures the current goroutine stack trace with options. | facade | — |
+| `GetStack` | `func GetStack(err error) string` | recommended | GetStack returns the stack attached to err, or the current goroutine stack. | facade | `ExampleGetStack` |
+| `GetStackTrace` | `func GetStackTrace(skip int) StackTrace` | recommended | GetStackTrace captures the current goroutine stack trace. | facade | `ExampleGetStackTrace` |
+| `GetStackTraceWithOptions` | `func GetStackTraceWithOptions(opts ...StackTraceOption) StackTrace` | recommended | GetStackTraceWithOptions captures the current goroutine stack trace with options. | facade | `ExampleGetStackTraceWithOptions` |
 | `GetStackWithOptions` | `func GetStackWithOptions(err error, opts ...StackOption) string` | recommended | GetStackWithOptions returns the stack attached to err, or captures a stack with options. | facade | `ExampleGetStackWithOptions` |
 | `Init` | `func Init(sentryDSN string)` | recommended | Init configures logrus output and optional Sentry forwarding. | facade | — |
 | `InitWithOptions` | `func InitWithOptions(opts ...InitOption)` | recommended | InitWithOptions configures logrus output and optional Sentry forwarding with options. | facade | — |
-| `MustExit` | `func MustExit(ctx context.Context, err error)` | compatibility | MustExit logs err and panics when err is non-nil. | facade | — |
+| `MustExit` | `func MustExit(ctx context.Context, err error)` | compatibility | MustExit logs err and panics when err is non-nil. | facade | `ExampleMustExit` |
 | `MustExitWithOptions` | `func MustExitWithOptions(ctx context.Context, err error, opts ...ExitOption)` | compatibility | MustExitWithOptions logs err and panics when err is non-nil with custom options. | facade | `ExampleMustExitWithOptions` |
 | `NewCollector` | `func NewCollector() *Collector` | recommended | NewCollector creates a Collector that logs failures at error level. | facade | `ExampleNewCollector` |
-| `NewCollectorWithOptions` | `func NewCollectorWithOptions(opts ...CollectorOption) *Collector` | recommended | NewCollectorWithOptions creates a Collector customized by options. | facade | — |
+| `NewCollectorWithOptions` | `func NewCollectorWithOptions(opts ...CollectorOption) *Collector` | recommended | NewCollectorWithOptions creates a Collector customized by options. | facade | `ExampleNewCollectorWithOptions` |
 | `NewIsolatedLogrusWithOptions` | `func NewIsolatedLogrusWithOptions(opts ...InitOption) *logrus.Logger` | recommended | NewIsolatedLogrusWithOptions creates a standalone logrus logger without mutating global logrus/Sentry state. | facade | `ExampleNewIsolatedLogrusWithOptions` |
 | `Recover` | `func Recover(f func() error, format string, args ...any) error` | recommended | Recover executes f with panic recovery and logs failures at error level. | facade | `ExampleRecover` |
 | `RecoverWithoutError` | `func RecoverWithoutError(f func(), format string, args ...any) error` | recommended | RecoverWithoutError executes f with panic recovery and logs failures at error level. | facade | `ExampleRecoverWithoutError` |
-| `ResetDefaultLogFunc` | `func ResetDefaultLogFunc()` | recommended | ResetDefaultLogFunc restores the package-level logger to the logrus-backed default. | facade | — |
-| `ResetStackFrameCache` | `func ResetStackFrameCache()` | recommended | ResetStackFrameCache clears cached stack frame metadata captured by GetStackTraceWithOptions. | facade | — |
-| `WaitUntilWithOptions` | `func WaitUntilWithOptions(c *Collector, duration time.Duration, opts ...WaitOption) (bool, error)` | recommended | WaitUntilWithOptions waits using per-call wait options. | facade | — |
+| `ResetDefaultLogFunc` | `func ResetDefaultLogFunc()` | recommended | ResetDefaultLogFunc restores the package-level logger to the logrus-backed default. | facade | `ExampleResetDefaultLogFunc` |
+| `ResetStackFrameCache` | `func ResetStackFrameCache()` | recommended | ResetStackFrameCache clears cached stack frame metadata captured by GetStackTraceWithOptions. | facade | `ExampleResetStackFrameCache` |
+| `WaitUntilWithOptions` | `func WaitUntilWithOptions(c *Collector, duration time.Duration, opts ...WaitOption) (bool, error)` | recommended | WaitUntilWithOptions waits using per-call wait options. | facade | `ExampleWaitUntilWithOptions` |
 | `WithCallersFunc` | `func WithCallersFunc(callers CallersFunc) StackTraceOption` | recommended | WithCallersFunc sets the function used to capture stack PCs. | facade | — |
 | `WithCollectorContext` | `func WithCollectorContext(ctx context.Context) CollectorOption` | recommended | WithCollectorContext sets the context attached to log entries during Collector construction. | facade | — |
 | `WithCollectorLevel` | `func WithCollectorLevel(level logrus.Level) CollectorOption` | recommended | WithCollectorLevel sets the log level during Collector construction. | facade | — |
@@ -1622,14 +1622,14 @@ Import path: `github.com/imajinyun/knifer-go/vid`
 
 Package vid provides public APIs for ID generation utilities.
 
-Quality: 53 functions · 9 with examples · 17.0% example coverage · statuses: recommended=48, compatibility=5, experimental=0, deprecated=0 · synopsis sources: facade=53, internal=0, empty=0
+Quality: 53 functions · 21 with examples · 39.6% example coverage · statuses: recommended=48, compatibility=5, experimental=0, deprecated=0 · synopsis sources: facade=53, internal=0, empty=0
 
 Recommended entrypoints:
 
 | Function | Profile | Rationale |
 | --- | --- | --- |
 | `ConfigureDefaultSnowflake` | options | Prefer when providers, limits, parsers, or policies must be reviewable at the call site. |
-| `GetSnowflakeNextID` | day-one | Start here for concise, trusted-input use cases in this package. |
+| `ConfigureDefaultFallbackRandomSourceProvider` | day-one | Start here for concise, trusted-input use cases in this package. |
 | `FastSimpleUUID` | compatibility | Compatibility API; use only when preserving existing call-site semantics. |
 
 Golden path API set:
@@ -1637,18 +1637,18 @@ Golden path API set:
 | Function | Use when | Avoid when |
 | --- | --- | --- |
 | `ConfigureDefaultSnowflake` | Use first when policies, providers, parsers, limits, or clocks must be explicit. | Avoid for trivial in-memory code where the standard library is clearer. |
-| `GetSnowflakeNextID` | Use first for concise trusted-input workflows in vid. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vid. |
-| `FastSimpleUUID` | Use only to preserve existing call-site behavior during migration. | Avoid for new code when a Recommended, Safe, E, or WithOptions variant exists. |
 | `ConfigureDefaultFallbackRandomSourceProvider` | Use first for concise trusted-input workflows in vid. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vid. |
+| `FastSimpleUUID` | Use only to preserve existing call-site behavior during migration. | Avoid for new code when a Recommended, Safe, E, or WithOptions variant exists. |
 | `CreateSnowflake` | Use first for concise trusted-input workflows in vid. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vid. |
+| `CreateSnowflakeWithOptions` | Use first for concise trusted-input workflows in vid. | Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vid. |
 
 | Function | Signature | Status | Synopsis | Source | Examples |
 | --- | --- | --- | --- | --- | --- |
-| `ConfigureDefaultFallbackRandomSourceProvider` | `func ConfigureDefaultFallbackRandomSourceProvider(provider func() *rand.Rand)` | recommended | ConfigureDefaultFallbackRandomSourceProvider sets the provider used to lazily create the package-level fallback PRNG. | facade | — |
-| `ConfigureDefaultSnowflake` | `func ConfigureDefaultSnowflake(opts ...SnowflakeOption) *Snowflake` | recommended | ConfigureDefaultSnowflake replaces the default singleton Snowflake generator with options. | facade | — |
-| `CreateSnowflake` | `func CreateSnowflake(workerID int64, datacenterID int64) *Snowflake` | recommended | CreateSnowflake creates a Snowflake generator for an explicit worker and datacenter pair. | facade | — |
+| `ConfigureDefaultFallbackRandomSourceProvider` | `func ConfigureDefaultFallbackRandomSourceProvider(provider func() *rand.Rand)` | recommended | ConfigureDefaultFallbackRandomSourceProvider sets the provider used to lazily create the package-level fallback PRNG. | facade | `ExampleConfigureDefaultFallbackRandomSourceProvider` |
+| `ConfigureDefaultSnowflake` | `func ConfigureDefaultSnowflake(opts ...SnowflakeOption) *Snowflake` | recommended | ConfigureDefaultSnowflake replaces the default singleton Snowflake generator with options. | facade | `ExampleConfigureDefaultSnowflake` |
+| `CreateSnowflake` | `func CreateSnowflake(workerID int64, datacenterID int64) *Snowflake` | recommended | CreateSnowflake creates a Snowflake generator for an explicit worker and datacenter pair. | facade | `ExampleCreateSnowflake` |
 | `CreateSnowflakeWithOptions` | `func CreateSnowflakeWithOptions(opts ...SnowflakeOption) *Snowflake` | recommended | CreateSnowflakeWithOptions creates a Snowflake generator from options. | facade | `ExampleCreateSnowflakeWithOptions` |
-| `FastSimpleUUID` | `func FastSimpleUUID() string` | compatibility | FastSimpleUUID creates a hyphen-free UUID through the compatibility fast UUID alias. | facade | — |
+| `FastSimpleUUID` | `func FastSimpleUUID() string` | compatibility | FastSimpleUUID creates a hyphen-free UUID through the compatibility fast UUID alias. | facade | `ExampleFastSimpleUUID` |
 | `FastSimpleUUIDWithOptions` | `func FastSimpleUUIDWithOptions(opts ...RandomOption) string` | compatibility | FastSimpleUUIDWithOptions creates a simple UUID alias with random options. | facade | — |
 | `FastUUID` | `func FastUUID() string` | compatibility | FastUUID creates an RFC 4122 UUID through the compatibility fast UUID alias. | facade | — |
 | `FastUUIDWithOptions` | `func FastUUIDWithOptions(opts ...RandomOption) string` | compatibility | FastUUIDWithOptions creates a UUID alias with random options. | facade | — |
@@ -1656,29 +1656,29 @@ Golden path API set:
 | `GetDataCenterIDWithOptions` | `func GetDataCenterIDWithOptions(maxDatacenterID int64, opts ...SnowflakeOption) int64` | recommended | GetDataCenterIDWithOptions derives a datacenter id using custom Snowflake providers. | facade | — |
 | `GetSnowflake` | `func GetSnowflake() *Snowflake` | recommended | GetSnowflake returns the package-level default Snowflake generator. | facade | — |
 | `GetSnowflakeNextID` | `func GetSnowflakeNextID() int64` | recommended | GetSnowflakeNextID returns the next numeric ID from the default Snowflake generator. | facade | `ExampleGetSnowflakeNextID` |
-| `GetSnowflakeNextIDStr` | `func GetSnowflakeNextIDStr() string` | recommended | GetSnowflakeNextIDStr returns the next Snowflake ID from the default generator as a string. | facade | — |
+| `GetSnowflakeNextIDStr` | `func GetSnowflakeNextIDStr() string` | recommended | GetSnowflakeNextIDStr returns the next Snowflake ID from the default generator as a string. | facade | `ExampleGetSnowflakeNextIDStr` |
 | `GetSnowflakeNextIDStrWithOptions` | `func GetSnowflakeNextIDStrWithOptions(opts ...SnowflakeOption) string` | recommended | GetSnowflakeNextIDStrWithOptions returns the next ID string from the default singleton Snowflake generator. | facade | — |
-| `GetSnowflakeNextIDWithOptions` | `func GetSnowflakeNextIDWithOptions(opts ...SnowflakeOption) int64` | recommended | GetSnowflakeNextIDWithOptions returns the next ID from the default singleton Snowflake generator. | facade | — |
+| `GetSnowflakeNextIDWithOptions` | `func GetSnowflakeNextIDWithOptions(opts ...SnowflakeOption) int64` | recommended | GetSnowflakeNextIDWithOptions returns the next ID from the default singleton Snowflake generator. | facade | `ExampleGetSnowflakeNextIDWithOptions` |
 | `GetSnowflakeWithOptions` | `func GetSnowflakeWithOptions(opts ...SnowflakeOption) *Snowflake` | recommended | GetSnowflakeWithOptions returns the default singleton Snowflake generator, creating it with options if needed. | facade | — |
 | `GetSnowflakeWithWorker` | `func GetSnowflakeWithWorker(workerID int64) *Snowflake` | recommended | GetSnowflakeWithWorker returns a cached Snowflake generator for workerID using default datacenter settings. | facade | — |
 | `GetSnowflakeWithWorkerDataCenter` | `func GetSnowflakeWithWorkerDataCenter(workerID int64, datacenterID int64) *Snowflake` | recommended | GetSnowflakeWithWorkerDataCenter returns a cached Snowflake generator for an explicit worker/datacenter pair. | facade | — |
 | `GetSnowflakeWithWorkerDataCenterWithOptions` | `func GetSnowflakeWithWorkerDataCenterWithOptions(workerID int64, datacenterID int64, opts ...SnowflakeOption) *Snowflake` | recommended | GetSnowflakeWithWorkerDataCenterWithOptions returns a singleton Snowflake generator for worker/datacenter pair using custom clock options. | facade | — |
 | `GetSnowflakeWithWorkerWithOptions` | `func GetSnowflakeWithWorkerWithOptions(workerID int64, opts ...SnowflakeOption) *Snowflake` | recommended | GetSnowflakeWithWorkerWithOptions returns a singleton Snowflake generator for workerID using custom defaults. | facade | — |
 | `GetWorkerID` | `func GetWorkerID(datacenterID int64, maxWorkerID int64) int64` | recommended | GetWorkerID derives a worker ID within maxWorkerID from the process ID and datacenter ID. | facade | — |
-| `GetWorkerIDWithOptions` | `func GetWorkerIDWithOptions(datacenterID int64, maxWorkerID int64, opts ...SnowflakeOption) int64` | recommended | GetWorkerIDWithOptions derives a worker id using custom Snowflake providers. | facade | — |
-| `NanoId` | `func NanoId() string` | recommended | NanoId creates a NanoId using the default alphabet and length. | facade | — |
+| `GetWorkerIDWithOptions` | `func GetWorkerIDWithOptions(datacenterID int64, maxWorkerID int64, opts ...SnowflakeOption) int64` | recommended | GetWorkerIDWithOptions derives a worker id using custom Snowflake providers. | facade | `ExampleGetWorkerIDWithOptions` |
+| `NanoId` | `func NanoId() string` | recommended | NanoId creates a NanoId using the default alphabet and length. | facade | `ExampleNanoId` |
 | `NanoIdN` | `func NanoIdN(n int) string` | recommended | NanoIdN creates a NanoId with an explicit length and the default alphabet. | facade | `ExampleNanoIdN` |
-| `NanoIdNWithOptions` | `func NanoIdNWithOptions(n int, opts ...NanoIDOption) string` | recommended | NanoIdNWithOptions creates a NanoId with explicit length and custom options. | facade | — |
+| `NanoIdNWithOptions` | `func NanoIdNWithOptions(n int, opts ...NanoIDOption) string` | recommended | NanoIdNWithOptions creates a NanoId with explicit length and custom options. | facade | `ExampleNanoIdNWithOptions` |
 | `NanoIdWithOptions` | `func NanoIdWithOptions(opts ...NanoIDOption) string` | recommended | NanoIdWithOptions creates a NanoId with custom generation options. | facade | `ExampleNanoIdWithOptions` |
-| `NewIsolatedSnowflake` | `func NewIsolatedSnowflake(opts ...SnowflakeOption) *Snowflake` | recommended | NewIsolatedSnowflake creates a standalone Snowflake generator without singleton/cache lookup. | facade | — |
+| `NewIsolatedSnowflake` | `func NewIsolatedSnowflake(opts ...SnowflakeOption) *Snowflake` | recommended | NewIsolatedSnowflake creates a standalone Snowflake generator without singleton/cache lookup. | facade | `ExampleNewIsolatedSnowflake` |
 | `ObjectId` | `func ObjectId() string` | recommended | ObjectId creates a MongoDB-style ObjectId using the default timestamp, random bytes, and counter sources. | facade | `ExampleObjectId` |
 | `ObjectIdWithOptions` | `func ObjectIdWithOptions(opts ...ObjectIDOption) string` | recommended | ObjectIdWithOptions creates an ObjectId with deterministic/custom generation options. | facade | `ExampleObjectIdWithOptions` |
 | `RandomUUID` | `func RandomUUID() string` | recommended | RandomUUID creates an RFC 4122 UUID using the default entropy source. | facade | `ExampleRandomUUID` |
 | `RandomUUIDWithOptions` | `func RandomUUIDWithOptions(opts ...RandomOption) string` | recommended | RandomUUIDWithOptions creates an RFC 4122 UUID with random options. | facade | `ExampleRandomUUIDWithOptions` |
-| `ResetDefaultFallbackRandomSource` | `func ResetDefaultFallbackRandomSource()` | recommended | ResetDefaultFallbackRandomSource restores the fallback PRNG provider and clears cached state. | facade | — |
+| `ResetDefaultFallbackRandomSource` | `func ResetDefaultFallbackRandomSource()` | recommended | ResetDefaultFallbackRandomSource restores the fallback PRNG provider and clears cached state. | facade | `ExampleResetDefaultFallbackRandomSource` |
 | `SetFallbackRandomSeed` | `func SetFallbackRandomSeed(seed int64)` | recommended | SetFallbackRandomSeed resets the package-level fallback PRNG to a deterministic seed. | facade | — |
 | `SimpleUUID` | `func SimpleUUID() string` | recommended | SimpleUUID creates a UUID string without hyphens using the default entropy source. | facade | `ExampleSimpleUUID` |
-| `SimpleUUIDWithOptions` | `func SimpleUUIDWithOptions(opts ...RandomOption) string` | recommended | SimpleUUIDWithOptions creates a UUID without hyphens with random options. | facade | — |
+| `SimpleUUIDWithOptions` | `func SimpleUUIDWithOptions(opts ...RandomOption) string` | recommended | SimpleUUIDWithOptions creates a UUID without hyphens with random options. | facade | `ExampleSimpleUUIDWithOptions` |
 | `UUID` | `func UUID() string` | compatibility | UUID creates a hyphen-free UUID string for compatibility with legacy callers. | facade | — |
 | `WithFallbackRandomSource` | `func WithFallbackRandomSource(source *rand.Rand) RandomOption` | recommended | WithFallbackRandomSource sets the fallback PRNG used when UUID random reads fail. | facade | — |
 | `WithNanoIDAlphabet` | `func WithNanoIDAlphabet(alphabet string) NanoIDOption` | recommended | WithNanoIDAlphabet sets the alphabet used by NanoIdWithOptions. | facade | — |

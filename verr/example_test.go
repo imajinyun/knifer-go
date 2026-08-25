@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	knifer "github.com/imajinyun/knifer-go"
 	"github.com/imajinyun/knifer-go/verr"
@@ -86,6 +87,107 @@ func ExampleRecover() {
 	fmt.Println(err != nil)
 	// Output: true
 }
+
+func ExampleConfigureDefaultLogFunc() {
+	verr.ConfigureDefaultLogFunc(func(_ context.Context, _ logrus.Level, _ error, _ string, format string, _ ...any) {
+		fmt.Println(format)
+	})
+	defer verr.ResetDefaultLogFunc()
+
+	_ = verr.Recover(func() error { return errors.New("failed") }, "run task")
+	// Output: run task
+}
+
+func ExampleResetDefaultLogFunc() {
+	verr.ConfigureDefaultLogFunc(func(context.Context, logrus.Level, error, string, string, ...any) {})
+	verr.ResetDefaultLogFunc()
+	fmt.Println("reset")
+	// Output: reset
+}
+
+func ExampleMustExit() {
+	verr.ConfigureDefaultLogFunc(func(context.Context, logrus.Level, error, string, string, ...any) {})
+	defer verr.ResetDefaultLogFunc()
+
+	defer func() {
+		fmt.Println(recover() != nil)
+	}()
+	verr.MustExit(context.Background(), errors.New("stop"))
+	// Output: true
+}
+
+func ExampleGetStack() {
+	err := attachedStackError{error: errors.New("plain")}
+	fmt.Println(verr.GetStack(err))
+	// Output: attached stack
+}
+
+func ExampleGetStackTrace() {
+	frames := verr.GetStackTrace(0)
+	fmt.Println(len(frames) > 0)
+	// Output: true
+}
+
+func ExampleGetStackTraceWithOptions() {
+	verr.ResetStackFrameCache()
+	defer verr.ResetStackFrameCache()
+
+	frames := verr.GetStackTraceWithOptions(
+		verr.WithStackSkip(0),
+		verr.WithStackDepth(1),
+		verr.WithStackFrameCache(true),
+		verr.WithCallersFunc(func(_ int, pcs []uintptr) int {
+			pcs[0] = 2
+			return 1
+		}),
+		verr.WithFuncForPCFunc(func(uintptr) (file string, line int, name string, ok bool) {
+			return "example.go", 10, "example.Run", true
+		}),
+	)
+	fmt.Printf("%+v\n", frames)
+	// Output:
+	//
+	// example.Run
+	//	example.go:10
+}
+
+func ExampleResetStackFrameCache() {
+	verr.ResetStackFrameCache()
+	fmt.Println("cleared")
+	// Output: cleared
+}
+
+func ExampleNewCollectorWithOptions() {
+	c := verr.NewCollectorWithOptions(
+		verr.WithCollectorLogFunc(func(context.Context, logrus.Level, error, string, string, ...any) {}),
+		verr.WithCollectorRunner(func(fn func()) { fn() }),
+	)
+	c.GoRun(func() error { return errors.New("task failed") }, "task")
+	fmt.Println(c.Error() != nil)
+	// Output: true
+}
+
+func ExampleWaitUntilWithOptions() {
+	c := verr.NewCollector()
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	done, err := verr.WaitUntilWithOptions(c, time.Second,
+		verr.WithWaitContext(ctx),
+		verr.WithWaitTimerFactory(func(time.Duration) (<-chan time.Time, verr.Timer) {
+			return make(chan time.Time), waitExampleTimer{}
+		}),
+	)
+	fmt.Println(done, err == nil)
+	// Output: false true
+}
+
+type attachedStackError struct{ error }
+
+func (attachedStackError) Stack() string { return "attached stack" }
+
+type waitExampleTimer struct{}
+
+func (waitExampleTimer) Stop() bool { return true }
 
 func ExampleNewIsolatedLogrusWithOptions() {
 	var out bytes.Buffer

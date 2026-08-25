@@ -4,7 +4,7 @@
   "summary": {
     "package_count": 55,
     "function_count": 2765,
-    "functions_with_examples": 1748,
+    "functions_with_examples": 1769,
     "context_aware_functions": 36,
     "returns_error_functions": 688,
     "variadic_functions": 804,
@@ -14478,8 +14478,8 @@
       "synopsis": "Package verr exposes error handling, panic recovery, and stack helpers.",
       "summary": {
         "function_count": 53,
-        "functions_with_examples": 8,
-        "example_coverage_percent": 15.1,
+        "functions_with_examples": 17,
+        "example_coverage_percent": 32.1,
         "status_counts": {
           "compatibility": 2,
           "deprecated": 0,
@@ -14504,7 +14504,7 @@
           "avoid_when": "Avoid for trivial in-memory code where the standard library is clearer."
         },
         {
-          "name": "ErrorIs",
+          "name": "ConfigureDefaultLogFunc",
           "use_when": "Use first for concise trusted-input workflows in verr.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in verr."
         },
@@ -14514,7 +14514,7 @@
           "avoid_when": "Avoid for new code when a Recommended, Safe, E, or WithOptions variant exists."
         },
         {
-          "name": "ConfigureDefaultLogFunc",
+          "name": "ErrorIs",
           "use_when": "Use first for concise trusted-input workflows in verr.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in verr."
         }
@@ -14531,7 +14531,7 @@
           "rationale": "Prefer when providers, limits, parsers, or policies must be reviewable at the call site."
         },
         {
-          "name": "ErrorIs",
+          "name": "ConfigureDefaultLogFunc",
           "profile": "day-one",
           "rationale": "Start here for concise, trusted-input use cases in this package."
         },
@@ -14556,7 +14556,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleConfigureDefaultLogFunc"
+          ]
         },
         {
           "name": "ErrorIs",
@@ -14601,7 +14604,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetStack"
+          ]
         },
         {
           "name": "GetStackTrace",
@@ -14620,7 +14626,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetStackTrace"
+          ]
         },
         {
           "name": "GetStackTraceWithOptions",
@@ -14639,7 +14648,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetStackTraceWithOptions"
+          ]
         },
         {
           "name": "GetStackWithOptions",
@@ -14717,7 +14729,10 @@
           ],
           "returns_error": false,
           "context_aware": true,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleMustExit"
+          ]
         },
         {
           "name": "MustExitWithOptions",
@@ -14779,7 +14794,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewCollectorWithOptions"
+          ]
         },
         {
           "name": "NewIsolatedLogrusWithOptions",
@@ -14871,7 +14889,10 @@
           "status": "recommended",
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleResetDefaultLogFunc"
+          ]
         },
         {
           "name": "ResetStackFrameCache",
@@ -14881,7 +14902,10 @@
           "status": "recommended",
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleResetStackFrameCache"
+          ]
         },
         {
           "name": "WaitUntilWithOptions",
@@ -14909,7 +14933,10 @@
           ],
           "returns_error": true,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleWaitUntilWithOptions"
+          ]
         },
         {
           "name": "WithCallersFunc",
@@ -22917,8 +22944,8 @@
       "synopsis": "Package vid provides public APIs for ID generation utilities.",
       "summary": {
         "function_count": 53,
-        "functions_with_examples": 9,
-        "example_coverage_percent": 17,
+        "functions_with_examples": 21,
+        "example_coverage_percent": 39.6,
         "status_counts": {
           "compatibility": 5,
           "deprecated": 0,
@@ -22938,7 +22965,7 @@
           "avoid_when": "Avoid for trivial in-memory code where the standard library is clearer."
         },
         {
-          "name": "GetSnowflakeNextID",
+          "name": "ConfigureDefaultFallbackRandomSourceProvider",
           "use_when": "Use first for concise trusted-input workflows in vid.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vid."
         },
@@ -22948,12 +22975,12 @@
           "avoid_when": "Avoid for new code when a Recommended, Safe, E, or WithOptions variant exists."
         },
         {
-          "name": "ConfigureDefaultFallbackRandomSourceProvider",
+          "name": "CreateSnowflake",
           "use_when": "Use first for concise trusted-input workflows in vid.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vid."
         },
         {
-          "name": "CreateSnowflake",
+          "name": "CreateSnowflakeWithOptions",
           "use_when": "Use first for concise trusted-input workflows in vid.",
           "avoid_when": "Avoid when inputs cross trust boundaries or need explicit errors; choose Safe/E/WithOptions APIs in vid."
         }
@@ -22965,7 +22992,7 @@
           "rationale": "Prefer when providers, limits, parsers, or policies must be reviewable at the call site."
         },
         {
-          "name": "GetSnowflakeNextID",
+          "name": "ConfigureDefaultFallbackRandomSourceProvider",
           "profile": "day-one",
           "rationale": "Start here for concise, trusted-input use cases in this package."
         },
@@ -22990,7 +23017,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleConfigureDefaultFallbackRandomSourceProvider"
+          ]
         },
         {
           "name": "ConfigureDefaultSnowflake",
@@ -23009,7 +23039,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleConfigureDefaultSnowflake"
+          ]
         },
         {
           "name": "CreateSnowflake",
@@ -23032,7 +23065,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleCreateSnowflake"
+          ]
         },
         {
           "name": "CreateSnowflakeWithOptions",
@@ -23067,7 +23103,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleFastSimpleUUID"
+          ]
         },
         {
           "name": "FastSimpleUUIDWithOptions",
@@ -23202,7 +23241,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleGetSnowflakeNextIDStr"
+          ]
         },
         {
           "name": "GetSnowflakeNextIDStrWithOptions",
@@ -23240,7 +23282,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetSnowflakeNextIDWithOptions"
+          ]
         },
         {
           "name": "GetSnowflakeWithOptions",
@@ -23401,7 +23446,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleGetWorkerIDWithOptions"
+          ]
         },
         {
           "name": "NanoId",
@@ -23414,7 +23462,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleNanoId"
+          ]
         },
         {
           "name": "NanoIdN",
@@ -23459,7 +23510,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNanoIdNWithOptions"
+          ]
         },
         {
           "name": "NanoIdWithOptions",
@@ -23500,7 +23554,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleNewIsolatedSnowflake"
+          ]
         },
         {
           "name": "ObjectId",
@@ -23586,7 +23643,10 @@
           "status": "recommended",
           "returns_error": false,
           "context_aware": false,
-          "variadic": false
+          "variadic": false,
+          "examples": [
+            "ExampleResetDefaultFallbackRandomSource"
+          ]
         },
         {
           "name": "SetFallbackRandomSeed",
@@ -23637,7 +23697,10 @@
           ],
           "returns_error": false,
           "context_aware": false,
-          "variadic": true
+          "variadic": true,
+          "examples": [
+            "ExampleSimpleUUIDWithOptions"
+          ]
         },
         {
           "name": "UUID",
