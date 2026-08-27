@@ -8,7 +8,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/makiuchi-d/gozxing v0.1.1
 	github.com/pelletier/go-toml/v2 v2.4.3
-	github.com/sirupsen/logrus v1.10.0
+	github.com/sirupsen/logrus v1.10.1
 	github.com/stretchr/testify v1.12.1
 	github.com/xuri/excelize/v2 v2.11.0
 	golang.org/x/crypto v0.55.0
