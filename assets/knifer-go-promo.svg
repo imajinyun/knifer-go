@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" role="img" aria-labelledby="title desc">
+  <title id="title">knifer-go — One toolbox. Many sharp tools. Pure Go.</title>
+  <desc id="desc">A dark, technical brand poster for the knifer-go Go utility toolkit, with a modular folding knife and eight focused Go package cards.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#050914"/>
+      <stop offset="0.52" stop-color="#091323"/>
+      <stop offset="1" stop-color="#10091b"/>
+    </linearGradient>
+    <radialGradient id="aura" cx="50%" cy="55%" r="55%">
+      <stop offset="0" stop-color="#25d9ed" stop-opacity=".25"/>
+      <stop offset=".5" stop-color="#3366d5" stop-opacity=".09"/>
+      <stop offset="1" stop-color="#0b1020" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e8fbff"/>
+      <stop offset=".22" stop-color="#8fcad9"/>
+      <stop offset=".5" stop-color="#315466"/>
+      <stop offset=".76" stop-color="#a3e8f5"/>
+      <stop offset="1" stop-color="#24465a"/>
+    </linearGradient>
+    <linearGradient id="handle" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1c3548"/>
+      <stop offset=".45" stop-color="#07111e"/>
+      <stop offset="1" stop-color="#192838"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#4ef0ff"/>
+      <stop offset=".52" stop-color="#d1fbff"/>
+      <stop offset="1" stop-color="#d751e7"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-80%" width="200%" height="260%">
+      <feGaussianBlur stdDeviation="9" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#7fbbd3" stroke-opacity=".075"/>
+    </pattern>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <rect width="1920" height="1080" fill="url(#grid)"/>
+  <ellipse cx="960" cy="570" rx="800" ry="470" fill="url(#aura)"/>
+
+  <!-- quiet circuit frame -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <g stroke="#55e7f5" stroke-opacity=".22" stroke-width="2">
+      <path d="M70 210H164l38 38v84h72"/><path d="M70 260h52v86h68"/>
+      <path d="M1650 212h104v72h84"/><path d="M1712 326h94v70h64"/>
+      <path d="M74 862h126v-76h78"/><path d="M1645 869h124v-88h84"/>
+    </g>
+    <g stroke="#d751e7" stroke-opacity=".17" stroke-width="2">
+      <path d="M135 150h186v46h54"/><path d="M1608 154h98v42h126"/>
+      <path d="M136 960h168v-48h71"/><path d="M1554 962h184v-52h74"/>
+    </g>
+    <g fill="#72efff" fill-opacity=".8" stroke="none">
+      <circle cx="274" cy="332" r="4"/><circle cx="190" cy="346" r="4"/><circle cx="1754" cy="212" r="4"/><circle cx="1778" cy="781" r="4"/>
+    </g>
+  </g>
+
+  <!-- title -->
+  <g font-family="Arial, Helvetica, sans-serif" text-anchor="middle">
+    <text x="960" y="176" font-size="120" font-weight="800" letter-spacing="9" fill="#d5faff" filter="url(#glow)">KNIFER-GO</text>
+    <text x="960" y="224" font-size="18" font-weight="700" letter-spacing="6" fill="#7bcbd8">GO UTILITY TOOLKIT</text>
+  </g>
+
+  <!-- package cards -->
+  <g font-family="Arial, Helvetica, sans-serif">
+    <g transform="translate(170 318)">
+      <rect width="300" height="100" rx="16" fill="#0b1d2c" fill-opacity=".88" stroke="#4cebf8" stroke-opacity=".75" stroke-width="2"/>
+      <path d="M28 70h42m-21-20v40" stroke="#5beefa" stroke-width="3"/><text x="94" y="62" font-size="33" font-weight="700" fill="#e0fcff">vstr</text><text x="94" y="84" font-size="13" letter-spacing="2" fill="#8daab7">TEXT HELPERS</text>
+    </g>
+    <g transform="translate(1450 318)">
+      <rect width="300" height="100" rx="16" fill="#160f27" fill-opacity=".88" stroke="#e564ed" stroke-opacity=".7" stroke-width="2"/>
+      <g fill="none" stroke="#e97aef" stroke-width="3"><path d="M30 46h16v16H30zM54 46h16v16H54zM42 67h16v16H42z"/></g><text x="94" y="62" font-size="33" font-weight="700" fill="#fbe5ff">vslice</text><text x="94" y="84" font-size="13" letter-spacing="2" fill="#b6a0bd">COLLECTIONS</text>
+    </g>
+    <g transform="translate(112 500)">
+      <rect width="300" height="100" rx="16" fill="#0b1d2c" fill-opacity=".88" stroke="#4cebf8" stroke-opacity=".72" stroke-width="2"/>
+      <g fill="none" stroke="#5beefa" stroke-width="3"><circle cx="38" cy="51" r="9"/><circle cx="66" cy="39" r="9"/><circle cx="66" cy="69" r="9"/><path d="M46 47l12-5m-12 10l12 13"/></g><text x="94" y="62" font-size="33" font-weight="700" fill="#e0fcff">vmap</text><text x="94" y="84" font-size="13" letter-spacing="2" fill="#8daab7">DATA FLOW</text>
+    </g>
+    <g transform="translate(1508 500)">
+      <rect width="300" height="100" rx="16" fill="#160f27" fill-opacity=".88" stroke="#e564ed" stroke-opacity=".7" stroke-width="2"/>
+      <text x="30" y="69" font-size="43" font-family="monospace" font-weight="700" fill="#e97aef">{ }</text><text x="118" y="62" font-size="33" font-weight="700" fill="#fbe5ff">vjson</text><text x="118" y="84" font-size="13" letter-spacing="2" fill="#b6a0bd">OBJECT PATHS</text>
+    </g>
+    <g transform="translate(170 682)">
+      <rect width="300" height="100" rx="16" fill="#0b1d2c" fill-opacity=".88" stroke="#4cebf8" stroke-opacity=".72" stroke-width="2"/>
+      <path d="M27 47h47v27H27zM27 53h47M39 82h23" fill="none" stroke="#5beefa" stroke-width="3"/><text x="94" y="62" font-size="33" font-weight="700" fill="#e0fcff">vhttp</text><text x="94" y="84" font-size="13" letter-spacing="2" fill="#8daab7">SAFE REQUESTS</text>
+    </g>
+    <g transform="translate(1450 682)">
+      <rect width="300" height="100" rx="16" fill="#160f27" fill-opacity=".88" stroke="#e564ed" stroke-opacity=".7" stroke-width="2"/>
+      <path d="M48 29l24 9v21c0 16-10 26-24 32-14-6-24-16-24-32V38z" fill="none" stroke="#e97aef" stroke-width="3"/><path d="M40 58l6 6 12-15" fill="none" stroke="#e97aef" stroke-width="3"/><text x="94" y="62" font-size="33" font-weight="700" fill="#fbe5ff">vurl</text><text x="94" y="84" font-size="13" letter-spacing="2" fill="#b6a0bd">URL SAFETY</text>
+    </g>
+  </g>
+
+  <!-- connection lines behind hero -->
+  <g fill="none" stroke-linecap="round" stroke-width="2" stroke-opacity=".45">
+    <path d="M470 368H630l64 80" stroke="#50eafa"/><path d="M1450 368h-160l-64 80" stroke="#dd66ea"/>
+    <path d="M412 550h222l60 14" stroke="#50eafa"/><path d="M1508 550h-222l-60 14" stroke="#dd66ea"/>
+    <path d="M470 732h160l64-90" stroke="#50eafa"/><path d="M1450 732h-160l-64-90" stroke="#dd66ea"/>
+  </g>
+
+  <!-- folding knife hero -->
+  <g transform="translate(0 4)">
+    <ellipse cx="963" cy="590" rx="392" ry="132" fill="#29d7ec" fill-opacity=".16" filter="url(#soft)"/>
+    <path d="M550 620c86-4 188-43 307-115l135-82 46 47c-101 80-215 151-355 206-52 20-100 31-140 29-19-1-26-9-23-25z" fill="url(#steel)" stroke="url(#edge)" stroke-width="6" filter="url(#glow)"/>
+    <path d="M580 608c133-33 279-95 414-174" fill="none" stroke="#eaffff" stroke-opacity=".76" stroke-width="3"/>
+    <path d="M552 624c95 10 258-42 455-150" fill="none" stroke="#38e9fa" stroke-opacity=".54" stroke-width="4"/>
+    <path d="M983 435l95 4c117 8 231 41 323 108l-64 104c-113-44-223-64-333-50l-52 5-58-86z" fill="url(#handle)" stroke="url(#edge)" stroke-width="6" filter="url(#glow)"/>
+    <path d="M1060 476h66l25 22h83l29 27h76" fill="none" stroke="#50eafa" stroke-width="4" stroke-linecap="round"/>
+    <path d="M1084 579h70l20-20h79l25-20h73" fill="none" stroke="#d85de8" stroke-width="4" stroke-linecap="round"/>
+    <g fill="#7af3ff" filter="url(#glow)"><circle cx="1126" cy="476" r="7"/><circle cx="1263" cy="525" r="7"/></g><g fill="#ee7bf1" filter="url(#glow)"><circle cx="1154" cy="579" r="7"/><circle cx="1278" cy="539" r="7"/></g>
+    <circle cx="985" cy="512" r="80" fill="#07101b" stroke="#b0f8ff" stroke-width="7" filter="url(#glow)"/><circle cx="985" cy="512" r="46" fill="url(#steel)" stroke="#173d52" stroke-width="4"/><circle cx="985" cy="512" r="14" fill="#092031" stroke="#7bf2ff" stroke-width="4"/>
+  </g>
+
+  <!-- lower security modules -->
+  <g font-family="Arial, Helvetica, sans-serif">
+    <g transform="translate(572 796)">
+      <rect width="340" height="104" rx="16" fill="#0b1d2c" fill-opacity=".92" stroke="#4cebf8" stroke-opacity=".78" stroke-width="2"/>
+      <path d="M48 28l24 9v23c0 17-10 28-24 34-14-6-24-17-24-34V37z" fill="none" stroke="#5beefa" stroke-width="3"/><path d="M42 57l6 6 14-17" fill="none" stroke="#5beefa" stroke-width="3"/><text x="102" y="62" font-size="34" font-weight="700" fill="#e0fcff">vcrypto</text><text x="102" y="85" font-size="13" letter-spacing="2" fill="#8daab7">SECURE PRIMITIVES</text>
+    </g>
+    <g transform="translate(1008 796)">
+      <rect width="340" height="104" rx="16" fill="#160f27" fill-opacity=".92" stroke="#e564ed" stroke-opacity=".78" stroke-width="2"/>
+      <path d="M36 68v-18a16 16 0 0132 0v18M28 68h48v24H28z" fill="none" stroke="#e97aef" stroke-width="3"/><text x="102" y="62" font-size="34" font-weight="700" fill="#fbe5ff">vjwt</text><text x="102" y="85" font-size="13" letter-spacing="2" fill="#b6a0bd">SIGNED TOKENS</text>
+    </g>
+  </g>
+
+  <!-- footer -->
+  <g font-family="Arial, Helvetica, sans-serif" text-anchor="middle">
+    <line x1="510" y1="962" x2="1410" y2="962" stroke="url(#edge)" stroke-opacity=".72" stroke-width="2"/>
+    <text x="960" y="1018" font-size="35" font-weight="500" letter-spacing="3" fill="#e3fbff">ONE TOOLBOX. MANY SHARP TOOLS. PURE GO.</text>
+    <text x="960" y="1052" font-size="14" font-weight="700" letter-spacing="4" fill="#72b7c7">FOCUSED PACKAGES · SAFE DEFAULTS · EXPLICIT ERRORS</text>
+  </g>
+</svg>
