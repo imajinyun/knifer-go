@@ -1,17 +1,17 @@
 module github.com/imajinyun/knifer-go
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/emmansun/gmsm v0.44.1
-	github.com/getsentry/sentry-go v0.48.0
+	github.com/getsentry/sentry-go v0.49.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/makiuchi-d/gozxing v0.1.1
 	github.com/pelletier/go-toml/v2 v2.4.3
-	github.com/sirupsen/logrus v1.10.1
+	github.com/sirupsen/logrus v1.10.2
 	github.com/stretchr/testify v1.12.1
 	github.com/xuri/excelize/v2 v2.11.0
-	golang.org/x/crypto v0.55.0
+	golang.org/x/crypto v0.56.0
 	golang.org/x/net v0.58.0
 	golang.org/x/text v0.41.0
 	golang.org/x/tools v0.49.0
