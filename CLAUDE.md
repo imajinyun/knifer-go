@@ -100,6 +100,7 @@
 |---------|-------|
 | `make test` | Run unit tests |
 | `make test-race` / `make coverage-profile` | Race/shuffle tests with coverage |
+| `make fuzz-smoke` | Discover and fuzz all targets under `PKGS` (override with `FUZZ_PKGS`); fail on discovery or execution errors |
 | `make coverage-report COVERAGE_FILE=<file>` | Print function coverage |
 | `make coverage-check COVERAGE_FILE=<file>` | Enforce coverage gates |
 | `make doctor` | Diagnose local Go/tooling/Git environment without modifying files |
@@ -163,6 +164,8 @@ status zero.
 
 - **Coverage**: Keep total coverage above the threshold in `ai-context.json`; `bin/check_coverage.sh` reads `ai-context.json` as the default source of truth.
 - **Coverage mode**: `agent-full-check` enforces repository, changed-package, and security-sensitive coverage; `release-check` sets `COVERAGE_CHECK_ALL_PACKAGES=1` to enforce every package threshold.
+- **Fuzz admission**: CI has a dedicated `fuzz-smoke` job, and `release-check` runs the same gate. All compiled Fuzz targets are discovered automatically; `FUZZTIME` bounds each target (default 1s). Longer runs can use `make fuzz-smoke FUZZTIME=30s`. Failed fuzz inputs may be written under `testdata/fuzz`; inspect and retain useful regression inputs.
+- **Release tools**: the release job installs the same pinned golangci-lint version as CI before running `release-check`. `ci-workflow-check` rejects missing, late, or unpinned installation.
 - **Architecture**: `make arch` composes focused gates for provider contracts, import direction, heavy dependency isolation, panic policy, package docs, unsafe reflection opt-in, and thin facade boundaries.
 - **API snapshot**: `docs/api/exports.txt` is CI-enforced. Run `UPDATE_API=1 make api-check` after intentional public API changes.
 - **Tools catalog**: `docs/api/tools.json` and `docs/api/tools.md` are CI-enforced by `make tools-check`. Run `make tools-gen` after intentional facade, doc comment, or Example changes.

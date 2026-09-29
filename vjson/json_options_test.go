@@ -86,7 +86,7 @@ func TestFacadeJSONEncodeProviderOptions(t *testing.T) {
 			struct{ Name string }{Name: "ignored"},
 			vjson.WithMarshalFunc(func(any) ([]byte, error) { return []byte(`{"name":"marshal"}`), nil }),
 			vjson.WithUnmarshalFunc(func(_ []byte, dst any) error {
-				*(dst.(*any)) = map[string]any{"name": "unmarshal"}
+				*dst.(*any) = map[string]any{"name": "unmarshal"}
 				return nil
 			}),
 		)
@@ -155,7 +155,7 @@ func TestFacadeJSONParseValidPathAndBeanOptions(t *testing.T) {
 		calledUnmarshal := false
 		arr, err := vjson.ParseArrayWithOptions(`[]`, vjson.WithParseUnmarshalFunc(func(_ []byte, dst any) error {
 			calledUnmarshal = true
-			*(dst.(*any)) = []any{"provided"}
+			*dst.(*any) = []any{"provided"}
 			return nil
 		}))
 		if err != nil {
@@ -225,7 +225,7 @@ func TestFacadeJSONParseValidPathAndBeanOptions(t *testing.T) {
 		listCalled := false
 		if err := vjson.ToListWithOptions(`[]`, &list, vjson.WithBeanUnmarshalFunc(func(_ []byte, dst any) error {
 			listCalled = true
-			*(dst.(*[]user)) = []user{{Name: "provided"}}
+			*dst.(*[]user) = []user{{Name: "provided"}}
 			return nil
 		})); err != nil {
 			t.Fatalf("ToListWithOptions: %v", err)

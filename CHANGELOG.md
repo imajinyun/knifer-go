@@ -80,6 +80,12 @@ subpackage APIs are treated as the compatibility boundary.
 
 ### Fixed
 
+- Fixed gzip response tests to compare original encoded bytes, including stored
+  blocks, without depending on compression output details across Go versions.
+- Made fuzz smoke checks discover every compiled Fuzz target and fail on
+  discovery or execution errors; CI and release gates now run the checks.
+- Installed the pinned golangci-lint in the release job and added a workflow
+  check for installation before release validation.
 - Fixed quoted `Content-Disposition` filename parsing when parameters follow
   the filename token.
 - Fixed package-level coverage accounting so race-mode profiles count each

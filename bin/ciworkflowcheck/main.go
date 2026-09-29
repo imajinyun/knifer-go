@@ -106,6 +106,9 @@ func (c *checker) run() error {
 			continue
 		}
 		workflowText := string(workflowBytes)
+		if name == "release" {
+			c.checkReleaseLint(workflowText, workflowPath, golangciLintVersion)
+		}
 
 		for _, target := range sortedSet(workflowMakeTargets(workflowText)) {
 			if _, ok := definedMakeTargets[target]; !ok {

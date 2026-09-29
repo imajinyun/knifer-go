@@ -43,6 +43,7 @@ func GetConstructors(target any) []reflect.Value      { return refimpl.GetConstr
 func GetConstructorsDirectly(target any) []reflect.Value {
 	return refimpl.GetConstructorsDirectly(target)
 }
+
 func HasField(target any, name string) bool                 { return refimpl.HasField(target, name) }
 func GetFieldName(field reflect.StructField) string         { return refimpl.GetFieldName(field) }
 func GetField(target any, name string) reflect.StructField  { return refimpl.GetField(target, name) }
@@ -85,6 +86,7 @@ func SetFieldValueWithOptions(obj any, fieldName string, value any, opts ...Fiel
 }
 func IsOuterClassField(field reflect.StructField) bool { return refimpl.IsOuterClassField(field) }
 func GetPublicMethodNames(target any) []string         { return refimpl.GetPublicMethodNames(target) }
+
 func GetPublicMethods(target any, filters ...MethodFilter) []reflect.Method {
 	return refimpl.GetPublicMethods(target, filters...)
 }

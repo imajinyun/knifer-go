@@ -248,6 +248,7 @@ func TestReleaseCheckEnforcesFullPackageCoverageMode(t *testing.T) {
 		"COVERAGE_CHECK_ALL_PACKAGES=1",
 		"full-check",
 		"COVERAGE_FILE=$(COVERAGE_FILE)",
+		"$(MAKE) fuzz-smoke",
 	} {
 		if !strings.Contains(releaseCheck, want) {
 			t.Fatalf("release-check target must contain %q:\n%s", want, releaseCheck)

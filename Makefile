@@ -9,7 +9,7 @@ EFFECTIVE_ISOLATED_GOCACHE := $(if $(strip $(GOCACHE)),$(GOCACHE),$(ISOLATED_GOC
 ifeq ($(USE_ISOLATED_GO_CACHE),1)
 export GOCACHE := $(ISOLATED_GOCACHE)
 endif
-AGENT_GOVERNANCE_TARGETS := doctor worktree-check agent-evidence agent-evidence-check change-policy-check security-sensitive-diff aiflow-layout-check go-module-cache-check coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check local-governance-gates-check roadmap-catalog-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check docs-gen docs-check facade-tiering-gen ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check generate mod-verify tidy-check mod-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench-regression-check ci-test
+AGENT_GOVERNANCE_TARGETS := fuzz-smoke doctor worktree-check agent-evidence agent-evidence-check change-policy-check security-sensitive-diff aiflow-layout-check go-module-cache-check coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check local-governance-gates-check roadmap-catalog-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check docs-gen docs-check facade-tiering-gen ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check generate mod-verify tidy-check mod-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench-regression-check ci-test
 
 $(AGENT_GOVERNANCE_TARGETS): export GOCACHE := $(EFFECTIVE_ISOLATED_GOCACHE)
 BENCH ?= .
@@ -19,7 +19,7 @@ BENCH_CODEC_PKGS ?= ./internal/json ./vjson ./internal/xml ./vxml ./internal/cod
 BENCHTIME ?= 1s
 BENCHCOUNT ?= 1
 FUZZTIME ?= 1s
-FUZZ_PKGS ?= ./internal/codec ./internal/json ./internal/sets
+FUZZ_PKGS ?= $(PKGS)
 BENCH_BASELINE ?=
 BENCH_CURRENT ?=
 BENCH_BASELINE_OUT ?= /tmp/knifer-go-bench-baseline.txt
@@ -152,12 +152,7 @@ shuffle-test:
 	$(GO) test -shuffle=on $(PKGS)
 
 fuzz-smoke:
-	@for pkg in $(FUZZ_PKGS); do \
-		fuzzes="$$( $(GO) test -list '^Fuzz' $$pkg | grep '^Fuzz' || true )"; \
-		for fuzz in $$fuzzes; do \
-			$(GO) test -run=^$$ -fuzz=^$$fuzz$$ -fuzztime=$(FUZZTIME) $$pkg || exit $$?; \
-		done; \
-	done
+	GO="$(GO)" FUZZTIME="$(FUZZTIME)" bash bin/fuzz_smoke.sh $(FUZZ_PKGS)
 
 coverage-profile: test-race
 
@@ -303,6 +298,7 @@ full-check: worktree-check mod-verify vet arch test-race coverage-check api-chec
 
 release-check: release-notes-check
 	COVERAGE_CHECK_ALL_PACKAGES=1 $(MAKE) full-check COVERAGE_FILE=$(COVERAGE_FILE)
+	$(MAKE) fuzz-smoke
 	$(MAKE) ci-workflow-check
 
 agent-check: quick-check change-policy-check security-sensitive-diff

@@ -167,7 +167,7 @@
       "network_required": true,
       "risk_level": "medium",
       "creates_artifacts": ["/tmp/knifer-go-coverage.out"],
-      "notes": "Release readiness gate; runs full local checks with COVERAGE_CHECK_ALL_PACKAGES=1 plus CI workflow governance validation."
+      "notes": "Release readiness gate; runs full local checks with COVERAGE_CHECK_ALL_PACKAGES=1, all discovered fuzz smoke targets, and CI workflow governance validation."
     },
     "release_notes_check": {
       "cmd": "make release-notes-check",
@@ -435,7 +435,7 @@
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "low",
-      "notes": "Runs short fuzz/property smoke checks for packages with Fuzz targets. Increase FUZZTIME for deeper local exploration."
+      "notes": "Discovers all Fuzz targets in FUZZ_PKGS (defaults to PKGS=./...) and runs each with bounded FUZZTIME. Discovery errors, missing targets, and fuzz failures fail the gate. Failing fuzz cases may write testdata/fuzz regression inputs."
     },
     "benchstat_compare": {
       "cmd": "make benchstat BENCH_BASELINE=/tmp/knifer-go-old.bench BENCH_CURRENT=/tmp/knifer-go-new.bench",
@@ -539,9 +539,9 @@
     "github_actions": {
       "go": {
         "path": ".github/workflows/go.yml",
-        "required_jobs": ["agent-governance", "test", "lint", "govulncheck", "benchmark-smoke", "codeql", "scorecard"],
+        "required_jobs": ["agent-governance", "test", "lint", "govulncheck", "benchmark-smoke", "fuzz-smoke", "codeql", "scorecard"],
         "agent_governance": {
-          "required_commands": ["make governance-maturity-check", "make bench-regression-check", "make ci-agent-governance"],
+          "required_commands": ["make governance-maturity-check", "make bench-regression-check", "make ci-agent-governance", "make fuzz-smoke"],
           "required_env": ["AGENT_CHANGE_BASE_REF", "AGENT_EVIDENCE_FILE"],
           "required_artifacts": ["agent-validation-evidence"]
         }

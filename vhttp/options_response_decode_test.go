@@ -13,17 +13,35 @@ import (
 )
 
 func TestFacadeResponseDecodeOptions(t *testing.T) {
+	var encoded bytes.Buffer
+	gz, err := gzip.NewWriterLevel(&encoded, gzip.NoCompression)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := gz.Write([]byte("gzipped")); err != nil {
+		t.Fatal(err)
+	}
+	if err := gz.Close(); err != nil {
+		t.Fatal(err)
+	}
 	gzipServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Encoding", "gzip")
-		gz := gzip.NewWriter(w)
-		_, _ = gz.Write([]byte("gzipped"))
-		_ = gz.Close()
+		_, _ = w.Write(encoded.Bytes())
 	}))
 	defer gzipServer.Close()
 
 	compressed := vhttp.Get(gzipServer.URL, vhttp.WithAutoDecodeResponse(false)).Execute().Bytes()
-	if bytes.Contains(compressed, []byte("gzipped")) || len(compressed) == 0 {
-		t.Fatalf("body should remain compressed, got %q", compressed)
+	if !bytes.Equal(compressed, encoded.Bytes()) {
+		t.Fatalf("raw body = %q, want original gzip bytes %q", compressed, encoded.Bytes())
+	}
+	reader, err := gzip.NewReader(bytes.NewReader(compressed))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer reader.Close()
+	decoded, err := io.ReadAll(reader)
+	if err != nil || string(decoded) != "gzipped" {
+		t.Fatalf("decoded body = %q, err = %v", decoded, err)
 	}
 
 	customServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

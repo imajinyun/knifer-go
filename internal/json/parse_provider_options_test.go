@@ -14,7 +14,7 @@ func TestParseObjAndArrayWithOptionsUseUnmarshalFunc(t *testing.T) {
 	objCalled := false
 	obj, err := ParseObjWithOptions(`{"ignored":true}`, WithParseUnmarshalFunc(func(_ []byte, dst any) error {
 		objCalled = true
-		*(dst.(*any)) = map[string]any{"provided": "yes"}
+		*dst.(*any) = map[string]any{"provided": "yes"}
 		return nil
 	}))
 	if err != nil {
@@ -27,7 +27,7 @@ func TestParseObjAndArrayWithOptionsUseUnmarshalFunc(t *testing.T) {
 	arrCalled := false
 	arr, err := ParseArrayWithOptions(`["ignored"]`, WithParseUnmarshalFunc(func(_ []byte, dst any) error {
 		arrCalled = true
-		*(dst.(*any)) = []any{"provided"}
+		*dst.(*any) = []any{"provided"}
 		return nil
 	}))
 	if err != nil {

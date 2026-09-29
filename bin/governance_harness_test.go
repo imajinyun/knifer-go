@@ -174,19 +174,31 @@ func (f *governanceFixture) RunChangePolicyCheckJSON(changedFiles, diffText stri
 	)
 }
 
+// Evidence fixtures describe a DB-only change, independent of the developer's
+// working tree. Keep the semantic-policy recheck on that same synthetic diff.
+const agentEvidenceFixtureDiff = `diff --git a/internal/db/scan.go b/internal/db/scan.go
+--- a/internal/db/scan.go
++++ b/internal/db/scan.go
+@@ -1 +1 @@
+-// Before fixture change.
++// After fixture change.
+`
+
 func (f *governanceFixture) RunAgentEvidenceCheck(evidence map[string]any) (string, error) {
 	f.t.Helper()
 	path := filepath.Join(f.root, "agent-evidence.json")
 	f.WriteJSON("agent-evidence.json", evidence)
-	return f.RunScript("bin/check_agent_evidence.sh", "AGENT_EVIDENCE_FILE="+path)
+	return f.RunScript("bin/check_agent_evidence.sh",
+		"AGENT_EVIDENCE_FILE="+path, "CHANGE_POLICY_DIFF="+agentEvidenceFixtureDiff)
 }
 
 func (f *governanceFixture) RunAgentEvidenceCheckJSON(evidence map[string]any) (string, error) {
 	f.t.Helper()
 	path := filepath.Join(f.root, "agent-evidence.json")
 	f.WriteJSON("agent-evidence.json", evidence)
-	return f.RunGoTool(
+	return f.RunGoToolEnv(
 		"agentevidencecheck",
+		[]string{"CHANGE_POLICY_DIFF=" + agentEvidenceFixtureDiff},
 		"-root", repoRoot(f.t),
 		"-evidence", path,
 		"-json",

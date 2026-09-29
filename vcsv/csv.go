@@ -25,10 +25,11 @@ func WithLazyQuotes(enabled bool) ReadOption { return csvx.WithLazyQuotes(enable
 
 func WithTrimLeadingSpace(enabled bool) ReadOption { return csvx.WithTrimLeadingSpace(enabled) }
 
-func WithReuseRecord(enabled bool) ReadOption                  { return csvx.WithReuseRecord(enabled) }
-func WithTrimUTF8BOM(enabled bool) ReadOption                  { return csvx.WithTrimUTF8BOM(enabled) }
-func WithUTF8BOM(enabled bool) WriteOption                     { return csvx.WithUTF8BOM(enabled) }
-func WithUseCRLF(enabled bool) WriteOption                     { return csvx.WithUseCRLF(enabled) }
+func WithReuseRecord(enabled bool) ReadOption { return csvx.WithReuseRecord(enabled) }
+func WithTrimUTF8BOM(enabled bool) ReadOption { return csvx.WithTrimUTF8BOM(enabled) }
+func WithUTF8BOM(enabled bool) WriteOption    { return csvx.WithUTF8BOM(enabled) }
+func WithUseCRLF(enabled bool) WriteOption    { return csvx.WithUseCRLF(enabled) }
+
 func Read(r io.Reader, opts ...ReadOption) ([][]string, error) { return csvx.Read(r, opts...) }
 func ReadString(s string, opts ...ReadOption) ([][]string, error) {
 	return csvx.ReadString(s, opts...)

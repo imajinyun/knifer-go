@@ -237,7 +237,7 @@ func ExampleWithUnmarshalFunc() {
 	s, _ := vjson.ToStr(struct{ Name string }{},
 		vjson.WithMarshalFunc(func(any) ([]byte, error) { return []byte(`{"ignored":true}`), nil }),
 		vjson.WithUnmarshalFunc(func(_ []byte, dst any) error {
-			*(dst.(*any)) = map[string]any{"name": "provided"}
+			*dst.(*any) = map[string]any{"name": "provided"}
 			return nil
 		}),
 	)
@@ -313,7 +313,7 @@ func ExampleWithParseConfig() {
 
 func ExampleWithParseUnmarshalFunc() {
 	obj, _ := vjson.ParseObjWithOptions(`{}`, vjson.WithParseUnmarshalFunc(func(_ []byte, dst any) error {
-		*(dst.(*any)) = map[string]any{"name": "provided"}
+		*dst.(*any) = map[string]any{"name": "provided"}
 		return nil
 	}))
 	fmt.Println(obj.GetString("name"))
@@ -381,7 +381,7 @@ func ExampleParse() {
 
 func ExampleParseWithOptions() {
 	parsed, _ := vjson.ParseWithOptions(`{}`, vjson.WithParseUnmarshalFunc(func(_ []byte, dst any) error {
-		*(dst.(*any)) = []any{"provided"}
+		*dst.(*any) = []any{"provided"}
 		return nil
 	}))
 	arr := parsed.(*vjson.Array)
@@ -400,7 +400,7 @@ func ExampleParseWithConfig() {
 
 func ExampleParseObjWithOptions() {
 	obj, _ := vjson.ParseObjWithOptions(`{}`, vjson.WithParseUnmarshalFunc(func(_ []byte, dst any) error {
-		*(dst.(*any)) = map[string]any{"name": "provided"}
+		*dst.(*any) = map[string]any{"name": "provided"}
 		return nil
 	}))
 	fmt.Println(obj.GetString("name"))
@@ -423,7 +423,7 @@ func ExampleParseArray() {
 
 func ExampleParseArrayWithOptions() {
 	arr, _ := vjson.ParseArrayWithOptions(`[]`, vjson.WithParseUnmarshalFunc(func(_ []byte, dst any) error {
-		*(dst.(*any)) = []any{"provided"}
+		*dst.(*any) = []any{"provided"}
 		return nil
 	}))
 	fmt.Println(arr.GetString(0))
@@ -567,7 +567,7 @@ func ExampleToListWithOptions() {
 	}
 	var users []user
 	_ = vjson.ToListWithOptions(`[]`, &users, vjson.WithBeanUnmarshalFunc(func(_ []byte, dst any) error {
-		*(dst.(*[]user)) = []user{{Name: "provided"}}
+		*dst.(*[]user) = []user{{Name: "provided"}}
 		return nil
 	}))
 	fmt.Println(users[0].Name)
