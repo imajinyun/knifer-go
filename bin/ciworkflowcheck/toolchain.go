@@ -10,11 +10,12 @@ import (
 )
 
 type workflowStep struct {
-	Uses string            `yaml:"uses"`
-	Run  string            `yaml:"run"`
-	If   string            `yaml:"if"`
-	Env  map[string]string `yaml:"env"`
-	With map[string]string `yaml:"with"`
+	Uses            string            `yaml:"uses"`
+	Run             string            `yaml:"run"`
+	If              string            `yaml:"if"`
+	Env             map[string]string `yaml:"env"`
+	With            map[string]string `yaml:"with"`
+	ContinueOnError bool              `yaml:"continue-on-error"`
 }
 
 type workflowJob struct {
@@ -25,7 +26,7 @@ type workflowJob struct {
 	} `yaml:"strategy"`
 }
 
-func (c *checker) checkToolchainWorkflow(text, path, name string, p toolchainpolicy.Policy) {
+func (c *checker) checkToolchainWorkflow(text, path string, p toolchainpolicy.Policy) {
 	var workflow struct {
 		Env  map[string]string      `yaml:"env"`
 		Jobs map[string]workflowJob `yaml:"jobs"`
@@ -47,7 +48,7 @@ func (c *checker) checkToolchainWorkflow(text, path, name string, p toolchainpol
 		if mode, ok := job.Env["GOTOOLCHAIN"]; ok && mode != "local" {
 			c.addError("CI_WORKFLOW_AUTO_TOOLCHAIN", path, jobName+" overrides GOTOOLCHAIN=local")
 		}
-		matrixJob := name == "go" && jobName == "test"
+		matrixJob := jobName == "test"
 		if matrixJob && !slices.Equal(job.Strategy.Matrix["go-version"], p.Test) {
 			c.addError("CI_WORKFLOW_VERSION_DRIFT", path, fmt.Sprintf("test matrix must equal %v", p.Test))
 		}

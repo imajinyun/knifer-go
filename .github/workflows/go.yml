@@ -5,6 +5,8 @@ name: knifer-go-ci
 
 env:
   GOTOOLCHAIN: local
+  GOWORK: "off"
+  AGENT_CHANGE_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
   GOLANGCI_LINT_VERSION: v2.14.0
   GO_RELEASE_VERSION: "1.27.1"
 
@@ -38,30 +40,20 @@ jobs:
           go env GOTOOLCHAIN
           test "$(go env GOVERSION)" = "go${{ env.GO_RELEASE_VERSION }}"
 
-      - name: Select change policy base
-        shell: bash
-        run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "AGENT_CHANGE_BASE_REF=origin/${{ github.base_ref }}" >> "${GITHUB_ENV}"
-          elif [ -n "${{ github.event.before }}" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
-            echo "AGENT_CHANGE_BASE_REF=${{ github.event.before }}" >> "${GITHUB_ENV}"
-          fi
+      - name: Build result recorder
+        run: go build -o .aiflow/ci/ciresult ./bin/ciresult
 
-      - name: Run v1 governance maturity gates
-        run: |
-          make governance-maturity-check
-          make bench-regression-check
+      - name: Run governance gates
+        run: .aiflow/ci/ciresult run -id agent-governance -out .aiflow/ci/records -- make ci-governance-check
 
-      - name: Run Agent governance workflow
-        env:
-          AGENT_EVIDENCE_FILE: knifer-go-agent-validation.json
-        run: make ci-agent-governance
-
-      - name: Upload Agent validation evidence
+      - name: Upload command result
+        if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: agent-validation-evidence
-          path: knifer-go-agent-validation.json
+          name: ci-result-${{ github.run_attempt }}-agent-governance
+          path: .aiflow/ci/records/agent-governance.json
+          include-hidden-files: true
+          if-no-files-found: error
 
   test:
     runs-on: ubuntu-latest
@@ -88,19 +80,32 @@ jobs:
           go env GOTOOLCHAIN
           test "$(go env GOVERSION)" = "go${{ matrix.go-version }}"
 
+      - name: Build result recorder
+        run: go build -o .aiflow/ci/ciresult ./bin/ciresult
+
       - name: Run CI test gates
-        run: make ci-test COVERAGE_FILE=coverage.out
+        run: .aiflow/ci/ciresult run -id test-${{ matrix.go-version }} -out .aiflow/ci/records -- make ci-test COVERAGE_FILE=.aiflow/ci/coverage.out
+
+      - name: Upload command result
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ci-result-${{ github.run_attempt }}-test-${{ matrix.go-version }}
+          path: .aiflow/ci/records/test-${{ matrix.go-version }}.json
+          include-hidden-files: true
+          if-no-files-found: error
 
       - name: Upload coverage
         uses: actions/upload-artifact@v7
         with:
-          name: coverage-${{ matrix.go-version }}
-          path: coverage.out
+          name: coverage-${{ github.run_attempt }}-${{ matrix.go-version }}
+          path: .aiflow/ci/coverage.out
+          include-hidden-files: true
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
         with:
-          files: coverage.out
+          files: .aiflow/ci/coverage.out
           flags: unittests
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
@@ -124,8 +129,20 @@ jobs:
       - name: Install golangci-lint
         run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@${{ env.GOLANGCI_LINT_VERSION }}
 
+      - name: Build result recorder
+        run: go build -o .aiflow/ci/ciresult ./bin/ciresult
+
       - name: Run lint gate
-        run: make lint
+        run: .aiflow/ci/ciresult run -id lint -out .aiflow/ci/records -- make lint
+
+      - name: Upload command result
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ci-result-${{ github.run_attempt }}-lint
+          path: .aiflow/ci/records/lint.json
+          include-hidden-files: true
+          if-no-files-found: error
 
   govulncheck:
     runs-on: ubuntu-latest
@@ -148,8 +165,20 @@ jobs:
           go env GOTOOLCHAIN
           test "$(go env GOVERSION)" = "go${{ env.GO_RELEASE_VERSION }}"
 
+      - name: Build result recorder
+        run: go build -o .aiflow/ci/ciresult ./bin/ciresult
+
       - name: Run vulnerability gate
-        run: make govulncheck
+        run: .aiflow/ci/ciresult run -id govulncheck -out .aiflow/ci/records -- make govulncheck
+
+      - name: Upload command result
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ci-result-${{ github.run_attempt }}-govulncheck
+          path: .aiflow/ci/records/govulncheck.json
+          include-hidden-files: true
+          if-no-files-found: error
 
   benchmark-smoke:
     runs-on: ubuntu-latest
@@ -172,8 +201,20 @@ jobs:
           go env GOTOOLCHAIN
           test "$(go env GOVERSION)" = "go${{ env.GO_RELEASE_VERSION }}"
 
+      - name: Build result recorder
+        run: go build -o .aiflow/ci/ciresult ./bin/ciresult
+
       - name: Run benchmark smoke gate
-        run: make bench-smoke
+        run: .aiflow/ci/ciresult run -id benchmark-smoke -out .aiflow/ci/records -- make bench-smoke
+
+      - name: Upload command result
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ci-result-${{ github.run_attempt }}-benchmark-smoke
+          path: .aiflow/ci/records/benchmark-smoke.json
+          include-hidden-files: true
+          if-no-files-found: error
 
   fuzz-smoke:
     runs-on: ubuntu-latest
@@ -196,8 +237,20 @@ jobs:
           go env GOTOOLCHAIN
           test "$(go env GOVERSION)" = "go${{ env.GO_RELEASE_VERSION }}"
 
+      - name: Build result recorder
+        run: go build -o .aiflow/ci/ciresult ./bin/ciresult
+
       - name: Run all fuzz smoke targets
-        run: make fuzz-smoke
+        run: .aiflow/ci/ciresult run -id fuzz-smoke -out .aiflow/ci/records -- make fuzz-smoke
+
+      - name: Upload command result
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ci-result-${{ github.run_attempt }}-fuzz-smoke
+          path: .aiflow/ci/records/fuzz-smoke.json
+          include-hidden-files: true
+          if-no-files-found: error
 
   codeql:
     runs-on: ubuntu-latest
@@ -257,3 +310,51 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: scorecard-results.sarif
+
+  admission:
+    if: always()
+    needs: [agent-governance, test, lint, govulncheck, benchmark-smoke, fuzz-smoke, codeql, scorecard]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    env:
+      CI_NEEDS_JSON: ${{ toJSON(needs) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_RELEASE_VERSION }}
+          cache: true
+
+      - name: Record fixed Go toolchain
+        run: |
+          go version
+          go env GOTOOLCHAIN
+          test "$(go env GOVERSION)" = "go${{ env.GO_RELEASE_VERSION }}"
+
+      - name: Download command results
+        uses: actions/download-artifact@v7
+        with:
+          pattern: ci-result-${{ github.run_attempt }}-*
+          path: .aiflow/ci/results
+          merge-multiple: true
+
+      - name: Require current successful evidence
+        run: make ci-admission-check
+
+      - name: Upload admission report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: agent-validation-evidence-${{ github.run_attempt }}
+          path: |
+            .aiflow/ci/manifest.json
+            .aiflow/ci/admission.json
+          include-hidden-files: true
+          if-no-files-found: warn

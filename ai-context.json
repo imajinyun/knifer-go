@@ -130,6 +130,26 @@
       "creates_artifacts": ["/tmp/knifer-go-coverage.out"],
       "notes": "Local reproduction of the GitHub Actions test job without creating coverage artifacts in the repository root."
     },
+    "ci_governance_check": {
+      "cmd": "make ci-governance-check",
+      "safe_for_agent_auto_run": true,
+      "writes_workspace": false,
+      "writes_git_config": false,
+      "network_required": true,
+      "risk_level": "medium",
+      "notes": "Runs the governance, module, API and documentation components recorded by the CI governance job."
+    },
+    "ci_admission_check": {
+      "cmd": "make ci-admission-check",
+      "safe_for_agent_auto_run": true,
+      "writes_workspace": false,
+      "writes_git_config": false,
+      "network_required": false,
+      "risk_level": "low",
+      "reads_artifacts": [".aiflow/ci/results"],
+      "creates_artifacts": [".aiflow/ci/manifest.json", ".aiflow/ci/admission.json"],
+      "notes": "Requires a clean candidate, original command results and CI_NEEDS_JSON from this GitHub run/attempt. Revalidates commit/tree/module hashes, fixed toolchains, actual exits and merge_ready=true. Report-only agent-evidence-check remains available."
+    },
     "ci_agent_governance": {
       "cmd": "make ci-agent-governance",
       "safe_for_agent_auto_run": true,
@@ -138,7 +158,7 @@
       "network_required": false,
       "risk_level": "low",
       "creates_artifacts": ["/tmp/knifer-go-agent-validation.json"],
-      "notes": "CI Agent governance gate; detects changed policies against AGENT_CHANGE_BASE_REF and emits validation evidence."
+      "notes": "Legacy report/schema workflow; detects changed policies and emits validation evidence without asserting final CI readiness."
     },
     "full_check": {
       "cmd": "make check COVERAGE_FILE=/tmp/knifer-go-coverage.out",
@@ -550,10 +570,10 @@
     "github_actions": {
       "go": {
         "path": ".github/workflows/go.yml",
-        "required_jobs": ["agent-governance", "test", "lint", "govulncheck", "benchmark-smoke", "fuzz-smoke", "codeql", "scorecard"],
+        "required_jobs": ["agent-governance", "test", "lint", "govulncheck", "benchmark-smoke", "fuzz-smoke", "codeql", "scorecard", "admission"],
         "agent_governance": {
-          "required_commands": ["make governance-maturity-check", "make bench-regression-check", "make ci-agent-governance", "make fuzz-smoke"],
-          "required_env": ["AGENT_CHANGE_BASE_REF", "AGENT_EVIDENCE_FILE"],
+          "required_commands": ["make ci-governance-check", "make ci-admission-check", "make fuzz-smoke"],
+          "required_env": ["AGENT_CHANGE_BASE_REF", "CI_NEEDS_JSON"],
           "required_artifacts": ["agent-validation-evidence"]
         }
       },

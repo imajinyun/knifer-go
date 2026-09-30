@@ -3380,7 +3380,7 @@ func ciWorkflowFixture(t *testing.T, workflowCommand string) *governanceFixture 
 				"golangci_lint": "v2.14.0",
 			},
 			"github_actions": map[string]any{
-				"go": map[string]any{
+				"fixture": map[string]any{
 					"path":          ".github/workflows/go.yml",
 					"required_jobs": []string{"agent-governance"},
 					"agent_governance": map[string]any{

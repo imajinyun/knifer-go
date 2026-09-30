@@ -48,6 +48,25 @@ Machine-readable phrases:
 6. Run `make quick-check` locally before small changes and `make agent-check`
    before publishing agent-generated changes.
 
+## CI Admission Evidence
+
+The `admission` job is the final CI readiness result. It waits for every required
+job and validates original command artifacts against the tested merge commit,
+Git tree, go.mod/go.sum hash, fixed Go version and current workflow run/attempt.
+Its artifacts include `.aiflow/ci/manifest.json` and `.aiflow/ci/admission.json`.
+Missing, failed, skipped, cancelled or stale required results block admission.
+
+`make agent-evidence-check` validates the structure and consistency of a report;
+it can succeed for a report with `merge_ready=false`. `make ci-admission-check`
+performs strict readiness validation, including fresh CI job results. Configure
+the repository's required status checks to include `admission` when adopting this
+workflow; changing a YAML file does not configure remote branch protection.
+
+Command artifacts record actual exit codes. Native CodeQL and Scorecard actions
+are checked through GitHub's job results. Security-sensitive diff detection is a
+review signal and remains nonzero where applicable; successful full/security
+validation satisfies that contract without relabeling the detector result.
+
 ## Governance Validation Contracts
 
 Use this release summary template when a change adds, removes, or tightens a

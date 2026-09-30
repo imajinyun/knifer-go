@@ -109,6 +109,9 @@ func (c *checker) run() error {
 			continue
 		}
 		workflowText := string(workflowBytes)
+		if name == "go" {
+			c.checkAdmissionWorkflow(workflowText, workflowPath)
+		}
 		if name == "release" {
 			c.checkReleaseLint(workflowText, workflowPath, golangciLintVersion)
 		}
@@ -152,7 +155,7 @@ func (c *checker) run() error {
 			}
 		}
 
-		c.checkToolchainWorkflow(workflowText, workflowPath, name, policy)
+		c.checkToolchainWorkflow(workflowText, workflowPath, policy)
 		if name == "go" {
 			for _, duplicateStep := range []string{"make race-test", "make shuffle-test", "make mod-check"} {
 				if strings.Contains(workflowText, duplicateStep) {

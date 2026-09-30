@@ -56,7 +56,7 @@ jobs:
 			}
 			c := &checker{}
 			p := toolchainpolicy.Policy{Minimum: "1.26.0", Release: "1.27.1", Test: []string{"1.26.8", "1.27.1"}, Lint: "v2.14.0"}
-			c.checkToolchainWorkflow(text, "fixture.yml", "go", p)
+			c.checkToolchainWorkflow(text, "fixture.yml", p)
 			if tt.rule == "" && len(c.findings) > 0 {
 				t.Fatalf("unexpected findings: %+v", c.findings)
 			}

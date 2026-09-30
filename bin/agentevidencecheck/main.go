@@ -47,6 +47,8 @@ func main() {
 	contextFlag := flag.String("ai-context", "", "ai-context.json path")
 	evidenceFlag := flag.String("evidence", "", "agent evidence JSON path")
 	jsonFlag := flag.Bool("json", false, "emit machine-readable JSON output")
+	requireReady := flag.Bool("require-ready", false, "require current, complete and successful CI evidence for admission")
+	ciResults := flag.String("ci-results", ".aiflow/ci/results", "original CI command result directory")
 	flag.Parse()
 
 	root := strings.TrimSpace(*rootFlag)
@@ -83,6 +85,9 @@ func main() {
 
 	c := &checker{root: root, context: context, evidence: evidence}
 	c.run()
+	if *requireReady {
+		c.requireAdmission(*ciResults, os.Getenv("CI_NEEDS_JSON"))
+	}
 	detectedPolicies := stringList(c.evidence["detected_change_policies"])
 	requiredCommands := stringList(c.evidence["required_commands"])
 	mergeReady, _ := boolValue(c.evidence["merge_ready"])

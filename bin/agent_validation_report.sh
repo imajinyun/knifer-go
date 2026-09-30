@@ -239,8 +239,29 @@ command_attestations = {
         "reason": "validated by make agent-evidence-check after evidence generation",
     },
 }
+ci_manifest = None
+ci_manifest_path = os.environ.get("AGENT_CI_MANIFEST", "").strip()
+if ci_manifest_path:
+    with open(ci_manifest_path, "r", encoding="utf-8") as f:
+        ci_manifest = json.load(f)
+    if ci_manifest.get("status") != "passed" or ci_manifest.get("candidate", {}).get("commit") != git(["rev-parse", "HEAD"]):
+        raise SystemExit("CI manifest must be passed and match the current commit")
+
 for command in required_commands:
     command_spec = data["commands"].get(command, {})
+    if ci_manifest is not None:
+        if command in command_attestations:
+            continue
+        ci_attestation = ci_manifest.get("attestations", {}).get(command)
+        if ci_attestation is not None:
+            command_attestations[command] = ci_attestation
+        else:
+            command_attestations[command] = {
+                "status": "not_recorded", "source": "required_by_policy",
+                "cmd": command_spec.get("cmd", command),
+                "reason": "required command has no validated CI result coverage",
+            }
+        continue
     external = external_command_attestation(command, command_spec)
     if external is not None:
         command_attestations[command] = external
@@ -321,7 +342,7 @@ report = {
     "generated_at": datetime.now(timezone.utc).isoformat(),
     "repository": data["project"]["name"],
     "module": data["project"]["module"],
-    "branch": git(["branch", "--show-current"]),
+    "branch": git(["branch", "--show-current"]) or "detached",
     "commit": git(["rev-parse", "HEAD"]),
     "change_base_ref": change_base_ref(),
     "diff_filter": DIFF_FILTER,
@@ -342,6 +363,9 @@ report = {
 output_dir = os.path.dirname(output_file)
 if output_dir:
     os.makedirs(output_dir, exist_ok=True)
+if ci_manifest is not None:
+    report["ci_evidence"] = ci_manifest
+
 with open(output_file, "w", encoding="utf-8") as f:
     json.dump(report, f, indent=2, sort_keys=True)
     f.write("\n")
