@@ -9,7 +9,7 @@
 ![knifer-go](./knifer-go.jpeg)
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/imajinyun/knifer-go.svg)](https://pkg.go.dev/github.com/imajinyun/knifer-go)
-[![Go Version](https://img.shields.io/badge/go-%3E%3D1.25-00ADD8?logo=go)](https://go.dev/)
+[![Go Version](https://img.shields.io/badge/go-%3E%3D1.26-00ADD8?logo=go)](https://go.dev/)
 [![CI](https://github.com/imajinyun/knifer-go/actions/workflows/go.yml/badge.svg)](https://github.com/imajinyun/knifer-go/actions/workflows/go.yml)
 [![License](https://img.shields.io/github/license/imajinyun/knifer-go)](./LICENSE)
 
@@ -56,7 +56,7 @@
 
 ## 🚀 安装
 
-项目要求 Go 1.25 或更高版本。
+项目要求 Go 1.26 或更高版本。
 
 ```bash
 go get github.com/imajinyun/knifer-go

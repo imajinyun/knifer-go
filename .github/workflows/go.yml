@@ -4,8 +4,9 @@
 name: knifer-go-ci
 
 env:
-  GOLANGCI_LINT_VERSION: v2.12.2
-  GO_1_25_PATCH_VERSION: "1.25.13"
+  GOTOOLCHAIN: local
+  GOLANGCI_LINT_VERSION: v2.14.0
+  GO_RELEASE_VERSION: "1.27.1"
 
 on:
   push:
@@ -24,6 +25,18 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_RELEASE_VERSION }}
+          cache: true
+
+      - name: Record fixed Go toolchain
+        run: |
+          go version
+          go env GOTOOLCHAIN
+          test "$(go env GOVERSION)" = "go${{ env.GO_RELEASE_VERSION }}"
 
       - name: Select change policy base
         shell: bash
@@ -58,7 +71,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go-version: ["1.25.13", "1.26"]
+        go-version: ["1.26.8", "1.27.1"]
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -68,6 +81,12 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
           cache: true
+
+      - name: Record fixed Go toolchain
+        run: |
+          go version
+          go env GOTOOLCHAIN
+          test "$(go env GOVERSION)" = "go${{ matrix.go-version }}"
 
       - name: Run CI test gates
         run: make ci-test COVERAGE_FILE=coverage.out
@@ -95,7 +114,13 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
         with:
-          go-version: ${{ env.GO_1_25_PATCH_VERSION }}
+          go-version: ${{ env.GO_RELEASE_VERSION }}
+      - name: Record fixed Go toolchain
+        run: |
+          go version
+          go env GOTOOLCHAIN
+          test "$(go env GOVERSION)" = "go${{ env.GO_RELEASE_VERSION }}"
+
       - name: Install golangci-lint
         run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@${{ env.GOLANGCI_LINT_VERSION }}
 
@@ -114,8 +139,14 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v7
         with:
-          go-version: ${{ env.GO_1_25_PATCH_VERSION }}
+          go-version: ${{ env.GO_RELEASE_VERSION }}
           cache: true
+
+      - name: Record fixed Go toolchain
+        run: |
+          go version
+          go env GOTOOLCHAIN
+          test "$(go env GOVERSION)" = "go${{ env.GO_RELEASE_VERSION }}"
 
       - name: Run vulnerability gate
         run: make govulncheck
@@ -132,8 +163,14 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v7
         with:
-          go-version: ${{ env.GO_1_25_PATCH_VERSION }}
+          go-version: ${{ env.GO_RELEASE_VERSION }}
           cache: true
+
+      - name: Record fixed Go toolchain
+        run: |
+          go version
+          go env GOTOOLCHAIN
+          test "$(go env GOVERSION)" = "go${{ env.GO_RELEASE_VERSION }}"
 
       - name: Run benchmark smoke gate
         run: make bench-smoke
@@ -150,8 +187,14 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v7
         with:
-          go-version: ${{ env.GO_1_25_PATCH_VERSION }}
+          go-version: ${{ env.GO_RELEASE_VERSION }}
           cache: true
+
+      - name: Record fixed Go toolchain
+        run: |
+          go version
+          go env GOTOOLCHAIN
+          test "$(go env GOVERSION)" = "go${{ env.GO_RELEASE_VERSION }}"
 
       - name: Run all fuzz smoke targets
         run: make fuzz-smoke
@@ -165,6 +208,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: Setup Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_RELEASE_VERSION }}
+          cache: true
+
+      - name: Record fixed Go toolchain
+        run: |
+          go version
+          go env GOTOOLCHAIN
+          test "$(go env GOVERSION)" = "go${{ env.GO_RELEASE_VERSION }}"
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v4

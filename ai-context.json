@@ -5,7 +5,7 @@
     "name": "knifer-go",
     "module": "github.com/imajinyun/knifer-go",
     "language": "go",
-    "go_version": ">=1.25",
+    "go_version": ">=1.26",
     "layout": "public v* facade packages delegate to internal/* implementation packages"
   },
   "commands": {
@@ -260,6 +260,15 @@
       "network_required": false,
       "risk_level": "low",
       "notes": "Validates benchmark regression metadata, tracked package coverage, and benchstat threshold declarations without running benchmarks."
+    },
+    "toolchain_check": {
+      "cmd": "make toolchain-check",
+      "safe_for_agent_auto_run": true,
+      "writes_workspace": false,
+      "writes_git_config": false,
+      "network_required": true,
+      "risk_level": "medium",
+      "notes": "Records the actual fixed Go toolchain, checks the module and dependency minimum, and rejects automatic toolchain switching. The lint gate also verifies the pinned linter version and build Go support."
     },
     "ci_workflow_check": {
       "cmd": "make ci-workflow-check",
@@ -533,8 +542,10 @@
   },
   "ci_workflows": {
     "tool_versions": {
-      "go_1_25_patch": "1.25.13",
-      "golangci_lint": "v2.12.2"
+      "go_minimum": "1.26.0",
+      "go_release": "1.27.1",
+      "go_test": ["1.26.8", "1.27.1"],
+      "golangci_lint": "v2.14.0"
     },
     "github_actions": {
       "go": {
@@ -1458,15 +1469,15 @@
     "readme_path": "README.md",
     "sprint": 41,
     "status": "completed",
-    "minimum_go_version": "1.25",
-    "ci_versions": ["1.25.13", "1.26"],
-    "release_go_version": "1.25.13",
+    "minimum_go_version": "1.26",
+    "ci_versions": ["1.26.8", "1.27.1"],
+    "release_go_version": "1.27.1",
     "downgrade_status": "not supported today",
     "required_rationale": [
-      "go.mod declares go 1.25.0",
-      "benchmarks use testing.B.Loop",
-      "ci verifies go 1.25.13 and 1.26",
-      "release workflow pins go 1.25.13"
+      "go.mod declares go 1.26.0",
+      "dependencies require Go 1.26",
+      "ci verifies go 1.26.8 and 1.27.1",
+      "release workflow pins go 1.27.1"
     ],
     "required_checks": ["docs-check", "ai-context-check", "ci-workflow-check", "governance-maturity-check"]
   },

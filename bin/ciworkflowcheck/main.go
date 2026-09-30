@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/imajinyun/knifer-go/bin/internal/govreport"
+	"github.com/imajinyun/knifer-go/bin/internal/toolchainpolicy"
 )
 
 type checker struct {
@@ -72,9 +73,11 @@ func (c *checker) run() error {
 		commandMakeTargets[target][name] = struct{}{}
 	}
 
-	toolVersions := c.requireMapping(ciWorkflows["tool_versions"], "ci_workflows.tool_versions")
-	go125Patch := c.requireString(toolVersions["go_1_25_patch"], "ci_workflows.tool_versions.go_1_25_patch")
-	golangciLintVersion := c.requireString(toolVersions["golangci_lint"], "ci_workflows.tool_versions.golangci_lint")
+	policy, err := toolchainpolicy.Load(c.root)
+	if err != nil {
+		c.addError("CI_WORKFLOW_VERSION_DRIFT", "go.mod", err.Error())
+	}
+	golangciLintVersion := policy.Lint
 	githubActions := c.requireMapping(ciWorkflows["github_actions"], "ci_workflows.github_actions")
 
 	makefileText, err := os.ReadFile(filepath.Join(c.root, "Makefile"))
@@ -149,19 +152,8 @@ func (c *checker) run() error {
 			}
 		}
 
-		if name == "go" || name == "release" {
-			if !strings.Contains(workflowText, "GO_1_25_PATCH_VERSION") || !strings.Contains(workflowText, go125Patch) {
-				c.addError("CI_WORKFLOW_VERSION_DRIFT", workflowPath, fmt.Sprintf("%s must use declared Go patch version %q", workflowPath, go125Patch))
-			}
-		}
+		c.checkToolchainWorkflow(workflowText, workflowPath, name, policy)
 		if name == "go" {
-			if !strings.Contains(workflowText, "GOLANGCI_LINT_VERSION") || !strings.Contains(workflowText, golangciLintVersion) {
-				c.addError("CI_WORKFLOW_VERSION_DRIFT", workflowPath, fmt.Sprintf("%s must use declared golangci-lint version %q", workflowPath, golangciLintVersion))
-			}
-			matrix := fmt.Sprintf(`go-version: ["%s", "1.26"]`, go125Patch)
-			if go125Patch != "" && !strings.Contains(workflowText, matrix) {
-				c.addError("CI_WORKFLOW_VERSION_DRIFT", workflowPath, fmt.Sprintf("%s test matrix must include %q and '1.26'", workflowPath, go125Patch))
-			}
 			for _, duplicateStep := range []string{"make race-test", "make shuffle-test", "make mod-check"} {
 				if strings.Contains(workflowText, duplicateStep) {
 					c.addError("CI_WORKFLOW_DUPLICATE_SUBSTEP", workflowPath, fmt.Sprintf("%s should not duplicate ci-test sub-step %q", workflowPath, duplicateStep))

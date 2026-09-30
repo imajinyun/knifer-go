@@ -3365,15 +3365,19 @@ bench-regression-check:
 func ciWorkflowFixture(t *testing.T, workflowCommand string) *governanceFixture {
 	t.Helper()
 	fixture := newGovernanceFixture(t)
+	fixture.WriteFile("go.mod", "module github.com/imajinyun/knifer-go\n\ngo 1.26.0\n")
 	fixture.WriteFile("Makefile", "ci-agent-governance:\n\t@true\n")
 	fixture.WriteJSON("ai-context.json", map[string]any{
+		"project": map[string]any{"go_version": ">=1.26"},
 		"commands": map[string]any{
 			"ci_agent_governance": map[string]any{"cmd": "make ci-agent-governance"},
 		},
 		"ci_workflows": map[string]any{
 			"tool_versions": map[string]any{
-				"go_1_25_patch": "1.25.11",
-				"golangci_lint": "v2.12.2",
+				"go_minimum":    "1.26.0",
+				"go_release":    "1.27.1",
+				"go_test":       []string{"1.26.8", "1.27.1"},
+				"golangci_lint": "v2.14.0",
 			},
 			"github_actions": map[string]any{
 				"go": map[string]any{
@@ -3391,20 +3395,34 @@ func ciWorkflowFixture(t *testing.T, workflowCommand string) *governanceFixture 
 	fixture.WriteFile(".github/workflows/go.yml", `name: fixture
 
 env:
-  GOLANGCI_LINT_VERSION: v2.12.2
-  GO_1_25_PATCH_VERSION: "1.25.11"
+  GOLANGCI_LINT_VERSION: v2.14.0
+  GO_RELEASE_VERSION: "1.27.1"
+  GOTOOLCHAIN: local
 
 jobs:
   agent-governance:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_RELEASE_VERSION }}
+      - run: |
+          go version
+          go env GOTOOLCHAIN
       - run: echo AGENT_CHANGE_BASE_REF AGENT_EVIDENCE_FILE agent-validation-evidence
       - run: make ci-agent-governance
       - run: `+workflowCommand+`
   test:
     strategy:
       matrix:
-        go-version: ["1.25.11", "1.26"]
+        go-version: ["1.26.8", "1.27.1"]
+    steps:
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ matrix.go-version }}
+      - run: |
+          go version
+          go env GOTOOLCHAIN
 `)
 	return fixture
 }

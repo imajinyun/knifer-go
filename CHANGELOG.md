@@ -41,6 +41,10 @@ subpackage APIs are treated as the compatibility boundary.
 
 ### Changed
 
+- Aligned the supported minimum with the Go 1.26 dependency graph. CI now pins
+  Go 1.26.8 and Go 1.27.1; release and lint tools use Go 1.27.1 with
+  golangci-lint v2.14.0. Validation disables implicit toolchain switching and
+  checks module, dependency, workflow, and linter-build compatibility.
 - Standardized all 55 facade quickstarts with helper selection guidance,
   safety checklists, when-not-to-use boundaries, related packages,
   benchmark notes, and FAQs.

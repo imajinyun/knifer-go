@@ -1,4 +1,4 @@
-.PHONY: help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check go-module-cache-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check local-governance-gates-check roadmap-catalog-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check docs-gen docs-check facade-tiering-gen utility-comparison-refresh generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
+.PHONY: toolchain-check help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check go-module-cache-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check local-governance-gates-check roadmap-catalog-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check docs-gen docs-check facade-tiering-gen utility-comparison-refresh generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -9,9 +9,10 @@ EFFECTIVE_ISOLATED_GOCACHE := $(if $(strip $(GOCACHE)),$(GOCACHE),$(ISOLATED_GOC
 ifeq ($(USE_ISOLATED_GO_CACHE),1)
 export GOCACHE := $(ISOLATED_GOCACHE)
 endif
-AGENT_GOVERNANCE_TARGETS := fuzz-smoke doctor worktree-check agent-evidence agent-evidence-check change-policy-check security-sensitive-diff aiflow-layout-check go-module-cache-check coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check local-governance-gates-check roadmap-catalog-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check docs-gen docs-check facade-tiering-gen ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check generate mod-verify tidy-check mod-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench-regression-check ci-test
+AGENT_GOVERNANCE_TARGETS := toolchain-check fuzz-smoke doctor worktree-check agent-evidence agent-evidence-check change-policy-check security-sensitive-diff aiflow-layout-check go-module-cache-check coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check local-governance-gates-check roadmap-catalog-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check docs-gen docs-check facade-tiering-gen ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check generate mod-verify tidy-check mod-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench-regression-check ci-test
 
 $(AGENT_GOVERNANCE_TARGETS): export GOCACHE := $(EFFECTIVE_ISOLATED_GOCACHE)
+$(AGENT_GOVERNANCE_TARGETS): export GOTOOLCHAIN := local
 BENCH ?= .
 BENCH_PKGS ?= ./internal/slice ./internal/maps ./internal/str ./internal/num ./internal/bean ./internal/db ./internal/poi ./internal/imgx ./internal/template ./internal/cli ./internal/ai ./internal/ftp ./internal/ssh ./internal/pinyin ./internal/tokenize
 BENCH_FACADE_PKGS ?= ./vslice ./vmap ./vset ./vstr ./vnum ./vbean ./vdb ./vcrypto ./vpoi ./vimg ./vtpl ./vcli ./vai ./vftp ./vssh ./vhan ./vtok ./vhttp ./vcodec
@@ -284,7 +285,11 @@ vet:
 arch:
 	bash bin/check_arch.sh
 
+toolchain-check:
+	$(GO) run ./bin/toolchaincheck -root . -go "$(GO)"
+
 lint:
+	$(GO) run ./bin/toolchaincheck -root . -go "$(GO)" -lint "$(GOLANGCI_LINT)"
 	$(GOLANGCI_LINT) run $(PKGS)
 
 govulncheck:
@@ -294,7 +299,7 @@ quick-check: worktree-check aiflow-layout-check mod-verify go-module-cache-check
 
 security-check: lint govulncheck
 
-full-check: worktree-check mod-verify vet arch test-race coverage-check api-check docs-check bench-regression-check lint govulncheck diff-whitespace
+full-check: worktree-check toolchain-check ai-context-check ci-workflow-check governance-maturity-check mod-verify vet arch test-race coverage-check api-check docs-check bench-regression-check lint govulncheck diff-whitespace
 
 release-check: release-notes-check
 	COVERAGE_CHECK_ALL_PACKAGES=1 $(MAKE) full-check COVERAGE_FILE=$(COVERAGE_FILE)
@@ -341,4 +346,4 @@ benchstat:
 
 check: full-check
 
-ci-test: mod-verify vet tidy-check diff-check arch test-race coverage-check api-check docs-check ai-context-check
+ci-test: toolchain-check mod-verify vet tidy-check diff-check arch test-race coverage-check api-check docs-check ai-context-check

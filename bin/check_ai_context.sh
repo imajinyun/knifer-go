@@ -299,7 +299,17 @@ for key in ("install", "uninstall", "pre_commit", "pre_push"):
 
 ci_workflows = require_mapping(data.get("ci_workflows"), "ci_workflows")
 tool_versions = require_mapping(ci_workflows.get("tool_versions"), "ci_workflows.tool_versions")
-go_1_25_patch = require_string(tool_versions.get("go_1_25_patch"), "ci_workflows.tool_versions.go_1_25_patch")
+go_minimum = require_string(tool_versions.get("go_minimum"), "ci_workflows.tool_versions.go_minimum")
+go_release = require_string(tool_versions.get("go_release"), "ci_workflows.tool_versions.go_release")
+go_test = require_string_list(tool_versions.get("go_test"), "ci_workflows.tool_versions.go_test")
+module_version = re.search(r"^go\s+(\S+)", go_mod_text, flags=re.MULTILINE)
+if module_version and go_minimum != module_version.group(1):
+    add_error("ci_workflows.tool_versions.go_minimum must match go.mod")
+if go_release not in go_test:
+    add_error("ci_workflows.tool_versions.go_release must be in go_test")
+for version in [go_minimum, go_release] + go_test:
+    if not re.fullmatch(r"1\.\d+\.\d+", version):
+        add_error(f"Go toolchain versions must pin stable patches, got {version!r}")
 golangci_lint_version = require_string(tool_versions.get("golangci_lint"), "ci_workflows.tool_versions.golangci_lint")
 github_actions = require_mapping(ci_workflows.get("github_actions"), "ci_workflows.github_actions")
 for name, workflow in sorted(github_actions.items()):
@@ -342,17 +352,15 @@ for name, workflow in sorted(github_actions.items()):
     for required_text in required_commands + required_env + required_artifacts:
         if workflow_text and required_text not in workflow_text:
             add_error(f"ci_workflows.github_actions.{name} workflow must contain {required_text!r}")
-    if workflow_text and go_1_25_patch and name in {"go", "release"}:
-        if "GO_1_25_PATCH_VERSION" not in workflow_text or go_1_25_patch not in workflow_text:
-            add_error(f"ci_workflows.github_actions.{name} must use declared Go patch version {go_1_25_patch!r}")
+    if workflow_text and go_release and name in {"go", "release"}:
+        if "GO_RELEASE_VERSION" not in workflow_text or go_release not in workflow_text:
+            add_error(f"ci_workflows.github_actions.{name} must use declared Go patch version {go_release!r}")
     if workflow_text and golangci_lint_version and name == "go":
         if "GOLANGCI_LINT_VERSION" not in workflow_text or golangci_lint_version not in workflow_text:
             add_error(f"ci_workflows.github_actions.{name} must use declared golangci-lint version {golangci_lint_version!r}")
     if workflow_text and name == "go":
-        if go_1_25_patch and f'go-version: ["{go_1_25_patch}", "1.26"]' not in workflow_text:
-            add_error(
-                f"ci_workflows.github_actions.{name} test matrix must include minimum patch {go_1_25_patch!r} and next Go minor '1.26'"
-            )
+        if f'go-version: {json.dumps(go_test)}' not in workflow_text:
+            add_error(f"ci_workflows.github_actions.{name} test matrix must match tool_versions.go_test")
         duplicate_steps = ["make race-test", "make shuffle-test", "make mod-check"]
         for duplicate_step in duplicate_steps:
             if duplicate_step in workflow_text:

@@ -15,7 +15,7 @@ or [pkg.go.dev](https://pkg.go.dev/github.com/imajinyun/knifer-go).
 ![knifer-go](./knifer-go.jpeg)
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/imajinyun/knifer-go.svg)](https://pkg.go.dev/github.com/imajinyun/knifer-go)
-[![Go Version](https://img.shields.io/badge/go-%3E%3D1.25-00ADD8?logo=go)](https://go.dev/)
+[![Go Version](https://img.shields.io/badge/go-%3E%3D1.26-00ADD8?logo=go)](https://go.dev/)
 [![CI](https://github.com/imajinyun/knifer-go/actions/workflows/go.yml/badge.svg)](https://github.com/imajinyun/knifer-go/actions/workflows/go.yml)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/imajinyun/knifer-go/badge)](https://securityscorecards.dev/viewer/?uri=github.com/imajinyun/knifer-go)
 [![License](https://img.shields.io/github/license/imajinyun/knifer-go)](./LICENSE)
@@ -64,7 +64,7 @@ The root package `github.com/imajinyun/knifer-go` is only the module entry point
 
 ## 🚀 Install
 
-Go 1.25 or later is required.
+Go 1.26 or later is required.
 
 See the [Go version adoption policy](docs/doc/go-version-adoption-policy.md) for
 the current minimum-version rationale and downgrade requirements.

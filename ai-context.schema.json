@@ -122,9 +122,11 @@
         },
         "tool_versions": {
           "type": "object",
-          "required": ["go_1_25_patch", "golangci_lint"],
+          "required": ["go_minimum", "go_release", "go_test", "golangci_lint"],
           "properties": {
-            "go_1_25_patch": { "type": "string", "minLength": 1 },
+            "go_minimum": { "type": "string", "pattern": "^1\\.[0-9]+\\.[0-9]+$" },
+            "go_release": { "type": "string", "pattern": "^1\\.[0-9]+\\.[0-9]+$" },
+            "go_test": { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "type": "string", "pattern": "^1\\.[0-9]+\\.[0-9]+$" } },
             "golangci_lint": { "type": "string", "minLength": 1 }
           },
           "additionalProperties": false

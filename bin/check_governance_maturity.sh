@@ -2067,24 +2067,29 @@ def validate_go_version_adoption_governance() -> None:
 	status = governance.get("status")
 	if status not in {"active", "completed"}:
 		add_error("go_version_adoption_governance.status must be active or completed")
-	if governance.get("minimum_go_version") != "1.25":
-		add_error("go_version_adoption_governance.minimum_go_version must be 1.25")
+	tools = require_mapping(require_mapping(ai_context.get("ci_workflows"), "ci_workflows").get("tool_versions"), "ci_workflows.tool_versions")
+	minimum = tools.get("go_minimum", "")
+	minimum_line = ".".join(minimum.split(".")[:2])
+	ci_pins = tools.get("go_test", [])
+	release_pin = tools.get("go_release", "")
+	if governance.get("minimum_go_version") != minimum_line:
+		add_error("go_version_adoption_governance.minimum_go_version must match the module minimum")
 	ci_versions = require_string_list(governance.get("ci_versions"), "go_version_adoption_governance.ci_versions")
-	if ci_versions != ["1.25.13", "1.26"]:
-		add_error("go_version_adoption_governance.ci_versions must be ordered as: 1.25.13, 1.26")
-	if governance.get("release_go_version") != "1.25.13":
-		add_error("go_version_adoption_governance.release_go_version must be 1.25.13")
+	if ci_versions != ci_pins:
+		add_error("go_version_adoption_governance.ci_versions must match tool_versions.go_test")
+	if governance.get("release_go_version") != release_pin:
+		add_error("go_version_adoption_governance.release_go_version must match tool_versions.go_release")
 	if governance.get("downgrade_status") != "not supported today":
 		add_error("go_version_adoption_governance.downgrade_status must be not supported today")
 	required_rationale = require_string_list(governance.get("required_rationale"), "go_version_adoption_governance.required_rationale")
 	expected_rationale = [
-		"go.mod declares go 1.25.0",
-		"benchmarks use testing.B.Loop",
-		"ci verifies go 1.25.13 and 1.26",
-		"release workflow pins go 1.25.13",
+		f"go.mod declares go {minimum}",
+		f"dependencies require Go {minimum_line}",
+		"ci verifies go " + " and ".join(ci_pins),
+		f"release workflow pins go {release_pin}",
 	]
 	if required_rationale != expected_rationale:
-		add_error("go_version_adoption_governance.required_rationale must be ordered as: " + ", ".join(expected_rationale))
+		add_error("go_version_adoption_governance.required_rationale must match the declared toolchain policy")
 	required_checks = require_string_list(governance.get("required_checks"), "go_version_adoption_governance.required_checks")
 	for check in ("docs-check", "ai-context-check", "ci-workflow-check", "governance-maturity-check"):
 		if check not in required_checks:
@@ -2093,22 +2098,22 @@ def validate_go_version_adoption_governance() -> None:
 		if not (root / path).exists():
 			add_error(f"{path} must exist")
 	go_mod_text = (root / "go.mod").read_text(encoding="utf-8")
-	if "go 1.25.0" not in go_mod_text:
-		add_error("go.mod must declare go 1.25.0")
+	if not re.search(rf"^go\s+{re.escape(minimum)}\s*$", go_mod_text, flags=re.MULTILINE):
+		add_error("go.mod must match tool_versions.go_minimum")
 	readme_text = (root / readme_path).read_text(encoding="utf-8") if (root / readme_path).exists() else ""
 	if "go-version-adoption-policy.md" not in readme_text:
 		add_error("README.md must link docs/doc/go-version-adoption-policy.md")
 	doc_text = (root / doc_path).read_text(encoding="utf-8") if (root / doc_path).exists() else ""
-	for phrase in ("Go 1.25", "Go 1.25.13", "Go 1.26", "Go 1.23/1.24 downgrade", "testing.B.Loop"):
+	for phrase in (f"Go {minimum_line}", f"Go {release_pin}", "GOTOOLCHAIN=local", "testing.B.Loop"):
 		if doc_text and phrase not in doc_text:
 			add_error(f"{doc_path} must include {phrase!r}")
 	workflow_text = (root / ".github/workflows/go.yml").read_text(encoding="utf-8")
-	for version in ("1.25.13", "1.26"):
+	for version in ci_pins:
 		if version not in workflow_text:
 			add_error(f".github/workflows/go.yml must include Go {version}")
 	release_text = (root / ".github/workflows/release.yml").read_text(encoding="utf-8")
-	if "1.25.13" not in release_text:
-		add_error(".github/workflows/release.yml must pin Go 1.25.13")
+	if release_pin not in release_text:
+		add_error(".github/workflows/release.yml must use tool_versions.go_release")
 	sprint_rows = extract_markdown_rows(root / roadmap_path, "Sprint order")
 	sprint_41_rows = [row for row in sprint_rows if row.get("Sprint") == "41"]
 	if len(sprint_41_rows) != 1:

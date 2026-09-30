@@ -94,6 +94,15 @@
 | vssh | SSH/SFTP adapters | internal/ssh |
 | vtok | tokenization adapters | internal/tokenize |
 
+### Toolchain policy
+
+`go.mod` declares the language minimum. `ai-context.json.ci_workflows.tool_versions`
+pins the minimum, release, CI test toolchains, and golangci-lint version. Governance
+Make targets export `GOTOOLCHAIN=local`; select the desired Go binary through PATH
+before running validation. `make toolchain-check` records the actual toolchain and
+checks dependency minimums. `make lint` also checks the linter build Go version.
+`make full-check` and `make release-check` include metadata and workflow consistency.
+
 ### Validation commands
 
 | Command | Scope |
@@ -290,7 +299,7 @@ When the user asks to continue general governance, generate next governance task
 5. Establish benchmark baselines before performance work:
    - Add benchmarks only for stable hot-path helpers with deterministic inputs, such as `internal/slice`, `internal/maps`, `internal/str`, and `internal/num`.
    - Cover empty, small, medium, and large input sizes where meaningful.
-   - Use `b.Loop()` for new benchmarks because the module targets Go 1.25. Keep benchmark results out of assertions; they are baselines, not optimization claims.
+   - Use `b.Loop()` for new benchmarks because the module targets Go 1.26. Keep benchmark results out of assertions; they are baselines, not optimization claims.
    - Run `go test -bench=. -run=^$ ./<target packages>` and report that the benchmark suite runs, not that a performance change was proven.
 
 6. Validate the final governance change with the normal repository gates:
