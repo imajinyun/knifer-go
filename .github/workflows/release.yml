@@ -54,6 +54,16 @@ jobs:
       - name: Verify release gates
         run: make release-check COVERAGE_FILE=/tmp/knifer-go-release-coverage.out
 
+      - name: Upload fuzz artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: fuzz-release-${{ github.run_attempt }}
+          path: .aiflow/fuzz/
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Verify v1 governance maturity gates
         run: |
           make governance-maturity-check

@@ -9,6 +9,16 @@ subpackage APIs are treated as the compatibility boundary.
 
 ### Added
 
+- Added daily/manual extended Fuzz runs with bounded workers, minimization and
+  whole-run deadlines. Failures retain logs and native corpus in isolated
+  `.aiflow/fuzz` directories and are uploaded by PR, release and extended jobs.
+- Added validated runtime-artifact write metadata, including the Fuzz writes
+  inherited by release checks, while preserving source-write restrictions.
+- Added final CI admission that binds recorded command results to the tested
+  commit, tree, module hashes, toolchain and workflow run/attempt, and rejects
+  missing, failed, cancelled or stale validation evidence.
+- Added an explicit strict Agent evidence mode while retaining report-only
+  schema validation for correctly blocked reports.
 - Added `vgeo` coordinate conversion helpers for WGS-84, GCJ-02, BD-09,
   BD-09 Mercator, coarse China-bound checks, and Haversine distance.
 - Added provider-contract facades `vai`, `vftp`, `vssh`, `vhan`, and `vtok`

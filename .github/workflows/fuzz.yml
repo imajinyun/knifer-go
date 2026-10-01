@@ -1,0 +1,48 @@
+name: knifer-go-fuzz
+
+env:
+  GOTOOLCHAIN: local
+  GOWORK: "off"
+  GO_RELEASE_VERSION: "1.27.1"
+  GOLANGCI_LINT_VERSION: v2.14.0
+
+on:
+  schedule:
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fuzz-extended:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_RELEASE_VERSION }}
+          cache: true
+
+      - name: Record fixed Go toolchain
+        run: |
+          go version
+          go env GOTOOLCHAIN
+          test "$(go env GOVERSION)" = "go${{ env.GO_RELEASE_VERSION }}"
+
+      - name: Run extended fuzz targets
+        run: make fuzz-extended
+
+      - name: Upload fuzz artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: fuzz-extended-${{ github.run_attempt }}
+          path: .aiflow/fuzz/
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14

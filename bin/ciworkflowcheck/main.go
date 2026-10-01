@@ -109,6 +109,7 @@ func (c *checker) run() error {
 			continue
 		}
 		workflowText := string(workflowBytes)
+		c.checkFuzzArtifacts(workflowText, workflowPath, name)
 		if name == "go" {
 			c.checkAdmissionWorkflow(workflowText, workflowPath)
 		}

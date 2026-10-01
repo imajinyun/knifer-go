@@ -1,4 +1,4 @@
-.PHONY: ci-governance-check ci-admission-check toolchain-check help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check go-module-cache-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check local-governance-gates-check roadmap-catalog-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check docs-gen docs-check facade-tiering-gen utility-comparison-refresh generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
+.PHONY: fuzz-extended ci-governance-check ci-admission-check toolchain-check help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check go-module-cache-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check local-governance-gates-check roadmap-catalog-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check docs-gen docs-check facade-tiering-gen utility-comparison-refresh generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -12,7 +12,7 @@ EFFECTIVE_ISOLATED_GOCACHE := $(if $(strip $(GOCACHE)),$(GOCACHE),$(ISOLATED_GOC
 ifeq ($(USE_ISOLATED_GO_CACHE),1)
 export GOCACHE := $(ISOLATED_GOCACHE)
 endif
-AGENT_GOVERNANCE_TARGETS := ci-governance-check ci-admission-check toolchain-check fuzz-smoke doctor worktree-check agent-evidence agent-evidence-check change-policy-check security-sensitive-diff aiflow-layout-check go-module-cache-check coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check local-governance-gates-check roadmap-catalog-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check docs-gen docs-check facade-tiering-gen ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check generate mod-verify tidy-check mod-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench-regression-check ci-test
+AGENT_GOVERNANCE_TARGETS := fuzz-extended ci-governance-check ci-admission-check toolchain-check fuzz-smoke doctor worktree-check agent-evidence agent-evidence-check change-policy-check security-sensitive-diff aiflow-layout-check go-module-cache-check coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check local-governance-gates-check roadmap-catalog-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check docs-gen docs-check facade-tiering-gen ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check generate mod-verify tidy-check mod-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench-regression-check ci-test
 
 $(AGENT_GOVERNANCE_TARGETS): export GOCACHE := $(EFFECTIVE_ISOLATED_GOCACHE)
 $(AGENT_GOVERNANCE_TARGETS): export GOTOOLCHAIN := local
@@ -23,6 +23,11 @@ BENCH_CODEC_PKGS ?= ./internal/json ./vjson ./internal/xml ./vxml ./internal/cod
 BENCHTIME ?= 1s
 BENCHCOUNT ?= 1
 FUZZTIME ?= 1s
+FUZZ_EXTENDED_TIME ?= 30s
+FUZZ_ARTIFACT_DIR ?= .aiflow/fuzz
+FUZZ_MINIMIZE_TIME ?= 2s
+FUZZ_RUN_TIMEOUT ?= 10m
+FUZZ_PARALLEL ?= 4
 FUZZ_PKGS ?= $(PKGS)
 BENCH_BASELINE ?=
 BENCH_CURRENT ?=
@@ -35,7 +40,8 @@ help:
 	@echo "  test-race       Run race/shuffle tests and write coverage"
 	@echo "  race-test       Run race-enabled tests"
 	@echo "  shuffle-test    Run order-shuffled tests"
-	@echo "  fuzz-smoke      Run short fuzz/property smoke checks"
+	@echo "  fuzz-smoke      Run short fuzz checks with isolated failure artifacts"
+	@echo "  fuzz-extended   Run all fuzz targets for 30s each (configurable)"
 	@echo "  coverage-profile Generate race/shuffle coverage profile"
 	@echo "  coverage-report  Print function coverage from COVERAGE_FILE"
 	@echo "  coverage-check  Enforce repository and package coverage gates"
@@ -156,7 +162,10 @@ shuffle-test:
 	$(GO) test -shuffle=on $(PKGS)
 
 fuzz-smoke:
-	GO="$(GO)" FUZZTIME="$(FUZZTIME)" bash bin/fuzz_smoke.sh $(FUZZ_PKGS)
+	GO="$(GO)" FUZZTIME="$(FUZZTIME)" FUZZ_ARTIFACT_DIR="$(FUZZ_ARTIFACT_DIR)" FUZZ_MINIMIZE_TIME="$(FUZZ_MINIMIZE_TIME)" FUZZ_RUN_TIMEOUT="$(FUZZ_RUN_TIMEOUT)" FUZZ_PARALLEL="$(FUZZ_PARALLEL)" bash bin/fuzz_smoke.sh $(FUZZ_PKGS)
+
+fuzz-extended:
+	$(MAKE) fuzz-smoke FUZZTIME=$(FUZZ_EXTENDED_TIME)
 
 coverage-profile: test-race
 

@@ -142,7 +142,9 @@
     "ci_admission_check": {
       "cmd": "make ci-admission-check",
       "safe_for_agent_auto_run": true,
-      "writes_workspace": false,
+      "writes_workspace": true,
+      "workspace_write_scope": "runtime_artifacts",
+      "writes_files": [".aiflow/ci/**"],
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "low",
@@ -182,11 +184,13 @@
     "release_check": {
       "cmd": "make release-check COVERAGE_FILE=/tmp/knifer-go-coverage.out",
       "safe_for_agent_auto_run": true,
-      "writes_workspace": false,
+      "writes_workspace": true,
+      "workspace_write_scope": "runtime_artifacts",
+      "writes_files": [".aiflow/fuzz/**"],
       "writes_git_config": false,
       "network_required": true,
       "risk_level": "medium",
-      "creates_artifacts": ["/tmp/knifer-go-coverage.out"],
+      "creates_artifacts": [".aiflow/fuzz/", "/tmp/knifer-go-coverage.out"],
       "notes": "Release readiness gate; runs full local checks with COVERAGE_CHECK_ALL_PACKAGES=1, all discovered fuzz smoke targets, and CI workflow governance validation."
     },
     "release_notes_check": {
@@ -457,14 +461,29 @@
       "risk_level": "low",
       "notes": "Runs the short benchmark health gate used by CI and release workflows. Output is evidence, not a performance claim."
     },
-    "fuzz_smoke": {
-      "cmd": "make fuzz-smoke",
+    "fuzz_extended": {
+      "cmd": "make fuzz-extended",
       "safe_for_agent_auto_run": true,
-      "writes_workspace": false,
+      "writes_workspace": true,
+      "workspace_write_scope": "runtime_artifacts",
+      "writes_files": [".aiflow/fuzz/**"],
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "low",
-      "notes": "Discovers all Fuzz targets in FUZZ_PKGS (defaults to PKGS=./...) and runs each with bounded FUZZTIME. Discovery errors, missing targets, and fuzz failures fail the gate. Failing fuzz cases may write testdata/fuzz regression inputs."
+      "creates_artifacts": [".aiflow/fuzz/"],
+      "notes": "Runs every discovered target with FUZZ_EXTENDED_TIME=30s, bounded minimization/workers and a whole-run deadline; saves reproducible failure inputs without modifying package corpus."
+    },
+    "fuzz_smoke": {
+      "cmd": "make fuzz-smoke",
+      "safe_for_agent_auto_run": true,
+      "writes_workspace": true,
+      "workspace_write_scope": "runtime_artifacts",
+      "writes_files": [".aiflow/fuzz/**"],
+      "writes_git_config": false,
+      "network_required": false,
+      "risk_level": "low",
+      "creates_artifacts": [".aiflow/fuzz/"],
+      "notes": "Discovers all Fuzz targets, runs instrumented binaries in isolated artifact directories, and saves summaries, logs and corpus under .aiflow/fuzz. Package source corpus is read-only. Time, minimization, worker and run budgets are explicit; any failure or incomplete target fails the gate."
     },
     "benchstat_compare": {
       "cmd": "make benchstat BENCH_BASELINE=/tmp/knifer-go-old.bench BENCH_CURRENT=/tmp/knifer-go-new.bench",
@@ -575,6 +594,15 @@
           "required_commands": ["make ci-governance-check", "make ci-admission-check", "make fuzz-smoke"],
           "required_env": ["AGENT_CHANGE_BASE_REF", "CI_NEEDS_JSON"],
           "required_artifacts": ["agent-validation-evidence"]
+        }
+      },
+      "fuzz": {
+        "path": ".github/workflows/fuzz.yml",
+        "required_jobs": ["fuzz-extended"],
+        "agent_governance": {
+          "required_commands": ["make fuzz-extended"],
+          "required_env": [],
+          "required_artifacts": ["fuzz-extended-"]
         }
       },
       "release": {

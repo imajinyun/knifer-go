@@ -4,13 +4,15 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 AI_CONTEXT="${ROOT_DIR}/ai-context.json"
 
-python3 - "${ROOT_DIR}" "${AI_CONTEXT}" <<'PY'
+python3 -B - "${ROOT_DIR}" "${AI_CONTEXT}" <<'PY'
 import json
 import os
 import re
 import sys
 
 root_dir, ai_context = sys.argv[1], sys.argv[2]
+sys.path.insert(0, os.path.join(root_dir, "bin"))
+from command_effects import validate_runtime_artifacts
 errors = []
 
 
@@ -190,6 +192,7 @@ commands = require_mapping(data.get("commands"), "commands")
 command_name_pattern = re.compile(r"^[a-z][a-z0-9_]*$")
 allowed_risk_levels = {"low", "medium", "high", "forbidden_for_agent"}
 command_names = set(commands)
+errors.extend(validate_runtime_artifacts(root_dir, commands))
 for name, spec in sorted(commands.items()):
     if not command_name_pattern.match(name):
         add_error(f"commands.{name} must use snake_case")
@@ -217,13 +220,13 @@ for name, spec in sorted(commands.items()):
         add_error(f"commands.{name} writes Git config and must require user consent")
     if writes_git_config and safe_for_agent_auto_run:
         add_error(f"commands.{name} writes Git config and must not be auto-runnable")
-    if writes_workspace and safe_for_agent_auto_run:
+    if writes_workspace and safe_for_agent_auto_run and spec.get("workspace_write_scope") != "runtime_artifacts":
         add_error(f"commands.{name} writes workspace files and must not be auto-runnable")
     if safe_for_agent_auto_run and risk_level in {"high", "forbidden_for_agent"}:
         add_error(f"commands.{name} is auto-runnable and must not be high or forbidden_for_agent risk")
     if requires_user_consent and risk_level == "low":
         add_error(f"commands.{name} requires user consent and must not be low risk")
-    if writes_workspace and risk_level == "low":
+    if writes_workspace and risk_level == "low" and spec.get("workspace_write_scope") != "runtime_artifacts":
         add_error(f"commands.{name} writes workspace files and must not be low risk")
     if writes_git_config and risk_level not in {"high", "forbidden_for_agent"}:
         add_error(f"commands.{name} writes Git config and must be high or forbidden_for_agent risk")

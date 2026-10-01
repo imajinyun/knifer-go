@@ -252,6 +252,16 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
 
+      - name: Upload fuzz artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: fuzz-smoke-${{ github.run_attempt }}
+          path: .aiflow/fuzz/
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14
+
   codeql:
     runs-on: ubuntu-latest
     timeout-minutes: 15

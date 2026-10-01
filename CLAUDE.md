@@ -109,7 +109,7 @@ checks dependency minimums. `make lint` also checks the linter build Go version.
 |---------|-------|
 | `make test` | Run unit tests |
 | `make test-race` / `make coverage-profile` | Race/shuffle tests with coverage |
-| `make fuzz-smoke` | Discover and fuzz all targets under `PKGS` (override with `FUZZ_PKGS`); fail on discovery or execution errors |
+| `make fuzz-smoke` / `make fuzz-extended` | Discover all targets; run for 1s / 30s each in isolated working directories, retaining logs and failure corpus |
 | `make coverage-report COVERAGE_FILE=<file>` | Print function coverage |
 | `make coverage-check COVERAGE_FILE=<file>` | Enforce coverage gates |
 | `make doctor` | Diagnose local Go/tooling/Git environment without modifying files |
@@ -129,7 +129,9 @@ checks dependency minimums. `make lint` also checks the linter build Go version.
 | `make agent-check` | Default AI/Agent-safe validation gate; delegates to `quick-check` |
 | `make agent-full-check COVERAGE_FILE=/tmp/knifer-go-coverage.out` | Full AI/Agent validation gate with coverage, lint, and vulnerability scan |
 | `make agent-security-check` | AI/Agent security validation gate |
-| `make ci-agent-governance` | CI Agent governance gate; detects change policies and emits validation evidence |
+| `make ci-agent-governance` | Legacy report/schema workflow; does not assert final readiness |
+| `make ci-governance-check` | Governance, module, API and docs checks executed by the recorded CI governance job |
+| `make ci-admission-check` | Aggregate current CI artifacts, generate the report and require complete successful evidence |
 | `make install-hooks` / `make uninstall-hooks` | Enable or disable optional local Git hooks for pre-commit/pre-push validation |
 | `make tools-check` | Verify `docs/api/tools.json` matches public facade functions, doc comments, and Example tests |
 | `make tools-gen` | Refresh `docs/api/tools.json`; ask first because generated files may change |
@@ -173,7 +175,8 @@ status zero.
 
 - **Coverage**: Keep total coverage above the threshold in `ai-context.json`; `bin/check_coverage.sh` reads `ai-context.json` as the default source of truth.
 - **Coverage mode**: `agent-full-check` enforces repository, changed-package, and security-sensitive coverage; `release-check` sets `COVERAGE_CHECK_ALL_PACKAGES=1` to enforce every package threshold.
-- **Fuzz admission**: CI has a dedicated `fuzz-smoke` job, and `release-check` runs the same gate. All compiled Fuzz targets are discovered automatically; `FUZZTIME` bounds each target (default 1s). Longer runs can use `make fuzz-smoke FUZZTIME=30s`. Failed fuzz inputs may be written under `testdata/fuzz`; inspect and retain useful regression inputs.
+- **Fuzz admission**: PR and release gates use bounded smoke; a daily/manual workflow uses `fuzz-extended`. Instrumented binaries run with copied `testdata` under `.aiflow/fuzz`, preserving package source. All jobs upload failure artifacts even after errors. See `docs/doc/fuzz-validation.md` for budgets, replay and deliberate regression-corpus promotion.
+- **Runtime artifact writes**: Commands writing ignored workspace output declare `writes_workspace=true`, `workspace_write_scope=runtime_artifacts`, `writes_files` and `creates_artifacts`. Automatic writes are allowed only for validated ignored `.aiflow/` paths. Source and Git configuration write rules remain unchanged; release-check declares the artifact writes inherited from Fuzz.
 - **Release tools**: the release job installs the same pinned golangci-lint version as CI before running `release-check`. `ci-workflow-check` rejects missing, late, or unpinned installation.
 - **Architecture**: `make arch` composes focused gates for provider contracts, import direction, heavy dependency isolation, panic policy, package docs, unsafe reflection opt-in, and thin facade boundaries.
 - **API snapshot**: `docs/api/exports.txt` is CI-enforced. Run `UPDATE_API=1 make api-check` after intentional public API changes.
@@ -183,7 +186,10 @@ status zero.
 - **Change policies**: `ai-context.json.change_type_policies` maps PR change types to required Agent validation commands; keep PR template change types aligned with those policy keys.
 - **Agent evidence**: `make agent-evidence` writes `/tmp/knifer-go-agent-validation.json`; use it to summarize detected policies, required commands, command attestations, security-sensitive paths, structured `security_review`, and governance check results.
 - **Agent evidence validation**: `make agent-evidence-check` validates the generated evidence JSON against `ai-context.json`; all change policies must require both evidence generation and evidence validation, every required command must have an attestation entry, and security-sensitive changes must carry a validated `security_review` conclusion.
-- **CI Agent governance**: GitHub Actions runs `make ci-agent-governance` with `AGENT_CHANGE_BASE_REF` so policy detection is based on the PR or push diff, then uploads the Agent evidence JSON artifact.
+- **CI admission**: Command jobs run through `bin/ciresult`, which records actual exits and before/after commit, tree and module hashes. The final `admission` job waits for governance, both test toolchains, lint, vulnerability, benchmark, Fuzz, CodeQL and Scorecard jobs. It uses GitHub's `needs` results and original artifacts from the same run/attempt; `make ci-admission-check` rejects missing, failed, cancelled, stale or unbound evidence and requires `merge_ready=true`.
+- **Evidence modes**: `make agent-evidence-check` remains a report/schema check and can validate a correctly blocked report. `go run ./bin/agentevidencecheck -require-ready -ci-results <dir> -evidence <file>` is strict admission and also requires `CI_NEEDS_JSON`, `GITHUB_RUN_ID`, `GITHUB_RUN_ATTEMPT` and a clean matching checkout. CI-derived attestations cannot be replaced with `AGENT_ATTEST_*` values in this mode.
+- **Candidate identity**: PR checks validate the tested merge commit (`HEAD`/`GITHUB_SHA`), not only the source branch tip. All jobs use the event's base SHA and `GOWORK=off`. Rerun all required jobs after a new workflow attempt so successful results from an older attempt are not silently reused. Result files and final reports stay in ignored `.aiflow/ci/` paths.
+- **Security diff**: A nonzero security-sensitive diff result remains an embedded classification signal. Validated full/security CI evidence satisfies the required review contract without changing that result to a fabricated success. Native CodeQL and Scorecard results come from GitHub's job status; command exit codes are recorded only for commands actually executed by the recorder.
 - **CI workflow invariants**: `ai-context.json.ci_workflows` declares required GitHub Actions jobs, Agent governance commands, environment variables, and artifacts; `make ci-workflow-check` validates them.
 - **Security-sensitive diff**: `make security-sensitive-diff` checks staged, unstaged, and untracked paths against `ai-context.json.security_sensitive_packages` and their mapped `internal/*` implementations.
 - **Provider contracts**: `make provider-contract-check` validates `vai`, `vftp`, `vhan`, `vssh`, and `vtok` provider-contract boundaries independently from the broader architecture gate.
