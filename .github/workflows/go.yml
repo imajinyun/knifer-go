@@ -349,7 +349,7 @@ jobs:
           test "$(go env GOVERSION)" = "go${{ env.GO_RELEASE_VERSION }}"
 
       - name: Download command results
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: ci-result-${{ github.run_attempt }}-*
           path: .aiflow/ci/results
