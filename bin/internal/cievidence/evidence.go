@@ -70,16 +70,16 @@ type Manifest struct {
 
 // RequiredJobs includes command jobs and native security actions.
 func RequiredJobs() []string {
-	return []string{"agent-governance", "test", "lint", "govulncheck", "benchmark-smoke", "fuzz-smoke", "codeql", "scorecard"}
+	return []string{"agent-governance", "test", "lint", "govulncheck", "benchmark-smoke", "fuzz-smoke", "codeql", "scorecard", "database"}
 }
 
 // Requirements derives every matrix artifact from the canonical toolchain pins.
 func Requirements(p toolchainpolicy.Policy) []Requirement {
-	out := make([]Requirement, 0, len(p.Test)+5)
+	out := make([]Requirement, 0, len(p.Test)+6)
 	for _, v := range p.Test {
 		out = append(out, Requirement{ID: "test-" + v, Job: "test", GoVersion: v, Command: []string{"make", "ci-test", "COVERAGE_FILE=.aiflow/ci/coverage.out"}})
 	}
-	for _, pair := range [][2]string{{"agent-governance", "ci-governance-check"}, {"lint", "lint"}, {"govulncheck", "govulncheck"}, {"benchmark-smoke", "bench-smoke"}, {"fuzz-smoke", "fuzz-smoke"}} {
+	for _, pair := range [][2]string{{"agent-governance", "ci-governance-check"}, {"lint", "lint"}, {"govulncheck", "govulncheck"}, {"benchmark-smoke", "bench-smoke"}, {"fuzz-smoke", "fuzz-smoke"}, {"database", "db-integration-check"}} {
 		out = append(out, Requirement{ID: pair[0], Job: pair[0], GoVersion: p.Release, Command: []string{"make", pair[1]}})
 	}
 	return out

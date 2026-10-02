@@ -24,6 +24,9 @@
 
 ## Required Evidence
 
+- `integration/db` runs the public facade contracts against real SQLite,
+  PostgreSQL and MySQL; see `integration/db/README.md` for isolated setup and
+  `make db-integration-check` for the required CI gate.
 - `internal/db/session_exec_test.go` covers session execution, batch, query, transaction, metadata, and unsupported behavior.
 - `internal/db/builder_write_test.go` covers write builders and upsert SQL.
 - `internal/db/db_sql_helpers_test.go` covers count, metadata SQL, scan helper errors, options, and provider errors.

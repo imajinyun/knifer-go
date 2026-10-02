@@ -57,3 +57,40 @@ func TestPublicHostIPs(t *testing.T) {
 		t.Fatalf("PublicHostIPs lookup private error = %v, want ErrPrivateHost", err)
 	}
 }
+
+func TestResolverBoundaries(t *testing.T) {
+	sentinel := errors.New("resolver unavailable")
+	for _, tt := range []struct {
+		name      string
+		ips       []net.IP
+		err       error
+		private   bool
+		publicErr error
+	}{
+		{name: "public", ips: []net.IP{net.ParseIP("93.184.216.34")}},
+		{name: "mixed", ips: []net.IP{net.ParseIP("93.184.216.34"), net.ParseIP("127.0.0.1")}, private: true, publicErr: ErrPrivateHost},
+		{name: "nil_address", ips: []net.IP{nil}, private: true, publicErr: ErrPrivateHost},
+		{name: "empty", publicErr: ErrNoAddresses},
+		{name: "resolver_error", err: sentinel, publicErr: sentinel},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			lookup := func(ctx context.Context, host string) ([]net.IP, error) {
+				if ctx == nil || host != "fixture.example" {
+					t.Fatalf("bad resolver arguments: %v %q", ctx, host)
+				}
+				return tt.ips, tt.err
+			}
+			private, err := IsPrivateHost(nil, lookup, "fixture.example") //nolint:staticcheck // SA1012: verify the supported nil-context fallback.
+			if private != tt.private || !errors.Is(err, tt.err) {
+				t.Fatalf("classification=%v error=%v", private, err)
+			}
+			ips, err := PublicHostIPs(nil, lookup, "fixture.example") //nolint:staticcheck // SA1012: verify the supported nil-context fallback.
+			if !errors.Is(err, tt.publicErr) {
+				t.Fatalf("public error=%v want=%v", err, tt.publicErr)
+			}
+			if tt.publicErr != nil && ips != nil {
+				t.Fatal("rejected addresses must not be returned")
+			}
+		})
+	}
+}

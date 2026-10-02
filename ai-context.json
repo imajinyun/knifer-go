@@ -108,7 +108,7 @@
       "writes_git_config": false,
       "network_required": true,
       "risk_level": "medium",
-      "creates_artifacts": ["/tmp/knifer-go-coverage.out"],
+      "creates_artifacts": ["/tmp/knifer-go-coverage.out", "/tmp/knifer-go-coverage.out.meta.json"],
       "notes": "Full AI/Agent validation entrypoint; runs race coverage, lint, and vulnerability checks."
     },
     "agent_security_check": {
@@ -127,8 +127,20 @@
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "medium",
-      "creates_artifacts": ["/tmp/knifer-go-coverage.out"],
+      "creates_artifacts": ["/tmp/knifer-go-coverage.out", "/tmp/knifer-go-coverage.out.meta.json"],
       "notes": "Local reproduction of the GitHub Actions test job without creating coverage artifacts in the repository root."
+    },
+    "db_integration_check": {
+      "cmd": "make db-integration-check",
+      "safe_for_agent_auto_run": true,
+      "writes_workspace": true,
+      "workspace_write_scope": "runtime_artifacts",
+      "writes_files": [".aiflow/db-integration/**"],
+      "writes_git_config": false,
+      "network_required": true,
+      "risk_level": "medium",
+      "creates_artifacts": [".aiflow/db-integration/"],
+      "notes": "Runs the isolated integration/db module against SQLite and explicitly configured dedicated PostgreSQL/MySQL test DSNs. Creates and drops only uniquely named fixture tables; requested missing engines fail."
     },
     "ci_governance_check": {
       "cmd": "make ci-governance-check",
@@ -169,7 +181,7 @@
       "writes_git_config": false,
       "network_required": true,
       "risk_level": "medium",
-      "creates_artifacts": ["/tmp/knifer-go-coverage.out"],
+      "creates_artifacts": ["/tmp/knifer-go-coverage.out", "/tmp/knifer-go-coverage.out.meta.json"],
       "notes": "Full local pre-push gate; includes race coverage, changed-package/security-sensitive coverage, governance maturity, benchmark metadata, lint, and govulncheck. govulncheck may require vulnerability database access."
     },
     "security_check": {
@@ -190,7 +202,7 @@
       "writes_git_config": false,
       "network_required": true,
       "risk_level": "medium",
-      "creates_artifacts": [".aiflow/fuzz/", "/tmp/knifer-go-coverage.out"],
+      "creates_artifacts": [".aiflow/fuzz/", "/tmp/knifer-go-coverage.out", "/tmp/knifer-go-coverage.out.meta.json"],
       "notes": "Release readiness gate; runs full local checks with COVERAGE_CHECK_ALL_PACKAGES=1, all discovered fuzz smoke targets, and CI workflow governance validation."
     },
     "release_notes_check": {
@@ -209,7 +221,7 @@
       "writes_git_config": false,
       "network_required": false,
       "risk_level": "medium",
-      "creates_artifacts": ["/tmp/knifer-go-coverage.out"],
+      "creates_artifacts": ["/tmp/knifer-go-coverage.out", "/tmp/knifer-go-coverage.out.meta.json"],
       "notes": "Generates a race/shuffle coverage profile outside the repository root."
     },
     "coverage_check": {
@@ -589,7 +601,7 @@
     "github_actions": {
       "go": {
         "path": ".github/workflows/go.yml",
-        "required_jobs": ["agent-governance", "test", "lint", "govulncheck", "benchmark-smoke", "fuzz-smoke", "codeql", "scorecard", "admission"],
+        "required_jobs": ["agent-governance", "test", "lint", "govulncheck", "benchmark-smoke", "fuzz-smoke", "codeql", "scorecard", "database", "admission"],
         "agent_governance": {
           "required_commands": ["make ci-governance-check", "make ci-admission-check", "make fuzz-smoke"],
           "required_env": ["AGENT_CHANGE_BASE_REF", "CI_NEEDS_JSON"],
@@ -2058,6 +2070,8 @@
     ]
   },
   "coverage_gates": {
+    "require_bound_profile": true,
+    "shared_security_packages": ["internal/httpboundary", "internal/httpx/internal/shared"],
     "repository_threshold": 75.2,
     "security_sensitive_min_threshold": 80.0,
     "package_thresholds": {

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -13,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/imajinyun/knifer-go/bin/internal/coverageprofile"
 	"github.com/imajinyun/knifer-go/bin/internal/govreport"
 )
 
@@ -25,8 +25,11 @@ type checkError struct {
 
 type coverageReport struct {
 	govreport.Envelope
-	RepositoryCoverage float64 `json:"repository_coverage"`
-	RequiredCoverage   float64 `json:"required_coverage"`
+	RepositoryCoverage         float64                   `json:"repository_coverage"`
+	RequiredCoverage           float64                   `json:"required_coverage"`
+	Breakdown                  map[string]coverageTotals `json:"breakdown"`
+	Evidence                   *coverageprofile.Evidence `json:"execution_evidence,omitempty"`
+	SubprocessCoverageIncluded bool                      `json:"subprocess_coverage_included"`
 }
 
 type config struct {
@@ -40,6 +43,7 @@ type config struct {
 	securitySensitiveMinThreshold float64
 	changedSecuritySensitivePaths []string
 	coverageCheckAllPackages      bool
+	requireBoundProfile           bool
 }
 
 type profileLine struct {
@@ -70,6 +74,13 @@ func main() {
 	if err != nil {
 		exitCoverageError(*jsonFlag, checkError{govreport.Error("COVERAGE_INPUT_ERROR", "ai-context.json", err.Error()), 2}, coverageReport{})
 	}
+	var executionEvidence *coverageprofile.Evidence
+	if cfg.requireBoundProfile {
+		executionEvidence, err = coverageprofile.ValidateEvidence(root, cfg.coverageFile)
+		if err != nil {
+			exitCoverageError(*jsonFlag, checkError{govreport.Error("COVERAGE_EVIDENCE_INVALID", cfg.coverageFile, err.Error()), 2}, coverageReport{})
+		}
+	}
 	lines, err := parseCoverageProfile(cfg.coverageFile)
 	if err != nil {
 		exitCoverageError(*jsonFlag, checkError{govreport.Error("COVERAGE_PROFILE_MISSING", cfg.coverageFile, err.Error()), 2}, coverageReport{})
@@ -79,6 +90,8 @@ func main() {
 	report := coverageReport{
 		RepositoryCoverage: total,
 		RequiredCoverage:   cfg.repositoryThreshold,
+		Evidence:           executionEvidence,
+		Breakdown:          coverageBreakdown(lines, cfg.module),
 	}
 	if !ok {
 		exitCoverageError(*jsonFlag, checkError{govreport.Error("COVERAGE_PROFILE_INVALID", cfg.coverageFile, "cannot read total coverage from "+cfg.coverageFile), 2}, report)
@@ -88,6 +101,10 @@ func main() {
 	}
 	if !*jsonFlag {
 		fmt.Printf("coverage %.1f%% meets required %.1f%%\n", total, cfg.repositoryThreshold)
+		for _, name := range []string{"library", "internal", "facade", "governance_go_test"} {
+			item := report.Breakdown[name]
+			fmt.Printf("%s statement coverage %.1f%% (%d/%d)\n", name, item.Percent, item.Covered, item.Statements)
+		}
 	}
 
 	if !cfg.coverageCheckAllPackages {
@@ -157,6 +174,13 @@ func loadConfig(root, coverageFile string) (config, error) {
 		}
 	}
 
+	for _, shared := range stringList(coverageGates["shared_security_packages"]) {
+		if !strings.HasPrefix(shared, "internal/") || strings.Contains(shared, "..") || !hasStatementSource(root, shared) {
+			return config{}, fmt.Errorf("invalid or missing shared security package %q", shared)
+		}
+		securitySensitiveSet[module+"/"+shared] = struct{}{}
+		securityPrefixToPackageDir[shared+"/"] = shared
+	}
 	changedPackageThresholds := map[string]float64{}
 	for _, path := range changedFiles {
 		if !strings.HasSuffix(path, ".go") || strings.HasSuffix(path, "/doc.go") {
@@ -184,6 +208,7 @@ func loadConfig(root, coverageFile string) (config, error) {
 		securitySensitiveMinThreshold: securitySensitiveMinThreshold,
 		changedSecuritySensitivePaths: sortedSet(changedSecuritySensitiveSet),
 		coverageCheckAllPackages:      os.Getenv("COVERAGE_CHECK_ALL_PACKAGES") == "1",
+		requireBoundProfile:           coverageGates["require_bound_profile"] == true,
 	}
 	cfg.applyEnvOverrides()
 	return cfg, nil
@@ -224,36 +249,17 @@ func parseCoverageProfile(path string) ([]profileLine, error) {
 	}
 	defer func() { _ = file.Close() }()
 
-	scanner := bufio.NewScanner(file)
-	if !scanner.Scan() {
-		return nil, fmt.Errorf("cannot read total coverage from %s", path)
-	}
-	var lines []profileLine
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-		if line == "" {
-			continue
-		}
-		fields := strings.Fields(line)
-		if len(fields) != 3 {
-			continue
-		}
-		filePath := fields[0]
-		if idx := strings.Index(filePath, ":"); idx >= 0 {
-			filePath = filePath[:idx]
-		}
-		statements, err := strconv.Atoi(fields[1])
-		if err != nil {
-			continue
-		}
-		count, err := strconv.Atoi(fields[2])
-		if err != nil {
-			continue
-		}
-		lines = append(lines, profileLine{file: filepath.ToSlash(filePath), statements: statements, count: count})
-	}
-	if err := scanner.Err(); err != nil {
+	blocks, err := coverageprofile.Parse(file)
+	if err != nil {
 		return nil, err
+	}
+	lines := make([]profileLine, 0, len(blocks))
+	for _, block := range blocks {
+		count := 0
+		if block.Covered {
+			count = 1
+		}
+		lines = append(lines, profileLine{file: block.File, statements: block.Statements, count: count})
 	}
 	return lines, nil
 }

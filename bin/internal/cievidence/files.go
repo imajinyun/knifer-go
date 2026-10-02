@@ -1,14 +1,14 @@
 package cievidence
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/imajinyun/knifer-go/bin/internal/sourceidentity"
 )
 
 // Capture binds a clean checkout to its immutable tree, dependencies and CI run.
@@ -35,17 +35,11 @@ func Capture(root string) (Candidate, error) {
 	if status, err := git("status", "--porcelain", "--untracked-files=all"); err != nil || status != "" {
 		return c, fmt.Errorf("candidate checkout must be clean: %s (%v)", status, err)
 	}
-	h := sha256.New()
-	for _, name := range []string{"go.mod", "go.sum"} {
-		data, err := os.ReadFile(filepath.Join(root, name))
-		if err != nil {
-			return c, err
-		}
-		_, _ = h.Write([]byte(name + "\x00"))
-		_, _ = h.Write(data)
-		_, _ = h.Write([]byte{0})
+	snapshot, err := sourceidentity.Capture(root)
+	if err != nil {
+		return c, err
 	}
-	c.ModulesSHA256 = hex.EncodeToString(h.Sum(nil))
+	c.ModulesSHA256 = snapshot.ModulesSHA256
 	return c, nil
 }
 

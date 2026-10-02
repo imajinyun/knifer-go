@@ -14,7 +14,7 @@ func TestCheckAdmissionWorkflow(t *testing.T) {
 	for _, tt := range []struct{ name, old, replacement string }{
 		{name: "valid"},
 		{name: "skips_on_failure", old: "  admission:\n    if: always()", replacement: "  admission:\n    if: success()"},
-		{name: "missing_dependency", old: "fuzz-smoke, codeql, scorecard]", replacement: "fuzz-smoke, scorecard]"},
+		{name: "missing_dependency", old: "fuzz-smoke, codeql, scorecard, database]", replacement: "fuzz-smoke, scorecard, database]"},
 		{name: "missing_upload", old: "name: ci-result-${{ github.run_attempt }}-govulncheck", replacement: "name: unused"},
 		{name: "unwrapped_command", old: ".aiflow/ci/ciresult run -id lint -out .aiflow/ci/records -- make lint", replacement: "make lint"},
 		{name: "wrong_context", old: "${{ toJSON(needs) }}", replacement: "'{}'"},

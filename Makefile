@@ -1,4 +1,4 @@
-.PHONY: fuzz-extended ci-governance-check ci-admission-check toolchain-check help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check go-module-cache-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check local-governance-gates-check roadmap-catalog-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check docs-gen docs-check facade-tiering-gen utility-comparison-refresh generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
+.PHONY: db-integration-check fuzz-extended ci-governance-check ci-admission-check toolchain-check help doctor install-hooks uninstall-hooks worktree-check change-policy-check security-sensitive-diff agent-evidence agent-evidence-check aiflow-layout-check go-module-cache-check test test-race race-test shuffle-test fuzz-smoke coverage-profile coverage-report coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check local-governance-gates-check roadmap-catalog-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check docs-gen docs-check facade-tiering-gen utility-comparison-refresh generate mod-verify tidy-check mod-check diff-whitespace diff-clean diff-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench bench-core bench-facade bench-codec bench-smoke bench-baseline bench-compare bench-regression-check benchstat check ci-test
 
 GO ?= go
 GOLANGCI_LINT ?= golangci-lint
@@ -12,7 +12,7 @@ EFFECTIVE_ISOLATED_GOCACHE := $(if $(strip $(GOCACHE)),$(GOCACHE),$(ISOLATED_GOC
 ifeq ($(USE_ISOLATED_GO_CACHE),1)
 export GOCACHE := $(ISOLATED_GOCACHE)
 endif
-AGENT_GOVERNANCE_TARGETS := fuzz-extended ci-governance-check ci-admission-check toolchain-check fuzz-smoke doctor worktree-check agent-evidence agent-evidence-check change-policy-check security-sensitive-diff aiflow-layout-check go-module-cache-check coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check local-governance-gates-check roadmap-catalog-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check docs-gen docs-check facade-tiering-gen ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check generate mod-verify tidy-check mod-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench-regression-check ci-test
+AGENT_GOVERNANCE_TARGETS := db-integration-check fuzz-extended ci-governance-check ci-admission-check toolchain-check fuzz-smoke doctor worktree-check agent-evidence agent-evidence-check change-policy-check security-sensitive-diff aiflow-layout-check go-module-cache-check coverage-check release-notes-check api-check api-freeze-check governance-maturity-check governance-migration-check local-governance-gates-check roadmap-catalog-check random-source-policy-check threat-model-check dynamic-contracts-check error-model-check api-convergence-check lifecycle-check dependency-tiers-check capability-domains-check tools-check tools-gen tools-report docs-quickstart-check docs-gen docs-check facade-tiering-gen ai-context-check ci-workflow-check provider-contract-check arch-imports-check panic-policy-check facade-boundary-check generate mod-verify tidy-check mod-check vet arch lint govulncheck quick-check security-check full-check release-check agent-check agent-full-check agent-security-check ci-agent-governance bench-regression-check ci-test
 
 $(AGENT_GOVERNANCE_TARGETS): export GOCACHE := $(EFFECTIVE_ISOLATED_GOCACHE)
 $(AGENT_GOVERNANCE_TARGETS): export GOTOOLCHAIN := local
@@ -153,7 +153,7 @@ test:
 	$(GO) test $(PKGS)
 
 test-race:
-	$(GO) test -race -shuffle=on -coverprofile=$(COVERAGE_FILE) $(PKGS)
+	$(GO) run ./bin/coveragerun -root . -go "$(GO)" -out "$(COVERAGE_FILE)" -- $(PKGS)
 
 race-test:
 	$(GO) test -race $(PKGS)
@@ -325,6 +325,9 @@ agent-full-check: full-check
 agent-security-check: security-check
 
 ci-agent-governance: change-policy-check ci-workflow-check agent-evidence agent-evidence-check
+
+db-integration-check:
+	GO="$(GO)" bash bin/db_integration.sh
 
 ci-governance-check: worktree-check aiflow-layout-check toolchain-check mod-verify go-module-cache-check governance-maturity-check ci-workflow-check change-policy-check api-check docs-check diff-whitespace
 

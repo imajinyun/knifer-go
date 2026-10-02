@@ -637,6 +637,15 @@ for index, decision in enumerate(stdlib_first_decisions):
         add_error(f"ai_tooling.stdlib_first_decisions[{index}].prefer_go_knifer_when must mention knifer-go")
 
 coverage_gates = require_mapping(data.get("coverage_gates"), "coverage_gates")
+if coverage_gates.get("require_bound_profile") is not True:
+    add_error("coverage_gates.require_bound_profile must be true")
+shared_coverage = require_string_list(coverage_gates.get("shared_security_packages"), "coverage_gates.shared_security_packages")
+if "internal/httpboundary" not in shared_coverage:
+    add_error("shared security coverage must include internal/httpboundary")
+for package in shared_coverage:
+    if not package.startswith("internal/") or ".." in package or not os.path.isdir(os.path.join(root_dir, package)):
+        add_error(f"invalid shared security coverage package {package!r}")
+
 repository_threshold = require_number(coverage_gates.get("repository_threshold"), "coverage_gates.repository_threshold")
 security_sensitive_min_threshold = coverage_gates.get("security_sensitive_min_threshold")
 if security_sensitive_min_threshold is not None:

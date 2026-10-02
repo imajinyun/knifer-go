@@ -207,7 +207,8 @@ func (f *governanceFixture) RunAgentEvidenceCheckJSON(evidence map[string]any) (
 
 func (f *governanceFixture) RunCoverageCheck(coverageFile string, env ...string) (string, error) {
 	f.t.Helper()
-	return f.RunScriptArgs("bin/check_coverage.sh", []string{coverageFile}, env...)
+	f.WriteJSON("ai-context.json", map[string]any{"project": map[string]any{"module": "github.com/imajinyun/knifer-go"}, "coverage_gates": map[string]any{}, "public_facades": []any{}, "security_sensitive_packages": []any{}})
+	return f.RunGoToolEnv("coveragecheck", env, "-root", f.root, coverageFile)
 }
 
 func (f *governanceFixture) RunCoverageCheckJSON(coverageFile string, env ...string) (string, error) {

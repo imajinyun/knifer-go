@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:17.6@sha256:00bc86618629af00d2937fdc5a5d63db3ff8450acf52f0636ec813c7f4902929
+    environment:
+      POSTGRES_USER: knifer
+      POSTGRES_PASSWORD: fixture-only
+      POSTGRES_DB: knifer
+    ports:
+      - "127.0.0.1:${KNIFER_PG_PORT:-15432}:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "knifer", "-d", "knifer"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  mysql:
+    image: mysql:8.4.6@sha256:869218921e61d6c3c89820955d63cca42971f0e3e6c1e2792247bbd944ebc6e9
+    environment:
+      MYSQL_ROOT_PASSWORD: fixture-root-only
+      MYSQL_USER: knifer
+      MYSQL_PASSWORD: fixture-only
+      MYSQL_DATABASE: knifer
+    ports:
+      - "127.0.0.1:${KNIFER_MYSQL_PORT:-13306}:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uknifer", "-pfixture-only"]
+      interval: 2s
+      timeout: 3s
+      retries: 60

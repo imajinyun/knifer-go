@@ -66,6 +66,7 @@ func (c *checker) checkAdmissionWorkflow(text, path string) {
 		{"govulncheck", "govulncheck", "make govulncheck"},
 		{"benchmark-smoke", "benchmark-smoke", "make bench-smoke"},
 		{"fuzz-smoke", "fuzz-smoke", "make fuzz-smoke"},
+		{"database", "database", "make db-integration-check"},
 	} {
 		job, id, command := pair[0], pair[1], pair[2]
 		built, recorded, saved := false, false, false

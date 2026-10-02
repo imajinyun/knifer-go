@@ -99,7 +99,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: coverage-${{ github.run_attempt }}-${{ matrix.go-version }}
-          path: .aiflow/ci/coverage.out
+          path: |
+            .aiflow/ci/coverage.out
+            .aiflow/ci/coverage.out.meta.json
           include-hidden-files: true
 
       - name: Upload coverage to Codecov
@@ -321,9 +323,77 @@ jobs:
         with:
           sarif_file: scorecard-results.sarif
 
+  database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: postgres:17.6@sha256:00bc86618629af00d2937fdc5a5d63db3ff8450acf52f0636ec813c7f4902929
+        env:
+          POSTGRES_USER: knifer
+          POSTGRES_PASSWORD: fixture-only
+          POSTGRES_DB: knifer
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U knifer -d knifer"
+          --health-interval 2s --health-timeout 3s --health-retries 30
+      mysql:
+        image: mysql:8.4.6@sha256:869218921e61d6c3c89820955d63cca42971f0e3e6c1e2792247bbd944ebc6e9
+        env:
+          MYSQL_ROOT_PASSWORD: fixture-root-only
+          MYSQL_USER: knifer
+          MYSQL_PASSWORD: fixture-only
+          MYSQL_DATABASE: knifer
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 -uknifer -pfixture-only"
+          --health-interval 2s --health-timeout 3s --health-retries 60
+    env:
+      DB_TEST_ENGINES: sqlite,postgres,mysql
+      KNIFER_TEST_POSTGRES_DSN: postgres://knifer:fixture-only@127.0.0.1:5432/knifer?sslmode=disable
+      KNIFER_TEST_MYSQL_DSN: knifer:fixture-only@tcp(127.0.0.1:3306)/knifer?parseTime=true&loc=UTC&timeout=5s
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_RELEASE_VERSION }}
+          cache: true
+          cache-dependency-path: |
+            go.sum
+            integration/db/go.sum
+      - name: Record fixed Go toolchain
+        run: |
+          go version
+          go env GOTOOLCHAIN
+          test "$(go env GOVERSION)" = "go${{ env.GO_RELEASE_VERSION }}"
+      - name: Build result recorder
+        run: go build -o .aiflow/ci/ciresult ./bin/ciresult
+      - name: Run database contracts
+        run: .aiflow/ci/ciresult run -id database -out .aiflow/ci/records -- make db-integration-check
+      - name: Upload command result
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ci-result-${{ github.run_attempt }}-database
+          path: .aiflow/ci/records/database.json
+          include-hidden-files: true
+          if-no-files-found: error
+      - name: Upload database test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: database-tests-${{ github.run_attempt }}
+          path: .aiflow/db-integration/
+          include-hidden-files: true
+          if-no-files-found: warn
+
   admission:
     if: always()
-    needs: [agent-governance, test, lint, govulncheck, benchmark-smoke, fuzz-smoke, codeql, scorecard]
+    needs: [agent-governance, test, lint, govulncheck, benchmark-smoke, fuzz-smoke, codeql, scorecard, database]
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -9,6 +9,12 @@ subpackage APIs are treated as the compatibility boundary.
 
 ### Added
 
+- Added coverage evidence bound to the tested source, module inputs and profile,
+  with caller-inclusive statement coverage, duplicate-block normalization and
+  explicit shared HTTP security coverage gates.
+- Added an isolated database integration module covering real SQLite,
+  PostgreSQL and MySQL behavior, with pinned drivers/service images and a
+  required recorded CI database job.
 - Added daily/manual extended Fuzz runs with bounded workers, minimization and
   whole-run deadlines. Failures retain logs and native corpus in isolated
   `.aiflow/fuzz` directories and are uploaded by PR, release and extended jobs.

@@ -169,6 +169,8 @@
       "type": "object",
       "required": ["repository_threshold", "package_thresholds"],
       "properties": {
+        "require_bound_profile": { "type": "boolean" },
+        "shared_security_packages": { "$ref": "#/$defs/string_array" },
         "repository_threshold": { "type": "number", "exclusiveMinimum": 0, "maximum": 100 },
         "security_sensitive_min_threshold": { "type": "number", "exclusiveMinimum": 0, "maximum": 100 },
         "package_thresholds": {
