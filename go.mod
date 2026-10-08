@@ -3,7 +3,7 @@ module github.com/imajinyun/knifer-go
 go 1.26.0
 
 require (
-	github.com/emmansun/gmsm v0.44.1
+	github.com/emmansun/gmsm v0.45.0
 	github.com/getsentry/sentry-go v0.49.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/makiuchi-d/gozxing v0.1.1
@@ -15,7 +15,7 @@ require (
 	golang.org/x/mod v0.41.0
 	golang.org/x/net v0.59.0
 	golang.org/x/text v0.42.0
-	golang.org/x/tools v0.50.0
+	golang.org/x/tools v0.51.0
 	gopkg.in/yaml.v3 v3.0.1
 	resty.dev/v3 v3.0.0-rc.4
 )
@@ -31,7 +31,7 @@ require (
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
 	golang.org/x/sync v0.23.0 // indirect
 	golang.org/x/sys v0.48.0 // indirect
-	golang.org/x/telemetry v0.0.0-20260908163034-4bcc4b2ee518 // indirect
+	golang.org/x/telemetry v0.0.0-20260924152758-ed294f943157 // indirect
 	golang.org/x/vuln v1.3.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 )
