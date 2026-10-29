@@ -3,7 +3,7 @@ module github.com/imajinyun/knifer-go
 go 1.26.0
 
 require (
-	github.com/emmansun/gmsm v0.45.0
+	github.com/emmansun/gmsm v0.45.1
 	github.com/getsentry/sentry-go v0.50.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/makiuchi-d/gozxing v0.1.1
